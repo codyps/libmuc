@@ -1,0 +1,87 @@
+/*
+Controls and Provides access to the Analog to Digital Converter (ADC) subsystem of the avr
+*/
+
+#include "defines.h"
+#include "adc.h"
+#include <math.h>
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <avr/sleep.h>
+#include <stdio.h>
+
+//const static unsigned char ADC_PRESCALE = log(F_CPU/200000)/log(2)+1;
+//#define ADC_PRESCALE  (char)(log(F_CPU/200000)/log(2)+1)
+#define ADC_PRESCALE 4
+#define channel_amt 4
+//const static unsigned char channel_amt = 4; //Number of channels
+static unsigned char curr_ch = 0; //Current 'Virtual' Channel
+static unsigned char channels [] = {4, 6, 5, 7}; //Actual channels we are using, indices are virtuals
+static int adc [channel_amt]; //Current Calculated Values
+
+
+unsigned char get_curr_channel(void){
+	return curr_ch;
+}
+
+int adc_read(unsigned char v_ch) {
+	//note: 'virtual' channels
+	return adc[v_ch];
+}
+
+void adc_init() {
+	printf("adc: init...\n");
+	//select reference voltage
+	//AVCC with external capacitor at AREF pin
+	ADMUX=(0<<REFS1)|(1<<REFS0);
+	//set prescaller and enable ADC
+	ADCSRA=(((1<<ADEN)|(1<<ADIE)|(1<<ADATE))&0b11111000)|(ADC_PRESCALE);
+	//set sleep mode for ADC noise reduction conversion
+	set_sleep_mode(SLEEP_MODE_ADC);
+	//Start convertions?
+	printf("adc: start convertions...\n");
+	adc_start_convert(curr_ch);
+}
+
+void adc_start_convert(unsigned char channel) {
+	
+	
+	//while channel>channel_amt
+	//	channel-=channel_amt;
+	//set ADC channel
+	//ADMUX=(ADMUX&0xE0)|channels[channel];
+	ADMUX=(ADMUX&0b11100000)|channels[channel];
+	//Start conversionio with Interupt after conversion
+	//enable global interrupts
+	//TODO: is this neccessary/appropriate position?
+	sei();
+	ADCSRA |= (1<<ADSC)|(1<<ADIE);
+	//Reset in free run mode
+	ADCSRA |= (ADCSRA&0b11111000)|ADC_PRESCALE;
+}
+
+
+
+//ADC Interupt
+ISR(ADC_vect) {
+	//read
+	uint16_t adc_value;
+	adc_value = ADCL;  
+	adc_value += (ADCH<<8);
+	//Store
+	adc[curr_ch]=adc_value;
+	//Goto next channel
+	if (curr_ch >= channel_amt)
+		curr_ch = 0;
+	else
+		++curr_ch;
+	//Start the next convertion.
+	printf("adc_value: %d",adc_value);
+	adc_start_convert(curr_ch);
+	
+	//TODO: possibly swap the last 2 blocks for speed boost?
+	//TODO: use 'free running' mode rather than calling start convert
+	//++curr_channel;
+	//TODO: modify for running average (Ave= (Ave*(ct-1)+New)/ct)
+	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
+}

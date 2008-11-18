@@ -1,0 +1,496 @@
+   1               		.file	"motor.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.global __do_copy_data
+   8               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  86               	.global	get_motor_L
+  88               	get_motor_L:
+  89               		.stabd	46,0,0
+   1:motor.c       **** #include "defines.h"
+   2:motor.c       **** #include "motor.h"
+   3:motor.c       **** #include <stdio.h>
+   4:motor.c       **** #include <inttypes.h>
+   5:motor.c       **** #include <util/atomic.h>
+   6:motor.c       **** 
+   7:motor.c       **** 
+   8:motor.c       **** uint16_t get_motor_L(void) {
+  91               	.LM0:
+  92               	.LFBB1:
+  93               	/* prologue: function */
+  94               	/* frame size = 0 */
+  95               	.LBB22:
+  96               	.LBB23:
+  97               	.LBB24:
+  99               	.Ltext1:
+   1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* Copyright (c) 2007 Dean Camera
+   2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    All rights reserved.
+   3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+   4:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    Redistribution and use in source and binary forms, with or without
+   5:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    modification, are permitted provided that the following conditions are met:
+   6:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+   7:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Redistributions of source code must retain the above copyright
+   8:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer.
+   9:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  10:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Redistributions in binary form must reproduce the above copyright
+  11:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer in
+  12:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      the documentation and/or other materials provided with the
+  13:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      distribution.
+  14:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  15:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Neither the name of the copyright holders nor the names of
+  16:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      contributors may be used to endorse or promote products derived
+  17:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      from this software without specific prior written permission.
+  18:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  19:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   POSSIBILITY OF SUCH DAMAGE.
+  30:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** */
+  31:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  32:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* $Id: atomic.h,v 1.3 2007/12/20 14:17:56 joerg_wunsch Exp $ */
+  33:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  34:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #ifndef _UTIL_ATOMIC_H_
+  35:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #define _UTIL_ATOMIC_H_ 1
+  36:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  37:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #include <avr/io.h>
+  38:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #include <avr/interrupt.h>
+  39:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  40:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #if !defined(__DOXYGEN__)
+  41:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* Internal helper functions. */
+  42:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iSeiRetVal(void)
+  43:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
+  44:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     sei();
+  45:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     return 1;
+  46:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
+  47:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  48:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
+  49:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
+  50:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     cli();
+ 101               	.LM1:
+ 102               	/* #APP */
+ 103               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 104 0000 F894      		cli
+ 105               	 ;  0 "" 2
+ 106               	/* #NOAPP */
+ 107               	.LBE24:
+ 108               	.LBE23:
+ 110               	.Ltext2:
+   9:motor.c       **** 	uint16_t temp;
+  10:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
+  11:motor.c       **** 		temp=MOTOR_LEFT;
+ 112               	.LM2:
+ 113 0002 2091 8800 		lds r18,136
+ 114 0006 3091 8900 		lds r19,(136)+1
+ 115               	.LBB25:
+ 116               	.LBB26:
+ 118               	.Ltext3:
+  51:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     return 1;
+  52:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
+  53:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
+  54:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ void __iSeiParam(const uint8_t *__s)
+  55:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
+  56:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     sei();
+ 120               	.LM3:
+ 121               	/* #APP */
+ 122               	 ;  56 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 123 000a 7894      		sei
+ 124               	 ;  0 "" 2
+  57:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 126               	.LM4:
+ 127               	/* #NOAPP */
+ 128               	.LBE26:
+ 129               	.LBE25:
+ 130               	.LBE22:
+ 132               	.Ltext4:
+  12:motor.c       **** 	}
+  13:motor.c       **** 	return temp;
+  14:motor.c       **** }
+ 134               	.LM5:
+ 135 000c C901      		movw r24,r18
+ 136               	/* epilogue start */
+ 137 000e 0895      		ret
+ 142               	.Lscope1:
+ 144               		.stabd	78,0,0
+ 146               	.global	get_motor_R
+ 148               	get_motor_R:
+ 149               		.stabd	46,0,0
+  15:motor.c       **** 
+  16:motor.c       **** uint16_t get_motor_R(void) {
+ 151               	.LM6:
+ 152               	.LFBB2:
+ 153               	/* prologue: function */
+ 154               	/* frame size = 0 */
+ 155               	.LBB27:
+ 156               	.LBB28:
+ 157               	.LBB29:
+ 159               	.Ltext5:
+ 161               	.LM7:
+ 162               	/* #APP */
+ 163               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 164 0010 F894      		cli
+ 165               	 ;  0 "" 2
+ 166               	/* #NOAPP */
+ 167               	.LBE29:
+ 168               	.LBE28:
+ 170               	.Ltext6:
+  17:motor.c       **** 	uint16_t temp;
+  18:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
+  19:motor.c       **** 		temp=MOTOR_RIGHT;
+ 172               	.LM8:
+ 173 0012 2091 8A00 		lds r18,138
+ 174 0016 3091 8B00 		lds r19,(138)+1
+ 175               	.LBB30:
+ 176               	.LBB31:
+ 178               	.Ltext7:
+ 180               	.LM9:
+ 181               	/* #APP */
+ 182               	 ;  56 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 183 001a 7894      		sei
+ 184               	 ;  0 "" 2
+ 186               	.LM10:
+ 187               	/* #NOAPP */
+ 188               	.LBE31:
+ 189               	.LBE30:
+ 190               	.LBE27:
+ 192               	.Ltext8:
+  20:motor.c       **** 	}
+  21:motor.c       **** 	return temp;
+  22:motor.c       **** }
+ 194               	.LM11:
+ 195 001c C901      		movw r24,r18
+ 196               	/* epilogue start */
+ 197 001e 0895      		ret
+ 202               	.Lscope2:
+ 204               		.stabd	78,0,0
+ 207               	.global	set_motor_L
+ 209               	set_motor_L:
+ 210               		.stabd	46,0,0
+  23:motor.c       **** 
+  24:motor.c       **** void set_motor_L(uint16_t speed) {
+ 212               	.LM12:
+ 213               	.LFBB3:
+ 214               	/* prologue: function */
+ 215               	/* frame size = 0 */
+ 216               	.LBB32:
+ 217               	.LBB33:
+ 218               	.LBB34:
+ 220               	.Ltext9:
+ 222               	.LM13:
+ 223               	/* #APP */
+ 224               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 225 0020 F894      		cli
+ 226               	 ;  0 "" 2
+ 227               	/* #NOAPP */
+ 228               	.LBE34:
+ 229               	.LBE33:
+ 231               	.Ltext10:
+  25:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
+  26:motor.c       **** 		MOTOR_LEFT=speed;
+ 233               	.LM14:
+ 234 0022 9093 8900 		sts (136)+1,r25
+ 235 0026 8093 8800 		sts 136,r24
+ 236               	.LBB35:
+ 237               	.LBB36:
+ 239               	.Ltext11:
+ 241               	.LM15:
+ 242               	/* #APP */
+ 243               	 ;  56 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 244 002a 7894      		sei
+ 245               	 ;  0 "" 2
+ 247               	.LM16:
+ 248               	/* epilogue start */
+ 249               	/* #NOAPP */
+ 250               	.LBE36:
+ 251               	.LBE35:
+ 252               	.LBE32:
+ 254               	.Ltext12:
+  27:motor.c       **** 	}
+  28:motor.c       **** }
+ 256               	.LM17:
+ 257 002c 0895      		ret
+ 259               	.Lscope3:
+ 261               		.stabd	78,0,0
+ 264               	.global	set_motor_R
+ 266               	set_motor_R:
+ 267               		.stabd	46,0,0
+  29:motor.c       **** 
+  30:motor.c       **** void set_motor_R(uint16_t speed) {
+ 269               	.LM18:
+ 270               	.LFBB4:
+ 271               	/* prologue: function */
+ 272               	/* frame size = 0 */
+ 273               	.LBB37:
+ 274               	.LBB38:
+ 275               	.LBB39:
+ 277               	.Ltext13:
+ 279               	.LM19:
+ 280               	/* #APP */
+ 281               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 282 002e F894      		cli
+ 283               	 ;  0 "" 2
+ 284               	/* #NOAPP */
+ 285               	.LBE39:
+ 286               	.LBE38:
+ 288               	.Ltext14:
+  31:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
+  32:motor.c       **** 		MOTOR_RIGHT=speed;
+ 290               	.LM20:
+ 291 0030 9093 8B00 		sts (138)+1,r25
+ 292 0034 8093 8A00 		sts 138,r24
+ 293               	.LBB40:
+ 294               	.LBB41:
+ 296               	.Ltext15:
+ 298               	.LM21:
+ 299               	/* #APP */
+ 300               	 ;  56 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
+ 301 0038 7894      		sei
+ 302               	 ;  0 "" 2
+ 304               	.LM22:
+ 305               	/* epilogue start */
+ 306               	/* #NOAPP */
+ 307               	.LBE41:
+ 308               	.LBE40:
+ 309               	.LBE37:
+ 311               	.Ltext16:
+  33:motor.c       **** 	}
+  34:motor.c       **** }
+ 313               	.LM23:
+ 314 003a 0895      		ret
+ 316               	.Lscope4:
+ 318               		.stabd	78,0,0
+ 319               		.data
+ 320               	.LC0:
+ 321 0000 6D6F 746F 		.string	"motor r mode: %d\n"
+ 321      7220 7220 
+ 321      6D6F 6465 
+ 321      3A20 2564 
+ 321      0A00 
+ 322               		.text
+ 325               	.global	motor_mode_R
+ 327               	motor_mode_R:
+ 328               		.stabd	46,0,0
+  35:motor.c       **** 
+  36:motor.c       **** uint8_t motor_mode_L(uint8_t mode) {
+  37:motor.c       **** 	static uint8_t c_mode; //=0;
+  38:motor.c       **** 
+  39:motor.c       **** 	if 	(mode == MOTOR_MODE_CCW ) {
+  40:motor.c       **** 		MOTOR_PORT&=~(1<<M_LIN1); // IN1 = L, IN2 = H
+  41:motor.c       **** 		MOTOR_PORT|=(1<<M_LIN2);
+  42:motor.c       **** 		c_mode = mode;
+  43:motor.c       **** 	}
+  44:motor.c       **** 	else if (mode == MOTOR_MODE_CW  ) {
+  45:motor.c       **** 		MOTOR_PORT|=(1<<M_LIN1);
+  46:motor.c       **** 		MOTOR_PORT&=~(1<<M_LIN2); // IN1 = H, IN2 = L
+  47:motor.c       **** 		c_mode = mode;
+  48:motor.c       **** 	}
+  49:motor.c       **** 	else if (mode == MOTOR_MODE_STOP) {
+  50:motor.c       **** 		MOTOR_PORT&=~((1<<M_LIN1)|(1<<M_LIN2)); // IN1 = L, IN2 = L
+  51:motor.c       **** 		c_mode = mode;
+  52:motor.c       **** 	}
+  53:motor.c       **** 	else if (mode == MOTOR_MODE_SB	) {
+  54:motor.c       **** 		MOTOR_PORT|=(1<<M_LIN1)|(1<<M_LIN2); // IN1 = H, IN2 = H
+  55:motor.c       **** 		c_mode = mode;
+  56:motor.c       **** 	}
+  57:motor.c       **** //	if	(mode == MOTOR_MODE_GET )
+  58:motor.c       **** //		return c_mode;
+  59:motor.c       **** 	printf("motor L mode: %d\n",c_mode);
+  60:motor.c       **** 	return c_mode;
+  61:motor.c       **** }
+  62:motor.c       **** 
+  63:motor.c       **** uint8_t motor_mode_R(uint8_t mode) {
+ 330               	.LM24:
+ 331               	.LFBB5:
+ 332               	/* prologue: function */
+ 333               	/* frame size = 0 */
+ 334 003c 982F      		mov r25,r24
+  64:motor.c       **** 	static uint8_t c_mode; //=0;
+  65:motor.c       **** 
+  66:motor.c       **** 	if 	(mode == MOTOR_MODE_CCW ) {
+ 336               	.LM25:
+ 337 003e 8230      		cpi r24,lo8(2)
+ 338 0040 01F4      		brne .L10
+  67:motor.c       **** 		MOTOR_PORT&=~(1<<M_RIN1); // IN1 = L, IN2 = H
+ 340               	.LM26:
+ 341 0042 5D98      		cbi 43-0x20,5
+  68:motor.c       **** 		MOTOR_PORT|=(1<<M_RIN2);
+ 343               	.LM27:
+ 344 0044 5F9A      		sbi 43-0x20,7
+ 345 0046 00C0      		rjmp .L15
+ 346               	.L10:
+  69:motor.c       **** 		c_mode = mode;
+  70:motor.c       **** 	}
+  71:motor.c       **** 	else if (mode == MOTOR_MODE_CW  ) {
+ 348               	.LM28:
+ 349 0048 8130      		cpi r24,lo8(1)
+ 350 004a 01F4      		brne .L12
+  72:motor.c       **** 		MOTOR_PORT|=(1<<M_RIN1);
+ 352               	.LM29:
+ 353 004c 5D9A      		sbi 43-0x20,5
+  73:motor.c       **** 		MOTOR_PORT&=~(1<<M_RIN2); // IN1 = H, IN2 = L
+ 355               	.LM30:
+ 356 004e 5F98      		cbi 43-0x20,7
+ 357 0050 00C0      		rjmp .L15
+ 358               	.L12:
+  74:motor.c       **** 		c_mode = mode;
+  75:motor.c       **** 	}
+  76:motor.c       **** 	else if (mode == MOTOR_MODE_STOP) {
+ 360               	.LM31:
+ 361 0052 8330      		cpi r24,lo8(3)
+ 362 0054 01F4      		brne .L13
+  77:motor.c       **** 		MOTOR_PORT&=~((1<<M_RIN1)|(1<<M_RIN2)); // IN1 = L, IN2 = L
+ 364               	.LM32:
+ 365 0056 8BB1      		in r24,43-0x20
+ 366 0058 8F75      		andi r24,lo8(95)
+ 367 005a 00C0      		rjmp .L16
+ 368               	.L13:
+  78:motor.c       **** 		c_mode = mode;
+  79:motor.c       **** 	}
+  80:motor.c       **** 	else if (mode == MOTOR_MODE_SB	) {
+ 370               	.LM33:
+ 371 005c 8430      		cpi r24,lo8(4)
+ 372 005e 01F4      		brne .L11
+  81:motor.c       **** 		MOTOR_PORT|=(1<<M_RIN1)|(1<<M_RIN2); // IN1 = H, IN2 = H
+ 374               	.LM34:
+ 375 0060 8BB1      		in r24,43-0x20
+ 376 0062 806A      		ori r24,lo8(-96)
+ 377               	.L16:
+ 378 0064 8BB9      		out 43-0x20,r24
+ 379               	.L15:
+  82:motor.c       **** 		c_mode = mode;
+ 381               	.LM35:
+ 382 0066 9093 0000 		sts c_mode.1465,r25
+ 383               	.L11:
+  83:motor.c       **** 	}
+  84:motor.c       **** //	if	(mode == MOTOR_MODE_GET )
+  85:motor.c       **** //		return c_mode;
+  86:motor.c       **** 	printf("motor r mode: %d\n",c_mode);
+ 385               	.LM36:
+ 386 006a 8091 0000 		lds r24,c_mode.1465
+ 387 006e 90E0      		ldi r25,lo8(0)
+ 388 0070 9F93      		push r25
+ 389 0072 8F93      		push r24
+ 390 0074 80E0      		ldi r24,lo8(.LC0)
+ 391 0076 90E0      		ldi r25,hi8(.LC0)
+ 392 0078 9F93      		push r25
+ 393 007a 8F93      		push r24
+ 394 007c 0E94 0000 		call printf
+ 395 0080 0F90      		pop __tmp_reg__
+ 396 0082 0F90      		pop __tmp_reg__
+ 397 0084 0F90      		pop __tmp_reg__
+ 398 0086 0F90      		pop __tmp_reg__
+  87:motor.c       **** 	return c_mode;
+  88:motor.c       **** }
+ 400               	.LM37:
+ 401 0088 8091 0000 		lds r24,c_mode.1465
+ 402               	/* epilogue start */
+ 403 008c 0895      		ret
+ 408               	.Lscope5:
+ 410               		.stabd	78,0,0
+ 411               		.data
+ 412               	.LC1:
+ 413 0012 6D6F 746F 		.string	"motor L mode: %d\n"
+ 413      7220 4C20 
+ 413      6D6F 6465 
+ 413      3A20 2564 
+ 413      0A00 
+ 414               		.text
+ 417               	.global	motor_mode_L
+ 419               	motor_mode_L:
+ 420               		.stabd	46,0,0
+ 422               	.LM38:
+ 423               	.LFBB6:
+ 424               	/* prologue: function */
+ 425               	/* frame size = 0 */
+ 426 008e 982F      		mov r25,r24
+ 428               	.LM39:
+ 429 0090 8230      		cpi r24,lo8(2)
+ 430 0092 01F4      		brne .L18
+ 432               	.LM40:
+ 433 0094 5998      		cbi 43-0x20,1
+ 435               	.LM41:
+ 436 0096 5B9A      		sbi 43-0x20,3
+ 437 0098 00C0      		rjmp .L23
+ 438               	.L18:
+ 440               	.LM42:
+ 441 009a 8130      		cpi r24,lo8(1)
+ 442 009c 01F4      		brne .L20
+ 444               	.LM43:
+ 445 009e 599A      		sbi 43-0x20,1
+ 447               	.LM44:
+ 448 00a0 5B98      		cbi 43-0x20,3
+ 449 00a2 00C0      		rjmp .L23
+ 450               	.L20:
+ 452               	.LM45:
+ 453 00a4 8330      		cpi r24,lo8(3)
+ 454 00a6 01F4      		brne .L21
+ 456               	.LM46:
+ 457 00a8 8BB1      		in r24,43-0x20
+ 458 00aa 857F      		andi r24,lo8(-11)
+ 459 00ac 00C0      		rjmp .L24
+ 460               	.L21:
+ 462               	.LM47:
+ 463 00ae 8430      		cpi r24,lo8(4)
+ 464 00b0 01F4      		brne .L19
+ 466               	.LM48:
+ 467 00b2 8BB1      		in r24,43-0x20
+ 468 00b4 8A60      		ori r24,lo8(10)
+ 469               	.L24:
+ 470 00b6 8BB9      		out 43-0x20,r24
+ 471               	.L23:
+ 473               	.LM49:
+ 474 00b8 9093 0000 		sts c_mode.1445,r25
+ 475               	.L19:
+ 477               	.LM50:
+ 478 00bc 8091 0000 		lds r24,c_mode.1445
+ 479 00c0 90E0      		ldi r25,lo8(0)
+ 480 00c2 9F93      		push r25
+ 481 00c4 8F93      		push r24
+ 482 00c6 80E0      		ldi r24,lo8(.LC1)
+ 483 00c8 90E0      		ldi r25,hi8(.LC1)
+ 484 00ca 9F93      		push r25
+ 485 00cc 8F93      		push r24
+ 486 00ce 0E94 0000 		call printf
+ 487 00d2 0F90      		pop __tmp_reg__
+ 488 00d4 0F90      		pop __tmp_reg__
+ 489 00d6 0F90      		pop __tmp_reg__
+ 490 00d8 0F90      		pop __tmp_reg__
+ 492               	.LM51:
+ 493 00da 8091 0000 		lds r24,c_mode.1445
+ 494               	/* epilogue start */
+ 495 00de 0895      		ret
+ 500               	.Lscope6:
+ 502               		.stabd	78,0,0
+ 503               		.lcomm c_mode.1465,1
+ 504               		.lcomm c_mode.1445,1
+ 508               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 motor.c
+     /tmp/ccno2cln.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccno2cln.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccno2cln.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccno2cln.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccno2cln.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccno2cln.s:88     .text:00000000 get_motor_L
+     /tmp/ccno2cln.s:148    .text:00000010 get_motor_R
+     /tmp/ccno2cln.s:209    .text:00000020 set_motor_L
+     /tmp/ccno2cln.s:266    .text:0000002e set_motor_R
+     /tmp/ccno2cln.s:327    .text:0000003c motor_mode_R
+                             .bss:00000000 c_mode.1465
+     /tmp/ccno2cln.s:419    .text:0000008e motor_mode_L
+     /tmp/ccno2cln.s:503    .bss:00000001 c_mode.1445
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+printf

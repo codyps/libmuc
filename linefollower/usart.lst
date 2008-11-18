@@ -1,0 +1,150 @@
+   1               		.file	"usart.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.global __do_copy_data
+   8               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  90               	usart_putchar:
+  91               		.stabd	46,0,0
+   1:usart.c       **** #include "usart.h"
+   2:usart.c       **** #include <stdio.h>
+   3:usart.c       **** #include <avr/io.h>
+   4:usart.c       **** #include <avr/power.h>
+   5:usart.c       **** 
+   6:usart.c       **** static int usart_putchar(char c, FILE *stream);
+   7:usart.c       **** static FILE usart_stdout = FDEV_SETUP_STREAM(usart_putchar, NULL,_FDEV_SETUP_WRITE);
+   8:usart.c       **** 
+   9:usart.c       **** 
+  10:usart.c       **** /*
+  11:usart.c       **** static int usart_getchar(char c, FILE *stream) {
+  12:usart.c       **** 	return 1;
+  13:usart.c       **** }
+  14:usart.c       **** */
+  15:usart.c       **** 
+  16:usart.c       **** static int usart_putchar(char c, FILE *stream) {
+  93               	.LM0:
+  94               	.LFBB1:
+  95 0000 1F93      		push r17
+  96               	/* prologue: function */
+  97               	/* frame size = 0 */
+  98 0002 182F      		mov r17,r24
+  17:usart.c       **** 
+  18:usart.c       ****   if (c == '\n')
+ 100               	.LM1:
+ 101 0004 8A30      		cpi r24,lo8(10)
+ 102 0006 01F4      		brne .L4
+  19:usart.c       **** 	usart_putchar('\r', stream);
+ 104               	.LM2:
+ 105 0008 8DE0      		ldi r24,lo8(13)
+ 106 000a 0E94 0000 		call usart_putchar
+ 107               	.L4:
+  20:usart.c       ****   loop_until_bit_is_set(UCSR0A, UDRE0);
+ 109               	.LM3:
+ 110 000e 8091 C000 		lds r24,192
+ 111 0012 85FF      		sbrs r24,5
+ 112 0014 00C0      		rjmp .L4
+  21:usart.c       ****   UDR0 = c;
+ 114               	.LM4:
+ 115 0016 1093 C600 		sts 198,r17
+  22:usart.c       ****   return 0;
+  23:usart.c       **** }
+ 117               	.LM5:
+ 118 001a 80E0      		ldi r24,lo8(0)
+ 119 001c 90E0      		ldi r25,hi8(0)
+ 120               	/* epilogue start */
+ 121 001e 1F91      		pop r17
+ 122 0020 0895      		ret
+ 124               	.Lscope1:
+ 126               		.stabd	78,0,0
+ 128               	.global	usart_init
+ 130               	usart_init:
+ 131               		.stabd	46,0,0
+  24:usart.c       **** 
+  25:usart.c       **** 
+  26:usart.c       **** void usart_init(void) {
+ 133               	.LM6:
+ 134               	.LFBB2:
+ 135               	/* prologue: function */
+ 136               	/* frame size = 0 */
+  27:usart.c       **** 	power_usart0_enable();
+ 138               	.LM7:
+ 139 0022 E4E6      		ldi r30,lo8(100)
+ 140 0024 F0E0      		ldi r31,hi8(100)
+ 141 0026 8081      		ld r24,Z
+ 142 0028 8D7F      		andi r24,lo8(-3)
+ 143 002a 8083      		st Z,r24
+  28:usart.c       **** 
+  29:usart.c       **** 	/* Set baud rate (12bit) */
+  30:usart.c       **** 	UBRR0 = UBRR_VALUE;
+ 145               	.LM8:
+ 146 002c 89E1      		ldi r24,lo8(25)
+ 147 002e 90E0      		ldi r25,hi8(25)
+ 148 0030 9093 C500 		sts (196)+1,r25
+ 149 0034 8093 C400 		sts 196,r24
+  31:usart.c       **** 	#if USE_2X
+  32:usart.c       **** 	UCSR0A |= (1 << U2X0);
+  33:usart.c       **** 	#else
+  34:usart.c       **** 	UCSR0A &= ~(1 << U2X0);
+ 151               	.LM9:
+ 152 0038 E0EC      		ldi r30,lo8(192)
+ 153 003a F0E0      		ldi r31,hi8(192)
+ 154 003c 8081      		ld r24,Z
+ 155 003e 8D7F      		andi r24,lo8(-3)
+ 156 0040 8083      		st Z,r24
+  35:usart.c       **** 	#endif
+  36:usart.c       **** 	/* Double the uart clock */
+  37:usart.c       **** 	//UCSR0A |=(1<<U2X0);
+  38:usart.c       **** 	/* Enable receiver and transmitter */
+  39:usart.c       **** 	UCSR0B = (1<<RXEN0)|(1<<TXEN0)	;
+ 158               	.LM10:
+ 159 0042 88E1      		ldi r24,lo8(24)
+ 160 0044 8093 C100 		sts 193,r24
+  40:usart.c       **** 	/* Enable r/t interupts, hangles input when used with some buffering functions */
+  41:usart.c       **** 	//UCSR0B =|(1<<RXCIE0)|(1<<TXCIE0);
+  42:usart.c       **** 	/* Set frame format: 8data, 1stop bit */
+  43:usart.c       **** 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
+ 162               	.LM11:
+ 163 0048 86E0      		ldi r24,lo8(6)
+ 164 004a 8093 C200 		sts 194,r24
+  44:usart.c       **** 	
+  45:usart.c       **** 	stdout=&usart_stdout;
+ 166               	.LM12:
+ 167 004e 80E0      		ldi r24,lo8(usart_stdout)
+ 168 0050 90E0      		ldi r25,hi8(usart_stdout)
+ 169 0052 9093 0000 		sts (__iob+2)+1,r25
+ 170 0056 8093 0000 		sts __iob+2,r24
+ 171               	/* epilogue start */
+  46:usart.c       **** }...
+ 173               	.LM13:
+ 174 005a 0895      		ret
+ 176               	.Lscope2:
+ 178               		.stabd	78,0,0
+ 179               		.data
+ 182               	usart_stdout:
+ 183 0000 0000 00   		.skip 3,0
+ 184 0003 02        		.byte	2
+ 185 0004 0000 0000 		.skip 4,0
+ 186 0008 0000      		.word	pm(usart_putchar)
+ 187 000a 0000      		.word	0
+ 188 000c 0000      		.word	0
+ 190               		.text
+ 192               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 usart.c
+     /tmp/ccZFObtj.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccZFObtj.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccZFObtj.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccZFObtj.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccZFObtj.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccZFObtj.s:90     .text:00000000 usart_putchar
+     /tmp/ccZFObtj.s:130    .text:00000022 usart_init
+     /tmp/ccZFObtj.s:182    .data:00000000 usart_stdout
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+__iob
