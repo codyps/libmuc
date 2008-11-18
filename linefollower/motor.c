@@ -1,6 +1,6 @@
 #include "defines.h"
 #include "motor.h"
-#include "timer.h"
+#include "timers.h"
 #include <stdio.h>
 #include <inttypes.h>
 #include <util/atomic.h>
@@ -97,6 +97,7 @@ void lf_turn_left_inc(uint16_t inc) {
 	if ((c_speed[LEFT] + inc) > LF_MAX_SPEED) {
 		set_motor_L(c_speed[LEFT]+speed_diff_L);
 		set_motor_R(c_speed[RIGHT]-(inc-speed_diff_L));
+	}
 	else
 		set_motor_L(c_speed[LEFT]+inc);
 	//TODO: case when ((c_speed[RIGHT]-inc) < LF_MIN_SPEED)?
@@ -106,7 +107,7 @@ void lf_turn_right_inc(uint16_t inc) {
 	uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
 	
 }
-void lf_max_speed(void) {
+void lf_full_speed(void) {
 	set_motor_L(LF_MAX_SPEED);
 	set_motor_R(LF_MAX_SPEED);
 }

@@ -135,14 +135,14 @@
  192               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 usart.c
-     /tmp/ccZFObtj.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccZFObtj.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccZFObtj.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccZFObtj.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/ccZFObtj.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/ccZFObtj.s:90     .text:00000000 usart_putchar
-     /tmp/ccZFObtj.s:130    .text:00000022 usart_init
-     /tmp/ccZFObtj.s:182    .data:00000000 usart_stdout
+     /tmp/cclXd6tF.s:2      *ABS*:0000003f __SREG__
+     /tmp/cclXd6tF.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cclXd6tF.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cclXd6tF.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/cclXd6tF.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/cclXd6tF.s:90     .text:00000000 usart_putchar
+     /tmp/cclXd6tF.s:130    .text:00000022 usart_init
+     /tmp/cclXd6tF.s:182    .data:00000000 usart_stdout
 
 UNDEFINED SYMBOLS
 __do_copy_data

@@ -1,1 +1,1 @@
-motor.o motor.d : motor.c defines.h motor.h
+motor.o motor.d : motor.c defines.h motor.h timers.h

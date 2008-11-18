@@ -893,21 +893,21 @@
  534               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 adc.c
-     /tmp/cc72iHmg.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc72iHmg.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc72iHmg.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc72iHmg.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/cc72iHmg.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/cc72iHmg.s:91     .text:00000000 copysign
-     /tmp/cc72iHmg.s:120    .text:00000006 isfinite
-     /tmp/cc72iHmg.s:160    .text:0000001e adc_set_channel
-     /tmp/cc72iHmg.s:520    .data:00000035 channels
-     /tmp/cc72iHmg.s:193    .text:00000036 __vector_19
+     /tmp/ccDdQKXB.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccDdQKXB.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccDdQKXB.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccDdQKXB.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccDdQKXB.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccDdQKXB.s:91     .text:00000000 copysign
+     /tmp/ccDdQKXB.s:120    .text:00000006 isfinite
+     /tmp/ccDdQKXB.s:160    .text:0000001e adc_set_channel
+     /tmp/ccDdQKXB.s:520    .data:00000035 channels
+     /tmp/ccDdQKXB.s:193    .text:00000036 __vector_19
                             *COM*:00000001 curr_ch
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_amt
-     /tmp/cc72iHmg.s:313    .text:000000d4 adc_init
-     /tmp/cc72iHmg.s:437    .text:0000016c print_adc_values
+     /tmp/ccDdQKXB.s:313    .text:000000d4 adc_init
+     /tmp/ccDdQKXB.s:437    .text:0000016c print_adc_values
 
 UNDEFINED SYMBOLS
 __do_copy_data

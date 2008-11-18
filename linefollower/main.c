@@ -34,7 +34,7 @@ void clock_init(void) {
 
 void  print_bin(uint8_t inp) {
 	for(int8_t j=7; j>=0; --j) {
-	    putc((inp&(1<<j))>>j)+'0');
+	   	printf("%c",((inp&(1<<j))>>j)+'0');
 	}
 }
 
@@ -67,7 +67,7 @@ int main(void) {
 		uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
 		printf("ML: %X\n",c_speed[0]);
 		printf("MR: %X\n",c_speed[1]);
-		printf_adc_values();
+		print_adc_values();
 		
 		uint16_t adc_val_mixed [2] = {	adc_val[0] + adc_val[1] * LF_ADC_MIX_WIEGHT,	\
 						adc_val[3] + adc_val[2] * LF_ADC_MIX_WIEGHT	};
