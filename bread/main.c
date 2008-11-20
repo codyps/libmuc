@@ -34,7 +34,6 @@ void init(void) {
 	timer1_init();
 }
 
-uint8_t led_dir = 0;
 
 int main(void){ 
 	init();
@@ -48,10 +47,8 @@ int main(void){
 		PORTA&=0b10;
 		_delay_ms(300);
 		PORTA&=0b01;*/
-		if (OCR1A==1)		
-		
-
-		printf("You Bet\n");
+		if (OCR1A==1)				
+			printf("You Bet\n");
 	}
 	return 0;
 }

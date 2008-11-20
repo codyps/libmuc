@@ -18,14 +18,15 @@ void timer2_init(void) {
 	// Clock Select
 	//8000000/78/1024 == 100 HZ
 	//8000000/125/64  == 1000 Hz
-	TCCR2B|=(1<<CS22)|(1<<CS21)|(1<<CS20);
+	//TCCR2B|=(1<<CS22)|(1<<CS21)|(1<<CS20); //1024
+	TCCR2B|=(1<<CS22);TCCR2B&=~((1<<CS21)|(1<<CS20));//64
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		OCR2A=78;
-		OCR2B=0xFF;
+		OCR2A=125;
+		//OCR2B=0xFF; //Doesn't check this anyhow
 	}
 
 	// Enable OCR2A interupt
-	TIMSK2|=(1<<OCIE2A);
+	TIMSK2|=(1<<OCIE2A); //ya know, it is probably the overflow vector. might want to check it anyhow.
 }
 
 /*
@@ -40,6 +41,8 @@ struct {
 } led_beat;
 */
 
+
+/* Heartbeat Control */
 ISR(TIMER2_COMPA_vect) {
 	static uint8_t led_dir_A=UP;
 	static uint8_t led_dir_B=DN;
@@ -51,17 +54,19 @@ ISR(TIMER2_COMPA_vect) {
 		if ((dwell_A>DWELL_TOP_A)&&(led_dir_A==UP)) {
 			dwell_A=0;
 			--OCR1A;
+			led_dir_A=DN;
 		}
 		else if ((dwell_A>DWELL_BTM_A)&&(led_dir_A==DN)) {
 			dwell_A=0;
 			++OCR1A;
+			led_dir_A=UP;
 		}
 	}
 	else {
-		if ((OCR1A==0xFFFF)||(OCR1A==0)) dwell_A=1;
+		if ((OCR1A==UINT16_MAX)||(OCR1A==0)) dwell_A=1;
 		else
 			if (led_dir_A==UP) 	++OCR1A;
-			else			--OCR1A;
+			else				--OCR1A;
 	}
 
 	if (dwell_B) {
@@ -69,17 +74,19 @@ ISR(TIMER2_COMPA_vect) {
 		if ((dwell_B>DWELL_TOP_B)&&(led_dir_B==UP)) {
 			dwell_B=0;
 			--OCR1B;
+			led_dir_A=DN;
 		}
 		else if ((dwell_B>DWELL_BTM_B)&&(led_dir_B==DN)) {
 			dwell_B=0;
 			++OCR1B;
+			led_dir_A=UP;
 		}
 	}
 	else {
-		if ((OCR1B==0xFFFF)||(OCR1B==0)) dwell_B=1;
+		if ((OCR1B==UINT16_MAX)||(OCR1B==0)) dwell_B=1;
 		else
 			if (led_dir_B==UP) 	++OCR1B;
-			else			--OCR1B;
+			else				--OCR1B;
 	}
 }
 
