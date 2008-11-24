@@ -22,6 +22,15 @@ static int usart_putchar(char c, FILE *stream) {
   return 0;
 }
 
+ISR(USART0_RX_vect) {
+}
+
+ISR(USART0_UDRE_vect) {
+}
+
+ISR(USART0_TX_vect) {
+}
+
 
 void usart_init(void) {
 	power_usart0_enable();
@@ -38,9 +47,10 @@ void usart_init(void) {
 	/* Enable receiver and transmitter */
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0)	;
 	/* Enable r/t interupts, hangles input when used with some buffering functions */
-	//UCSR0B =|(1<<RXCIE0)|(1<<TXCIE0);
+	UCSR0B =|(1<<RXCIE0)|(1<<TXCIE0);
 	/* Set frame format: 8data, 1stop bit */
 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
 	
 	stdout=&usart_stdout;
 }
+
