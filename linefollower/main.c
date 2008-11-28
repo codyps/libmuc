@@ -60,29 +60,41 @@ int main(void) {
 		
 	//_delay_ms(500);
 	//_delay_ms(500);	
+	char input;
+   start:
+	printf(PRGM("What (Test/Follow): "));
+	scanf("%c",input);
+	if (input=='F')
+		for (;;) {
+			uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
+			printf("ML: %X\n",c_speed[0]);
+			printf("MR: %X\n",c_speed[1]);
+			print_adc_values();
+		
+			uint16_t adc_val_mixed [2] = {	adc_val[0] + adc_val[1] * LF_ADC_MIX_WIEGHT,	\
+							adc_val[3] + adc_val[2] * LF_ADC_MIX_WIEGHT	};
 
+			if (adc_val_mixed[0]>adc_val_mixed[1])
+				lf_turn_left_inc(LF_INC);
+			else if (adc_val_mixed[1]>adc_val_mixed[0])
+				lf_turn_right_inc(LF_INC);
+			else
+				lf_full_speed();
+
+			_delay_ms(700);
+		}
+	else (input=='T')
+		for(;;) {
+			motor_mode_L(MOTOR_L_FWD);
+			motor_mode_R(MOTOR_R_FWD);
 			
+			printf("       76543210\n");
+			printf("PORTB: ");print_bin(PORTB);printf("\n");
+			printf("PORTD: ");print_bin(PORTD);printf("\n");
+		}
+	else {
+		printf("\ninvalid mode.\n");
+		goto start;
+	}
 	
-	for (;;) {
-		uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
-		printf("ML: %X\n",c_speed[0]);
-		printf("MR: %X\n",c_speed[1]);
-		print_adc_values();
-		
-		uint16_t adc_val_mixed [2] = {	adc_val[0] + adc_val[1] * LF_ADC_MIX_WIEGHT,	\
-						adc_val[3] + adc_val[2] * LF_ADC_MIX_WIEGHT	};
-
-		if (adc_val_mixed[0]>adc_val_mixed[1])
-			lf_turn_left_inc(LF_INC);
-		else if (adc_val_mixed[1]>adc_val_mixed[0])
-			lf_turn_right_inc(LF_INC);
-		else
-			lf_full_speed();
-
-		
-		//printf("       76543210\n");
-		//printf("PORTB: ");print_bin(PORTB);printf("\n");
-		//printf("PORTD: ");print_bin(PORTD);printf("\n");
-		_delay_ms(700);
-	}	
 } 
