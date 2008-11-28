@@ -7,6 +7,7 @@
 #include <avr/io.h>
 #include <avr/power.h>
 
+#define RX_BUFSIZE 80
 
 static FILE usart0_stdio = FDEV_SETUP_STREAM(usart0_putchar, usart0_getchar ,_FDEV_SETUP_RW);
 
@@ -18,15 +19,15 @@ int usart0_getchar(FILE *stream) {
 
 	if (rxp == 0) {
 		for (cp = b;;) {
-			loop_until_bit_is_set(UCSRA, RXC);
-			if (UCSRA & _BV(FE))	return _FDEV_EOF;
-			if (UCSRA & _BV(DOR))	return _FDEV_ERR;
-			c = UDR;
+			loop_until_bit_is_set(UCSR0A, RXC0);
+			if (UCSR0A & _BV(FE0))	return _FDEV_EOF;
+			if (UCSR0A & _BV(DOR0))	return _FDEV_ERR;
+			c = UDR0;
 			/* behaviour similar to Unix stty ICRNL */
 			if (c == '\r') c = '\n';
 			if (c == '\n') {
 				*cp = c;
-				uart_putchar(c, stream);
+				usart0_putchar(c, stream);
 				rxp = b;
 				break;
 			}
@@ -34,10 +35,10 @@ int usart0_getchar(FILE *stream) {
 			
 			if ((c >= (uint8_t)' ' && c <= (uint8_t)'\x7e') || c >= (uint8_t)'\xa0') {
 				if (cp == b + RX_BUFSIZE - 1)
-					uart_putchar('\a', stream);
+					usart0_putchar('\a', stream);
 				else {
 					*cp++ = c;
-					uart_putchar(c, stream);
+					usart0_putchar(c, stream);
 				}
 				continue;
 			}
@@ -49,33 +50,33 @@ int usart0_getchar(FILE *stream) {
 			  case '\b':
 			  case '\x7f':
 				if (cp > b) {
-					uart_putchar('\b', stream);
-					uart_putchar(' ', stream);
-					uart_putchar('\b', stream);
+					usart0_putchar('\b', stream);
+					usart0_putchar(' ', stream);
+					usart0_putchar('\b', stream);
 					cp--;
 				}
 				break;
 				
 			  case 'r' & 0x1f:
-				uart_putchar('\r', stream);
+				usart0_putchar('\r', stream);
 				for (cp2 = b; cp2 < cp; cp2++)
-					uart_putchar(*cp2, stream);
+					usart0_putchar(*cp2, stream);
 				break;
 				
 			  case 'u' & 0x1f:
 				while (cp > b) {
-					uart_putchar('\b', stream);
-					uart_putchar(' ', stream);
-					uart_putchar('\b', stream);
+					usart0_putchar('\b', stream);
+					usart0_putchar(' ', stream);
+					usart0_putchar('\b', stream);
 					cp--;
 				}
 				break;
 				
 			  case 'w' & 0x1f:
 				while (cp > b && cp[-1] != ' ') {
-					uart_putchar('\b', stream);
-					uart_putchar(' ', stream);
-					uart_putchar('\b', stream);
+					usart0_putchar('\b', stream);
+					usart0_putchar(' ', stream);
+					usart0_putchar('\b', stream);
 					cp--;
 				}
 				break;
@@ -88,10 +89,10 @@ int usart0_getchar(FILE *stream) {
 }
 
 
-static int usart_putchar(char c, FILE *stream) {
+static int usart0_putchar(char c, FILE *stream) {
 
   if (c == '\n')
-	usart_putchar('\r', stream);
+	usart0_putchar('\r', stream);
   loop_until_bit_is_set(UCSR0A, UDRE0);
   UDR0 = c;
   return 0;
@@ -128,6 +129,6 @@ void usart_init(void) {
 	/* Set frame format: 8data, 1stop bit */
 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
 	
-	stdout=stdin=&usart_stdio;
+	stdout=stdin=&usart0_stdio;
 }
 

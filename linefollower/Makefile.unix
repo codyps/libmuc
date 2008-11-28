@@ -38,7 +38,7 @@ CLINK = -L/usr/x86_64-pc-linux-gnu/avr/lib
 CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-#CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
+CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA) $(CLINK)
 
 
