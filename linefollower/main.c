@@ -41,10 +41,10 @@ void joy_init(void) {
 	PORTE|=((1<<2)|(1<<3));
 	
 	//DOWN	= PINB&(1<<7)
-	//LEFT	= PINX&(1<<Z)
-	//RIGHT = PINX&(1<<Z)
-	//UP	= PINX&(1<<Z) = reset
-	//IN	= PINX&(1<<Z) = reset
+	//LEFT	= PINE&(1<<2)
+	//RIGHT = PINE&(1<<3)
+	//UP	= PINB&(1<<6)
+	//IN	= PINB&(1<<4)
 	
 }
 
@@ -56,11 +56,12 @@ void  print_bin(uint8_t inp) {
 
 ISR(PCINT0_vect) {
 	//PE2,3
-	if (PINE&((1<<2)|(1<<3))) {
-		if (PINE&(1<<2))
-			printf_P(PSTR("\n[debug] PE2 Pressed"));
-		if (PINE&(1<<3))
-			printf_P(PSTR("\n[debug] PE3 Pressed"));
+	uint8_t iPINE = (uint8_t)~PINE;
+	if (iPINE&((1<<2)|(1<<3))) {
+		if (iPINE&(1<<2))
+			printf_P(PSTR("\n[debug] Left"));
+		if (iPINE&(1<<3))
+			printf_P(PSTR("\n[debug] Right"));
 	}
 	else
 		printf_P(PSTR("\n[debug] PE? Released"));
@@ -68,20 +69,25 @@ ISR(PCINT0_vect) {
 
 ISR(PCINT1_vect) {
 	//PB7,4,6
-
-	if (PINB&((1<<7)|(1<<6)|(1<<4))) {
-		if (PINB&(1<<7)) {
-			printf_P(PSTR("\n[debug] PB7 Pressed"));
-			printf_P(PSTR("\n[debug] DOWN "));
-			printf_P(PSTR("PRESSED"));
+	uint8_t iPINB = (uint8_t)~PINB;
+	if (iPINB&((1<<7)|(1<<6)|(1<<4))) {
+		if (iPINB&(1<<7)) {
+			printf_P(PSTR("\n[debug] Down "));
 			adc_calibrate_update();
 			print_adc_calibration();
 			print_adc_values();
 		}
-		if (PINB&(1<<4))
-			printf_P(PSTR("\n[debug] PB4 Pressed"));
-		if (PINB&(1<<6))
-			printf_P(PSTR("\n[debug] PB6 Pressed"));
+		if (iPINB&(1<<4)) {
+			printf_P(PSTR("\n[debug] In"));
+			print_adc_calibration();
+			print_adc_values();
+		}
+		if (iPINB&(1<<6)) {
+			printf_P(PSTR("\n[debug] Up"));
+			adc_calibrate_clear();
+			print_adc_calibration();
+			print_adc_values();
+		}
 	}
 	else
 		printf_P(PSTR("\n[debug] PB? Released"));

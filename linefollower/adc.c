@@ -17,7 +17,7 @@ Controls and Provides access to the Analog to Digital Converter (ADC) subsystem 
 uint8_t max(uint16_t val[],uint8_t sz) {
 	uint8_t tmpi=sz,tmpv=0;
 	for(uint8_t c=0;c<sz;++c)
-		if (val[c]>tmpv) {
+		if (val[c]<tmpv) {
 			tmpi=c;
 			tmpv=val[c];
 		}
@@ -42,25 +42,30 @@ void print_adc_calibration() {
 
 
 uint16_t adc_get_val(uint8_t ch) {
-	return adc_val[ch]-adc_offset[ch];
+	return adc_val[ch]+adc_offset[ch];
 }
 
 static uint8_t num_calibrations;
 void adc_calibrate_update() {
-	uint16_t offsets[channel_amt];
+	int16_t offsets[channel_amt];
 	uint16_t adc_val_cpy[channel_amt];
-	memcpy(adc_val_cpy,adc_val,channel_amt);
+	memcpy(adc_val_cpy,adc_val,sizeof(adc_val));
 	
 	
-	
-	uint8_t i = max(adc_val_cpy,channel_amt);
+	uint8_t i=0,val=0;
+	for(uint8_t c=0;c<channel_amt;++c) {
+		if(val>adc_val_cpy[c]) {
+			i=c;
+			val=adc_val_cpy[c];
+		}
+	}
 	
 	for(uint8_t c=0;c<channel_amt;++c) {
 		offsets[c]=adc_val_cpy[i]-adc_val_cpy[c];
 	}
 		
 	if (num_calibrations==0)
-		memcpy(adc_offset,offsets,channel_amt);
+		memcpy(adc_offset,offsets,sizeof(adc_offset));
 	else
 		for(uint8_t c=0;c<channel_amt;++c) {
 			adc_offset[c]=(adc_offset[c] * num_calibrations + offsets[c])/(num_calibrations+1);

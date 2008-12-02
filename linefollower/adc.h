@@ -17,7 +17,7 @@
 #define channel_amt 4
 const static uint8_t channels [] = {4, 6, 5, 7}; //Actual channels we are using, indices are virtuals
 uint16_t adc_val [channel_amt]; //Current Calculated Values (vchan+1=
-uint16_t adc_offset [channel_amt]; //Offsets to apply to each channel so they are equal.
+int16_t adc_offset [channel_amt]; //Offsets to apply to each channel so they are equal.
 uint16_t adc_amt [channel_amt];
 uint8_t curr_ch; //=0 //Current 'Virtual' Channel
 
