@@ -2,912 +2,388 @@
    2               	__SREG__ = 0x3f
    3               	__SP_H__ = 0x3e
    4               	__SP_L__ = 0x3d
-   5               	__tmp_reg__ = 0
-   6               	__zero_reg__ = 1
-   7               		.global __do_copy_data
-   8               		.global __do_clear_bss
-  11               		.text
-  12               	.Ltext0:
-  89               	.global	copysign
-  91               	copysign:
-  92               		.stabd	46,0,0
-  94               	.Ltext1:
-   1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /* Copyright (c) 2002,2007 Michael Stumpf
-   2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-   3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    Portions of documentation Copyright (c) 1990 - 1994
-   4:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    The Regents of the University of California.
-   5:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-   6:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    All rights reserved.
-   7:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-   8:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    Redistribution and use in source and binary forms, with or without
-   9:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    modification, are permitted provided that the following conditions are met:
-  10:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  11:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    * Redistributions of source code must retain the above copyright
-  12:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      notice, this list of conditions and the following disclaimer.
-  13:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  14:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    * Redistributions in binary form must reproduce the above copyright
-  15:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      notice, this list of conditions and the following disclaimer in
-  16:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the documentation and/or other materials provided with the
-  17:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      distribution.
-  18:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  19:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    * Neither the name of the copyright holders nor the names of
-  20:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      contributors may be used to endorse or promote products derived
-  21:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      from this software without specific prior written permission.
-  22:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  23:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  24:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  25:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-  26:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-  27:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-  28:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-  29:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-  30:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-  31:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  32:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  33:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   POSSIBILITY OF SUCH DAMAGE. */
-  34:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  35:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /* $Id: math.h,v 1.21.2.1 2008/03/17 15:28:49 arcanum Exp $ */
-  36:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  37:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /*
-  38:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    math.h - mathematical functions
-  39:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  40:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    Author : Michael Stumpf
-  41:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****             Michael.Stumpf@t-online.de
-  42:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  43:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    __ATTR_CONST__ added by marekm@linux.org.pl for functions
-  44:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    that "do not examine any values except their arguments, and have
-  45:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    no effects except the return value", for better optimization by gcc.
-  46:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****  */
-  47:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  48:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #ifndef __MATH_H
-  49:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define __MATH_H
-  50:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  51:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /** \file */
-  52:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /** \defgroup avr_math <math.h>: Mathematics
-  53:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     \code #include <math.h> \endcode
-  54:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  55:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     This header file declares basic mathematics constants and
-  56:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     functions.
-  57:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  58:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     \par Notes:
-  59:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     - In order to access the functions delcared herein, it is usually
-  60:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       also required to additionally link against the library \c libm.a.
-  61:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       See also the related \ref faq_libm "FAQ entry".
-  62:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     - Math functions do not raise exceptions and do not change the
-  63:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       \c errno variable. Therefore the majority of them are declared
-  64:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       with const attribute, for better optimization by GCC.	*/
-  65:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  66:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
-  67:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
-  68:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  69:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    The constant \c pi. */
-  70:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define M_PI 3.141592653589793238462643
-  71:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  72:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
-  73:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
-  74:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  75:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    The square root of 2. */
-  76:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define M_SQRT2 1.4142135623730950488016887
-  77:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  78:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
-  79:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
-  80:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  81:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    NAN constant. */
-  82:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define NAN	__builtin_nan("")
-  83:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  84:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
-  85:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
-  86:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  87:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    INFINITY constant. */
-  88:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define INFINITY	__builtin_inf()
-  89:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  90:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #ifndef __ATTR_CONST__
-  91:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** # define __ATTR_CONST__ __attribute__((__const__))
-  92:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #endif
-  93:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  94:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #ifdef __cplusplus
-  95:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern "C" {
-  96:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #endif
-  97:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
-  98:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
-  99:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 100:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 101:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The cos() function returns the cosine of \a __x, measured in radians.
- 102:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 103:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double cos(double __x) __ATTR_CONST__;
- 104:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 105:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 106:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 107:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 108:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fabs() function computes the absolute value of a floating-point
- 109:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      number \a __x.
- 110:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 111:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fabs(double __x) __ATTR_CONST__;
- 112:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #if 0
- 113:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /* fabs seems to be built in already */
- 114:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern inline double fabs( double __x )
- 115:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   { double __res;
- 116:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ __volatile__ ("andi %D0,0x7F \n\t"
- 117:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 		: "=d" (__res) : "0" (__x) );
- 118:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __res;
- 119:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   }
- 120:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #endif
- 121:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 122:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 123:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 124:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 125:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function fmod() returns the floating-point remainder of <em>__x /
- 126:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      __y</em>.
- 127:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 128:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fmod(double __x, double __y) __ATTR_CONST__;
- 129:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 130:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 131:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 132:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 133:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The modf() function breaks the argument \a __x into integral and
- 134:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      fractional parts, each of which has the same sign as the argument. 
- 135:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      It stores the integral part as a double in the object pointed to by
- 136:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __iptr.
- 137:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 138:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The modf() function returns the signed fractional part of \a __x.
- 139:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      
- 140:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note
- 141:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      This implementation skips writing by zero pointer.
- 142:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 143:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double modf(double __x, double *__iptr);
- 144:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 145:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 146:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 147:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 148:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The sin() function returns the sine of \a __x, measured in radians.
- 149:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 150:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double sin(double __x) __ATTR_CONST__;
- 151:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 152:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 153:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 154:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 155:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The sqrt() function returns the non-negative square root of \a __x.
- 156:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 157:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double sqrt(double __x) __ATTR_CONST__;
- 158:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 159:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 160:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 161:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 162:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The tan() function returns the tangent of \a __x, measured in
- 163:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      radians.
- 164:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 165:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double tan(double __x) __ATTR_CONST__;
- 166:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 167:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 168:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 169:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 170:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The floor() function returns the largest integral value less than or
- 171:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      equal to \a __x, expressed as a floating-point number.
- 172:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 173:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double floor(double __x) __ATTR_CONST__;
- 174:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 175:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 176:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 177:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 178:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The ceil() function returns the smallest integral value greater than
- 179:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      or equal to \a __x, expressed as a floating-point number.
- 180:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 181:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double ceil(double __x) __ATTR_CONST__;
- 182:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 183:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 184:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 185:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 186:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The frexp() function breaks a floating-point number into a normalized
- 187:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      fraction and an integral power of 2.  It stores the integer in the \c
- 188:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      int object pointed to by \a __pexp.
- 189:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 190:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      If \a __x is a normal float point number, the frexp() function
- 191:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      returns the value \c v, such that \c v has a magnitude in the
- 192:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      interval [1/2, 1) or zero, and \a __x equals \c v times 2 raised to
- 193:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the power \a __pexp. If \a __x is zero, both parts of the result are
- 194:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      zero. If \a __x is not a finite number, the frexp() returns \a __x as
- 195:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      is and stores 0 by \a __pexp.
- 196:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 197:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note  This implementation permits a zero pointer as a directive to
- 198:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      skip a storing the exponent.
- 199:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 200:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double frexp(double __x, int *__pexp);
- 201:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 202:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 203:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 204:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 205:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The ldexp() function multiplies a floating-point number by an integral
- 206:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      power of 2.
- 207:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 208:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The ldexp() function returns the value of \a __x times 2 raised to
- 209:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the power \a __exp.
- 210:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 211:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double ldexp(double __x, int __exp) __ATTR_CONST__;
- 212:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 213:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 214:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 215:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 216:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The exp() function returns the exponential value of \a __x.
- 217:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 218:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double exp(double __x) __ATTR_CONST__;
- 219:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 220:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 221:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 222:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 223:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The cosh() function returns the hyperbolic cosine of \a __x.
- 224:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 225:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double cosh(double __x) __ATTR_CONST__;
- 226:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 227:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 228:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 229:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 230:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The sinh() function returns the hyperbolic sine of \a __x.
- 231:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 232:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double sinh(double __x) __ATTR_CONST__;
- 233:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 234:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 235:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 236:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 237:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The tanh() function returns the hyperbolic tangent of \a __x.
- 238:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 239:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double tanh(double __x) __ATTR_CONST__;
- 240:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 241:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 242:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 243:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 244:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The acos() function computes the principal value of the arc cosine of
- 245:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __x.  The returned value is in the range [0, pi] radians. A domain
- 246:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      error occurs for arguments not in the range [-1, +1].
- 247:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 248:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double acos(double __x) __ATTR_CONST__;
- 249:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 250:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 251:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 252:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 253:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The asin() function computes the principal value of the arc sine of
- 254:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __x.  The returned value is in the range [-pi/2, pi/2] radians. A
- 255:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      domain error occurs for arguments not in the range [-1, +1].
- 256:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 257:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double asin(double __x) __ATTR_CONST__;
- 258:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 259:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 260:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 261:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 262:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The atan() function computes the principal value of the arc tangent
- 263:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      of \a __x.  The returned value is in the range [-pi/2, pi/2] radians.
- 264:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 265:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double atan(double __x) __ATTR_CONST__;
- 266:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 267:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 268:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 269:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      
- 270:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The atan2() function computes the principal value of the arc tangent
- 271:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      of <em>__y / __x</em>, using the signs of both arguments to determine
- 272:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the quadrant of the return value.  The returned value is in the range
- 273:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      [-pi, +pi] radians.
- 274:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 275:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double atan2(double __y, double __x) __ATTR_CONST__;
- 276:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 277:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 278:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 279:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 280:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The log() function returns the natural logarithm of argument \a __x.
- 281:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    */
- 282:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double log(double __x) __ATTR_CONST__;
- 283:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 284:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 285:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 286:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 287:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The log10() function returns the logarithm of argument \a __x to base
- 288:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      10.
- 289:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    */
- 290:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double log10(double __x) __ATTR_CONST__;
- 291:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 292:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 293:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 294:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 295:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function pow() returns the value of \a __x to the exponent \a __y.
- 296:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 297:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double pow(double __x, double __y) __ATTR_CONST__;
- 298:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 299:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 300:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 301:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 302:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function isnan() returns 1 if the argument \a __x represents a
- 303:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      "not-a-number" (NaN) object, otherwise 0.
- 304:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 305:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern int isnan(double __x) __ATTR_CONST__;
- 306:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 307:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 308:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 309:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 310:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function isinf() returns 1 if the argument \a __x is positive
- 311:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      infinity, -1 if \a __x is negative infinity, and 0 otherwise.
- 312:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 313:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern int isinf(double __x) __ATTR_CONST__;
- 314:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 315:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 316:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 317:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 318:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function square() returns <em>__x * __x</em>.
- 319:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 320:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note
- 321:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      This function does not belong to the C standard definition.
- 322:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 323:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double square(double __x) __ATTR_CONST__;
- 324:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 325:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 326:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 327:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 328:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The copysign() function returns \a __x but with the sign of \a __y.
- 329:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      They work even if \a __x or \a __y are NaN or zero.
- 330:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****  */
- 331:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** __ATTR_CONST__ extern inline double copysign (double __x, double __y)
- 332:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** {
- 333:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ (
-  96               	.LM0:
-  97               	.LFBB1:
-  98               	/* prologue: function */
-  99               	/* frame size = 0 */
- 101               	.LM1:
- 102               	/* #APP */
- 103               	 ;  333 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
- 104 0000 57FB      		bst	r21, 7	
- 105 0002 97F9      		bld	r25, 7	
- 106               	 ;  0 "" 2
- 107               	/* epilogue start */
- 334:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"bst	%D2, 7	\n\t"
- 335:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"bld	%D0, 7	"
- 336:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "=r" (__x)
- 337:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "0" (__x), "r" (__y) );
- 338:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __x;
- 339:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** }
- 109               	.LM2:
- 110               	/* #NOAPP */
- 111 0004 0895      		ret
- 113               	.Lscope1:
- 115               		.stabd	78,0,0
- 118               	.global	isfinite
- 120               	isfinite:
- 121               		.stabd	46,0,0
- 340:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 341:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 342:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 343:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 344:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fdim() function returns <em>max(__x - __y, 0)</em>. If \a __x or
- 345:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __y or both are NaN, NaN is returned.
- 346:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 347:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fdim (double __x, double __y) __ATTR_CONST__;
- 348:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 349:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 350:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 351:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 352:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fma() function performs floating-point multiply-add. This is the
- 353:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      operation <em>(__x * __y) + __z</em>, but the intermediate result is
- 354:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      not rounded to the destination type.  This can sometimes improve the
- 355:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      precision of a calculation.
- 356:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 357:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fma (double __x, double __y, double __z) __ATTR_CONST__;
- 358:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 359:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 360:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 361:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 362:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fmax() function returns the greater of the two values \a __x and
- 363:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __y. If an argument is NaN, the other argument is returned. If
- 364:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      both arguments are NaN, NaN is returned.
- 365:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 366:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fmax (double __x, double __y) __ATTR_CONST__;
- 367:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 368:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 369:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 370:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 371:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fmin() function returns the lesser of the two values \a __x and
- 372:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __y. If an argument is NaN, the other argument is returned. If
- 373:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      both arguments are NaN, NaN is returned.
- 374:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 375:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fmin (double __x, double __y) __ATTR_CONST__;
- 376:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 377:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 378:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 379:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 380:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The signbit() function returns a nonzero value if the value of \a __x
- 381:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      has its sign bit set.  This is not the same as `\a __x < 0.0',
- 382:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      because IEEE 754 floating point allows zero to be signed. The
- 383:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      comparison `-0.0 < 0.0' is false, but `signbit (-0.0)' will return a
- 384:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      nonzero value.
- 385:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      
- 386:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note
- 387:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      This implementation returns 1 if sign bit is set.
- 388:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 389:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern int signbit (double __x) __ATTR_CONST__;
- 390:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 391:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 392:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 393:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 394:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The trunc() function rounds \a __x to the nearest integer not larger
- 395:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      in absolute value.
- 396:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 397:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double trunc (double __x) __ATTR_CONST__;
- 398:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 399:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
- 400:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
- 401:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
- 402:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The isfinite() function returns a nonzero value if \a __x is finite:
- 403:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      not plus or minus infinity, and not NaN.
- 404:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
- 405:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** __ATTR_CONST__ extern inline int isfinite (double __x)
- 406:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** {
- 123               	.LM3:
- 124               	.LFBB2:
- 125               	/* prologue: function */
- 126               	/* frame size = 0 */
- 407:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     unsigned char __exp;
- 408:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ (
- 128               	.LM4:
- 129               	/* #APP */
- 130               	 ;  408 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
- 131 0006 682F      		mov	r22, r24		
- 132 0008 660F      		lsl	r22		
- 133 000a 692F      		mov	r22, r25		
- 134 000c 661F      		rol	r22		
- 135               	 ;  0 "" 2
- 136               	/* #NOAPP */
- 137 000e 20E0      		ldi r18,lo8(0)
- 138 0010 30E0      		ldi r19,hi8(0)
- 139 0012 6F3F      		cpi r22,lo8(-1)
- 140 0014 01F0      		breq .L4
- 141 0016 21E0      		ldi r18,lo8(1)
- 142 0018 30E0      		ldi r19,hi8(1)
- 143               	.L4:
- 409:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"mov	%0, %C1		\n\t"
- 410:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"lsl	%0		\n\t"
- 411:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"mov	%0, %D1		\n\t"
- 412:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"rol	%0		"
- 413:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "=r" (__exp)
- 414:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "r" (__x)	);
- 415:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __exp != 0xff;
- 416:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** }
- 145               	.LM5:
- 146 001a C901      		movw r24,r18
- 147               	/* epilogue start */
- 148 001c 0895      		ret
- 153               	.Lscope2:
- 155               		.stabd	78,0,0
- 158               	.global	adc_set_channel
- 160               	adc_set_channel:
- 161               		.stabd	46,0,0
- 163               	.Ltext2:
-   1:adc.c         **** /*
-   2:adc.c         **** Controls and Provides access to the Analog to Digital Converter (ADC) subsystem of the avr
-   3:adc.c         **** */
-   4:adc.c         **** 
-   5:adc.c         **** #include "defines.h"
-   6:adc.c         **** #include "adc.h"
-   7:adc.c         **** #include <avr/interrupt.h>
-   8:adc.c         **** #include <avr/io.h>
-   9:adc.c         **** #include <avr/sleep.h>
-  10:adc.c         **** #include <avr/power.h>
-  11:adc.c         **** #include <stdio.h>
-  12:adc.c         **** #include <math.h>
-  13:adc.c         **** 
-  14:adc.c         **** void print_adc_values() {
-  15:adc.c         **** 	//printf("ADC: ");
-  16:adc.c         **** 	for (uint8_t chan=0;chan<channel_amt;chan++) 
-  17:adc.c         **** 		printf(" [ %d : %d ] ", chan, adc_val[chan]);
-  18:adc.c         **** 	printf("\n");
-  19:adc.c         **** }
-  20:adc.c         **** 
-  21:adc.c         **** void adc_init() {
-  22:adc.c         **** 	printf("adc: init...\n");
-  23:adc.c         **** 
-  24:adc.c         **** 	power_adc_enable();
-  25:adc.c         **** 
-  26:adc.c         **** 	//Set Voltage to AVCC with external capacitor at AREF pin
-  27:adc.c         **** 	ADMUX|= (uint8_t)(1<<REFS0);
-  28:adc.c         **** 	ADMUX&=~(uint8_t)(1<<REFS1);
-  29:adc.c         **** 	//ADMUX&=~(1<<ADLAR); // Default disabled
-  30:adc.c         **** 	
-  31:adc.c         **** 	// Enable ADC, Inturupt, Trigger mode and set prescaler
-  32:adc.c         **** 	//ADCSRA=(((1<<ADEN)|(1<<ADIE)|(1<<ADATE))&0b11111000)|(ADC_PRESCALE);
-  33:adc.c         **** 	ADCSRA|= (uint8_t)(1<<ADEN)|(1<<ADIE)|(1<<ADATE);
-  34:adc.c         **** 	ADCSRA = (uint8_t)(ADCSRA & 0b11111000)|((uint8_t)ADC_PRESCALE);
-  35:adc.c         **** 	
-  36:adc.c         **** 	// Enable Free Running Mode 
-  37:adc.c         **** 	ADCSRB|= (uint8_t)(1<<7); //reserved bit.
-  38:adc.c         **** 	ADCSRB&= (uint8_t)~(0b111); //(ADTS2:0)=0
-  39:adc.c         **** 	
-  40:adc.c         **** 	// Disable Digital reads from analog pins
-  41:adc.c         **** 	DIDR0 |= (uint8_t)((1<<ADC4D)|(1<<ADC5D)|(1<<ADC6D)|(1<<ADC7D));
-  42:adc.c         **** 	
-  43:adc.c         **** 	set_sleep_mode(SLEEP_MODE_ADC);
-  44:adc.c         **** 	printf("adc: setup convertions...\n");
-  45:adc.c         **** 	adc_set_channel(curr_ch);
-  46:adc.c         **** 	//Start the convertions
-  47:adc.c         **** 	ADCSRA|= (uint8_t)(1<<ADSC);
-  48:adc.c         **** 
-  49:adc.c         **** 	// Wait one adc clock cycle and change the channel
-  50:adc.c         **** 	// 125KHz
-  51:adc.c         **** 	//adc_set_channel(++curr_ch);
-  52:adc.c         **** 	// Right now it will compute the first sensor twice, and store it's first find in the 4th sensor.
-  53:adc.c         **** 	// Could use one of the timers to do this, but probably unesicary
-  54:adc.c         **** }
-  55:adc.c         **** 
-  56:adc.c         **** void adc_set_channel(uint8_t channel) {
- 165               	.LM6:
- 166               	.LFBB3:
- 167               	/* prologue: function */
- 168               	/* frame size = 0 */
-  57:adc.c         **** 	//Prescale reset on each "trigger event"s
-  58:adc.c         **** 	//From Data Sheet: (Switching to Free Running mode (ADTS[2:0]=0) will)
-  59:adc.c         **** 	//(not cause a trigger event, even if the ADC Interrupt Flag is set.)
-  60:adc.c         **** 	ADMUX  = (uint8_t)((uint8_t)(ADMUX &0b11100000)|channels[channel]);
- 170               	.LM7:
- 171 001e ACE7      		ldi r26,lo8(124)
- 172 0020 B0E0      		ldi r27,hi8(124)
- 173 0022 9C91      		ld r25,X
- 174 0024 E0E0      		ldi r30,lo8(channels)
- 175 0026 F0E0      		ldi r31,hi8(channels)
- 176 0028 E80F      		add r30,r24
- 177 002a F11D      		adc r31,__zero_reg__
- 178 002c 907E      		andi r25,lo8(-32)
- 179 002e 8081      		ld r24,Z
- 180 0030 982B      		or r25,r24
- 181 0032 9C93      		st X,r25
- 182               	/* epilogue start */
-  61:adc.c         **** 	//print_adc_values();
-  62:adc.c         **** 	//printf("V - chan %X\n",channel);
-  63:adc.c         **** }
- 184               	.LM8:
- 185 0034 0895      		ret
- 187               	.Lscope3:
- 189               		.stabd	78,0,0
- 191               	.global	__vector_19
- 193               	__vector_19:
- 194               		.stabd	46,0,0
-  64:adc.c         **** 
-  65:adc.c         **** //ADC Interupt handler
-  66:adc.c         **** ISR(ADC_vect) {
- 196               	.LM9:
- 197               	.LFBB4:
- 198 0036 1F92      		push __zero_reg__
- 199 0038 0F92      		push r0
- 200 003a 0FB6      		in r0,__SREG__
- 201 003c 0F92      		push r0
- 202 003e 1124      		clr __zero_reg__
- 203 0040 2F93      		push r18
- 204 0042 3F93      		push r19
- 205 0044 4F93      		push r20
- 206 0046 8F93      		push r24
- 207 0048 9F93      		push r25
- 208 004a AF93      		push r26
- 209 004c BF93      		push r27
- 210 004e EF93      		push r30
- 211 0050 FF93      		push r31
- 212               	/* prologue: Signal */
- 213               	/* frame size = 0 */
-  67:adc.c         **** 	// New conversion has already started.
-  68:adc.c         **** 	uint16_t adc_value;
-  69:adc.c         **** 	adc_value  =  ADCL;  
- 215               	.LM10:
- 216 0052 4091 7800 		lds r20,120
-  70:adc.c         **** 	adc_value += (ADCH<<8);
- 218               	.LM11:
- 219 0056 3091 7900 		lds r19,121
-  71:adc.c         **** 	uint8_t real_channel;
-  72:adc.c         **** 
-  73:adc.c         **** 	// the curr_ch now has the chan of the ongoing conversion, we need the last one
-  74:adc.c         **** 	if (!curr_ch)	real_channel = channel_amt-1; //curr_ch==0 
- 221               	.LM12:
- 222 005a 2091 0000 		lds r18,curr_ch
- 223 005e 2223      		tst r18
- 224 0060 01F4      		brne .L9
- 225 0062 E3E0      		ldi r30,lo8(3)
- 226 0064 00C0      		rjmp .L10
- 227               	.L9:
-  75:adc.c         **** 	else		real_channel = curr_ch-1;
- 229               	.LM13:
- 230 0066 E22F      		mov r30,r18
- 231 0068 E150      		subi r30,lo8(-(-1))
- 232               	.L10:
-  76:adc.c         **** 
-  77:adc.c         **** 	adc_val[real_channel] = adc_value;
- 234               	.LM14:
- 235 006a F0E0      		ldi r31,lo8(0)
- 236 006c EE0F      		lsl r30
- 237 006e FF1F      		rol r31
- 238 0070 DF01      		movw r26,r30
- 239 0072 A050      		subi r26,lo8(-(adc_val))
- 240 0074 B040      		sbci r27,hi8(-(adc_val))
- 241 0076 932F      		mov r25,r19
- 242 0078 80E0      		ldi r24,lo8(0)
- 243 007a 840F      		add r24,r20
- 244 007c 911D      		adc r25,__zero_reg__
- 245 007e 8D93      		st X+,r24
- 246 0080 9C93      		st X,r25
-  78:adc.c         **** 	++adc_amt[real_channel];
- 248               	.LM15:
- 249 0082 E050      		subi r30,lo8(-(adc_amt))
- 250 0084 F040      		sbci r31,hi8(-(adc_amt))
- 251 0086 8081      		ld r24,Z
- 252 0088 9181      		ldd r25,Z+1
- 253 008a 0196      		adiw r24,1
- 254 008c 9183      		std Z+1,r25
- 255 008e 8083      		st Z,r24
-  79:adc.c         **** 
-  80:adc.c         **** 	// Change the channel for the conversion after the one currently processing.
-  81:adc.c         **** 	if (++curr_ch >= channel_amt)	curr_ch = 0;
- 257               	.LM16:
- 258 0090 822F      		mov r24,r18
- 259 0092 8F5F      		subi r24,lo8(-(1))
- 260 0094 8093 0000 		sts curr_ch,r24
- 261 0098 8430      		cpi r24,lo8(4)
- 262 009a 00F0      		brlo .L11
- 263 009c 1092 0000 		sts curr_ch,__zero_reg__
- 264               	.L11:
- 265               	.LBB6:
- 266               	.LBB7:
- 268               	.LM17:
- 269 00a0 8091 7C00 		lds r24,124
- 270 00a4 E091 0000 		lds r30,curr_ch
- 271 00a8 F0E0      		ldi r31,lo8(0)
- 272 00aa E050      		subi r30,lo8(-(channels))
- 273 00ac F040      		sbci r31,hi8(-(channels))
- 274 00ae 807E      		andi r24,lo8(-32)
- 275 00b0 9081      		ld r25,Z
- 276 00b2 892B      		or r24,r25
- 277 00b4 8093 7C00 		sts 124,r24
- 278               	/* epilogue start */
- 279               	.LBE7:
- 280               	.LBE6:
-  82:adc.c         **** 	
-  83:adc.c         **** 	adc_set_channel(curr_ch);
-  84:adc.c         **** 	
-  85:adc.c         **** 	//printf("adc_value: %d",adc_value);
-  86:adc.c         **** 	
-  87:adc.c         **** 	//TODO: modify for running average (Ave= (Ave*(ct-1)+New)/ct)
-  88:adc.c         **** 	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
-  89:adc.c         **** }
- 282               	.LM18:
- 283 00b8 FF91      		pop r31
- 284 00ba EF91      		pop r30
- 285 00bc BF91      		pop r27
- 286 00be AF91      		pop r26
- 287 00c0 9F91      		pop r25
- 288 00c2 8F91      		pop r24
- 289 00c4 4F91      		pop r20
- 290 00c6 3F91      		pop r19
- 291 00c8 2F91      		pop r18
- 292 00ca 0F90      		pop r0
- 293 00cc 0FBE      		out __SREG__,r0
- 294 00ce 0F90      		pop r0
- 295 00d0 1F90      		pop __zero_reg__
- 296 00d2 1895      		reti
- 301               	.Lscope4:
- 303               		.stabd	78,0,0
- 304               		.data
- 305               	.LC0:
- 306 0000 6164 633A 		.string	"adc: init..."
- 306      2069 6E69 
- 306      742E 2E2E 
- 306      00
- 307               	.LC1:
- 308 000d 6164 633A 		.string	"adc: setup convertions..."
- 308      2073 6574 
- 308      7570 2063 
- 308      6F6E 7665 
- 308      7274 696F 
- 309               		.text
- 311               	.global	adc_init
- 313               	adc_init:
- 314               		.stabd	46,0,0
- 316               	.LM19:
- 317               	.LFBB5:
- 318 00d4 EF92      		push r14
- 319 00d6 FF92      		push r15
- 320 00d8 0F93      		push r16
- 321 00da 1F93      		push r17
- 322               	/* prologue: function */
- 323               	/* frame size = 0 */
- 325               	.LM20:
- 326 00dc 80E0      		ldi r24,lo8(.LC0)
- 327 00de 90E0      		ldi r25,hi8(.LC0)
- 328 00e0 0E94 0000 		call puts
- 330               	.LM21:
- 331 00e4 E4E6      		ldi r30,lo8(100)
- 332 00e6 F0E0      		ldi r31,hi8(100)
- 333 00e8 8081      		ld r24,Z
- 334 00ea 8E7F      		andi r24,lo8(-2)
- 335 00ec 8083      		st Z,r24
- 337               	.LM22:
- 338 00ee 9CE7      		ldi r25,lo8(124)
- 339 00f0 E92E      		mov r14,r25
- 340 00f2 F12C      		mov r15,__zero_reg__
- 341 00f4 F701      		movw r30,r14
- 342 00f6 8081      		ld r24,Z
- 343 00f8 8064      		ori r24,lo8(64)
- 344 00fa 8083      		st Z,r24
- 346               	.LM23:
- 347 00fc 8081      		ld r24,Z
- 348 00fe 8F77      		andi r24,lo8(127)
- 349 0100 8083      		st Z,r24
- 351               	.LM24:
- 352 0102 0AE7      		ldi r16,lo8(122)
- 353 0104 10E0      		ldi r17,hi8(122)
- 354 0106 F801      		movw r30,r16
- 355 0108 8081      		ld r24,Z
- 356 010a 886A      		ori r24,lo8(-88)
- 357 010c 8083      		st Z,r24
- 359               	.LM25:
- 360 010e 8081      		ld r24,Z
- 361 0110 887F      		andi r24,lo8(-8)
- 362 0112 8660      		ori r24,lo8(6)
- 363 0114 8083      		st Z,r24
- 365               	.LM26:
- 366 0116 EBE7      		ldi r30,lo8(123)
- 367 0118 F0E0      		ldi r31,hi8(123)
- 368 011a 8081      		ld r24,Z
- 369 011c 8068      		ori r24,lo8(-128)
- 370 011e 8083      		st Z,r24
- 372               	.LM27:
- 373 0120 8081      		ld r24,Z
- 374 0122 887F      		andi r24,lo8(-8)
- 375 0124 8083      		st Z,r24
- 377               	.LM28:
- 378 0126 EEE7      		ldi r30,lo8(126)
- 379 0128 F0E0      		ldi r31,hi8(126)
- 380 012a 8081      		ld r24,Z
- 381 012c 806F      		ori r24,lo8(-16)
- 382 012e 8083      		st Z,r24
- 384               	.LM29:
- 385 0130 83B7      		in r24,83-0x20
- 386 0132 817F      		andi r24,lo8(-15)
- 387 0134 8260      		ori r24,lo8(2)
- 388 0136 83BF      		out 83-0x20,r24
- 390               	.LM30:
- 391 0138 80E0      		ldi r24,lo8(.LC1)
- 392 013a 90E0      		ldi r25,hi8(.LC1)
- 393 013c 0E94 0000 		call puts
- 394               	.LBB8:
- 395               	.LBB9:
- 397               	.LM31:
- 398 0140 F701      		movw r30,r14
- 399 0142 9081      		ld r25,Z
- 400 0144 8091 0000 		lds r24,curr_ch
- 401 0148 E0E0      		ldi r30,lo8(channels)
- 402 014a F0E0      		ldi r31,hi8(channels)
- 403 014c E80F      		add r30,r24
- 404 014e F11D      		adc r31,__zero_reg__
- 405 0150 907E      		andi r25,lo8(-32)
- 406 0152 8081      		ld r24,Z
- 407 0154 982B      		or r25,r24
- 408 0156 F701      		movw r30,r14
- 409 0158 9083      		st Z,r25
- 410               	.LBE9:
- 411               	.LBE8:
- 413               	.LM32:
- 414 015a F801      		movw r30,r16
- 415 015c 8081      		ld r24,Z
- 416 015e 8064      		ori r24,lo8(64)
- 417 0160 8083      		st Z,r24
- 418               	/* epilogue start */
- 420               	.LM33:
- 421 0162 1F91      		pop r17
- 422 0164 0F91      		pop r16
- 423 0166 FF90      		pop r15
- 424 0168 EF90      		pop r14
- 425 016a 0895      		ret
- 427               	.Lscope5:
- 429               		.stabd	78,0,0
- 430               		.data
- 431               	.LC2:
- 432 0027 205B 2025 		.string	" [ %d : %d ] "
- 432      6420 3A20 
- 432      2564 205D 
- 432      2000 
- 433               		.text
- 435               	.global	print_adc_values
- 437               	print_adc_values:
- 438               		.stabd	46,0,0
- 440               	.LM34:
- 441               	.LFBB6:
- 442 016c 0F93      		push r16
- 443 016e 1F93      		push r17
- 444               	/* prologue: function */
- 445               	/* frame size = 0 */
- 446               	.LBB10:
- 448               	.LM35:
- 449 0170 8091 0000 		lds r24,adc_val
- 450 0174 9091 0000 		lds r25,(adc_val)+1
- 451 0178 9F93      		push r25
- 452 017a 8F93      		push r24
- 453 017c 1F92      		push __zero_reg__
- 454 017e 1F92      		push __zero_reg__
- 455 0180 00E0      		ldi r16,lo8(.LC2)
- 456 0182 10E0      		ldi r17,hi8(.LC2)
- 457 0184 1F93      		push r17
- 458 0186 0F93      		push r16
- 459 0188 0E94 0000 		call printf
- 460 018c 8091 0000 		lds r24,adc_val+2
- 461 0190 9091 0000 		lds r25,(adc_val+2)+1
- 462 0194 9F93      		push r25
- 463 0196 8F93      		push r24
- 464 0198 81E0      		ldi r24,lo8(1)
- 465 019a 90E0      		ldi r25,hi8(1)
- 466 019c 9F93      		push r25
- 467 019e 8F93      		push r24
- 468 01a0 1F93      		push r17
- 469 01a2 0F93      		push r16
- 470 01a4 0E94 0000 		call printf
- 471 01a8 8091 0000 		lds r24,adc_val+4
- 472 01ac 9091 0000 		lds r25,(adc_val+4)+1
- 473 01b0 9F93      		push r25
- 474 01b2 8F93      		push r24
- 475 01b4 82E0      		ldi r24,lo8(2)
- 476 01b6 90E0      		ldi r25,hi8(2)
- 477 01b8 9F93      		push r25
- 478 01ba 8F93      		push r24
- 479 01bc 1F93      		push r17
- 480 01be 0F93      		push r16
- 481 01c0 0E94 0000 		call printf
- 482 01c4 8091 0000 		lds r24,adc_val+6
- 483 01c8 9091 0000 		lds r25,(adc_val+6)+1
- 484 01cc 9F93      		push r25
- 485 01ce 8F93      		push r24
- 486 01d0 83E0      		ldi r24,lo8(3)
- 487 01d2 90E0      		ldi r25,hi8(3)
- 488 01d4 9F93      		push r25
- 489 01d6 8F93      		push r24
- 490 01d8 1F93      		push r17
- 491 01da 0F93      		push r16
- 492 01dc 0E94 0000 		call printf
- 493               	.LBE10:
- 495               	.LM36:
- 496 01e0 8AE0      		ldi r24,lo8(10)
- 497 01e2 90E0      		ldi r25,hi8(10)
- 498 01e4 0E94 0000 		call putchar
- 499 01e8 8DB7      		in r24,__SP_L__
- 500 01ea 9EB7      		in r25,__SP_H__
- 501 01ec 4896      		adiw r24,24
- 502 01ee 0FB6      		in __tmp_reg__,__SREG__
- 503 01f0 F894      		cli
- 504 01f2 9EBF      		out __SP_H__,r25
- 505 01f4 0FBE      		out __SREG__,__tmp_reg__
- 506 01f6 8DBF      		out __SP_L__,r24
- 507               	/* epilogue start */
- 509               	.LM37:
- 510 01f8 1F91      		pop r17
- 511 01fa 0F91      		pop r16
- 512 01fc 0895      		ret
- 514               	.Lscope6:
- 516               		.stabd	78,0,0
- 517               		.data
- 520               	channels:
- 521 0035 04        		.byte	4
- 522 0036 06        		.byte	6
- 523 0037 05        		.byte	5
- 524 0038 07        		.byte	7
- 525               		.comm adc_val,8,1
- 526               		.comm adc_amt,8,1
- 527               		.comm curr_ch,1,1
- 532               		.text
- 534               	.Letext0:
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	adc_set_channel
+  20               	adc_set_channel:
+  21               	.LFB9:
+  22               	.LM1:
+  23               	.LVL0:
+  24               	/* prologue: function */
+  25               	/* frame size = 0 */
+  26               	.LM2:
+  27 0000 ACE7      		ldi r26,lo8(124)
+  28 0002 B0E0      		ldi r27,hi8(124)
+  29 0004 9C91      		ld r25,X
+  30 0006 E0E0      		ldi r30,lo8(channels)
+  31 0008 F0E0      		ldi r31,hi8(channels)
+  32 000a E80F      		add r30,r24
+  33 000c F11D      		adc r31,__zero_reg__
+  34 000e 907E      		andi r25,lo8(-32)
+  35 0010 8081      		ld r24,Z
+  36               	.LVL1:
+  37 0012 982B      		or r25,r24
+  38 0014 9C93      		st X,r25
+  39               	/* epilogue start */
+  40               	.LM3:
+  41 0016 0895      		ret
+  42               	.LFE9:
+  44               	.global	__vector_19
+  46               	__vector_19:
+  47               	.LFB10:
+  48               	.LM4:
+  49 0018 1F92      		push __zero_reg__
+  50 001a 0F92      		push r0
+  51 001c 0FB6      		in r0,__SREG__
+  52 001e 0F92      		push r0
+  53 0020 1124      		clr __zero_reg__
+  54 0022 2F93      		push r18
+  55 0024 3F93      		push r19
+  56 0026 4F93      		push r20
+  57 0028 8F93      		push r24
+  58 002a 9F93      		push r25
+  59 002c AF93      		push r26
+  60 002e BF93      		push r27
+  61 0030 EF93      		push r30
+  62 0032 FF93      		push r31
+  63               	/* prologue: Signal */
+  64               	/* frame size = 0 */
+  65               	.LM5:
+  66 0034 4091 7800 		lds r20,120
+  67               	.LM6:
+  68 0038 3091 7900 		lds r19,121
+  69               	.LM7:
+  70 003c 2091 0000 		lds r18,curr_ch
+  71 0040 2223      		tst r18
+  72 0042 01F4      		brne .L4
+  73 0044 E3E0      		ldi r30,lo8(3)
+  74               	.LVL2:
+  75 0046 00C0      		rjmp .L5
+  76               	.LVL3:
+  77               	.L4:
+  78               	.LM8:
+  79 0048 E22F      		mov r30,r18
+  80               	.LVL4:
+  81 004a E150      		subi r30,lo8(-(-1))
+  82               	.L5:
+  83               	.LM9:
+  84 004c F0E0      		ldi r31,lo8(0)
+  85 004e EE0F      		lsl r30
+  86 0050 FF1F      		rol r31
+  87               	.LVL5:
+  88 0052 DF01      		movw r26,r30
+  89 0054 A050      		subi r26,lo8(-(adc_val))
+  90 0056 B040      		sbci r27,hi8(-(adc_val))
+  91 0058 932F      		mov r25,r19
+  92 005a 80E0      		ldi r24,lo8(0)
+  93 005c 840F      		add r24,r20
+  94 005e 911D      		adc r25,__zero_reg__
+  95 0060 8D93      		st X+,r24
+  96 0062 9C93      		st X,r25
+  97               	.LM10:
+  98 0064 E050      		subi r30,lo8(-(adc_amt))
+  99 0066 F040      		sbci r31,hi8(-(adc_amt))
+ 100 0068 8081      		ld r24,Z
+ 101 006a 9181      		ldd r25,Z+1
+ 102 006c 0196      		adiw r24,1
+ 103 006e 9183      		std Z+1,r25
+ 104 0070 8083      		st Z,r24
+ 105               	.LM11:
+ 106 0072 822F      		mov r24,r18
+ 107 0074 8F5F      		subi r24,lo8(-(1))
+ 108 0076 8093 0000 		sts curr_ch,r24
+ 109 007a 8430      		cpi r24,lo8(4)
+ 110 007c 00F0      		brlo .L6
+ 111 007e 1092 0000 		sts curr_ch,__zero_reg__
+ 112               	.L6:
+ 113               	.LBB10:
+ 114               	.LBB11:
+ 115               	.LM12:
+ 116 0082 8091 7C00 		lds r24,124
+ 117 0086 E091 0000 		lds r30,curr_ch
+ 118 008a F0E0      		ldi r31,lo8(0)
+ 119 008c E050      		subi r30,lo8(-(channels))
+ 120 008e F040      		sbci r31,hi8(-(channels))
+ 121 0090 807E      		andi r24,lo8(-32)
+ 122 0092 9081      		ld r25,Z
+ 123 0094 892B      		or r24,r25
+ 124 0096 8093 7C00 		sts 124,r24
+ 125               	/* epilogue start */
+ 126               	.LBE11:
+ 127               	.LBE10:
+ 128               	.LM13:
+ 129 009a FF91      		pop r31
+ 130 009c EF91      		pop r30
+ 131 009e BF91      		pop r27
+ 132 00a0 AF91      		pop r26
+ 133 00a2 9F91      		pop r25
+ 134 00a4 8F91      		pop r24
+ 135 00a6 4F91      		pop r20
+ 136 00a8 3F91      		pop r19
+ 137 00aa 2F91      		pop r18
+ 138 00ac 0F90      		pop r0
+ 139 00ae 0FBE      		out __SREG__,r0
+ 140 00b0 0F90      		pop r0
+ 141 00b2 1F90      		pop __zero_reg__
+ 142 00b4 1895      		reti
+ 143               	.LFE10:
+ 145               		.data
+ 146               	.LC0:
+ 147 0000 6164 633A 		.string	"adc: init..."
+ 147      2069 6E69 
+ 147      742E 2E2E 
+ 147      00
+ 148               	.LC1:
+ 149 000d 6164 633A 		.string	"adc: setup convertions..."
+ 149      2073 6574 
+ 149      7570 2063 
+ 149      6F6E 7665 
+ 149      7274 696F 
+ 150               		.text
+ 151               	.global	adc_init
+ 153               	adc_init:
+ 154               	.LFB8:
+ 155               	.LM14:
+ 156 00b6 EF92      		push r14
+ 157 00b8 FF92      		push r15
+ 158 00ba 0F93      		push r16
+ 159 00bc 1F93      		push r17
+ 160               	/* prologue: function */
+ 161               	/* frame size = 0 */
+ 162               	.LM15:
+ 163 00be 80E0      		ldi r24,lo8(.LC0)
+ 164 00c0 90E0      		ldi r25,hi8(.LC0)
+ 165 00c2 0E94 0000 		call puts
+ 166               	.LM16:
+ 167 00c6 E4E6      		ldi r30,lo8(100)
+ 168 00c8 F0E0      		ldi r31,hi8(100)
+ 169 00ca 8081      		ld r24,Z
+ 170 00cc 8E7F      		andi r24,lo8(-2)
+ 171 00ce 8083      		st Z,r24
+ 172               	.LM17:
+ 173 00d0 0CE7      		ldi r16,lo8(124)
+ 174 00d2 10E0      		ldi r17,hi8(124)
+ 175 00d4 F801      		movw r30,r16
+ 176 00d6 8081      		ld r24,Z
+ 177 00d8 8064      		ori r24,lo8(64)
+ 178 00da 8083      		st Z,r24
+ 179               	.LM18:
+ 180 00dc 8081      		ld r24,Z
+ 181 00de 8F77      		andi r24,lo8(127)
+ 182 00e0 8083      		st Z,r24
+ 183               	.LM19:
+ 184 00e2 9AE7      		ldi r25,lo8(122)
+ 185 00e4 E92E      		mov r14,r25
+ 186 00e6 F12C      		mov r15,__zero_reg__
+ 187 00e8 F701      		movw r30,r14
+ 188 00ea 8081      		ld r24,Z
+ 189 00ec 886A      		ori r24,lo8(-88)
+ 190 00ee 8083      		st Z,r24
+ 191               	.LM20:
+ 192 00f0 8081      		ld r24,Z
+ 193 00f2 887F      		andi r24,lo8(-8)
+ 194 00f4 8660      		ori r24,lo8(6)
+ 195 00f6 8083      		st Z,r24
+ 196               	.LM21:
+ 197 00f8 EBE7      		ldi r30,lo8(123)
+ 198 00fa F0E0      		ldi r31,hi8(123)
+ 199 00fc 8081      		ld r24,Z
+ 200 00fe 8068      		ori r24,lo8(-128)
+ 201 0100 8083      		st Z,r24
+ 202               	.LM22:
+ 203 0102 8081      		ld r24,Z
+ 204 0104 887F      		andi r24,lo8(-8)
+ 205 0106 8083      		st Z,r24
+ 206               	.LM23:
+ 207 0108 EEE7      		ldi r30,lo8(126)
+ 208 010a F0E0      		ldi r31,hi8(126)
+ 209 010c 8081      		ld r24,Z
+ 210 010e 806F      		ori r24,lo8(-16)
+ 211 0110 8083      		st Z,r24
+ 212               	.LM24:
+ 213 0112 83B7      		in r24,83-32
+ 214 0114 817F      		andi r24,lo8(-15)
+ 215 0116 8260      		ori r24,lo8(2)
+ 216 0118 83BF      		out 83-32,r24
+ 217               	.LM25:
+ 218 011a 80E0      		ldi r24,lo8(.LC1)
+ 219 011c 90E0      		ldi r25,hi8(.LC1)
+ 220 011e 0E94 0000 		call puts
+ 221               	.LM26:
+ 222 0122 2091 0000 		lds r18,curr_ch
+ 223               	.LBB12:
+ 224               	.LBB13:
+ 225               	.LM27:
+ 226 0126 F801      		movw r30,r16
+ 227 0128 8081      		ld r24,Z
+ 228 012a A0E0      		ldi r26,lo8(channels)
+ 229 012c B0E0      		ldi r27,hi8(channels)
+ 230 012e FD01      		movw r30,r26
+ 231 0130 E20F      		add r30,r18
+ 232 0132 F11D      		adc r31,__zero_reg__
+ 233 0134 807E      		andi r24,lo8(-32)
+ 234 0136 9081      		ld r25,Z
+ 235 0138 892B      		or r24,r25
+ 236 013a F801      		movw r30,r16
+ 237 013c 8083      		st Z,r24
+ 238               	.LBE13:
+ 239               	.LBE12:
+ 240               	.LM28:
+ 241 013e F701      		movw r30,r14
+ 242 0140 8081      		ld r24,Z
+ 243 0142 8064      		ori r24,lo8(64)
+ 244 0144 8083      		st Z,r24
+ 245               	.LBB14:
+ 246               	.LBB15:
+ 247               	.LM29:
+ 248 0146 80E0      		ldi r24,lo8(0)
+ 249 0148 90E0      		ldi r25,hi8(0)
+ 250               	.LVL6:
+ 251               	/* #APP */
+ 252               	 ;  105 "c:/winavr-20080610/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 253 014a 0197      		1: sbiw r24,1
+ 254 014c 01F4      		brne 1b
+ 255               	 ;  0 "" 2
+ 256               	/* #NOAPP */
+ 257               	.LBE15:
+ 258               	.LBE14:
+ 259               	.LM30:
+ 260 014e 2F5F      		subi r18,lo8(-(1))
+ 261 0150 2093 0000 		sts curr_ch,r18
+ 262               	.LBB16:
+ 263               	.LBB17:
+ 264               	.LM31:
+ 265 0154 F801      		movw r30,r16
+ 266 0156 8081      		ld r24,Z
+ 267               	.LVL7:
+ 268 0158 A20F      		add r26,r18
+ 269 015a B11D      		adc r27,__zero_reg__
+ 270 015c 807E      		andi r24,lo8(-32)
+ 271 015e 9C91      		ld r25,X
+ 272 0160 892B      		or r24,r25
+ 273 0162 8083      		st Z,r24
+ 274               	/* epilogue start */
+ 275               	.LBE17:
+ 276               	.LBE16:
+ 277               	.LM32:
+ 278 0164 1F91      		pop r17
+ 279 0166 0F91      		pop r16
+ 280 0168 FF90      		pop r15
+ 281 016a EF90      		pop r14
+ 282 016c 0895      		ret
+ 283               	.LFE8:
+ 285               		.data
+ 286               	.LC2:
+ 287 0027 205B 2025 		.string	" [ %d : %d ] "
+ 287      6420 3A20 
+ 287      2564 205D 
+ 287      2000 
+ 288               		.text
+ 289               	.global	print_adc_values
+ 291               	print_adc_values:
+ 292               	.LFB7:
+ 293               	.LM33:
+ 294 016e 0F93      		push r16
+ 295 0170 1F93      		push r17
+ 296               	/* prologue: function */
+ 297               	/* frame size = 0 */
+ 298               	.LBB18:
+ 299               	.LM34:
+ 300 0172 8091 0000 		lds r24,adc_val
+ 301 0176 9091 0000 		lds r25,(adc_val)+1
+ 302 017a 9F93      		push r25
+ 303 017c 8F93      		push r24
+ 304 017e 1F92      		push __zero_reg__
+ 305 0180 1F92      		push __zero_reg__
+ 306 0182 00E0      		ldi r16,lo8(.LC2)
+ 307 0184 10E0      		ldi r17,hi8(.LC2)
+ 308 0186 1F93      		push r17
+ 309 0188 0F93      		push r16
+ 310 018a 0E94 0000 		call printf
+ 311 018e 8091 0000 		lds r24,adc_val+2
+ 312 0192 9091 0000 		lds r25,(adc_val+2)+1
+ 313 0196 9F93      		push r25
+ 314 0198 8F93      		push r24
+ 315 019a 81E0      		ldi r24,lo8(1)
+ 316 019c 90E0      		ldi r25,hi8(1)
+ 317 019e 9F93      		push r25
+ 318 01a0 8F93      		push r24
+ 319 01a2 1F93      		push r17
+ 320 01a4 0F93      		push r16
+ 321 01a6 0E94 0000 		call printf
+ 322 01aa 8091 0000 		lds r24,adc_val+4
+ 323 01ae 9091 0000 		lds r25,(adc_val+4)+1
+ 324 01b2 9F93      		push r25
+ 325 01b4 8F93      		push r24
+ 326 01b6 82E0      		ldi r24,lo8(2)
+ 327 01b8 90E0      		ldi r25,hi8(2)
+ 328 01ba 9F93      		push r25
+ 329 01bc 8F93      		push r24
+ 330 01be 1F93      		push r17
+ 331 01c0 0F93      		push r16
+ 332 01c2 0E94 0000 		call printf
+ 333 01c6 8091 0000 		lds r24,adc_val+6
+ 334 01ca 9091 0000 		lds r25,(adc_val+6)+1
+ 335 01ce 9F93      		push r25
+ 336 01d0 8F93      		push r24
+ 337 01d2 83E0      		ldi r24,lo8(3)
+ 338 01d4 90E0      		ldi r25,hi8(3)
+ 339 01d6 9F93      		push r25
+ 340 01d8 8F93      		push r24
+ 341 01da 1F93      		push r17
+ 342 01dc 0F93      		push r16
+ 343 01de 0E94 0000 		call printf
+ 344               	.LBE18:
+ 345               	.LM35:
+ 346 01e2 8AE0      		ldi r24,lo8(10)
+ 347 01e4 90E0      		ldi r25,hi8(10)
+ 348 01e6 0E94 0000 		call putchar
+ 349 01ea 8DB7      		in r24,__SP_L__
+ 350 01ec 9EB7      		in r25,__SP_H__
+ 351 01ee 4896      		adiw r24,24
+ 352 01f0 0FB6      		in __tmp_reg__,__SREG__
+ 353 01f2 F894      		cli
+ 354 01f4 9EBF      		out __SP_H__,r25
+ 355 01f6 0FBE      		out __SREG__,__tmp_reg__
+ 356 01f8 8DBF      		out __SP_L__,r24
+ 357               	/* epilogue start */
+ 358               	.LM36:
+ 359 01fa 1F91      		pop r17
+ 360 01fc 0F91      		pop r16
+ 361 01fe 0895      		ret
+ 362               	.LFE7:
+ 364               		.data
+ 367               	channels:
+ 368 0035 04        		.byte	4
+ 369 0036 06        		.byte	6
+ 370 0037 05        		.byte	5
+ 371 0038 07        		.byte	7
+ 372               		.comm adc_val,8,1
+ 373               		.comm adc_offset,8,1
+ 374               		.comm adc_amt,8,1
+ 375               		.comm curr_ch,1,1
+ 424               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 adc.c
-     /tmp/ccDdQKXB.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccDdQKXB.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccDdQKXB.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccDdQKXB.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/ccDdQKXB.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/ccDdQKXB.s:91     .text:00000000 copysign
-     /tmp/ccDdQKXB.s:120    .text:00000006 isfinite
-     /tmp/ccDdQKXB.s:160    .text:0000001e adc_set_channel
-     /tmp/ccDdQKXB.s:520    .data:00000035 channels
-     /tmp/ccDdQKXB.s:193    .text:00000036 __vector_19
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:20     .text:00000000 adc_set_channel
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:367    .data:00000035 channels
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:46     .text:00000018 __vector_19
                             *COM*:00000001 curr_ch
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_amt
-     /tmp/ccDdQKXB.s:313    .text:000000d4 adc_init
-     /tmp/ccDdQKXB.s:437    .text:0000016c print_adc_values
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:153    .text:000000b6 adc_init
+C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:291    .text:0000016e print_adc_values
+                            *COM*:00000008 adc_offset
 
 UNDEFINED SYMBOLS
 __do_copy_data

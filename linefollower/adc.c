@@ -10,6 +10,7 @@ Controls and Provides access to the Analog to Digital Converter (ADC) subsystem 
 #include <avr/power.h>
 #include <stdio.h>
 #include <math.h>
+#include <util/delay_basic.h>
 
 void print_adc_values() {
 	//printf("ADC: ");
@@ -46,11 +47,15 @@ void adc_init() {
 	//Start the convertions
 	ADCSRA|= (uint8_t)(1<<ADSC);
 
-	// Wait one adc clock cycle and change the channel
-	// 125KHz
-	//adc_set_channel(++curr_ch);
-	// Right now it will compute the first sensor twice, and store it's first find in the 4th sensor.
-	// Could use one of the timers to do this, but probably unesicary
+	// Wait one adc clock cycle and change the channel, done by interupt later.
+	_delay_loop_2(ADC_CYCLE_DELAY);
+	adc_set_channel(++curr_ch);
+	
+	// Wait for one set of convertions to complete.
+	//_delay_loop_2(ADC_CYCLE_DELAY*26);
+	
+	//memcopy(adc_offsets,adc_val,sizeof(adc_val));
+	
 }
 
 void adc_set_channel(uint8_t channel) {
@@ -70,8 +75,8 @@ ISR(ADC_vect) {
 	adc_value += (ADCH<<8);
 	uint8_t real_channel;
 
-	// the curr_ch now has the chan of the ongoing conversion, we need the last one
-	if (!curr_ch)	real_channel = channel_amt-1; //curr_ch==0 
+	// the curr_ch now has the chan of the on going conversion, we need the last one
+	if (curr_ch==0)	real_channel = channel_amt-1; //curr_ch==0 
 	else		real_channel = curr_ch-1;
 
 	adc_val[real_channel] = adc_value;
@@ -80,6 +85,8 @@ ISR(ADC_vect) {
 	// Change the channel for the conversion after the one currently processing.
 	if (++curr_ch >= channel_amt)	curr_ch = 0;
 	
+	//Wait for the clock to be set, 1 adc cycle.
+	//_delay_loop2(ADC_CYCLE_DELAY);
 	adc_set_channel(curr_ch);
 	
 	//printf("adc_value: %d",adc_value);

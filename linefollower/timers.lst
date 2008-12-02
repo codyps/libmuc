@@ -2,622 +2,377 @@
    2               	__SREG__ = 0x3f
    3               	__SP_H__ = 0x3e
    4               	__SP_L__ = 0x3d
-   5               	__tmp_reg__ = 0
-   6               	__zero_reg__ = 1
-   7               		.global __do_copy_data
-   8               		.global __do_clear_bss
-  11               		.text
-  12               	.Ltext0:
-  86               	.global	timer2_init
-  88               	timer2_init:
-  89               		.stabd	46,0,0
-   1:timers.c      **** /* 
-   2:timers.c      ****  * File: timers.c
-   3:timers.c      ****  * Function: control of timers and pwm outputs
-   4:timers.c      ****  */
-   5:timers.c      **** 
-   6:timers.c      **** #include "adc.h"
-   7:timers.c      **** #include "defines.h"
-   8:timers.c      **** #include <util/atomic.h>
-   9:timers.c      **** #include <avr/io.h>
-  10:timers.c      **** #include <avr/interrupt.h>
-  11:timers.c      **** #include <stdio.h>
-  12:timers.c      **** 
-  13:timers.c      **** 
-  14:timers.c      **** 
-  15:timers.c      **** void timer2_init(void) {
-  91               	.LM0:
-  92               	.LFBB1:
-  93               	/* prologue: function */
-  94               	/* frame size = 0 */
-  16:timers.c      **** 	// External crystal : 32.768KHZ
-  17:timers.c      **** 	/*
-  18:timers.c      **** 	a. Disable the Timer/Counter2 interrupts by clearing OCIE2A and TOIE2.
-  19:timers.c      **** 	b. Select clock source by setting AS2 as appropriate.
-  20:timers.c      **** 	c. Write new values to TCNT2, OCR2A, and TCCR2A.
-  21:timers.c      **** 	d. To switch to asynchronous operation: Wait for TCN2UB, OCR2UB, and TCR2UB.
-  22:timers.c      **** 	e. Clear the Timer/Counter2 Interrupt Flags.
-  23:timers.c      **** 	f. Enable interrupts, if needed.
-  24:timers.c      **** 	*/
-  25:timers.c      **** 	
-  26:timers.c      **** 	// disable interupts (probably alread done)
-  27:timers.c      **** 	TIMSK2&=(uint8_t)~((1<<OCIE2A)|(1<<TOIE2));
-  96               	.LM1:
-  97 0000 8091 7000 		lds r24,112
-  98 0004 8C7F      		andi r24,lo8(-4)
-  99 0006 8093 7000 		sts 112,r24
-  28:timers.c      **** 	
-  29:timers.c      **** 	// Enable asyncronous clocking.
-  30:timers.c      **** 	ASSR&=~(uint8_t)(1<<EXCLK);
- 101               	.LM2:
- 102 000a 8091 B600 		lds r24,182
- 103 000e 8F7E      		andi r24,lo8(-17)
- 104 0010 8093 B600 		sts 182,r24
-  31:timers.c      **** 	ASSR|=(uint8_t)(1<<AS2);
- 106               	.LM3:
- 107 0014 8091 B600 		lds r24,182
- 108 0018 8860      		ori r24,lo8(8)
- 109 001a 8093 B600 		sts 182,r24
-  32:timers.c      **** 	
-  33:timers.c      **** 	// Reset acculumator
-  34:timers.c      **** 	TCNT2 = 0;
- 111               	.LM4:
- 112 001e 1092 B200 		sts 178,__zero_reg__
-  35:timers.c      **** 	
-  36:timers.c      **** 	TCCR2A&=(uint8_t)~(1<<FOC2A);
- 114               	.LM5:
- 115 0022 8091 B000 		lds r24,176
- 116 0026 8F77      		andi r24,lo8(127)
- 117 0028 8093 B000 		sts 176,r24
-  37:timers.c      **** 	
-  38:timers.c      **** 	/* 	Mode	WGM21	WGM20	operation
-  39:timers.c      **** 		0	0		0		Normal
-  40:timers.c      **** 		1	0		1		PWM,Phase correct
-  41:timers.c      **** 		2	1		0		CTC
-  42:timers.c      **** 		3	1		1		Fast PWM
-  43:timers.c      **** 	*/
-  44:timers.c      **** 	// : CTC Mode.
-  45:timers.c      **** 	//TCCR2A|=(1<<WGM20);
-  46:timers.c      **** 	//TCCR2A&=~(1<<WGM21);
-  47:timers.c      **** 	// : Normal Mode.
-  48:timers.c      **** 	TCCR2A&=(uint8_t)~((1<<WGM20)|(1<<WGM21));
- 119               	.LM6:
- 120 002c 8091 B000 		lds r24,176
- 121 0030 877B      		andi r24,lo8(-73)
- 122 0032 8093 B000 		sts 176,r24
-  49:timers.c      **** 	
-  50:timers.c      **** 	/* Compare output mode (non-pwm) (OC2A)
-  51:timers.c      **** 		COM2A1	COM2A0	Result
-  52:timers.c      **** 		0		0		No output
-  53:timers.c      **** 		0		1		Toggle on compare match
-  54:timers.c      **** 		1		0		clear on compare match
-  55:timers.c      **** 		1		1		set on 		"		"
-  56:timers.c      **** 	*/
-  57:timers.c      **** 	// : No output
-  58:timers.c      **** 	TCCR2A&=(uint8_t)~((1<<COM2A1)|(1<<COM2A0));
- 124               	.LM7:
- 125 0036 8091 B000 		lds r24,176
- 126 003a 8F7C      		andi r24,lo8(-49)
- 127 003c 8093 B000 		sts 176,r24
-  59:timers.c      **** 	
-  60:timers.c      **** 	// Clock Select (Prescale) set
-  61:timers.c      **** 
-  62:timers.c      **** 	//32768/1/256 = 128Hz
-  63:timers.c      **** 	//TCCR2A&=~((1<<CS22)|(1<<CS21));
-  64:timers.c      **** 	//TCCR2A|= (1<<CS20);
-  65:timers.c      **** 	
-  66:timers.c      **** 	// 32768/8/256 = 16Hz
-  67:timers.c      **** 	//TCCR2A|= (uint8_t)(1<<CS21);
-  68:timers.c      **** 	//TCCR2A&=(uint8_t)~((uint8_t)((1<<CS20)|(1<<CS22)));
-  69:timers.c      **** 
-  70:timers.c      **** 	// 32768/128/256 = 1Hz
-  71:timers.c      **** 	TCCR2A|= (1<<CS20)|(1<<CS22);
- 129               	.LM8:
- 130 0040 8091 B000 		lds r24,176
- 131 0044 8560      		ori r24,lo8(5)
- 132 0046 8093 B000 		sts 176,r24
-  72:timers.c      **** 	TCCR2A&=~(1<<CS21);
- 134               	.LM9:
- 135 004a 8091 B000 		lds r24,176
- 136 004e 8D7F      		andi r24,lo8(-3)
- 137 0050 8093 B000 		sts 176,r24
- 138               	.L2:
-  73:timers.c      **** 
-  74:timers.c      **** 	// 32768/1024/256 = 1/8Hz
-  75:timers.c      **** 	//TCCR2A|= (1<<CS21)|(1<<CS20)|(1<<CS22);
-  76:timers.c      **** 
-  77:timers.c      **** 	loop_until_bit_is_clear(ASSR,TCN2UB);
- 140               	.LM10:
- 141 0054 8091 B600 		lds r24,182
- 142 0058 82FD      		sbrc r24,2
- 143 005a 00C0      		rjmp .L2
- 144               	.L7:
-  78:timers.c      **** 	loop_until_bit_is_clear(ASSR,OCR2UB);
- 146               	.LM11:
- 147 005c 8091 B600 		lds r24,182
- 148 0060 81FD      		sbrc r24,1
- 149 0062 00C0      		rjmp .L7
- 150               	.L6:
-  79:timers.c      **** 	loop_until_bit_is_clear(ASSR,TCR2UB);
- 152               	.LM12:
- 153 0064 8091 B600 		lds r24,182
- 154 0068 80FD      		sbrc r24,0
- 155 006a 00C0      		rjmp .L6
-  80:timers.c      **** 	
-  81:timers.c      **** 	// Enable overflow interrupt, disable match.
-  82:timers.c      **** 	TIMSK2|= (uint8_t)(1<<TOIE2);
- 157               	.LM13:
- 158 006c 8091 7000 		lds r24,112
- 159 0070 8160      		ori r24,lo8(1)
- 160 0072 8093 7000 		sts 112,r24
- 161               	/* epilogue start */
-  83:timers.c      **** 	//TIMSK2&=~(1<<OCIE2A); // Disabled
-  84:timers.c      **** }
- 163               	.LM14:
- 164 0076 0895      		ret
- 166               	.Lscope1:
- 168               		.stabd	78,0,0
- 170               	.global	timer1_init
- 172               	timer1_init:
- 173               		.stabd	46,0,0
-  85:timers.c      **** 
-  86:timers.c      **** 
-  87:timers.c      **** // Timer2 Overflow
-  88:timers.c      **** ISR(TIMER2_OVF_vect) {
-  89:timers.c      **** 	static uint16_t sec;//=0
-  90:timers.c      **** 	++sec;
-  91:timers.c      **** 	//1 Hz (16/16)
-  92:timers.c      **** 	printf("\tT: %ds\n",sec);
-  93:timers.c      **** 	//print_adc_values();
-  94:timers.c      **** 	//printf("Current Channel: %d\n", curr_ch);
-  95:timers.c      **** }
-  96:timers.c      **** 
-  97:timers.c      **** void timer1_init(void) { // Runs the PWMs
- 175               	.LM15:
- 176               	.LFBB2:
- 177               	/* prologue: function */
- 178               	/* frame size = 0 */
-  98:timers.c      **** 
-  99:timers.c      **** 	// Set OC1A/B on up, clear on down
- 100:timers.c      **** //	TCCR1A|= (uint8_t) (1<<COM1A1)|(1<<COM1A0);
- 101:timers.c      **** //	TCCR1A|= (uint8_t) (1<<COM1B1)|(1<<COM1B0);
- 102:timers.c      **** 
- 103:timers.c      **** 	// OC1A/B disconnected
- 104:timers.c      **** 	TCCR1A&= (uint8_t) ~((1<<COM1A1)|(1<<COM1A0)|(1<<COM1B1)|(1<<COM1B0));
- 180               	.LM16:
- 181 0078 E0E8      		ldi r30,lo8(128)
- 182 007a F0E0      		ldi r31,hi8(128)
- 183 007c 8081      		ld r24,Z
- 184 007e 8F70      		andi r24,lo8(15)
- 185 0080 8083      		st Z,r24
- 105:timers.c      **** 	
- 106:timers.c      **** 	// Waveform Generation Set to PWM (Phase and frequency correct, mode 8)
- 107:timers.c      **** 	TCCR1A&= (uint8_t) ~((1<<WGM11)|(1<<WGM10));
- 187               	.LM17:
- 188 0082 8081      		ld r24,Z
- 189 0084 8C7F      		andi r24,lo8(-4)
- 190 0086 8083      		st Z,r24
- 108:timers.c      **** 	TCCR1B|= (uint8_t) (1<<5); //Reserved bit
- 192               	.LM18:
- 193 0088 E1E8      		ldi r30,lo8(129)
- 194 008a F0E0      		ldi r31,hi8(129)
- 195 008c 8081      		ld r24,Z
- 196 008e 8062      		ori r24,lo8(32)
- 197 0090 8083      		st Z,r24
- 109:timers.c      **** 	TCCR1B|= (uint8_t) (1<<WGM13);
- 199               	.LM19:
- 200 0092 8081      		ld r24,Z
- 201 0094 8061      		ori r24,lo8(16)
- 202 0096 8083      		st Z,r24
- 110:timers.c      **** 	TCCR1B&= (uint8_t)~(1<<WGM12);
- 204               	.LM20:
- 205 0098 8081      		ld r24,Z
- 206 009a 877F      		andi r24,lo8(-9)
- 207 009c 8083      		st Z,r24
- 111:timers.c      **** 
- 112:timers.c      **** 	// Disable Input noise canceler
- 113:timers.c      **** 	TCCR1B|= (uint8_t)(1<<ICNC1);
- 209               	.LM21:
- 210 009e 8081      		ld r24,Z
- 211 00a0 8068      		ori r24,lo8(-128)
- 212 00a2 8083      		st Z,r24
- 213               	.LBB7:
- 114:timers.c      **** 	
- 115:timers.c      **** 	// Set TOP
- 116:timers.c      **** 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
- 215               	.LM22:
- 216 00a4 2FB7      		in r18,__SREG__
- 217               	.LBB8:
- 218               	.LBB9:
- 220               	.Ltext1:
-   1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* Copyright (c) 2007 Dean Camera
-   2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    All rights reserved.
-   3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-   4:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    Redistribution and use in source and binary forms, with or without
-   5:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    modification, are permitted provided that the following conditions are met:
-   6:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-   7:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Redistributions of source code must retain the above copyright
-   8:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer.
-   9:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  10:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Redistributions in binary form must reproduce the above copyright
-  11:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer in
-  12:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      the documentation and/or other materials provided with the
-  13:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      distribution.
-  14:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  15:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Neither the name of the copyright holders nor the names of
-  16:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      contributors may be used to endorse or promote products derived
-  17:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      from this software without specific prior written permission.
-  18:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  19:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  20:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  21:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-  22:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-  23:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-  24:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-  25:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-  26:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-  27:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  28:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  29:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   POSSIBILITY OF SUCH DAMAGE.
-  30:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** */
-  31:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  32:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* $Id: atomic.h,v 1.3 2007/12/20 14:17:56 joerg_wunsch Exp $ */
-  33:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  34:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #ifndef _UTIL_ATOMIC_H_
-  35:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #define _UTIL_ATOMIC_H_ 1
-  36:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  37:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #include <avr/io.h>
-  38:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #include <avr/interrupt.h>
-  39:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  40:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #if !defined(__DOXYGEN__)
-  41:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* Internal helper functions. */
-  42:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iSeiRetVal(void)
-  43:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  44:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     sei();
-  45:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     return 1;
-  46:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
-  47:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  48:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
-  49:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  50:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     cli();
- 222               	.LM23:
- 223               	/* #APP */
- 224               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
- 225 00a6 F894      		cli
- 226               	 ;  0 "" 2
- 227               	/* #NOAPP */
- 228               	.LBE9:
- 229               	.LBE8:
- 231               	.Ltext2:
- 117:timers.c      **** 		ICR1=0xFFFF;
- 233               	.LM24:
- 234 00a8 8FEF      		ldi r24,lo8(-1)
- 235 00aa 9FEF      		ldi r25,hi8(-1)
- 236 00ac 9093 8700 		sts (134)+1,r25
- 237 00b0 8093 8600 		sts 134,r24
- 238               	.LBB10:
- 239               	.LBB11:
- 241               	.Ltext3:
-  51:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     return 1;
-  52:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
-  53:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  54:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ void __iSeiParam(const uint8_t *__s)
-  55:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  56:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     sei();
-  57:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
-  58:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     (void)__s;
-  59:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
-  60:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  61:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ void __iCliParam(const uint8_t *__s)
-  62:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  63:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     cli();
-  64:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
-  65:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     (void)__s;
-  66:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
-  67:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  68:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ void __iRestore(const  uint8_t *__s)
-  69:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  70:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     SREG = *__s;
- 243               	.LM25:
- 244 00b4 2FBF      		out __SREG__,r18
-  71:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
- 246               	.LM26:
- 247               	.LBE11:
- 248               	.LBE10:
- 249               	.LBE7:
- 251               	.Ltext4:
- 118:timers.c      **** 	}
- 119:timers.c      **** 	
- 120:timers.c      **** 	// Note: f[OCnxPFCPWM]=f[pwm]=f[clk_io]/(2*Prescale*TOP);
- 121:timers.c      **** 	//	Presacle = f[clk]/(2*f[pwm]*TOP)
- 122:timers.c      **** 	//	Max f[pwm] for TB6612FNG is 100KHz (100000HZ)
- 123:timers.c      **** 	//prescale = F_CPU/(2*100000*0xFFFF) = 
- 124:timers.c      **** 	// At 8MHz the best we get is 60Hz (bad. very bad.)
- 125:timers.c      **** 	
- 126:timers.c      **** 	// Set prescale to 1
- 127:timers.c      **** 	// TCCR1B = (TCCR1B & 0b11111000)|(log(prescale)/log(2));
- 128:timers.c      **** 	TCCR1B&= (uint8_t)~((1<<CS12)|(1<<CS11));
- 253               	.LM27:
- 254 00b6 E1E8      		ldi r30,lo8(129)
- 255 00b8 F0E0      		ldi r31,hi8(129)
- 256 00ba 8081      		ld r24,Z
- 257 00bc 897F      		andi r24,lo8(-7)
- 258 00be 8083      		st Z,r24
- 129:timers.c      **** 	TCCR1B|= (uint8_t) (1<<CS10);
- 260               	.LM28:
- 261 00c0 8081      		ld r24,Z
- 262 00c2 8160      		ori r24,lo8(1)
- 263 00c4 8083      		st Z,r24
- 130:timers.c      **** 	
- 131:timers.c      **** 	//OCR1A and OCR1B are the Compare / PWM registers
- 132:timers.c      **** 	//OCR1A = OCR1B = 0xFFFF; // Max = 65535,0xFFFF
- 133:timers.c      **** 	
- 134:timers.c      **** 	// disable the interupts (probably done by default).
- 135:timers.c      **** 	TIMSK1&= (uint8_t)~((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
- 265               	.LM29:
- 266 00c6 EFE6      		ldi r30,lo8(111)
- 267 00c8 F0E0      		ldi r31,hi8(111)
- 268 00ca 8081      		ld r24,Z
- 269 00cc 887D      		andi r24,lo8(-40)
- 270 00ce 8083      		st Z,r24
- 136:timers.c      **** 	
- 137:timers.c      **** 	MOTOR_PWM_DDR|= (uint8_t)(1<<M_PWMA_PIN)|(1<<M_PWMB_PIN);
- 272               	.LM30:
- 273 00d0 84B1      		in r24,36-0x20
- 274 00d2 8C60      		ori r24,lo8(12)
- 275 00d4 84B9      		out 36-0x20,r24
- 276               	/* epilogue start */
- 138:timers.c      **** }
- 278               	.LM31:
- 279 00d6 0895      		ret
- 281               	.Lscope2:
- 283               		.stabd	78,0,0
- 285               	.global	__vector_9
- 287               	__vector_9:
- 288               		.stabd	46,0,0
- 139:timers.c      **** 
- 140:timers.c      **** enum {DOWN, UP};
- 141:timers.c      **** static uint8_t timer_2_dir;
- 142:timers.c      **** /* Timer/Counter1 Overflow ; BOTTOM */
- 143:timers.c      **** ISR(TIMER1_OVF_vect) {
- 290               	.LM32:
- 291               	.LFBB3:
- 292 00d8 1F92      		push __zero_reg__
- 293 00da 0F92      		push r0
- 294 00dc 0FB6      		in r0,__SREG__
- 295 00de 0F92      		push r0
- 296 00e0 1124      		clr __zero_reg__
- 297 00e2 8F93      		push r24
- 298               	/* prologue: Signal */
- 299               	/* frame size = 0 */
- 144:timers.c      **** 	timer_2_dir=UP;
- 301               	.LM33:
- 302 00e4 81E0      		ldi r24,lo8(1)
- 303 00e6 8093 0000 		sts timer_2_dir,r24
- 304               	/* epilogue start */
- 145:timers.c      **** }
- 306               	.LM34:
- 307 00ea 8F91      		pop r24
- 308 00ec 0F90      		pop r0
- 309 00ee 0FBE      		out __SREG__,r0
- 310 00f0 0F90      		pop r0
- 311 00f2 1F90      		pop __zero_reg__
- 312 00f4 1895      		reti
- 314               	.Lscope3:
- 316               		.stabd	78,0,0
- 318               	.global	__vector_6
- 320               	__vector_6:
- 321               		.stabd	46,0,0
- 146:timers.c      **** 
- 147:timers.c      **** /* Timer/Counter1 ISR1 ; TOP */
- 148:timers.c      **** ISR(SIG_INPUT_CAPTURE1) {
- 323               	.LM35:
- 324               	.LFBB4:
- 325 00f6 1F92      		push __zero_reg__
- 326 00f8 0F92      		push r0
- 327 00fa 0FB6      		in r0,__SREG__
- 328 00fc 0F92      		push r0
- 329 00fe 1124      		clr __zero_reg__
- 330               	/* prologue: Signal */
- 331               	/* frame size = 0 */
- 149:timers.c      **** 	timer_2_dir=DOWN;
- 333               	.LM36:
- 334 0100 1092 0000 		sts timer_2_dir,__zero_reg__
- 335               	/* epilogue start */
- 150:timers.c      **** }
- 337               	.LM37:
- 338 0104 0F90      		pop r0
- 339 0106 0FBE      		out __SREG__,r0
- 340 0108 0F90      		pop r0
- 341 010a 1F90      		pop __zero_reg__
- 342 010c 1895      		reti
- 344               	.Lscope4:
- 346               		.stabd	78,0,0
- 348               	.global	__vector_7
- 350               	__vector_7:
- 351               		.stabd	46,0,0
- 151:timers.c      **** 
- 152:timers.c      **** /* Timer/Counter Compare Match A */
- 153:timers.c      **** ISR(TIMER1_COMPA_vect) {
- 353               	.LM38:
- 354               	.LFBB5:
- 355 010e 1F92      		push __zero_reg__
- 356 0110 0F92      		push r0
- 357 0112 0FB6      		in r0,__SREG__
- 358 0114 0F92      		push r0
- 359 0116 1124      		clr __zero_reg__
- 360 0118 8F93      		push r24
- 361               	/* prologue: Signal */
- 362               	/* frame size = 0 */
- 154:timers.c      **** 	if (timer_2_dir==DOWN)	
- 364               	.LM39:
- 365 011a 8091 0000 		lds r24,timer_2_dir
- 366 011e 8823      		tst r24
- 367 0120 01F4      		brne .L18
- 155:timers.c      **** 		MOTOR_PWM_PORT&=~(1<<M_PWMA_PIN);
- 369               	.LM40:
- 370 0122 2A98      		cbi 37-0x20,2
- 371 0124 00C0      		rjmp .L20
- 372               	.L18:
- 156:timers.c      **** 	else
- 157:timers.c      **** 		MOTOR_PWM_PORT|=(1<<M_PWMA_PIN);
- 374               	.LM41:
- 375 0126 2A9A      		sbi 37-0x20,2
- 376               	.L20:
- 377               	/* epilogue start */
- 158:timers.c      **** 		
- 159:timers.c      **** }
- 379               	.LM42:
- 380 0128 8F91      		pop r24
- 381 012a 0F90      		pop r0
- 382 012c 0FBE      		out __SREG__,r0
- 383 012e 0F90      		pop r0
- 384 0130 1F90      		pop __zero_reg__
- 385 0132 1895      		reti
- 387               	.Lscope5:
- 389               		.stabd	78,0,0
- 391               	.global	__vector_8
- 393               	__vector_8:
- 394               		.stabd	46,0,0
- 160:timers.c      **** 
- 161:timers.c      **** /* Timer/Counter Compare Match B */
- 162:timers.c      **** ISR(TIMER1_COMPB_vect) {
- 396               	.LM43:
- 397               	.LFBB6:
- 398 0134 1F92      		push __zero_reg__
- 399 0136 0F92      		push r0
- 400 0138 0FB6      		in r0,__SREG__
- 401 013a 0F92      		push r0
- 402 013c 1124      		clr __zero_reg__
- 403 013e 8F93      		push r24
- 404               	/* prologue: Signal */
- 405               	/* frame size = 0 */
- 163:timers.c      **** 	if (timer_2_dir==DOWN)	
- 407               	.LM44:
- 408 0140 8091 0000 		lds r24,timer_2_dir
- 409 0144 8823      		tst r24
- 410 0146 01F4      		brne .L22
- 164:timers.c      **** 		MOTOR_PWM_PORT&=~(1<<M_PWMB_PIN);
- 412               	.LM45:
- 413 0148 2B98      		cbi 37-0x20,3
- 414 014a 00C0      		rjmp .L24
- 415               	.L22:
- 165:timers.c      **** 	else
- 166:timers.c      **** 		MOTOR_PWM_PORT|=(1<<M_PWMB_PIN);
- 417               	.LM46:
- 418 014c 2B9A      		sbi 37-0x20,3
- 419               	.L24:
- 420               	/* epilogue start */
- 167:timers.c      **** }
- 422               	.LM47:
- 423 014e 8F91      		pop r24
- 424 0150 0F90      		pop r0
- 425 0152 0FBE      		out __SREG__,r0
- 426 0154 0F90      		pop r0
- 427 0156 1F90      		pop __zero_reg__
- 428 0158 1895      		reti
- 430               	.Lscope6:
- 432               		.stabd	78,0,0
- 434               	.global	timers_init
- 436               	timers_init:
- 437               		.stabd	46,0,0
- 168:timers.c      **** 
- 169:timers.c      **** 
- 170:timers.c      **** /*
- 171:timers.c      **** void timer0_init(void) {}
- 172:timers.c      **** */
- 173:timers.c      **** 
- 174:timers.c      **** void timers_init(void) {
- 439               	.LM48:
- 440               	.LFBB7:
- 441               	/* prologue: function */
- 442               	/* frame size = 0 */
- 175:timers.c      **** //	timer0_init(); // Not implimented.
- 176:timers.c      **** 	timer1_init(); //PWM
- 444               	.LM49:
- 445 015a 0E94 0000 		call timer1_init
- 177:timers.c      **** 	timer2_init(); //RTC
- 447               	.LM50:
- 448 015e 0E94 0000 		call timer2_init
- 449               	/* epilogue start */
- 178:timers.c      **** }
- 451               	.LM51:
- 452 0162 0895      		ret
- 454               	.Lscope7:
- 456               		.stabd	78,0,0
- 457               		.data
- 458               	.LC0:
- 459 0000 0954 3A20 		.string	"\tT: %ds\n"
- 459      2564 730A 
- 459      00
- 460               		.text
- 462               	.global	__vector_5
- 464               	__vector_5:
- 465               		.stabd	46,0,0
- 467               	.LM52:
- 468               	.LFBB8:
- 469 0164 1F92      		push __zero_reg__
- 470 0166 0F92      		push r0
- 471 0168 0FB6      		in r0,__SREG__
- 472 016a 0F92      		push r0
- 473 016c 1124      		clr __zero_reg__
- 474 016e 8F93      		push r24
- 475 0170 9F93      		push r25
- 476               	/* prologue: Signal */
- 477               	/* frame size = 0 */
- 479               	.LM53:
- 480 0172 8091 0000 		lds r24,sec.1436
- 481 0176 9091 0000 		lds r25,(sec.1436)+1
- 482 017a 0196      		adiw r24,1
- 483 017c 9093 0000 		sts (sec.1436)+1,r25
- 484 0180 8093 0000 		sts sec.1436,r24
- 486               	.LM54:
- 487 0184 9F93      		push r25
- 488 0186 8F93      		push r24
- 489 0188 80E0      		ldi r24,lo8(.LC0)
- 490 018a 90E0      		ldi r25,hi8(.LC0)
- 491 018c 9F93      		push r25
- 492 018e 8F93      		push r24
- 493 0190 0E94 0000 		call printf
- 494 0194 0F90      		pop __tmp_reg__
- 495 0196 0F90      		pop __tmp_reg__
- 496 0198 0F90      		pop __tmp_reg__
- 497 019a 0F90      		pop __tmp_reg__
- 498               	/* epilogue start */
- 500               	.LM55:
- 501 019c 9F91      		pop r25
- 502 019e 8F91      		pop r24
- 503 01a0 0F90      		pop r0
- 504 01a2 0FBE      		out __SREG__,r0
- 505 01a4 0F90      		pop r0
- 506 01a6 1F90      		pop __zero_reg__
- 507 01a8 1895      		reti
- 512               	.Lscope8:
- 514               		.stabd	78,0,0
- 515               		.lcomm sec.1436,2
- 516               		.lcomm timer_2_dir,1
- 517               		.comm adc_val,8,1
- 518               		.comm adc_amt,8,1
- 519               		.comm curr_ch,1,1
- 526               	.Letext0:
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	timer2_init
+  20               	timer2_init:
+  21               	.LFB8:
+  22               	.LM1:
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25               	.LM2:
+  26 0000 8091 7000 		lds r24,112
+  27 0004 8C7F      		andi r24,lo8(-4)
+  28 0006 8093 7000 		sts 112,r24
+  29               	.LM3:
+  30 000a 8091 B600 		lds r24,182
+  31 000e 8F7E      		andi r24,lo8(-17)
+  32 0010 8093 B600 		sts 182,r24
+  33               	.LM4:
+  34 0014 8091 B600 		lds r24,182
+  35 0018 8860      		ori r24,lo8(8)
+  36 001a 8093 B600 		sts 182,r24
+  37               	.LM5:
+  38 001e 1092 B200 		sts 178,__zero_reg__
+  39               	.LM6:
+  40 0022 8091 B000 		lds r24,176
+  41 0026 8F77      		andi r24,lo8(127)
+  42 0028 8093 B000 		sts 176,r24
+  43               	.LM7:
+  44 002c 8091 B000 		lds r24,176
+  45 0030 877B      		andi r24,lo8(-73)
+  46 0032 8093 B000 		sts 176,r24
+  47               	.LM8:
+  48 0036 8091 B000 		lds r24,176
+  49 003a 8F7C      		andi r24,lo8(-49)
+  50 003c 8093 B000 		sts 176,r24
+  51               	.LM9:
+  52 0040 8091 B000 		lds r24,176
+  53 0044 8560      		ori r24,lo8(5)
+  54 0046 8093 B000 		sts 176,r24
+  55               	.LM10:
+  56 004a 8091 B000 		lds r24,176
+  57 004e 8D7F      		andi r24,lo8(-3)
+  58 0050 8093 B000 		sts 176,r24
+  59               	.L2:
+  60               	.LM11:
+  61 0054 8091 B600 		lds r24,182
+  62 0058 82FD      		sbrc r24,2
+  63 005a 00C0      		rjmp .L2
+  64               	.L7:
+  65               	.LM12:
+  66 005c 8091 B600 		lds r24,182
+  67 0060 81FD      		sbrc r24,1
+  68 0062 00C0      		rjmp .L7
+  69               	.L6:
+  70               	.LM13:
+  71 0064 8091 B600 		lds r24,182
+  72 0068 80FD      		sbrc r24,0
+  73 006a 00C0      		rjmp .L6
+  74               	.LM14:
+  75 006c 8091 7000 		lds r24,112
+  76 0070 8160      		ori r24,lo8(1)
+  77 0072 8093 7000 		sts 112,r24
+  78               	/* epilogue start */
+  79               	.LM15:
+  80 0076 0895      		ret
+  81               	.LFE8:
+  83               	.global	timer1_init
+  85               	timer1_init:
+  86               	.LFB10:
+  87               	.LM16:
+  88               	/* prologue: function */
+  89               	/* frame size = 0 */
+  90               	.LM17:
+  91 0078 E0E8      		ldi r30,lo8(128)
+  92 007a F0E0      		ldi r31,hi8(128)
+  93 007c 8081      		ld r24,Z
+  94 007e 8F70      		andi r24,lo8(15)
+  95 0080 8083      		st Z,r24
+  96               	.LM18:
+  97 0082 8081      		ld r24,Z
+  98 0084 8C7F      		andi r24,lo8(-4)
+  99 0086 8083      		st Z,r24
+ 100               	.LM19:
+ 101 0088 E1E8      		ldi r30,lo8(129)
+ 102 008a F0E0      		ldi r31,hi8(129)
+ 103 008c 8081      		ld r24,Z
+ 104 008e 8062      		ori r24,lo8(32)
+ 105 0090 8083      		st Z,r24
+ 106               	.LM20:
+ 107 0092 8081      		ld r24,Z
+ 108 0094 8061      		ori r24,lo8(16)
+ 109 0096 8083      		st Z,r24
+ 110               	.LM21:
+ 111 0098 8081      		ld r24,Z
+ 112 009a 877F      		andi r24,lo8(-9)
+ 113 009c 8083      		st Z,r24
+ 114               	.LM22:
+ 115 009e 8081      		ld r24,Z
+ 116 00a0 8068      		ori r24,lo8(-128)
+ 117 00a2 8083      		st Z,r24
+ 118               	.LBB7:
+ 119               	.LM23:
+ 120 00a4 2FB7      		in r18,__SREG__
+ 121               	.LVL0:
+ 122               	.LBB8:
+ 123               	.LBB9:
+ 124               	.LM24:
+ 125               	/* #APP */
+ 126               	 ;  50 "c:/winavr-20080610/lib/gcc/../../avr/include/util/atomic.h" 1
+ 127 00a6 F894      		cli
+ 128               	 ;  0 "" 2
+ 129               	/* #NOAPP */
+ 130               	.LBE9:
+ 131               	.LBE8:
+ 132               	.LM25:
+ 133 00a8 8FEF      		ldi r24,lo8(-1)
+ 134 00aa 9FEF      		ldi r25,hi8(-1)
+ 135 00ac 9093 8700 		sts (134)+1,r25
+ 136 00b0 8093 8600 		sts 134,r24
+ 137               	.LBB10:
+ 138               	.LBB11:
+ 139               	.LM26:
+ 140 00b4 2FBF      		out __SREG__,r18
+ 141               	.LM27:
+ 142               	.LBE11:
+ 143               	.LBE10:
+ 144               	.LBE7:
+ 145               	.LM28:
+ 146 00b6 E1E8      		ldi r30,lo8(129)
+ 147 00b8 F0E0      		ldi r31,hi8(129)
+ 148 00ba 8081      		ld r24,Z
+ 149 00bc 897F      		andi r24,lo8(-7)
+ 150 00be 8083      		st Z,r24
+ 151               	.LM29:
+ 152 00c0 8081      		ld r24,Z
+ 153 00c2 8160      		ori r24,lo8(1)
+ 154 00c4 8083      		st Z,r24
+ 155               	.LM30:
+ 156 00c6 EFE6      		ldi r30,lo8(111)
+ 157 00c8 F0E0      		ldi r31,hi8(111)
+ 158 00ca 8081      		ld r24,Z
+ 159 00cc 887D      		andi r24,lo8(-40)
+ 160 00ce 8083      		st Z,r24
+ 161               	.LM31:
+ 162 00d0 84B1      		in r24,36-32
+ 163 00d2 8C60      		ori r24,lo8(12)
+ 164 00d4 84B9      		out 36-32,r24
+ 165               	/* epilogue start */
+ 166               	.LM32:
+ 167 00d6 0895      		ret
+ 168               	.LFE10:
+ 170               	.global	__vector_9
+ 172               	__vector_9:
+ 173               	.LFB11:
+ 174               	.LM33:
+ 175 00d8 1F92      		push __zero_reg__
+ 176 00da 0F92      		push r0
+ 177 00dc 0FB6      		in r0,__SREG__
+ 178 00de 0F92      		push r0
+ 179 00e0 1124      		clr __zero_reg__
+ 180 00e2 8F93      		push r24
+ 181               	/* prologue: Signal */
+ 182               	/* frame size = 0 */
+ 183               	.LM34:
+ 184 00e4 81E0      		ldi r24,lo8(1)
+ 185 00e6 8093 0000 		sts timer_2_dir,r24
+ 186               	/* epilogue start */
+ 187               	.LM35:
+ 188 00ea 8F91      		pop r24
+ 189 00ec 0F90      		pop r0
+ 190 00ee 0FBE      		out __SREG__,r0
+ 191 00f0 0F90      		pop r0
+ 192 00f2 1F90      		pop __zero_reg__
+ 193 00f4 1895      		reti
+ 194               	.LFE11:
+ 196               	.global	__vector_6
+ 198               	__vector_6:
+ 199               	.LFB12:
+ 200               	.LM36:
+ 201 00f6 1F92      		push __zero_reg__
+ 202 00f8 0F92      		push r0
+ 203 00fa 0FB6      		in r0,__SREG__
+ 204 00fc 0F92      		push r0
+ 205 00fe 1124      		clr __zero_reg__
+ 206               	/* prologue: Signal */
+ 207               	/* frame size = 0 */
+ 208               	.LM37:
+ 209 0100 1092 0000 		sts timer_2_dir,__zero_reg__
+ 210               	/* epilogue start */
+ 211               	.LM38:
+ 212 0104 0F90      		pop r0
+ 213 0106 0FBE      		out __SREG__,r0
+ 214 0108 0F90      		pop r0
+ 215 010a 1F90      		pop __zero_reg__
+ 216 010c 1895      		reti
+ 217               	.LFE12:
+ 219               	.global	__vector_7
+ 221               	__vector_7:
+ 222               	.LFB13:
+ 223               	.LM39:
+ 224 010e 1F92      		push __zero_reg__
+ 225 0110 0F92      		push r0
+ 226 0112 0FB6      		in r0,__SREG__
+ 227 0114 0F92      		push r0
+ 228 0116 1124      		clr __zero_reg__
+ 229 0118 8F93      		push r24
+ 230               	/* prologue: Signal */
+ 231               	/* frame size = 0 */
+ 232               	.LM40:
+ 233 011a 8091 0000 		lds r24,timer_2_dir
+ 234 011e 8823      		tst r24
+ 235 0120 01F4      		brne .L18
+ 236               	.LM41:
+ 237 0122 2A98      		cbi 37-32,2
+ 238 0124 00C0      		rjmp .L20
+ 239               	.L18:
+ 240               	.LM42:
+ 241 0126 2A9A      		sbi 37-32,2
+ 242               	.L20:
+ 243               	/* epilogue start */
+ 244               	.LM43:
+ 245 0128 8F91      		pop r24
+ 246 012a 0F90      		pop r0
+ 247 012c 0FBE      		out __SREG__,r0
+ 248 012e 0F90      		pop r0
+ 249 0130 1F90      		pop __zero_reg__
+ 250 0132 1895      		reti
+ 251               	.LFE13:
+ 253               	.global	__vector_8
+ 255               	__vector_8:
+ 256               	.LFB14:
+ 257               	.LM44:
+ 258 0134 1F92      		push __zero_reg__
+ 259 0136 0F92      		push r0
+ 260 0138 0FB6      		in r0,__SREG__
+ 261 013a 0F92      		push r0
+ 262 013c 1124      		clr __zero_reg__
+ 263 013e 8F93      		push r24
+ 264               	/* prologue: Signal */
+ 265               	/* frame size = 0 */
+ 266               	.LM45:
+ 267 0140 8091 0000 		lds r24,timer_2_dir
+ 268 0144 8823      		tst r24
+ 269 0146 01F4      		brne .L22
+ 270               	.LM46:
+ 271 0148 2B98      		cbi 37-32,3
+ 272 014a 00C0      		rjmp .L24
+ 273               	.L22:
+ 274               	.LM47:
+ 275 014c 2B9A      		sbi 37-32,3
+ 276               	.L24:
+ 277               	/* epilogue start */
+ 278               	.LM48:
+ 279 014e 8F91      		pop r24
+ 280 0150 0F90      		pop r0
+ 281 0152 0FBE      		out __SREG__,r0
+ 282 0154 0F90      		pop r0
+ 283 0156 1F90      		pop __zero_reg__
+ 284 0158 1895      		reti
+ 285               	.LFE14:
+ 287               	.global	timers_init
+ 289               	timers_init:
+ 290               	.LFB15:
+ 291               	.LM49:
+ 292               	/* prologue: function */
+ 293               	/* frame size = 0 */
+ 294               	.LM50:
+ 295 015a 0E94 0000 		call timer1_init
+ 296               	.LM51:
+ 297 015e 0E94 0000 		call timer2_init
+ 298               	/* epilogue start */
+ 299               	.LM52:
+ 300 0162 0895      		ret
+ 301               	.LFE15:
+ 303               		.data
+ 304               	.LC0:
+ 305 0000 0954 3A20 		.string	"\tT: %ds\n"
+ 305      2564 730A 
+ 305      00
+ 306               		.text
+ 307               	.global	__vector_5
+ 309               	__vector_5:
+ 310               	.LFB9:
+ 311               	.LM53:
+ 312 0164 1F92      		push __zero_reg__
+ 313 0166 0F92      		push r0
+ 314 0168 0FB6      		in r0,__SREG__
+ 315 016a 0F92      		push r0
+ 316 016c 1124      		clr __zero_reg__
+ 317 016e 2F93      		push r18
+ 318 0170 3F93      		push r19
+ 319 0172 4F93      		push r20
+ 320 0174 5F93      		push r21
+ 321 0176 6F93      		push r22
+ 322 0178 7F93      		push r23
+ 323 017a 8F93      		push r24
+ 324 017c 9F93      		push r25
+ 325 017e AF93      		push r26
+ 326 0180 BF93      		push r27
+ 327 0182 EF93      		push r30
+ 328 0184 FF93      		push r31
+ 329               	/* prologue: Signal */
+ 330               	/* frame size = 0 */
+ 331               	.LM54:
+ 332 0186 8091 0000 		lds r24,sec.1437
+ 333 018a 9091 0000 		lds r25,(sec.1437)+1
+ 334 018e 0196      		adiw r24,1
+ 335 0190 9093 0000 		sts (sec.1437)+1,r25
+ 336 0194 8093 0000 		sts sec.1437,r24
+ 337               	.LM55:
+ 338 0198 9F93      		push r25
+ 339 019a 8F93      		push r24
+ 340 019c 80E0      		ldi r24,lo8(.LC0)
+ 341 019e 90E0      		ldi r25,hi8(.LC0)
+ 342 01a0 9F93      		push r25
+ 343 01a2 8F93      		push r24
+ 344 01a4 0E94 0000 		call printf
+ 345 01a8 0F90      		pop __tmp_reg__
+ 346 01aa 0F90      		pop __tmp_reg__
+ 347 01ac 0F90      		pop __tmp_reg__
+ 348 01ae 0F90      		pop __tmp_reg__
+ 349               	/* epilogue start */
+ 350               	.LM56:
+ 351 01b0 FF91      		pop r31
+ 352 01b2 EF91      		pop r30
+ 353 01b4 BF91      		pop r27
+ 354 01b6 AF91      		pop r26
+ 355 01b8 9F91      		pop r25
+ 356 01ba 8F91      		pop r24
+ 357 01bc 7F91      		pop r23
+ 358 01be 6F91      		pop r22
+ 359 01c0 5F91      		pop r21
+ 360 01c2 4F91      		pop r20
+ 361 01c4 3F91      		pop r19
+ 362 01c6 2F91      		pop r18
+ 363 01c8 0F90      		pop r0
+ 364 01ca 0FBE      		out __SREG__,r0
+ 365 01cc 0F90      		pop r0
+ 366 01ce 1F90      		pop __zero_reg__
+ 367 01d0 1895      		reti
+ 368               	.LFE9:
+ 370               		.lcomm sec.1437,2
+ 371               		.lcomm timer_2_dir,1
+ 372               		.comm adc_val,8,1
+ 373               		.comm adc_offset,8,1
+ 374               		.comm adc_amt,8,1
+ 375               		.comm curr_ch,1,1
+ 456               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 timers.c
-     /tmp/ccjbnZ7H.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccjbnZ7H.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccjbnZ7H.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccjbnZ7H.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/ccjbnZ7H.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/ccjbnZ7H.s:88     .text:00000000 timer2_init
-     /tmp/ccjbnZ7H.s:172    .text:00000078 timer1_init
-     /tmp/ccjbnZ7H.s:287    .text:000000d8 __vector_9
-     /tmp/ccjbnZ7H.s:515    .bss:00000002 timer_2_dir
-     /tmp/ccjbnZ7H.s:320    .text:000000f6 __vector_6
-     /tmp/ccjbnZ7H.s:350    .text:0000010e __vector_7
-     /tmp/ccjbnZ7H.s:393    .text:00000134 __vector_8
-     /tmp/ccjbnZ7H.s:436    .text:0000015a timers_init
-     /tmp/ccjbnZ7H.s:464    .text:00000164 __vector_5
-                             .bss:00000000 sec.1436
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:20     .text:00000000 timer2_init
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:85     .text:00000078 timer1_init
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:172    .text:000000d8 __vector_9
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:370    .bss:00000002 timer_2_dir
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:198    .text:000000f6 __vector_6
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:221    .text:0000010e __vector_7
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:255    .text:00000134 __vector_8
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:289    .text:0000015a timers_init
+C:\Users\Unknown\AppData\Local\Temp/ccDjC7W2.s:309    .text:00000164 __vector_5
+                             .bss:00000000 sec.1437
                             *COM*:00000008 adc_val
+                            *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt
                             *COM*:00000001 curr_ch
 

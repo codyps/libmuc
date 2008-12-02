@@ -32,6 +32,11 @@ void clock_init(void) {
 	//OSCAL set by the bootloader.
 }
 
+void joy_init(void) {
+	DDRB&=(uint8_t)~((1<<4)|(1<<6)|(1<<7));
+	DDRE&=(uint8_t)~((1<<2)|(1<<3));
+	
+}
 
 void  print_bin(uint8_t inp) {
 	for(int8_t j=7; j>=0; --j) {
@@ -41,13 +46,14 @@ void  print_bin(uint8_t inp) {
 
 void init(void) {
 	cli();
-	PCMSK1&=~(1<<PCINT15);
+	PCMSK1&=(uint8_t)~(1<<PCINT15);
 	power_lcd_disable();
 	power_spi_disable();
 	clock_init();
 	usart_init();
-	timers_init();
-	adc_init();	MOTOR_CTL_DDR|=(uint8_t)((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
+	joy_init();
+	adc_init();
+	timers_init();	MOTOR_CTL_DDR|=(uint8_t)((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
 	motor_mode_L(MOTOR_L_FWD);
 	motor_mode_R(MOTOR_R_FWD);
 	sei(); //We use interupts, so enable them.
@@ -71,7 +77,7 @@ int main(void) {
 				print_adc_values();
 		
 				uint16_t adc_val_mixed [2] = {	adc_val[0] + adc_val[1] * LF_ADC_MIX_WIEGHT,	\
-								adc_val[3] + adc_val[2] * LF_ADC_MIX_WIEGHT	};
+												adc_val[3] + adc_val[2] * LF_ADC_MIX_WIEGHT	};
 
 				if (adc_val_mixed[0]>adc_val_mixed[1])
 					lf_turn_left_inc(LF_INC);
@@ -91,6 +97,8 @@ int main(void) {
 				printf(PSTR("       76543210\n"));
 				printf(PSTR("PORTB: "));print_bin(PORTB);printf("\n");
 				printf(PSTR("PORTD: "));print_bin(PORTD);printf("\n");
+				printf(PSTR("PORTE: "));print_bin(PORTE);printf("\n");
+				
 			}
 		}
 		else {

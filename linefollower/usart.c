@@ -9,6 +9,9 @@
 
 #define RX_BUFSIZE 80
 
+static int usart0_putchar(char c, FILE *stream);
+int usart0_getchar(FILE *stream);
+
 static FILE usart0_stdio = FDEV_SETUP_STREAM(usart0_putchar, usart0_getchar ,_FDEV_SETUP_RW);
 
 int usart0_getchar(FILE *stream) {

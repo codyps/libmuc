@@ -10,7 +10,6 @@ USART
 #define BAUD 19200
 #include <util/setbaud.h>
 void usart_init(void);
-static int usart0_putchar(char c, FILE *stream);
-int usart0_getchar(FILE *stream);
+
 
 #endif
