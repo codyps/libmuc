@@ -22,7 +22,11 @@ uint16_t adc_amt [channel_amt];
 uint8_t curr_ch; //=0 //Current 'Virtual' Channel
 
 // Functions:
-
+uint16_t adc_get_val(uint8_t ch);
+void adc_calibrate_update(void);
+void adc_calibrate_store(void);
+void adc_calibrate_clear(void);
+void print_adc_calibration(void);
 void print_adc_values(void);
 void adc_init(void);
 void adc_set_channel(uint8_t);

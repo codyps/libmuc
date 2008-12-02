@@ -367,29 +367,29 @@
  382 000c 0000      		.word	0
  383               		.section	.progmem.data,"a",@progbits
  386               	__c.1545:
- 387 0000 7573 6172 		.string	"usart: init usart0... [done]\n"
- 387      743A 2069 
- 387      6E69 7420 
- 387      7573 6172 
- 387      7430 2E2E 
+ 387 0000 0A75 7361 		.string	"\nusart: init usart0\t[done]"
+ 387      7274 3A20 
+ 387      696E 6974 
+ 387      2075 7361 
+ 387      7274 3009 
  388               		.lcomm rxp.1487,2
  389               		.lcomm b.1486,127
  430               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 usart.c
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:19     .text:00000000 usart0_putchar
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:53     .text:00000022 usart0_getchar
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:19     .text:00000000 usart0_putchar
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:53     .text:00000022 usart0_getchar
                              .bss:00000000 rxp.1487
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:388    .bss:00000002 b.1486
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:325    .text:000001b6 usart_init
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:376    .data:00000000 usart0_stdio
-C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:386    .progmem.data:00000000 __c.1545
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:388    .bss:00000002 b.1486
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:325    .text:000001b6 usart_init
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:376    .data:00000000 usart0_stdio
+C:\Users\Unknown\AppData\Local\Temp/cc3cS88I.s:386    .progmem.data:00000000 __c.1545
 
 UNDEFINED SYMBOLS
 __do_copy_data

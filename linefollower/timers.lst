@@ -124,8 +124,8 @@
  140               	/* prologue: function */
  141               	/* frame size = 0 */
  142               	.LM18:
- 143 0082 80E0      		ldi r24,lo8(__c.1547)
- 144 0084 90E0      		ldi r25,hi8(__c.1547)
+ 143 0082 80E0      		ldi r24,lo8(__c.1557)
+ 144 0084 90E0      		ldi r25,hi8(__c.1557)
  145 0086 9F93      		push r25
  146 0088 8F93      		push r24
  147 008a 0E94 0000 		call printf_P
@@ -205,8 +205,8 @@
  221 00e8 8C60      		ori r24,lo8(12)
  222 00ea 84B9      		out 36-32,r24
  223               	.LM34:
- 224 00ec 80E0      		ldi r24,lo8(__c.1554)
- 225 00ee 90E0      		ldi r25,hi8(__c.1554)
+ 224 00ec 80E0      		ldi r24,lo8(__c.1564)
+ 225 00ee 90E0      		ldi r25,hi8(__c.1564)
  226 00f0 9F93      		push r25
  227 00f2 8F93      		push r24
  228 00f4 0E94 0000 		call printf_P
@@ -226,8 +226,8 @@
  244               	/* prologue: function */
  245               	/* frame size = 0 */
  246               	.LM37:
- 247 0102 80E0      		ldi r24,lo8(__c.1494)
- 248 0104 90E0      		ldi r25,hi8(__c.1494)
+ 247 0102 80E0      		ldi r24,lo8(__c.1504)
+ 248 0104 90E0      		ldi r25,hi8(__c.1504)
  249 0106 9F93      		push r25
  250 0108 8F93      		push r24
  251 010a 0E94 0000 		call printf_P
@@ -287,8 +287,8 @@
  305 0182 8160      		ori r24,lo8(1)
  306 0184 8093 7000 		sts 112,r24
  307               	.LM51:
- 308 0188 80E0      		ldi r24,lo8(__c.1502)
- 309 018a 90E0      		ldi r25,hi8(__c.1502)
+ 308 0188 80E0      		ldi r24,lo8(__c.1512)
+ 309 018a 90E0      		ldi r25,hi8(__c.1512)
  310 018c 9F93      		push r25
  311 018e 8F93      		push r24
  312 0190 0E94 0000 		call printf_P
@@ -305,8 +305,8 @@
  325               	/* prologue: function */
  326               	/* frame size = 0 */
  327               	.LM54:
- 328 019a 80E0      		ldi r24,lo8(__c.1623)
- 329 019c 90E0      		ldi r25,hi8(__c.1623)
+ 328 019a 80E0      		ldi r24,lo8(__c.1633)
+ 329 019c 90E0      		ldi r25,hi8(__c.1633)
  330 019e 9F93      		push r25
  331 01a0 8F93      		push r24
  332 01a2 0E94 0000 		call printf_P
@@ -315,8 +315,8 @@
  335               	.LM56:
  336 01aa 0E94 0000 		call timer2_init
  337               	.LM57:
- 338 01ae 80E0      		ldi r24,lo8(__c.1625)
- 339 01b0 90E0      		ldi r25,hi8(__c.1625)
+ 338 01ae 80E0      		ldi r24,lo8(__c.1635)
+ 339 01b0 90E0      		ldi r25,hi8(__c.1635)
  340 01b2 9F93      		push r25
  341 01b4 8F93      		push r24
  342 01b6 0E94 0000 		call printf_P
@@ -330,9 +330,9 @@
  350               	.LFE15:
  352               		.data
  353               	.LC0:
- 354 0000 0954 3A20 		.string	"\tT: %ds\n"
- 354      2564 730A 
- 354      00
+ 354 0000 0A09 543A 		.string	"\n\tT: %ds\n"
+ 354      2025 6473 
+ 354      0A00 
  355               		.text
  356               	.global	__vector_5
  358               	__vector_5:
@@ -358,11 +358,11 @@
  378               	/* prologue: Signal */
  379               	/* frame size = 0 */
  380               	.LM60:
- 381 01e6 8091 0000 		lds r24,sec.1541
- 382 01ea 9091 0000 		lds r25,(sec.1541)+1
+ 381 01e6 8091 0000 		lds r24,sec.1551
+ 382 01ea 9091 0000 		lds r25,(sec.1551)+1
  383 01ee 0196      		adiw r24,1
- 384 01f0 9093 0000 		sts (sec.1541)+1,r25
- 385 01f4 8093 0000 		sts sec.1541,r24
+ 384 01f0 9093 0000 		sts (sec.1551)+1,r25
+ 385 01f4 8093 0000 		sts sec.1551,r24
  386               	.LM61:
  387 01f8 9F93      		push r25
  388 01fa 8F93      		push r24
@@ -396,38 +396,37 @@
  416 0230 1895      		reti
  417               	.LFE9:
  419               		.section	.progmem.data,"a",@progbits
- 422               	__c.1625:
- 423 0000 7469 6D65 		.string	"timers: init     \t[done]"
- 423      7273 3A20 
- 423      696E 6974 
- 423      2020 2020 
- 423      2009 5B64 
- 426               	__c.1623:
- 427 0019 7469 6D65 		.string	"timers: init..."
- 427      7273 3A20 
- 427      696E 6974 
- 427      2E2E 2E00 
- 430               	__c.1554:
- 431 0029 095B 646F 		.string	"\t[done]\n"
- 431      6E65 5D0A 
- 431      00
- 434               	__c.1547:
- 435 0032 7469 6D65 		.string	"timer: timer1 init..."
- 435      723A 2074 
+ 422               	__c.1635:
+ 423 0000 0A74 696D 		.string	"\ntimers: init:\t[done]"
+ 423      6572 733A 
+ 423      2069 6E69 
+ 423      743A 095B 
+ 423      646F 6E65 
+ 426               	__c.1633:
+ 427 0016 0A74 696D 		.string	"\ntimers: init: start."
+ 427      6572 733A 
+ 427      2069 6E69 
+ 427      743A 2073 
+ 427      7461 7274 
+ 430               	__c.1564:
+ 431 002c 095B 646F 		.string	"\t[done]"
+ 431      6E65 5D00 
+ 434               	__c.1557:
+ 435 0034 0A74 696D 		.string	"\ntimers: init: timer1"
+ 435      6572 733A 
+ 435      2069 6E69 
+ 435      743A 2074 
  435      696D 6572 
- 435      3120 696E 
- 435      6974 2E2E 
- 436               		.lcomm sec.1541,2
- 439               	__c.1502:
- 440 0048 095B 646F 		.string	"\t[done]\n"
- 440      6E65 5D0A 
- 440      00
- 443               	__c.1494:
- 444 0051 7469 6D65 		.string	"timer: timer2 init..."
- 444      723A 2074 
+ 436               		.lcomm sec.1551,2
+ 439               	__c.1512:
+ 440 004a 095B 646F 		.string	"\t[done]"
+ 440      6E65 5D00 
+ 443               	__c.1504:
+ 444 0052 0A74 696D 		.string	"\ntimers: init: timer2"
+ 444      6572 733A 
+ 444      2069 6E69 
+ 444      743A 2074 
  444      696D 6572 
- 444      3220 696E 
- 444      6974 2E2E 
  445               		.lcomm timer_2_dir,1
  446               		.comm adc_val,8,1
  447               		.comm adc_offset,8,1
@@ -436,28 +435,28 @@
  530               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 timers.c
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:20     .text:00000000 __vector_9
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:436    .bss:00000002 timer_2_dir
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:46     .text:0000001e __vector_6
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:69     .text:00000036 __vector_7
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:103    .text:0000005c __vector_8
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:137    .text:00000082 timer1_init
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:434    .progmem.data:00000032 __c.1547
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:430    .progmem.data:00000029 __c.1554
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:241    .text:00000102 timer2_init
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:443    .progmem.data:00000051 __c.1494
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:439    .progmem.data:00000048 __c.1502
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:322    .text:0000019a timers_init
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:426    .progmem.data:00000019 __c.1623
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:422    .progmem.data:00000000 __c.1625
-C:\Users\Unknown\AppData\Local\Temp/cc3C7vPl.s:358    .text:000001c4 __vector_5
-                             .bss:00000000 sec.1541
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:20     .text:00000000 __vector_9
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:436    .bss:00000002 timer_2_dir
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:46     .text:0000001e __vector_6
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:69     .text:00000036 __vector_7
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:103    .text:0000005c __vector_8
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:137    .text:00000082 timer1_init
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:434    .progmem.data:00000034 __c.1557
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:430    .progmem.data:0000002c __c.1564
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:241    .text:00000102 timer2_init
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:443    .progmem.data:00000052 __c.1504
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:439    .progmem.data:0000004a __c.1512
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:322    .text:0000019a timers_init
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:426    .progmem.data:00000016 __c.1633
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:422    .progmem.data:00000000 __c.1635
+C:\Users\Unknown\AppData\Local\Temp/ccJsw8bV.s:358    .text:000001c4 __vector_5
+                             .bss:00000000 sec.1551
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt

@@ -134,6 +134,6 @@ void usart_init(void) {
 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
 	
 	stdout=stdin=&usart0_stdio;
-	printf_P(PSTR("usart: init usart0... [done]\n"));
+	printf_P(PSTR("\nusart: init usart0\t[done]"));
 }
 

@@ -54,31 +54,37 @@ void  print_bin(uint8_t inp) {
 	}
 }
 
-ISR(PCINT2_vector) {
-	//PE2
-	printf_P(PSTR("PE2 flop\n"));
+ISR(PCINT0_vect) {
+	//PE2,3
+	if (PINE&((1<<2)|(1<<3))) {
+		if (PINE&(1<<2))
+			printf_P(PSTR("\n[debug] PE2 Pressed"));
+		if (PINE&(1<<3))
+			printf_P(PSTR("\n[debug] PE3 Pressed"));
+	}
+	else
+		printf_P(PSTR("\n[debug] PE? Released"));
 }
 
+ISR(PCINT1_vect) {
+	//PB7,4,6
 
-ISR(PCINT3_vector) {
-	//PE3
-	printf_P(PSTR("PE3 flop\n"));
-}
-
-ISR(PCINT12_vector) {
-	//PB4
-	printf_P(PSTR("PB4 flop\n"));
-}
-
-
-ISR(PCINT14_vector) {
-	//PB6
-	printf_P(PSTR("PB6 flop\n"));
-}
-
-ISR(PCINT15_vector) {
-	//PB7
-	printf_P(PSTR("PB7 flop\n"));
+	if (PINB&((1<<7)|(1<<6)|(1<<4))) {
+		if (PINB&(1<<7)) {
+			printf_P(PSTR("\n[debug] PB7 Pressed"));
+			printf_P(PSTR("\n[debug] DOWN "));
+			printf_P(PSTR("PRESSED"));
+			adc_calibrate_update();
+			print_adc_calibration();
+			print_adc_values();
+		}
+		if (PINB&(1<<4))
+			printf_P(PSTR("\n[debug] PB4 Pressed"));
+		if (PINB&(1<<6))
+			printf_P(PSTR("\n[debug] PB6 Pressed"));
+	}
+	else
+		printf_P(PSTR("\n[debug] PB? Released"));
 }
 
 void pcint_init(void) {
@@ -87,10 +93,7 @@ void pcint_init(void) {
 	//EIMSK&=(uint8_t)~(1<<INT0);
 	EIMSK=(1<<PCIE1)|(1<<PCIE0);
 	PCMSK1=(1<<PCINT15)|(1<<PCINT14)|(1<<PCINT12);
-	PCMSK0=(1<<PCINT3)|(1<<PCINT2);
-	
-	
-	
+	PCMSK0=(1<<PCINT3)|(1<<PCINT2);	
 }
 
 void init(void) {
@@ -106,7 +109,7 @@ void init(void) {
 	motor_mode_L(MOTOR_L_FWD);
 	motor_mode_R(MOTOR_R_FWD);
 	sei(); //We use interupts, so enable them.
-	printf_P(PSTR(": Init: Done\n\n"));
+	printf_P(PSTR("\n: Init: Done\n\n"));
 }
 
 int main(void) {
@@ -116,17 +119,17 @@ int main(void) {
 		
 	char input;
 	for(;;) {
-		printf_P(PSTR("What ([T]est/[F]ollow): "));
+		printf_P(PSTR("\nWhat ([T]est/[F]ollow): "));
 		scanf("%c",&input);
 		if (input=='F') {
 			for (;;) {
 				uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
-				printf("ML: %X\n",c_speed[0]);
-				printf("MR: %X\n",c_speed[1]);
+				printf("\nML: %X",c_speed[0]);
+				printf("\nMR: %X",c_speed[1]);
 				print_adc_values();
 		
-				uint16_t adc_val_mixed [2] = {	adc_val[0] + adc_val[1] * LF_ADC_MIX_WIEGHT,	\
-												adc_val[3] + adc_val[2] * LF_ADC_MIX_WIEGHT	};
+				uint16_t adc_val_mixed [2] = {	adc_get_val(0) + adc_get_val(1) * LF_ADC_MIX_WIEGHT,	\
+												adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
 
 				if (adc_val_mixed[0]>adc_val_mixed[1])
 					lf_turn_left_inc(LF_INC);
@@ -143,21 +146,21 @@ int main(void) {
 			motor_mode_R(MOTOR_R_FWD);	
 			for(;;) {
 			
-				printf_P(PSTR("       76543210\n"));
-				printf_P(PSTR("PORTB: "));print_bin(PORTB);printf("\n");
-				printf_P(PSTR("PORTD: "));print_bin(PORTD);printf("\n");
-				printf_P(PSTR("PINB : "));print_bin(PINB);printf("\n");
-				printf_P(PSTR("PINE : "));print_bin(PINE);printf("\n");
+				printf_P(PSTR("\n       76543210"));
+				printf_P(PSTR("\nPORTB: "));print_bin(PORTB);
+				printf_P(PSTR("\nPORTD: "));print_bin(PORTD);
+				printf_P(PSTR("\nPINB : "));print_bin(PINB);
+				printf_P(PSTR("\nPINE : "));print_bin(PINE);
 				_delay_ms(700);
 			}
 		}
 		else {
-			printf_P(PSTR("\nInvalid Mode.\n"));
+			printf_P(PSTR("\nInvalid Mode."));
 		}
 	}	
 } 
 		
 ISR(BADISR_vect) {
-	printf_P(PSTR("\n\nInvalid Interupt Enabled\n\n"));
+	printf_P(PSTR("\n\nInvalid Interupt Enabled\n"));
 }
 

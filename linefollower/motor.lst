@@ -607,23 +607,23 @@
  712               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:20     .text:00000000 get_motor_L
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:61     .text:00000010 get_motor_R
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:102    .text:00000020 set_motor_L
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:141    .text:0000002e set_motor_R
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:180    .text:0000003c lf_turn_left_inc
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:288    .text:00000066 lf_turn_right_inc
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:396    .text:00000090 lf_full_speed
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:476    .text:000000b2 motor_mode_R
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:20     .text:00000000 get_motor_L
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:61     .text:00000010 get_motor_R
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:102    .text:00000020 set_motor_L
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:141    .text:0000002e set_motor_R
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:180    .text:0000003c lf_turn_left_inc
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:288    .text:00000066 lf_turn_right_inc
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:396    .text:00000090 lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:476    .text:000000b2 motor_mode_R
                              .bss:00000000 c_mode.1481
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:552    .text:00000104 motor_mode_L
-C:\Users\Unknown\AppData\Local\Temp/ccZCT8nc.s:622    .bss:00000001 c_mode.1461
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:552    .text:00000104 motor_mode_L
+C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:622    .bss:00000001 c_mode.1461
 
 UNDEFINED SYMBOLS
 __do_copy_data
