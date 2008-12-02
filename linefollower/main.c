@@ -32,6 +32,12 @@ void clock_init(void) {
 	//OSCAL set by the bootloader.
 }
 
+void  print_bin(uint8_t inp) {
+	for(int8_t j=7; j>=0; --j) {
+	   	printf("%c",((inp&(1<<j))>>j)+'0');
+	}
+}
+
 void joy_init(void) {
 	// Set pins as inputs.
 	DDRB&=(uint8_t)~((1<<4)|(1<<6)|(1<<7));
@@ -46,13 +52,16 @@ void joy_init(void) {
 	//UP	= PINB&(1<<6)
 	//IN	= PINB&(1<<4)
 	
+	// Enable Pin Change interupts. Disable INT0
+	//EIMSK|=((1<<PCIE1)|(1<<PCIE0));
+	//EIMSK&=(uint8_t)~(1<<INT0);
+	EIMSK=(1<<PCIE1)|(1<<PCIE0);
+	PCMSK1=(1<<PCINT15)|(1<<PCINT14)|(1<<PCINT12);
+	PCMSK0=(1<<PCINT3)|(1<<PCINT2);	
+	
 }
 
-void  print_bin(uint8_t inp) {
-	for(int8_t j=7; j>=0; --j) {
-	   	printf("%c",((inp&(1<<j))>>j)+'0');
-	}
-}
+
 
 ISR(PCINT0_vect) {
 	//PE2,3
@@ -94,12 +103,7 @@ ISR(PCINT1_vect) {
 }
 
 void pcint_init(void) {
-	// Enable Pin Change interupts. Disable INT0
-	//EIMSK|=((1<<PCIE1)|(1<<PCIE0));
-	//EIMSK&=(uint8_t)~(1<<INT0);
-	EIMSK=(1<<PCIE1)|(1<<PCIE0);
-	PCMSK1=(1<<PCINT15)|(1<<PCINT14)|(1<<PCINT12);
-	PCMSK0=(1<<PCINT3)|(1<<PCINT2);	
+	
 }
 
 void init(void) {
@@ -107,15 +111,14 @@ void init(void) {
 	power_lcd_disable();
 	power_spi_disable();
 	clock_init();
-	pcint_init();
-	usart_init();
 	joy_init();
+	usart_init();
 	adc_init();
 	timers_init();	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
 	motor_mode_L(MOTOR_L_FWD);
 	motor_mode_R(MOTOR_R_FWD);
-	sei(); //We use interupts, so enable them.
-	printf_P(PSTR("\n: Init: Done\n\n"));
+	sei();
+	printf_P(PSTR("\nInit: Done\n\n"));
 }
 
 int main(void) {
@@ -145,6 +148,7 @@ int main(void) {
 					lf_full_speed();
 
 				_delay_ms(700);
+				// do at every adc calc or pwm vector.
 			}
 		}
 		else if(input=='T') {
