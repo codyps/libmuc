@@ -13,7 +13,7 @@
 
 
 void timer2_init(void) {
-	printf_P(PSTR("timer: timer2 init..."));
+	printf_P(PSTR("timers: init: timer2"));
 	// External crystal : 32.768KHZ
 	/*
 	a. Disable the Timer/Counter2 interrupts by clearing OCIE2A and TOIE2.
@@ -97,7 +97,7 @@ ISR(TIMER2_OVF_vect) {
 }
 
 void timer1_init(void) { // Runs the PWMs
-	printf_P(PSTR("timer: timer1 init..."));
+	printf_P(PSTR("timers: init: timer1"));
 	// Set OC1A/B on up, clear on down
 //	TCCR1A|= (uint8_t) (1<<COM1A1)|(1<<COM1A0);
 //	TCCR1A|= (uint8_t) (1<<COM1B1)|(1<<COM1B0);
@@ -176,10 +176,10 @@ void timer0_init(void) {}
 */
 
 void timers_init(void) {
-	printf_P(PSTR("timers: init..."));
+	printf_P(PSTR("timers: init: start."));
 //	timer0_init(); // Not implimented.
 	timer1_init(); //PWM
 	timer2_init(); //RTC
-	printf_P(PSTR("timers: init     \t[done]"));
+	printf_P(PSTR("timers: init:\t[done]"));
 	
 }

@@ -33,8 +33,12 @@ void clock_init(void) {
 }
 
 void joy_init(void) {
+	// Set pins as inputs.
 	DDRB&=(uint8_t)~((1<<4)|(1<<6)|(1<<7));
 	DDRE&=(uint8_t)~((1<<2)|(1<<3));
+	// Enable pullup resistors.
+	PORTB|=((1<<4)|(1<<6)|(1<<7));
+	PORTE|=((1<<2)|(1<<3));
 	
 	//DOWN	= PINB&(1<<7)
 	//LEFT	= PINX&(1<<Z)
@@ -50,12 +54,51 @@ void  print_bin(uint8_t inp) {
 	}
 }
 
+ISR(PCINT2_vector) {
+	//PE2
+	printf_P(PSTR("PE2 flop\n"));
+}
+
+
+ISR(PCINT3_vector) {
+	//PE3
+	printf_P(PSTR("PE3 flop\n"));
+}
+
+ISR(PCINT12_vector) {
+	//PB4
+	printf_P(PSTR("PB4 flop\n"));
+}
+
+
+ISR(PCINT14_vector) {
+	//PB6
+	printf_P(PSTR("PB6 flop\n"));
+}
+
+ISR(PCINT15_vector) {
+	//PB7
+	printf_P(PSTR("PB7 flop\n"));
+}
+
+void pcint_init(void) {
+	// Enable Pin Change interupts. Disable INT0
+	//EIMSK|=((1<<PCIE1)|(1<<PCIE0));
+	//EIMSK&=(uint8_t)~(1<<INT0);
+	EIMSK=(1<<PCIE1)|(1<<PCIE0);
+	PCMSK1=(1<<PCINT15)|(1<<PCINT14)|(1<<PCINT12);
+	PCMSK0=(1<<PCINT3)|(1<<PCINT2);
+	
+	
+	
+}
+
 void init(void) {
 	cli();
-	PCMSK1&=(uint8_t)~(1<<PCINT15);
 	power_lcd_disable();
 	power_spi_disable();
 	clock_init();
+	pcint_init();
 	usart_init();
 	joy_init();
 	adc_init();
@@ -114,3 +157,7 @@ int main(void) {
 	}	
 } 
 		
+ISR(BADISR_vect) {
+	printf_P(PSTR("\n\nInvalid Interupt Enabled\n\n"));
+}
+
