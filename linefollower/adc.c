@@ -11,6 +11,7 @@ Controls and Provides access to the Analog to Digital Converter (ADC) subsystem 
 #include <stdio.h>
 #include <math.h>
 #include <util/delay_basic.h>
+#include <avr/pgmspace.h>
 
 void print_adc_values() {
 	//printf("ADC: ");
@@ -20,13 +21,13 @@ void print_adc_values() {
 }
 
 void adc_init() {
-	printf("adc: init...\n");
+	printf_P(PSTR("adc: init..."));
 
 	power_adc_enable();
 
 	//Set Voltage to AVCC with external capacitor at AREF pin
 	ADMUX|= (uint8_t)(1<<REFS0);
-	ADMUX&=~(uint8_t)(1<<REFS1);
+	ADMUX&=(uint8_t)~(1<<REFS1);
 	//ADMUX&=~(1<<ADLAR); // Default disabled
 	
 	// Enable ADC, Inturupt, Trigger mode and set prescaler
@@ -42,7 +43,7 @@ void adc_init() {
 	DIDR0 |= (uint8_t)((1<<ADC4D)|(1<<ADC5D)|(1<<ADC6D)|(1<<ADC7D));
 	
 	set_sleep_mode(SLEEP_MODE_ADC);
-	printf("adc: setup convertions...\n");
+	printf_P(PSTR("\nadc: setup convertions... "));
 	adc_set_channel(curr_ch);
 	//Start the convertions
 	ADCSRA|= (uint8_t)(1<<ADSC);
@@ -56,6 +57,7 @@ void adc_init() {
 	
 	//memcopy(adc_offsets,adc_val,sizeof(adc_val));
 	
+	printf_P(PSTR("  [done]\n"));
 }
 
 void adc_set_channel(uint8_t channel) {

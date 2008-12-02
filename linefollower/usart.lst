@@ -54,14 +54,14 @@
   64               	/* frame size = 0 */
   65 002e 7C01      		movw r14,r24
   66               	.LM8:
-  67 0030 8091 0000 		lds r24,rxp.1387
-  68 0034 9091 0000 		lds r25,(rxp.1387)+1
+  67 0030 8091 0000 		lds r24,rxp.1487
+  68 0034 9091 0000 		lds r25,(rxp.1487)+1
   69               	.LVL5:
   70 0038 892B      		or r24,r25
   71 003a 01F0      		breq .+2
   72 003c 00C0      		rjmp .L7
-  73 003e 00E0      		ldi r16,lo8(b.1386)
-  74 0040 10E0      		ldi r17,hi8(b.1386)
+  73 003e 00E0      		ldi r16,lo8(b.1486)
+  74 0040 10E0      		ldi r17,hi8(b.1486)
   75               	.LVL6:
   76               	.L33:
   77               	.LM9:
@@ -98,10 +98,10 @@
  108 0074 0E94 0000 		call usart0_putchar
  109               	.LVL7:
  110               	.LM17:
- 111 0078 80E0      		ldi r24,lo8(b.1386)
- 112 007a 90E0      		ldi r25,hi8(b.1386)
- 113 007c 9093 0000 		sts (rxp.1387)+1,r25
- 114 0080 8093 0000 		sts rxp.1387,r24
+ 111 0078 80E0      		ldi r24,lo8(b.1486)
+ 112 007a 90E0      		ldi r25,hi8(b.1486)
+ 113 007c 9093 0000 		sts (rxp.1487)+1,r25
+ 114 0080 8093 0000 		sts rxp.1487,r24
  115 0084 00C0      		rjmp .L7
  116               	.LVL8:
  117               	.L13:
@@ -119,8 +119,8 @@
  129 0096 00F0      		brlo .L16
  130               	.L15:
  131               	.LM20:
- 132 0098 F0E0      		ldi r31,hi8(b.1386+79)
- 133 009a 0030      		cpi r16,lo8(b.1386+79)
+ 132 0098 F0E0      		ldi r31,hi8(b.1486+126)
+ 133 009a 0030      		cpi r16,lo8(b.1486+126)
  134 009c 1F07      		cpc r17,r31
  135 009e 01F4      		brne .L17
  136               	.LM21:
@@ -167,8 +167,8 @@
  177 00dc 00C0      		rjmp .L32
  178               	.L18:
  179               	.LM25:
- 180 00de F0E0      		ldi r31,hi8(b.1386)
- 181 00e0 0030      		cpi r16,lo8(b.1386)
+ 180 00de F0E0      		ldi r31,hi8(b.1486)
+ 181 00e0 0030      		cpi r16,lo8(b.1486)
  182 00e2 1F07      		cpc r17,r31
  183 00e4 01F0      		breq .+2
  184 00e6 00F4      		brsh .+2
@@ -197,8 +197,8 @@
  207 010a 8DE0      		ldi r24,lo8(13)
  208 010c 0E94 0000 		call usart0_putchar
  209               	.LVL15:
- 210 0110 C0E0      		ldi r28,lo8(b.1386)
- 211 0112 D0E0      		ldi r29,hi8(b.1386)
+ 210 0110 C0E0      		ldi r28,lo8(b.1486)
+ 211 0112 D0E0      		ldi r29,hi8(b.1486)
  212 0114 00C0      		rjmp .L23
  213               	.L24:
  214               	.LM31:
@@ -232,8 +232,8 @@
  242               	.LVL18:
  243               	.L32:
  244               	.LM37:
- 245 0142 80E0      		ldi r24,hi8(b.1386)
- 246 0144 0030      		cpi r16,lo8(b.1386)
+ 245 0142 80E0      		ldi r24,hi8(b.1486)
+ 246 0144 0030      		cpi r16,lo8(b.1486)
  247 0146 1807      		cpc r17,r24
  248 0148 01F0      		breq .+2
  249 014a 00F4      		brsh .L25
@@ -257,8 +257,8 @@
  267               	.LVL21:
  268               	.L31:
  269               	.LM41:
- 270 0168 E0E0      		ldi r30,hi8(b.1386)
- 271 016a 0030      		cpi r16,lo8(b.1386)
+ 270 0168 E0E0      		ldi r30,hi8(b.1486)
+ 271 016a 0030      		cpi r16,lo8(b.1486)
  272 016c 1E07      		cpc r17,r30
  273 016e 01F0      		breq .+2
  274 0170 00F4      		brsh .+2
@@ -273,17 +273,17 @@
  283               	.LVL24:
  284               	.L7:
  285               	.LM42:
- 286 017e E091 0000 		lds r30,rxp.1387
- 287 0182 F091 0000 		lds r31,(rxp.1387)+1
+ 286 017e E091 0000 		lds r30,rxp.1487
+ 287 0182 F091 0000 		lds r31,(rxp.1487)+1
  288 0186 8191      		ld r24,Z+
  289               	.LVL25:
- 290 0188 F093 0000 		sts (rxp.1387)+1,r31
- 291 018c E093 0000 		sts rxp.1387,r30
+ 290 0188 F093 0000 		sts (rxp.1487)+1,r31
+ 291 018c E093 0000 		sts rxp.1487,r30
  292               	.LM43:
  293 0190 8A30      		cpi r24,lo8(10)
  294 0192 01F4      		brne .L27
- 295 0194 1092 0000 		sts (rxp.1387)+1,__zero_reg__
- 296 0198 1092 0000 		sts rxp.1387,__zero_reg__
+ 295 0194 1092 0000 		sts (rxp.1487)+1,__zero_reg__
+ 296 0198 1092 0000 		sts rxp.1487,__zero_reg__
  297               	.L27:
  298               	.LM44:
  299 019c 282F      		mov r18,r24
@@ -345,37 +345,54 @@
  357 01ea 8093 0000 		sts __iob,r24
  358 01ee 9093 0000 		sts (__iob+2)+1,r25
  359 01f2 8093 0000 		sts __iob+2,r24
- 360               	/* epilogue start */
- 361               	.LM53:
- 362 01f6 0895      		ret
- 363               	.LFE5:
- 365               		.data
- 368               	usart0_stdio:
- 369 0000 0000 00   		.skip 3,0
- 370 0003 03        		.byte	3
- 371 0004 0000 0000 		.skip 4,0
- 372 0008 0000      		.word	gs(usart0_putchar)
- 373 000a 0000      		.word	gs(usart0_getchar)
- 374 000c 0000      		.word	0
- 375               		.lcomm rxp.1387,2
- 376               		.lcomm b.1386,80
- 417               	.Letext0:
+ 360               	.LM53:
+ 361 01f6 80E0      		ldi r24,lo8(__c.1545)
+ 362 01f8 90E0      		ldi r25,hi8(__c.1545)
+ 363 01fa 9F93      		push r25
+ 364 01fc 8F93      		push r24
+ 365 01fe 0E94 0000 		call printf_P
+ 366 0202 0F90      		pop __tmp_reg__
+ 367 0204 0F90      		pop __tmp_reg__
+ 368               	/* epilogue start */
+ 369               	.LM54:
+ 370 0206 0895      		ret
+ 371               	.LFE5:
+ 373               		.data
+ 376               	usart0_stdio:
+ 377 0000 0000 00   		.skip 3,0
+ 378 0003 03        		.byte	3
+ 379 0004 0000 0000 		.skip 4,0
+ 380 0008 0000      		.word	gs(usart0_putchar)
+ 381 000a 0000      		.word	gs(usart0_getchar)
+ 382 000c 0000      		.word	0
+ 383               		.section	.progmem.data,"a",@progbits
+ 386               	__c.1545:
+ 387 0000 7573 6172 		.string	"usart: init usart0... [done]\n"
+ 387      743A 2069 
+ 387      6E69 7420 
+ 387      7573 6172 
+ 387      7430 2E2E 
+ 388               		.lcomm rxp.1487,2
+ 389               		.lcomm b.1486,127
+ 430               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 usart.c
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:19     .text:00000000 usart0_putchar
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:53     .text:00000022 usart0_getchar
-                             .bss:00000000 rxp.1387
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:375    .bss:00000002 b.1386
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:325    .text:000001b6 usart_init
-C:\Users\Unknown\AppData\Local\Temp/ccfj8PxT.s:368    .data:00000000 usart0_stdio
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:19     .text:00000000 usart0_putchar
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:53     .text:00000022 usart0_getchar
+                             .bss:00000000 rxp.1487
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:388    .bss:00000002 b.1486
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:325    .text:000001b6 usart_init
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:376    .data:00000000 usart0_stdio
+C:\Users\Unknown\AppData\Local\Temp/ccXDuLFv.s:386    .progmem.data:00000000 __c.1545
 
 UNDEFINED SYMBOLS
 __do_copy_data
 __do_clear_bss
 __iob
+printf_P

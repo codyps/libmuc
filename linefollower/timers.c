@@ -9,10 +9,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
-
+#include <avr/pgmspace.h>
 
 
 void timer2_init(void) {
+	printf_P(PSTR("timer: timer2 init..."));
 	// External crystal : 32.768KHZ
 	/*
 	a. Disable the Timer/Counter2 interrupts by clearing OCIE2A and TOIE2.
@@ -27,7 +28,7 @@ void timer2_init(void) {
 	TIMSK2&=(uint8_t)~((1<<OCIE2A)|(1<<TOIE2));
 	
 	// Enable asyncronous clocking.
-	ASSR&=~(uint8_t)(1<<EXCLK);
+	ASSR&=(uint8_t)~(1<<EXCLK);
 	ASSR|=(uint8_t)(1<<AS2);
 	
 	// Reset acculumator
@@ -69,7 +70,7 @@ void timer2_init(void) {
 
 	// 32768/128/256 = 1Hz
 	TCCR2A|= (1<<CS20)|(1<<CS22);
-	TCCR2A&=~(1<<CS21);
+	TCCR2A&=(uint8_t)~(1<<CS21);
 
 	// 32768/1024/256 = 1/8Hz
 	//TCCR2A|= (1<<CS21)|(1<<CS20)|(1<<CS22);
@@ -79,8 +80,9 @@ void timer2_init(void) {
 	loop_until_bit_is_clear(ASSR,TCR2UB);
 	
 	// Enable overflow interrupt, disable match.
-	TIMSK2|= (uint8_t)(1<<TOIE2);
+	TIMSK2|= (1<<TOIE2);
 	//TIMSK2&=~(1<<OCIE2A); // Disabled
+	printf_P(PSTR("\t[done]\n"));
 }
 
 
@@ -95,7 +97,7 @@ ISR(TIMER2_OVF_vect) {
 }
 
 void timer1_init(void) { // Runs the PWMs
-
+	printf_P(PSTR("timer: timer1 init..."));
 	// Set OC1A/B on up, clear on down
 //	TCCR1A|= (uint8_t) (1<<COM1A1)|(1<<COM1A0);
 //	TCCR1A|= (uint8_t) (1<<COM1B1)|(1<<COM1B0);
@@ -134,7 +136,9 @@ void timer1_init(void) { // Runs the PWMs
 	// disable the interupts (probably done by default).
 	TIMSK1&= (uint8_t)~((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
 	
-	MOTOR_PWM_DDR|= (uint8_t)(1<<M_PWMA_PIN)|(1<<M_PWMB_PIN);
+	MOTOR_PWM_DDR|= ((1<<M_PWMA_PIN)|(1<<M_PWMB_PIN));
+	
+	printf_P(PSTR("\t[done]\n"));
 }
 
 enum {DOWN, UP};
@@ -152,7 +156,7 @@ ISR(SIG_INPUT_CAPTURE1) {
 /* Timer/Counter Compare Match A */
 ISR(TIMER1_COMPA_vect) {
 	if (timer_2_dir==DOWN)	
-		MOTOR_PWM_PORT&=~(1<<M_PWMA_PIN);
+		MOTOR_PWM_PORT&=(uint8_t)~(1<<M_PWMA_PIN);
 	else
 		MOTOR_PWM_PORT|=(1<<M_PWMA_PIN);
 		
@@ -161,7 +165,7 @@ ISR(TIMER1_COMPA_vect) {
 /* Timer/Counter Compare Match B */
 ISR(TIMER1_COMPB_vect) {
 	if (timer_2_dir==DOWN)	
-		MOTOR_PWM_PORT&=~(1<<M_PWMB_PIN);
+		MOTOR_PWM_PORT&=(uint8_t)~(1<<M_PWMB_PIN);
 	else
 		MOTOR_PWM_PORT|=(1<<M_PWMB_PIN);
 }
@@ -172,7 +176,10 @@ void timer0_init(void) {}
 */
 
 void timers_init(void) {
+	printf_P(PSTR("timers: init..."));
 //	timer0_init(); // Not implimented.
 	timer1_init(); //PWM
 	timer2_init(); //RTC
+	printf_P(PSTR("timers: init     \t[done]"));
+	
 }

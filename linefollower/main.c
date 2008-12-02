@@ -36,6 +36,12 @@ void joy_init(void) {
 	DDRB&=(uint8_t)~((1<<4)|(1<<6)|(1<<7));
 	DDRE&=(uint8_t)~((1<<2)|(1<<3));
 	
+	//DOWN	= PINB&(1<<7)
+	//LEFT	= PINX&(1<<Z)
+	//RIGHT = PINX&(1<<Z)
+	//UP	= PINX&(1<<Z) = reset
+	//IN	= PINX&(1<<Z) = reset
+	
 }
 
 void  print_bin(uint8_t inp) {
@@ -53,11 +59,11 @@ void init(void) {
 	usart_init();
 	joy_init();
 	adc_init();
-	timers_init();	MOTOR_CTL_DDR|=(uint8_t)((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
+	timers_init();	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
 	motor_mode_L(MOTOR_L_FWD);
 	motor_mode_R(MOTOR_R_FWD);
 	sei(); //We use interupts, so enable them.
-	printf(PSTR(": Init: Done\n\n"));
+	printf_P(PSTR(": Init: Done\n\n"));
 }
 
 int main(void) {
@@ -67,7 +73,7 @@ int main(void) {
 		
 	char input;
 	for(;;) {
-		printf(PSTR("What ([T]est/[F]ollow): "));
+		printf_P(PSTR("What ([T]est/[F]ollow): "));
 		scanf("%c",&input);
 		if (input=='F') {
 			for (;;) {
@@ -94,15 +100,16 @@ int main(void) {
 			motor_mode_R(MOTOR_R_FWD);	
 			for(;;) {
 			
-				printf(PSTR("       76543210\n"));
-				printf(PSTR("PORTB: "));print_bin(PORTB);printf("\n");
-				printf(PSTR("PORTD: "));print_bin(PORTD);printf("\n");
-				printf(PSTR("PORTE: "));print_bin(PORTE);printf("\n");
-				
+				printf_P(PSTR("       76543210\n"));
+				printf_P(PSTR("PORTB: "));print_bin(PORTB);printf("\n");
+				printf_P(PSTR("PORTD: "));print_bin(PORTD);printf("\n");
+				printf_P(PSTR("PINB : "));print_bin(PINB);printf("\n");
+				printf_P(PSTR("PINE : "));print_bin(PINE);printf("\n");
+				_delay_ms(700);
 			}
 		}
 		else {
-			printf(PSTR("\nInvalid Mode.\n"));
+			printf_P(PSTR("\nInvalid Mode.\n"));
 		}
 	}	
 } 

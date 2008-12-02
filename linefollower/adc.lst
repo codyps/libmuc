@@ -100,8 +100,8 @@
  110 007c 00F0      		brlo .L6
  111 007e 1092 0000 		sts curr_ch,__zero_reg__
  112               	.L6:
- 113               	.LBB10:
- 114               	.LBB11:
+ 113               	.LBB13:
+ 114               	.LBB14:
  115               	.LM12:
  116 0082 8091 7C00 		lds r24,124
  117 0086 E091 0000 		lds r30,curr_ch
@@ -113,8 +113,8 @@
  123 0094 892B      		or r24,r25
  124 0096 8093 7C00 		sts 124,r24
  125               	/* epilogue start */
- 126               	.LBE11:
- 127               	.LBE10:
+ 126               	.LBE14:
+ 127               	.LBE13:
  128               	.LM13:
  129 009a FF91      		pop r31
  130 009c EF91      		pop r30
@@ -131,263 +131,287 @@
  141 00b2 1F90      		pop __zero_reg__
  142 00b4 1895      		reti
  143               	.LFE10:
- 145               		.data
- 146               	.LC0:
- 147 0000 6164 633A 		.string	"adc: init..."
- 147      2069 6E69 
- 147      742E 2E2E 
- 147      00
- 148               	.LC1:
- 149 000d 6164 633A 		.string	"adc: setup convertions..."
- 149      2073 6574 
- 149      7570 2063 
- 149      6F6E 7665 
- 149      7274 696F 
- 150               		.text
- 151               	.global	adc_init
- 153               	adc_init:
- 154               	.LFB8:
- 155               	.LM14:
- 156 00b6 EF92      		push r14
- 157 00b8 FF92      		push r15
- 158 00ba 0F93      		push r16
- 159 00bc 1F93      		push r17
- 160               	/* prologue: function */
- 161               	/* frame size = 0 */
- 162               	.LM15:
- 163 00be 80E0      		ldi r24,lo8(.LC0)
- 164 00c0 90E0      		ldi r25,hi8(.LC0)
- 165 00c2 0E94 0000 		call puts
- 166               	.LM16:
- 167 00c6 E4E6      		ldi r30,lo8(100)
- 168 00c8 F0E0      		ldi r31,hi8(100)
- 169 00ca 8081      		ld r24,Z
- 170 00cc 8E7F      		andi r24,lo8(-2)
- 171 00ce 8083      		st Z,r24
- 172               	.LM17:
- 173 00d0 0CE7      		ldi r16,lo8(124)
- 174 00d2 10E0      		ldi r17,hi8(124)
- 175 00d4 F801      		movw r30,r16
- 176 00d6 8081      		ld r24,Z
- 177 00d8 8064      		ori r24,lo8(64)
- 178 00da 8083      		st Z,r24
- 179               	.LM18:
- 180 00dc 8081      		ld r24,Z
- 181 00de 8F77      		andi r24,lo8(127)
- 182 00e0 8083      		st Z,r24
- 183               	.LM19:
- 184 00e2 9AE7      		ldi r25,lo8(122)
- 185 00e4 E92E      		mov r14,r25
- 186 00e6 F12C      		mov r15,__zero_reg__
- 187 00e8 F701      		movw r30,r14
- 188 00ea 8081      		ld r24,Z
- 189 00ec 886A      		ori r24,lo8(-88)
- 190 00ee 8083      		st Z,r24
- 191               	.LM20:
- 192 00f0 8081      		ld r24,Z
- 193 00f2 887F      		andi r24,lo8(-8)
- 194 00f4 8660      		ori r24,lo8(6)
- 195 00f6 8083      		st Z,r24
- 196               	.LM21:
- 197 00f8 EBE7      		ldi r30,lo8(123)
- 198 00fa F0E0      		ldi r31,hi8(123)
- 199 00fc 8081      		ld r24,Z
- 200 00fe 8068      		ori r24,lo8(-128)
- 201 0100 8083      		st Z,r24
- 202               	.LM22:
- 203 0102 8081      		ld r24,Z
- 204 0104 887F      		andi r24,lo8(-8)
- 205 0106 8083      		st Z,r24
- 206               	.LM23:
- 207 0108 EEE7      		ldi r30,lo8(126)
- 208 010a F0E0      		ldi r31,hi8(126)
- 209 010c 8081      		ld r24,Z
- 210 010e 806F      		ori r24,lo8(-16)
- 211 0110 8083      		st Z,r24
- 212               	.LM24:
- 213 0112 83B7      		in r24,83-32
- 214 0114 817F      		andi r24,lo8(-15)
- 215 0116 8260      		ori r24,lo8(2)
- 216 0118 83BF      		out 83-32,r24
- 217               	.LM25:
- 218 011a 80E0      		ldi r24,lo8(.LC1)
- 219 011c 90E0      		ldi r25,hi8(.LC1)
- 220 011e 0E94 0000 		call puts
- 221               	.LM26:
- 222 0122 2091 0000 		lds r18,curr_ch
- 223               	.LBB12:
- 224               	.LBB13:
- 225               	.LM27:
- 226 0126 F801      		movw r30,r16
- 227 0128 8081      		ld r24,Z
- 228 012a A0E0      		ldi r26,lo8(channels)
- 229 012c B0E0      		ldi r27,hi8(channels)
- 230 012e FD01      		movw r30,r26
- 231 0130 E20F      		add r30,r18
- 232 0132 F11D      		adc r31,__zero_reg__
- 233 0134 807E      		andi r24,lo8(-32)
- 234 0136 9081      		ld r25,Z
- 235 0138 892B      		or r24,r25
- 236 013a F801      		movw r30,r16
- 237 013c 8083      		st Z,r24
- 238               	.LBE13:
- 239               	.LBE12:
- 240               	.LM28:
- 241 013e F701      		movw r30,r14
- 242 0140 8081      		ld r24,Z
- 243 0142 8064      		ori r24,lo8(64)
- 244 0144 8083      		st Z,r24
- 245               	.LBB14:
- 246               	.LBB15:
- 247               	.LM29:
- 248 0146 80E0      		ldi r24,lo8(0)
- 249 0148 90E0      		ldi r25,hi8(0)
- 250               	.LVL6:
- 251               	/* #APP */
- 252               	 ;  105 "c:/winavr-20080610/lib/gcc/../../avr/include/util/delay_basic.h" 1
- 253 014a 0197      		1: sbiw r24,1
- 254 014c 01F4      		brne 1b
- 255               	 ;  0 "" 2
- 256               	/* #NOAPP */
- 257               	.LBE15:
- 258               	.LBE14:
- 259               	.LM30:
- 260 014e 2F5F      		subi r18,lo8(-(1))
- 261 0150 2093 0000 		sts curr_ch,r18
- 262               	.LBB16:
- 263               	.LBB17:
- 264               	.LM31:
- 265 0154 F801      		movw r30,r16
- 266 0156 8081      		ld r24,Z
- 267               	.LVL7:
- 268 0158 A20F      		add r26,r18
- 269 015a B11D      		adc r27,__zero_reg__
- 270 015c 807E      		andi r24,lo8(-32)
- 271 015e 9C91      		ld r25,X
- 272 0160 892B      		or r24,r25
- 273 0162 8083      		st Z,r24
- 274               	/* epilogue start */
- 275               	.LBE17:
- 276               	.LBE16:
- 277               	.LM32:
- 278 0164 1F91      		pop r17
- 279 0166 0F91      		pop r16
- 280 0168 FF90      		pop r15
- 281 016a EF90      		pop r14
- 282 016c 0895      		ret
- 283               	.LFE8:
- 285               		.data
- 286               	.LC2:
- 287 0027 205B 2025 		.string	" [ %d : %d ] "
- 287      6420 3A20 
- 287      2564 205D 
- 287      2000 
- 288               		.text
- 289               	.global	print_adc_values
- 291               	print_adc_values:
- 292               	.LFB7:
- 293               	.LM33:
- 294 016e 0F93      		push r16
- 295 0170 1F93      		push r17
- 296               	/* prologue: function */
- 297               	/* frame size = 0 */
- 298               	.LBB18:
- 299               	.LM34:
- 300 0172 8091 0000 		lds r24,adc_val
- 301 0176 9091 0000 		lds r25,(adc_val)+1
- 302 017a 9F93      		push r25
- 303 017c 8F93      		push r24
- 304 017e 1F92      		push __zero_reg__
- 305 0180 1F92      		push __zero_reg__
- 306 0182 00E0      		ldi r16,lo8(.LC2)
- 307 0184 10E0      		ldi r17,hi8(.LC2)
- 308 0186 1F93      		push r17
- 309 0188 0F93      		push r16
- 310 018a 0E94 0000 		call printf
- 311 018e 8091 0000 		lds r24,adc_val+2
- 312 0192 9091 0000 		lds r25,(adc_val+2)+1
- 313 0196 9F93      		push r25
- 314 0198 8F93      		push r24
- 315 019a 81E0      		ldi r24,lo8(1)
- 316 019c 90E0      		ldi r25,hi8(1)
- 317 019e 9F93      		push r25
- 318 01a0 8F93      		push r24
- 319 01a2 1F93      		push r17
- 320 01a4 0F93      		push r16
- 321 01a6 0E94 0000 		call printf
- 322 01aa 8091 0000 		lds r24,adc_val+4
- 323 01ae 9091 0000 		lds r25,(adc_val+4)+1
- 324 01b2 9F93      		push r25
- 325 01b4 8F93      		push r24
- 326 01b6 82E0      		ldi r24,lo8(2)
- 327 01b8 90E0      		ldi r25,hi8(2)
- 328 01ba 9F93      		push r25
- 329 01bc 8F93      		push r24
- 330 01be 1F93      		push r17
- 331 01c0 0F93      		push r16
- 332 01c2 0E94 0000 		call printf
- 333 01c6 8091 0000 		lds r24,adc_val+6
- 334 01ca 9091 0000 		lds r25,(adc_val+6)+1
- 335 01ce 9F93      		push r25
- 336 01d0 8F93      		push r24
- 337 01d2 83E0      		ldi r24,lo8(3)
- 338 01d4 90E0      		ldi r25,hi8(3)
- 339 01d6 9F93      		push r25
- 340 01d8 8F93      		push r24
- 341 01da 1F93      		push r17
- 342 01dc 0F93      		push r16
- 343 01de 0E94 0000 		call printf
- 344               	.LBE18:
- 345               	.LM35:
- 346 01e2 8AE0      		ldi r24,lo8(10)
- 347 01e4 90E0      		ldi r25,hi8(10)
- 348 01e6 0E94 0000 		call putchar
- 349 01ea 8DB7      		in r24,__SP_L__
- 350 01ec 9EB7      		in r25,__SP_H__
- 351 01ee 4896      		adiw r24,24
- 352 01f0 0FB6      		in __tmp_reg__,__SREG__
- 353 01f2 F894      		cli
- 354 01f4 9EBF      		out __SP_H__,r25
- 355 01f6 0FBE      		out __SREG__,__tmp_reg__
- 356 01f8 8DBF      		out __SP_L__,r24
- 357               	/* epilogue start */
- 358               	.LM36:
- 359 01fa 1F91      		pop r17
- 360 01fc 0F91      		pop r16
- 361 01fe 0895      		ret
- 362               	.LFE7:
- 364               		.data
- 367               	channels:
- 368 0035 04        		.byte	4
- 369 0036 06        		.byte	6
- 370 0037 05        		.byte	5
- 371 0038 07        		.byte	7
- 372               		.comm adc_val,8,1
- 373               		.comm adc_offset,8,1
- 374               		.comm adc_amt,8,1
- 375               		.comm curr_ch,1,1
- 424               	.Letext0:
+ 145               	.global	adc_init
+ 147               	adc_init:
+ 148               	.LFB8:
+ 149               	.LM14:
+ 150 00b6 EF92      		push r14
+ 151 00b8 FF92      		push r15
+ 152 00ba 0F93      		push r16
+ 153 00bc 1F93      		push r17
+ 154               	/* prologue: function */
+ 155               	/* frame size = 0 */
+ 156               	.LM15:
+ 157 00be 80E0      		ldi r24,lo8(__c.1595)
+ 158 00c0 90E0      		ldi r25,hi8(__c.1595)
+ 159 00c2 9F93      		push r25
+ 160 00c4 8F93      		push r24
+ 161 00c6 0E94 0000 		call printf_P
+ 162               	.LM16:
+ 163 00ca E4E6      		ldi r30,lo8(100)
+ 164 00cc F0E0      		ldi r31,hi8(100)
+ 165 00ce 8081      		ld r24,Z
+ 166 00d0 8E7F      		andi r24,lo8(-2)
+ 167 00d2 8083      		st Z,r24
+ 168               	.LM17:
+ 169 00d4 0CE7      		ldi r16,lo8(124)
+ 170 00d6 10E0      		ldi r17,hi8(124)
+ 171 00d8 F801      		movw r30,r16
+ 172 00da 8081      		ld r24,Z
+ 173 00dc 8064      		ori r24,lo8(64)
+ 174 00de 8083      		st Z,r24
+ 175               	.LM18:
+ 176 00e0 8081      		ld r24,Z
+ 177 00e2 8F77      		andi r24,lo8(127)
+ 178 00e4 8083      		st Z,r24
+ 179               	.LM19:
+ 180 00e6 9AE7      		ldi r25,lo8(122)
+ 181 00e8 E92E      		mov r14,r25
+ 182 00ea F12C      		mov r15,__zero_reg__
+ 183 00ec F701      		movw r30,r14
+ 184 00ee 8081      		ld r24,Z
+ 185 00f0 886A      		ori r24,lo8(-88)
+ 186 00f2 8083      		st Z,r24
+ 187               	.LM20:
+ 188 00f4 8081      		ld r24,Z
+ 189 00f6 887F      		andi r24,lo8(-8)
+ 190 00f8 8660      		ori r24,lo8(6)
+ 191 00fa 8083      		st Z,r24
+ 192               	.LM21:
+ 193 00fc EBE7      		ldi r30,lo8(123)
+ 194 00fe F0E0      		ldi r31,hi8(123)
+ 195 0100 8081      		ld r24,Z
+ 196 0102 8068      		ori r24,lo8(-128)
+ 197 0104 8083      		st Z,r24
+ 198               	.LM22:
+ 199 0106 8081      		ld r24,Z
+ 200 0108 887F      		andi r24,lo8(-8)
+ 201 010a 8083      		st Z,r24
+ 202               	.LM23:
+ 203 010c EEE7      		ldi r30,lo8(126)
+ 204 010e F0E0      		ldi r31,hi8(126)
+ 205 0110 8081      		ld r24,Z
+ 206 0112 806F      		ori r24,lo8(-16)
+ 207 0114 8083      		st Z,r24
+ 208               	.LM24:
+ 209 0116 83B7      		in r24,83-32
+ 210 0118 817F      		andi r24,lo8(-15)
+ 211 011a 8260      		ori r24,lo8(2)
+ 212 011c 83BF      		out 83-32,r24
+ 213               	.LM25:
+ 214 011e 80E0      		ldi r24,lo8(__c.1597)
+ 215 0120 90E0      		ldi r25,hi8(__c.1597)
+ 216 0122 9F93      		push r25
+ 217 0124 8F93      		push r24
+ 218 0126 0E94 0000 		call printf_P
+ 219               	.LM26:
+ 220 012a 2091 0000 		lds r18,curr_ch
+ 221               	.LBB15:
+ 222               	.LBB16:
+ 223               	.LM27:
+ 224 012e F801      		movw r30,r16
+ 225 0130 8081      		ld r24,Z
+ 226 0132 A0E0      		ldi r26,lo8(channels)
+ 227 0134 B0E0      		ldi r27,hi8(channels)
+ 228 0136 FD01      		movw r30,r26
+ 229 0138 E20F      		add r30,r18
+ 230 013a F11D      		adc r31,__zero_reg__
+ 231 013c 807E      		andi r24,lo8(-32)
+ 232 013e 9081      		ld r25,Z
+ 233 0140 892B      		or r24,r25
+ 234 0142 F801      		movw r30,r16
+ 235 0144 8083      		st Z,r24
+ 236               	.LBE16:
+ 237               	.LBE15:
+ 238               	.LM28:
+ 239 0146 F701      		movw r30,r14
+ 240 0148 8081      		ld r24,Z
+ 241 014a 8064      		ori r24,lo8(64)
+ 242 014c 8083      		st Z,r24
+ 243               	.LBB17:
+ 244               	.LBB18:
+ 245               	.LM29:
+ 246 014e 80E0      		ldi r24,lo8(0)
+ 247 0150 90E0      		ldi r25,hi8(0)
+ 248               	.LVL6:
+ 249               	/* #APP */
+ 250               	 ;  105 "c:/winavr-20080610/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 251 0152 0197      		1: sbiw r24,1
+ 252 0154 01F4      		brne 1b
+ 253               	 ;  0 "" 2
+ 254               	/* #NOAPP */
+ 255               	.LBE18:
+ 256               	.LBE17:
+ 257               	.LM30:
+ 258 0156 2F5F      		subi r18,lo8(-(1))
+ 259 0158 2093 0000 		sts curr_ch,r18
+ 260               	.LBB19:
+ 261               	.LBB20:
+ 262               	.LM31:
+ 263 015c F801      		movw r30,r16
+ 264 015e 8081      		ld r24,Z
+ 265               	.LVL7:
+ 266 0160 A20F      		add r26,r18
+ 267 0162 B11D      		adc r27,__zero_reg__
+ 268 0164 807E      		andi r24,lo8(-32)
+ 269 0166 9C91      		ld r25,X
+ 270 0168 892B      		or r24,r25
+ 271 016a 8083      		st Z,r24
+ 272               	.LBE20:
+ 273               	.LBE19:
+ 274               	.LM32:
+ 275 016c 80E0      		ldi r24,lo8(__c.1599)
+ 276 016e 90E0      		ldi r25,hi8(__c.1599)
+ 277 0170 9F93      		push r25
+ 278 0172 8F93      		push r24
+ 279 0174 0E94 0000 		call printf_P
+ 280 0178 8DB7      		in r24,__SP_L__
+ 281 017a 9EB7      		in r25,__SP_H__
+ 282 017c 0696      		adiw r24,6
+ 283 017e 0FB6      		in __tmp_reg__,__SREG__
+ 284 0180 F894      		cli
+ 285 0182 9EBF      		out __SP_H__,r25
+ 286 0184 0FBE      		out __SREG__,__tmp_reg__
+ 287 0186 8DBF      		out __SP_L__,r24
+ 288               	/* epilogue start */
+ 289               	.LM33:
+ 290 0188 1F91      		pop r17
+ 291 018a 0F91      		pop r16
+ 292 018c FF90      		pop r15
+ 293 018e EF90      		pop r14
+ 294 0190 0895      		ret
+ 295               	.LFE8:
+ 297               		.data
+ 298               	.LC0:
+ 299 0000 205B 2025 		.string	" [ %d : %d ] "
+ 299      6420 3A20 
+ 299      2564 205D 
+ 299      2000 
+ 300               		.text
+ 301               	.global	print_adc_values
+ 303               	print_adc_values:
+ 304               	.LFB7:
+ 305               	.LM34:
+ 306 0192 0F93      		push r16
+ 307 0194 1F93      		push r17
+ 308               	/* prologue: function */
+ 309               	/* frame size = 0 */
+ 310               	.LBB21:
+ 311               	.LM35:
+ 312 0196 8091 0000 		lds r24,adc_val
+ 313 019a 9091 0000 		lds r25,(adc_val)+1
+ 314 019e 9F93      		push r25
+ 315 01a0 8F93      		push r24
+ 316 01a2 1F92      		push __zero_reg__
+ 317 01a4 1F92      		push __zero_reg__
+ 318 01a6 00E0      		ldi r16,lo8(.LC0)
+ 319 01a8 10E0      		ldi r17,hi8(.LC0)
+ 320 01aa 1F93      		push r17
+ 321 01ac 0F93      		push r16
+ 322 01ae 0E94 0000 		call printf
+ 323 01b2 8091 0000 		lds r24,adc_val+2
+ 324 01b6 9091 0000 		lds r25,(adc_val+2)+1
+ 325 01ba 9F93      		push r25
+ 326 01bc 8F93      		push r24
+ 327 01be 81E0      		ldi r24,lo8(1)
+ 328 01c0 90E0      		ldi r25,hi8(1)
+ 329 01c2 9F93      		push r25
+ 330 01c4 8F93      		push r24
+ 331 01c6 1F93      		push r17
+ 332 01c8 0F93      		push r16
+ 333 01ca 0E94 0000 		call printf
+ 334 01ce 8091 0000 		lds r24,adc_val+4
+ 335 01d2 9091 0000 		lds r25,(adc_val+4)+1
+ 336 01d6 9F93      		push r25
+ 337 01d8 8F93      		push r24
+ 338 01da 82E0      		ldi r24,lo8(2)
+ 339 01dc 90E0      		ldi r25,hi8(2)
+ 340 01de 9F93      		push r25
+ 341 01e0 8F93      		push r24
+ 342 01e2 1F93      		push r17
+ 343 01e4 0F93      		push r16
+ 344 01e6 0E94 0000 		call printf
+ 345 01ea 8091 0000 		lds r24,adc_val+6
+ 346 01ee 9091 0000 		lds r25,(adc_val+6)+1
+ 347 01f2 9F93      		push r25
+ 348 01f4 8F93      		push r24
+ 349 01f6 83E0      		ldi r24,lo8(3)
+ 350 01f8 90E0      		ldi r25,hi8(3)
+ 351 01fa 9F93      		push r25
+ 352 01fc 8F93      		push r24
+ 353 01fe 1F93      		push r17
+ 354 0200 0F93      		push r16
+ 355 0202 0E94 0000 		call printf
+ 356               	.LBE21:
+ 357               	.LM36:
+ 358 0206 8AE0      		ldi r24,lo8(10)
+ 359 0208 90E0      		ldi r25,hi8(10)
+ 360 020a 0E94 0000 		call putchar
+ 361 020e 8DB7      		in r24,__SP_L__
+ 362 0210 9EB7      		in r25,__SP_H__
+ 363 0212 4896      		adiw r24,24
+ 364 0214 0FB6      		in __tmp_reg__,__SREG__
+ 365 0216 F894      		cli
+ 366 0218 9EBF      		out __SP_H__,r25
+ 367 021a 0FBE      		out __SREG__,__tmp_reg__
+ 368 021c 8DBF      		out __SP_L__,r24
+ 369               	/* epilogue start */
+ 370               	.LM37:
+ 371 021e 1F91      		pop r17
+ 372 0220 0F91      		pop r16
+ 373 0222 0895      		ret
+ 374               	.LFE7:
+ 376               		.data
+ 379               	channels:
+ 380 000e 04        		.byte	4
+ 381 000f 06        		.byte	6
+ 382 0010 05        		.byte	5
+ 383 0011 07        		.byte	7
+ 384               		.section	.progmem.data,"a",@progbits
+ 387               	__c.1599:
+ 388 0000 2020 5B64 		.string	"  [done]\n"
+ 388      6F6E 655D 
+ 388      0A00 
+ 391               	__c.1597:
+ 392 000a 0A61 6463 		.string	"\nadc: setup convertions... "
+ 392      3A20 7365 
+ 392      7475 7020 
+ 392      636F 6E76 
+ 392      6572 7469 
+ 395               	__c.1595:
+ 396 0026 6164 633A 		.string	"adc: init..."
+ 396      2069 6E69 
+ 396      742E 2E2E 
+ 396      00
+ 397               		.comm adc_val,8,1
+ 398               		.comm adc_offset,8,1
+ 399               		.comm adc_amt,8,1
+ 400               		.comm curr_ch,1,1
+ 449               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 adc.c
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:20     .text:00000000 adc_set_channel
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:367    .data:00000035 channels
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:46     .text:00000018 __vector_19
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:20     .text:00000000 adc_set_channel
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:379    .data:0000000e channels
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:46     .text:00000018 __vector_19
                             *COM*:00000001 curr_ch
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_amt
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:153    .text:000000b6 adc_init
-C:\Users\Unknown\AppData\Local\Temp/cc1F06vN.s:291    .text:0000016e print_adc_values
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:147    .text:000000b6 adc_init
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:395    .progmem.data:00000026 __c.1595
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:391    .progmem.data:0000000a __c.1597
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:387    .progmem.data:00000000 __c.1599
+C:\Users\Unknown\AppData\Local\Temp/cci3CFza.s:303    .text:00000192 print_adc_values
                             *COM*:00000008 adc_offset
 
 UNDEFINED SYMBOLS
 __do_copy_data
 __do_clear_bss
-puts
+printf_P
 printf
 putchar

@@ -6,8 +6,9 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/power.h>
+#include <avr/pgmspace.h>
 
-#define RX_BUFSIZE 80
+#define RX_BUFSIZE 127
 
 static int usart0_putchar(char c, FILE *stream);
 int usart0_getchar(FILE *stream);
@@ -121,7 +122,7 @@ void usart_init(void) {
 	#if USE_2X
 	UCSR0A |= (1 << U2X0);
 	#else
-	UCSR0A &= ~(1 << U2X0);
+	UCSR0A &=(uint8_t)~(1 << U2X0);
 	#endif
 	/* Double the uart clock */
 	//UCSR0A |=(1<<U2X0);
@@ -133,5 +134,6 @@ void usart_init(void) {
 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
 	
 	stdout=stdin=&usart0_stdio;
+	printf_P(PSTR("usart: init usart0... [done]\n"));
 }
 
