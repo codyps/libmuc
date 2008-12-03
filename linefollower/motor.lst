@@ -506,22 +506,22 @@
  577               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:20     .text:00000000 motor_set_speed
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:507    .progmem.data:0000002e __c.1550
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:104    .text:00000050 lf_full_speed
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:126    .text:00000066 motor_get_speed
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:511    .progmem.data:0000005c __c.1528
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:217    .text:000000be lf_turn_right_inc
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:247    .text:000000e0 lf_turn_left_inc
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:291    .text:0000010e motor_mode
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:20     .text:00000000 motor_set_speed
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:507    .progmem.data:0000002e __c.1550
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:104    .text:00000050 lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:126    .text:00000066 motor_get_speed
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:511    .progmem.data:0000005c __c.1528
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:217    .text:000000be lf_turn_right_inc
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:247    .text:000000e0 lf_turn_left_inc
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:291    .text:0000010e motor_mode
                              .bss:00000000 c_modes.1561
-C:\Users\Unknown\AppData\Local\Temp/cc5H4axD.s:502    .progmem.data:00000000 __c.1565
+C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:502    .progmem.data:00000000 __c.1565
 
 UNDEFINED SYMBOLS
 __do_copy_data
