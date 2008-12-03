@@ -91,9 +91,15 @@ uint8_t motor_mode_R(uint8_t mode) {
 //TODO: This should replace the left/right specific functions.
 /*
 void lf_turn_inc(int32_t inc) {
+	uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
 	//L < 0, R > 0
 	if (inc==0)
 		return;
+	int32_t c_spin = c_speed[LEFT]-c_speed[RIGHT];
+	int32_t max_d_L = LF_MAX_SPEED - c_speed[LEFT];
+	int32_t max_d_R = LF_MAX_SPEED - c_speed[RIGHT];
+	int32_t min_d_L = LF_MIN_SPEED - c_speed[LEFT];
+	int32_t min_d_R = LF_MIN_SPEED - c_speed[RIGHT];
 	
 	
 }
@@ -108,12 +114,13 @@ void lf_turn_left_inc(uint16_t inc) {
 
 	if ((c_speed[LEFT] + inc) > LF_MAX_SPEED) {
 		set_motor_L(c_speed[LEFT]+speed_diff_L);
-		set_motor_R(c_speed[RIGHT]-(inc-speed_diff_L));
+		if ((c_speed[RIGHT]-inc) < LF_MIN_SPEED)
+			set_motor_R(LF_MIN_SPEED);
+		else
+			set_motor_R(c_speed[RIGHT]-(inc-speed_diff_L));
 	}
 	else
 		set_motor_L(c_speed[LEFT]+inc);
-	//TODO: case when ((c_speed[RIGHT]-inc) < LF_MIN_SPEED)?
-		
 }
 void lf_turn_right_inc(uint16_t inc) {
 	uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
@@ -122,12 +129,15 @@ void lf_turn_right_inc(uint16_t inc) {
 
 	if ((c_speed[RIGHT] + inc) > LF_MAX_SPEED) {
 		set_motor_R(c_speed[RIGHT]+speed_diff_R);
-		set_motor_L(c_speed[LEFT]-(inc-speed_diff_R));
+		if ((c_speed[LEFT]-inc) < LF_MIN_SPEED)
+			set_motor_L(LF_MIN_SPEED);
+		else
+			set_motor_L(c_speed[LEFT]-(inc-speed_diff_R));
 	}
 	else
 		set_motor_R(c_speed[RIGHT]+inc);
-	//TODO: case when ((c_speed[RIGHT]-inc) < LF_MIN_SPEED)?
 }
+
 
 
 void lf_full_speed(void) {

@@ -448,11 +448,11 @@
  468               	.LFE16:
  470               		.data
  471               	.LC0:
- 472 0000 6D6F 746F 		.string	"motor R mode: %d\n"
- 472      7220 5220 
- 472      6D6F 6465 
- 472      3A20 2564 
- 472      0A00 
+ 472 0000 0A6D 6F74 		.string	"\nmotor R mode: %d"
+ 472      6F72 2052 
+ 472      206D 6F64 
+ 472      653A 2025 
+ 472      6400 
  473               		.text
  474               	.global	motor_mode_R
  476               	motor_mode_R:
@@ -526,11 +526,11 @@
  544               	.LFE13:
  546               		.data
  547               	.LC1:
- 548 0012 6D6F 746F 		.string	"motor L mode: %d\n"
- 548      7220 4C20 
- 548      6D6F 6465 
- 548      3A20 2564 
- 548      0A00 
+ 548 0012 0A6D 6F74 		.string	"\nmotor L mode: %d"
+ 548      6F72 204C 
+ 548      206D 6F64 
+ 548      653A 2025 
+ 548      6400 
  549               		.text
  550               	.global	motor_mode_L
  552               	motor_mode_L:
@@ -607,23 +607,23 @@
  712               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:20     .text:00000000 get_motor_L
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:61     .text:00000010 get_motor_R
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:102    .text:00000020 set_motor_L
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:141    .text:0000002e set_motor_R
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:180    .text:0000003c lf_turn_left_inc
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:288    .text:00000066 lf_turn_right_inc
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:396    .text:00000090 lf_full_speed
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:476    .text:000000b2 motor_mode_R
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:20     .text:00000000 get_motor_L
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:61     .text:00000010 get_motor_R
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:102    .text:00000020 set_motor_L
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:141    .text:0000002e set_motor_R
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:180    .text:0000003c lf_turn_left_inc
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:288    .text:00000066 lf_turn_right_inc
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:396    .text:00000090 lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:476    .text:000000b2 motor_mode_R
                              .bss:00000000 c_mode.1481
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:552    .text:00000104 motor_mode_L
-C:\Users\Unknown\AppData\Local\Temp/cctqfHB7.s:622    .bss:00000001 c_mode.1461
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:552    .text:00000104 motor_mode_L
+C:\Users\Unknown\AppData\Local\Temp/ccaPVwBw.s:622    .bss:00000001 c_mode.1461
 
 UNDEFINED SYMBOLS
 __do_copy_data
