@@ -102,10 +102,6 @@ ISR(PCINT1_vect) {
 		printf_P(PSTR("\n[debug] PB? Released"));
 }
 
-void pcint_init(void) {
-	
-}
-
 void init(void) {
 	cli();
 	power_lcd_disable();
@@ -121,60 +117,51 @@ void init(void) {
 	printf_P(PSTR("\nInit: Done\n\n"));
 }
 
+
+
 int main(void) {
 	init();
+	c_mode=WAIT;
+	
 	motor_set_speed(0,LEFT);
 	motor_set_speed(0,RIGHT);
 		
-	char input;
 	for(;;) {
-		printf_P(PSTR("\nWhat ([T]est/[F]ollow): "));
-		scanf("%c",&input);
-		if (input=='F') {
-			for (;;) {
-				uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-				printf("\nML: %X",c_speed[0]);
-				printf("\nMR: %X",c_speed[1]);
-				print_adc_values();
-		
-				uint16_t adc_val_mixed [2] = {	adc_get_val(0) + adc_get_val(1) * LF_ADC_MIX_WIEGHT,	\
-												adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
+		if		(c_mode==FOLLOW) {		
+			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
+			printf("\nML: %X",c_speed[0]);
+			printf("\nMR: %X",c_speed[1]);
+			print_adc_values();
+	
+			uint16_t adc_val_mixed [2] = {	adc_get_val(0) + adc_get_val(1) * LF_ADC_MIX_WIEGHT,	\
+											adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
 
-				if (adc_val_mixed[0]>adc_val_mixed[1])
-					lf_turn_left_inc(LF_INC);
-				else if (adc_val_mixed[1]>adc_val_mixed[0])
-					lf_turn_right_inc(LF_INC);
-				else
-					lf_full_speed();
+			if (adc_val_mixed[0]>adc_val_mixed[1])
+				lf_turn_left_inc(LF_INC);
+			else if (adc_val_mixed[1]>adc_val_mixed[0])
+				lf_turn_right_inc(LF_INC);
+			else
+				lf_full_speed();
 
-				_delay_ms(700);
-				// do at every adc calc or pwm vector.
-			}
+			_delay_ms(700);
+			// do at every adc calc or pwm vector.
 		}
-		else if(input=='T') {
+		else if	(c_mode==TEST) {
+			uint16_t sp;
+			
 			motor_mode(MOTOR_L_FWD,LEFT);
-			motor_mode(MOTOR_R_FWD,RIGHT);	
-			for(;;) {
-				motor_set_speed(0x0F00,LEFT);
-				motor_set_speed(0x00F0,RIGHT);
-				printf_P(PSTR("\n       76543210"));
-				printf_P(PSTR("\nPORTB: "));print_bin(PORTB);
-				printf_P(PSTR("\nPORTD: "));print_bin(PORTD);
-				printf_P(PSTR("\nPINB : "));print_bin(PINB);
-				printf_P(PSTR("\nPINE : "));print_bin(PINE);
-				_delay_ms(700);
-				motor_set_speed(0xFFFF,LEFT);
-				motor_set_speed(0xFFFF,RIGHT);
-				printf_P(PSTR("\n       76543210"));
-				printf_P(PSTR("\nPORTB: "));print_bin(PORTB);
-				printf_P(PSTR("\nPORTD: "));print_bin(PORTD);
-				printf_P(PSTR("\nPINB : "));print_bin(PINB);
-				printf_P(PSTR("\nPINE : "));print_bin(PINE);
-				_delay_ms(700);
-			}
-		}
-		else {
-			printf_P(PSTR("\nInvalid Mode."));
+			motor_mode(MOTOR_R_FWD,RIGHT);				
+			
+			printf_P(PSTR("\nMotor Speed L (max=%d):"),UINT16_MAX);
+			scanf("%d",&sp);
+			motor_set_speed(sp,LEFT);
+			printf_P(PSTR("\nMotor Speed L is now %d"),motor_get_speed(LEFT));
+			
+			printf_P(PSTR("\nMotor Speed R (max=%d):"),UINT16_MAX);
+			scanf("%x",&sp);
+			motor_set_speed(sp,RIGHT);
+			printf_P(PSTR("\nMotor Speed R is now %d"),motor_get_speed(RIGHT));
+		
 		}
 	}	
 } 

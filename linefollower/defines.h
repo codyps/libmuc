@@ -47,4 +47,8 @@ Globaly Utilized Information
 #define MOTOR_R_FWD MOTOR_MODE_CW
 #define MOTOR_R_BWD MOTOR_MODE_CCW
 
+/* Mode/State */
+enum {WAIT,TEST,FOLLOW};
+uint8_t c_mode;
+
 #endif

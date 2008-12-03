@@ -91,7 +91,10 @@ ISR(TIMER2_OVF_vect) {
 	static uint16_t sec;//=0
 	++sec;
 	//1 Hz (16/16)
-	printf("\n\tT: %ds\n",sec);
+	if (c_mode==WAIT) {
+		printf("\n\tT: %ds\n",sec);
+		printf_P(PSTR("\nMode: %d"),c_mode);
+	}
 	//print_adc_values();
 	//printf("Current Channel: %d\n", curr_ch);
 }

@@ -75,8 +75,8 @@
   83 002c 90E0      		ldi r25,lo8(0)
   84 002e 9F93      		push r25
   85 0030 8F93      		push r24
-  86 0032 80E0      		ldi r24,lo8(__c.1550)
-  87 0034 90E0      		ldi r25,hi8(__c.1550)
+  86 0032 80E0      		ldi r24,lo8(__c.1555)
+  87 0034 90E0      		ldi r25,hi8(__c.1555)
   88 0036 9F93      		push r25
   89 0038 8F93      		push r24
   90 003a 0E94 0000 		call printf_P
@@ -178,8 +178,8 @@
  190 0094 90E0      		ldi r25,lo8(0)
  191 0096 9F93      		push r25
  192 0098 8F93      		push r24
- 193 009a 80E0      		ldi r24,lo8(__c.1528)
- 194 009c 90E0      		ldi r25,hi8(__c.1528)
+ 193 009a 80E0      		ldi r24,lo8(__c.1533)
+ 194 009c 90E0      		ldi r25,hi8(__c.1533)
  195 009e 9F93      		push r25
  196 00a0 8F93      		push r24
  197 00a2 0E94 0000 		call printf_P
@@ -296,8 +296,8 @@
  308               	.LVL8:
  309 011e E7E0      		ldi r30,lo8(7)
  310               	.LVL9:
- 311 0120 C0E0      		ldi r28,lo8(c_modes.1561+1)
- 312 0122 D0E0      		ldi r29,hi8(c_modes.1561+1)
+ 311 0120 C0E0      		ldi r28,lo8(c_modes.1566+1)
+ 312 0122 D0E0      		ldi r29,hi8(c_modes.1566+1)
  313               	.LVL10:
  314 0124 00C0      		rjmp .L22
  315               	.LVL11:
@@ -312,8 +312,8 @@
  324               	.LVL12:
  325 0132 9F93      		push r25
  326 0134 8F93      		push r24
- 327 0136 80E0      		ldi r24,lo8(__c.1565)
- 328 0138 90E0      		ldi r25,hi8(__c.1565)
+ 327 0136 80E0      		ldi r24,lo8(__c.1570)
+ 328 0138 90E0      		ldi r25,hi8(__c.1570)
  329 013a 9F93      		push r25
  330 013c 8F93      		push r24
  331 013e 0E94 0000 		call printf_P
@@ -327,8 +327,8 @@
  339               	.LVL15:
  340 0148 E3E0      		ldi r30,lo8(3)
  341               	.LVL16:
- 342 014a C0E0      		ldi r28,lo8(c_modes.1561)
- 343 014c D0E0      		ldi r29,hi8(c_modes.1561)
+ 342 014a C0E0      		ldi r28,lo8(c_modes.1566)
+ 343 014c D0E0      		ldi r29,hi8(c_modes.1566)
  344               	.LVL17:
  345               	.L22:
  346               	.LM39:
@@ -484,44 +484,46 @@
  496 0238 0895      		ret
  497               	.LFE10:
  499               		.section	.progmem.data,"a",@progbits
- 502               	__c.1565:
+ 502               	__c.1570:
  503 0000 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
  503      726F 725D 
  503      204D 6F74 
  503      6F72 3A20 
  503      496E 7661 
- 504               		.lcomm c_modes.1561,2
- 507               	__c.1550:
+ 504               		.lcomm c_modes.1566,2
+ 507               	__c.1555:
  508 002e 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
  508      726F 725D 
  508      204D 6F74 
  508      6F72 3A20 
  508      496E 7661 
- 511               	__c.1528:
+ 511               	__c.1533:
  512 005c 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
  512      726F 725D 
  512      204D 6F74 
  512      6F72 3A20 
  512      496E 7661 
- 577               	.Letext0:
+ 513               		.comm c_mode,1,1
+ 578               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:20     .text:00000000 motor_set_speed
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:507    .progmem.data:0000002e __c.1550
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:104    .text:00000050 lf_full_speed
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:126    .text:00000066 motor_get_speed
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:511    .progmem.data:0000005c __c.1528
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:217    .text:000000be lf_turn_right_inc
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:247    .text:000000e0 lf_turn_left_inc
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:291    .text:0000010e motor_mode
-                             .bss:00000000 c_modes.1561
-C:\Users\Unknown\AppData\Local\Temp/ccu3wjpp.s:502    .progmem.data:00000000 __c.1565
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:20     .text:00000000 motor_set_speed
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:507    .progmem.data:0000002e __c.1555
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:104    .text:00000050 lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:126    .text:00000066 motor_get_speed
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:511    .progmem.data:0000005c __c.1533
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:217    .text:000000be lf_turn_right_inc
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:247    .text:000000e0 lf_turn_left_inc
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:291    .text:0000010e motor_mode
+                             .bss:00000000 c_modes.1566
+C:\Users\Unknown\AppData\Local\Temp/ccIlVYM6.s:502    .progmem.data:00000000 __c.1570
+                            *COM*:00000001 c_mode
 
 UNDEFINED SYMBOLS
 __do_copy_data

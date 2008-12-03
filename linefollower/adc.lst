@@ -207,8 +207,8 @@
  225               	/* prologue: function */
  226               	/* frame size = 0 */
  227               	.LM24:
- 228 010a 80E0      		ldi r24,lo8(__c.1816)
- 229 010c 90E0      		ldi r25,hi8(__c.1816)
+ 228 010a 80E0      		ldi r24,lo8(__c.1821)
+ 229 010c 90E0      		ldi r25,hi8(__c.1821)
  230 010e 9F93      		push r25
  231 0110 8F93      		push r24
  232 0112 0E94 0000 		call printf_P
@@ -264,8 +264,8 @@
  282 0166 8260      		ori r24,lo8(2)
  283 0168 83BF      		out 83-32,r24
  284               	.LM34:
- 285 016a 80E0      		ldi r24,lo8(__c.1818)
- 286 016c 90E0      		ldi r25,hi8(__c.1818)
+ 285 016a 80E0      		ldi r24,lo8(__c.1823)
+ 286 016c 90E0      		ldi r25,hi8(__c.1823)
  287 016e 9F93      		push r25
  288 0170 8F93      		push r24
  289 0172 0E94 0000 		call printf_P
@@ -325,8 +325,8 @@
  343               	.LBE27:
  344               	.LBE26:
  345               	.LM41:
- 346 01b8 80E0      		ldi r24,lo8(__c.1820)
- 347 01ba 90E0      		ldi r25,hi8(__c.1820)
+ 346 01b8 80E0      		ldi r24,lo8(__c.1825)
+ 347 01ba 90E0      		ldi r25,hi8(__c.1825)
  348 01bc 9F93      		push r25
  349 01be 8F93      		push r24
  350 01c0 0E94 0000 		call printf_P
@@ -353,8 +353,8 @@
  373               	/* prologue: function */
  374               	/* frame size = 0 */
  375               	.LM44:
- 376 01de 80E0      		ldi r24,lo8(__c.1805)
- 377 01e0 90E0      		ldi r25,hi8(__c.1805)
+ 376 01de 80E0      		ldi r24,lo8(__c.1810)
+ 377 01e0 90E0      		ldi r25,hi8(__c.1810)
  378 01e2 9F93      		push r25
  379 01e4 8F93      		push r24
  380 01e6 0E94 0000 		call printf_P
@@ -526,8 +526,8 @@
  547               	/* prologue: function */
  548               	/* frame size = 0 */
  549               	.LM57:
- 550 02ea 80E0      		ldi r24,lo8(__c.1749)
- 551 02ec 90E0      		ldi r25,hi8(__c.1749)
+ 550 02ea 80E0      		ldi r24,lo8(__c.1754)
+ 551 02ec 90E0      		ldi r25,hi8(__c.1754)
  552 02ee 9F93      		push r25
  553 02f0 8F93      		push r24
  554 02f2 0E94 0000 		call printf_P
@@ -607,8 +607,8 @@
  630               	/* prologue: function */
  631               	/* frame size = 0 */
  632               	.LM61:
- 633 038c 80E0      		ldi r24,lo8(__c.1731)
- 634 038e 90E0      		ldi r25,hi8(__c.1731)
+ 633 038c 80E0      		ldi r24,lo8(__c.1736)
+ 634 038e 90E0      		ldi r25,hi8(__c.1736)
  635 0390 9F93      		push r25
  636 0392 8F93      		push r24
  637 0394 0E94 0000 		call printf_P
@@ -660,8 +660,8 @@
  683 0404 0E94 0000 		call printf
  684               	.LBE31:
  685               	.LM63:
- 686 0408 80E0      		ldi r24,lo8(__c.1737)
- 687 040a 90E0      		ldi r25,hi8(__c.1737)
+ 686 0408 80E0      		ldi r24,lo8(__c.1742)
+ 687 040a 90E0      		ldi r25,hi8(__c.1742)
  688 040c 9F93      		push r25
  689 040e 8F93      		push r24
  690 0410 0E94 0000 		call printf_P
@@ -736,81 +736,83 @@
  762 0010 05        		.byte	5
  763 0011 07        		.byte	7
  764               		.section	.progmem.data,"a",@progbits
- 767               	__c.1820:
+ 767               	__c.1825:
  768 0000 095B 646F 		.string	"\t[done]"
  768      6E65 5D00 
- 771               	__c.1818:
+ 771               	__c.1823:
  772 0008 0A61 6463 		.string	"\nadc: init: setup convertions"
  772      3A20 696E 
  772      6974 3A20 
  772      7365 7475 
  772      7020 636F 
- 775               	__c.1816:
+ 775               	__c.1821:
  776 0026 0A61 6463 		.string	"\nadc: init"
  776      3A20 696E 
  776      6974 00
- 779               	__c.1805:
+ 779               	__c.1810:
  780 0031 0A5B 64   		.ascii	"\n[d"
  781 0034 6562 7567 		.string	"ebug] Warning: unimplimented function adc_calibrate_store called"
  781      5D20 5761 
  781      726E 696E 
  781      673A 2075 
  781      6E69 6D70 
- 784               	__c.1749:
+ 784               	__c.1754:
  785 0075 0A5B 6465 		.string	"\n[debug] ADC OFFSETS: "
  785      6275 675D 
  785      2041 4443 
  785      204F 4646 
  785      5345 5453 
- 788               	__c.1737:
+ 788               	__c.1742:
  789 008c 0A5B 6465 		.string	"\n[debug] FIXED ADC: "
  789      6275 675D 
  789      2046 4958 
  789      4544 2041 
  789      4443 3A20 
- 792               	__c.1731:
+ 792               	__c.1736:
  793 00a1 0A5B 6465 		.string	"\n[debug]   RAW ADC: "
  793      6275 675D 
  793      2020 2052 
  793      4157 2041 
  793      4443 3A20 
  794               		.lcomm num_calibrations,1
- 795               		.comm adc_val,8,1
- 796               		.comm adc_offset,8,1
- 797               		.comm adc_amt,8,1
- 798               		.comm curr_ch,1,1
- 895               	.Letext0:
+ 795               		.comm c_mode,1,1
+ 796               		.comm adc_val,8,1
+ 797               		.comm adc_offset,8,1
+ 798               		.comm adc_amt,8,1
+ 799               		.comm curr_ch,1,1
+ 896               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 adc.c
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:20     .text:00000000 max
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:35     .text:00000004 adc_get_val
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:20     .text:00000000 max
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:35     .text:00000004 adc_get_val
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:66     .text:00000026 adc_calibrate_clear
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:66     .text:00000026 adc_calibrate_clear
                              .bss:00000000 num_calibrations
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:91     .text:0000004c adc_set_channel
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:759    .data:0000000e channels
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:117    .text:00000064 __vector_19
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:91     .text:0000004c adc_set_channel
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:759    .data:0000000e channels
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:117    .text:00000064 __vector_19
                             *COM*:00000001 curr_ch
                             *COM*:00000008 adc_amt
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:218    .text:00000102 adc_init
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:775    .progmem.data:00000026 __c.1816
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:771    .progmem.data:00000008 __c.1818
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:767    .progmem.data:00000000 __c.1820
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:370    .text:000001de adc_calibrate_store
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:779    .progmem.data:00000031 __c.1805
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:390    .text:000001f0 adc_calibrate_update
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:542    .text:000002e6 print_adc_calibration
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:784    .progmem.data:00000075 __c.1749
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:619    .text:0000037c print_adc_values
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:792    .progmem.data:000000a1 __c.1731
-C:\Users\Unknown\AppData\Local\Temp/ccG8hDIg.s:788    .progmem.data:0000008c __c.1737
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:218    .text:00000102 adc_init
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:775    .progmem.data:00000026 __c.1821
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:771    .progmem.data:00000008 __c.1823
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:767    .progmem.data:00000000 __c.1825
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:370    .text:000001de adc_calibrate_store
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:779    .progmem.data:00000031 __c.1810
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:390    .text:000001f0 adc_calibrate_update
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:542    .text:000002e6 print_adc_calibration
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:784    .progmem.data:00000075 __c.1754
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:619    .text:0000037c print_adc_values
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:792    .progmem.data:000000a1 __c.1736
+C:\Users\Unknown\AppData\Local\Temp/ccwfbpKs.s:788    .progmem.data:0000008c __c.1742
+                            *COM*:00000001 c_mode
 
 UNDEFINED SYMBOLS
 __do_copy_data
