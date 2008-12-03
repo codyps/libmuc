@@ -115,16 +115,16 @@ void init(void) {
 	usart_init();
 	adc_init();
 	timers_init();	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
-	motor_mode_L(MOTOR_L_FWD);
-	motor_mode_R(MOTOR_R_FWD);
+	motor_mode(MOTOR_L_FWD,LEFT);
+	motor_mode(MOTOR_R_FWD,RIGHT);
 	sei();
 	printf_P(PSTR("\nInit: Done\n\n"));
 }
 
 int main(void) {
 	init();
-	set_motor_L(0);
-	set_motor_R(0);
+	motor_set_speed(0,LEFT);
+	motor_set_speed(0,RIGHT);
 		
 	char input;
 	for(;;) {
@@ -132,7 +132,7 @@ int main(void) {
 		scanf("%c",&input);
 		if (input=='F') {
 			for (;;) {
-				uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
+				uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
 				printf("\nML: %X",c_speed[0]);
 				printf("\nMR: %X",c_speed[1]);
 				print_adc_values();
@@ -152,10 +152,19 @@ int main(void) {
 			}
 		}
 		else if(input=='T') {
-			motor_mode_L(MOTOR_L_FWD);
-			motor_mode_R(MOTOR_R_FWD);	
+			motor_mode(MOTOR_L_FWD,LEFT);
+			motor_mode(MOTOR_R_FWD,RIGHT);	
 			for(;;) {
-			
+				motor_set_speed(0x0F00,LEFT);
+				motor_set_speed(0x00F0,RIGHT);
+				printf_P(PSTR("\n       76543210"));
+				printf_P(PSTR("\nPORTB: "));print_bin(PORTB);
+				printf_P(PSTR("\nPORTD: "));print_bin(PORTD);
+				printf_P(PSTR("\nPINB : "));print_bin(PINB);
+				printf_P(PSTR("\nPINE : "));print_bin(PINE);
+				_delay_ms(700);
+				motor_set_speed(0xFFFF,LEFT);
+				motor_set_speed(0xFFFF,RIGHT);
 				printf_P(PSTR("\n       76543210"));
 				printf_P(PSTR("\nPORTB: "));print_bin(PORTB);
 				printf_P(PSTR("\nPORTD: "));print_bin(PORTD);

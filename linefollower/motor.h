@@ -7,17 +7,17 @@
 #include <avr/io.h>
 #include <inttypes.h>
 
-void set_motor_L(uint16_t);
-void set_motor_R(uint16_t);
-uint16_t get_motor_L(void);
-uint16_t get_motor_R(void);
-uint8_t	motor_mode_L(uint8_t);
-uint8_t	motor_mode_R(uint8_t);
+void motor_set_speed(uint16_t speed,uint8_t motor);
+uint16_t motor_get_speed(uint8_t motor); 
+uint8_t motor_mode(uint8_t mode, uint8_t motor);
 
-enum { MOTOR_MODE_GET, MOTOR_MODE_CW, MOTOR_MODE_CCW, MOTOR_MODE_STOP, MOTOR_MODE_SB, MOTOR_MODE_BWD, MOTOR_MODE_FWD };
 
-void lf_turn_left_inc(uint16_t);
-void lf_turn_right_inc(uint16_t);
+enum { MOTOR_MODE_GET, MOTOR_MODE_CW, MOTOR_MODE_CCW, MOTOR_MODE_STOP, MOTOR_MODE_SB, MOTOR_MODE_BWD, MOTOR_MODE_FWD, MOTOR_MODE_ERROR };
+enum {LEFT, RIGHT};
+
+
+void lf_turn_left_inc(uint16_t incriment);
+void lf_turn_right_inc(uint16_t incriment);
 void lf_full_speed(void);
 
 #endif
