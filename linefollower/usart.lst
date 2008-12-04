@@ -379,19 +379,19 @@
  432               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 usart.c
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:19     .text:00000000 usart0_putchar
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:53     .text:00000022 usart0_getchar
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:19     .text:00000000 usart0_putchar
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:53     .text:00000022 usart0_getchar
                              .bss:00000000 rxp.1525
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:388    .bss:00000002 b.1524
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:325    .text:000001b6 usart_init
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:376    .data:00000000 usart0_stdio
-C:\Users\Unknown\AppData\Local\Temp/ccpjvv0R.s:386    .progmem.data:00000000 __c.1583
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:388    .bss:00000002 b.1524
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:325    .text:000001b6 usart_init
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:376    .data:00000000 usart0_stdio
+C:\Users\Unknown\AppData\Local\Temp/cc7FrXVP.s:386    .progmem.data:00000000 __c.1583
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

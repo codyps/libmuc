@@ -153,18 +153,52 @@ int main(void) {
 			printf("\nML: %X",c_speed[0]);
 			printf("\nMR: %X",c_speed[1]);
 			print_adc_values();
-	
-			uint16_t adc_val_mixed [2] = {	adc_get_val(0) + adc_get_val(1) * LF_ADC_MIX_WIEGHT,	\
-											adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
-
-			if (adc_val_mixed[0]>adc_val_mixed[1])
-				lf_turn_inc(LF_INC,NEG);
-			else if (adc_val_mixed[1]>adc_val_mixed[0])
-				lf_turn_inc(LF_INC,POS);
-			else
+			uint16_t adc_vc[4]={adc_get_val(0), adc_get_val(1),adc_get_val(2), adc_get_val(3)};
+//			uint16_t adc_val_mixed [2] = {	adc_get_val(0) + adc_get_val(1) * LF_ADC_MIX_WIEGHT,	\
+//											adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
+			
+			static uint8_t old_dir=FWD;
+			static uint8_t dir=FWD;
+			static uint8_t ct;
+			//0=LEFT, 3=RIGHT
+			if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
+				lf_turn_inc(LF_INC_LARGE,NEG);
+				dir=LEFT;
+			}
+			else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
+				lf_turn_inc(LF_INC_LARGE,POS);
+				dir=RIGHT;
+			}
+			else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+				lf_turn_inc(LF_INC_SMALL,NEG);
+				dir=LEFT;
+			}
+			else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
+				lf_turn_inc(LF_INC_LARGE,POS);
+				dir=RIGHT;
+			}
+			else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[2]>adc_vc[3])) {
 				lf_full_speed();
-
-			_delay_ms(10);
+				dir=FWD;
+			}
+			/*// Shit is going down, so just keep turning. 
+			else {
+				++ct;
+			}
+			*/
+			
+			if (dir!=old_dir)
+				ct=0;
+			else 
+				++ct;
+			old_dir=dir;
+			uint16_t integ = ct*LF_INC_INTEG;
+			if (integ>LF_INTEG_MAX)
+				integ=LF_INTEG_MAX;
+			if (dir!=FWD)
+				lf_turn_inc(integ,dir);
+				
+			_delay_ms(5);
 			// do at every adc calc or pwm vector.
 		}
 		else if	(c_mode==TEST) {
