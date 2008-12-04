@@ -3,6 +3,7 @@
 char Author [] ="Cody Schafer";
 */
 
+#include <stdbool.h>
 #include "defines.h"
 #include "usart.h"
 #include "adc.h"
@@ -14,6 +15,7 @@ char Author [] ="Cody Schafer";
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+
 
 void clock_init(void) {
 	
@@ -61,16 +63,30 @@ void joy_init(void) {
 	
 }
 
-
-
 ISR(PCINT0_vect) {
 	//PE2,3
 	uint8_t iPINE = (uint8_t)~PINE;
 	if (iPINE&((1<<2)|(1<<3))) {
-		if (iPINE&(1<<2))
-			printf_P(PSTR("\n[debug] Left"));
-		if (iPINE&(1<<3))
-			printf_P(PSTR("\n[debug] Right"));
+		if (iPINE&(1<<2)) {// Left
+			if (c_mode!=WAIT)
+				c_mode=WAIT;
+			else {
+				initial=true;
+				c_mode=TEST;
+			}
+				
+			printf_P(PSTR("\nCurrent Mode (T/W) = %d"),c_mode);
+		}
+		if (iPINE&(1<<3)) {// Right
+			if (c_mode!=WAIT)
+				c_mode=WAIT;
+			else {
+				initial=true;
+				c_mode=FOLLOW;
+			}
+				
+			printf_P(PSTR("\nCurrent Mode (F/W)= %d"),c_mode);
+		}
 	}
 	else
 		printf_P(PSTR("\n[debug] PE? Released"));
@@ -80,19 +96,16 @@ ISR(PCINT1_vect) {
 	//PB7,4,6
 	uint8_t iPINB = (uint8_t)~PINB;
 	if (iPINB&((1<<7)|(1<<6)|(1<<4))) {
-		if (iPINB&(1<<7)) {
-			printf_P(PSTR("\n[debug] Down "));
+		if (iPINB&(1<<7)) {// Down
 			adc_calibrate_update();
 			print_adc_calibration();
 			print_adc_values();
 		}
-		if (iPINB&(1<<4)) {
-			printf_P(PSTR("\n[debug] In"));
+		if (iPINB&(1<<4)) {// In
 			print_adc_calibration();
 			print_adc_values();
 		}
-		if (iPINB&(1<<6)) {
-			printf_P(PSTR("\n[debug] Up"));
+		if (iPINB&(1<<6)) {// Up
 			adc_calibrate_clear();
 			print_adc_calibration();
 			print_adc_values();
@@ -122,12 +135,18 @@ void init(void) {
 int main(void) {
 	init();
 	c_mode=WAIT;
+	initial=true;
 	
 	motor_set_speed(0,LEFT);
 	motor_set_speed(0,RIGHT);
 		
 	for(;;) {
-		if		(c_mode==FOLLOW) {		
+		if		(c_mode==FOLLOW) {	
+			if (initial) {
+				lf_full_speed();
+				printf("\nInitialize Speed.");
+				initial=false;
+			}
 			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
 			printf("\nML: %X",c_speed[0]);
 			printf("\nMR: %X",c_speed[1]);
@@ -137,9 +156,9 @@ int main(void) {
 											adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
 
 			if (adc_val_mixed[0]>adc_val_mixed[1])
-				lf_turn_left_inc(LF_INC);
+				lf_turn_inc(LF_INC,-1);
 			else if (adc_val_mixed[1]>adc_val_mixed[0])
-				lf_turn_right_inc(LF_INC);
+				lf_turn_inc(LF_INC,1);
 			else
 				lf_full_speed();
 

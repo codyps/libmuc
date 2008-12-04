@@ -92,7 +92,7 @@ ISR(TIMER2_OVF_vect) {
 	++sec;
 	//1 Hz (16/16)
 	if (c_mode==WAIT) {
-		printf("\n\tT: %ds\n",sec);
+		//printf("\n\tT: %ds\n",sec);
 		printf_P(PSTR("\nMode: %d"),c_mode);
 	}
 	//print_adc_values();
@@ -136,8 +136,8 @@ void timer1_init(void) { // Runs the PWMs
 	//OCR1A and OCR1B are the Compare / PWM registers
 	//OCR1A = OCR1B = 0xFFFF; // Max = 65535,0xFFFF
 	
-	// disable the interupts (probably done by default).
-	TIMSK1&= (uint8_t)~((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
+	// Enable the interupts, used to avoid the fucking speaker.
+	TIMSK1|=((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
 	
 	MOTOR_PWM_DDR|= ((1<<M_PWMA_PIN)|(1<<M_PWMB_PIN));
 	
@@ -149,11 +149,13 @@ static uint8_t timer_2_dir;
 /* Timer/Counter1 Overflow ; BOTTOM */
 ISR(TIMER1_OVF_vect) {
 	timer_2_dir=UP;
+	//printf("\n\tUP\n");
 }
 
 /* Timer/Counter1 ISR1 ; TOP */
 ISR(SIG_INPUT_CAPTURE1) {
 	timer_2_dir=DOWN;
+	//printf("\n\tDN\n");
 }
 
 /* Timer/Counter Compare Match A */

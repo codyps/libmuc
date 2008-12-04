@@ -5,9 +5,11 @@
 #include <inttypes.h>
 #include <util/atomic.h>
 #include <avr/pgmspace.h>
+#include <stdlib.h>
 
 #define error_invalid_motor(_m) printf_P(PSTR("\n[error] Motor: Invalid Motor Number: %d [%s]"),_m,__LINE__)
-
+#define mr MOTOR_RIGHT
+#define ml MOTOR_LEFT
 uint16_t motor_get_speed(uint8_t motor) {
 	uint16_t temp;
 	if		(motor==LEFT)
@@ -85,64 +87,23 @@ uint8_t motor_mode(uint8_t mode, uint8_t motor) {
 	return *c_mode;
 }
 
-
-//TODO: This should replace the left/right specific functions.
-/*
-void lf_turn_inc(int32_t inc) {
-	uint16_t c_speed [2] = {get_motor_L(),get_motor_R()};
-	//L < 0, R > 0
-	if (inc==0)
-		return;
-	
-	int32_t max_d[] = {LF_MAX_SPEED - c_speed[LEFT], LF_MAX_SPEED - c_speed[RIGHT]};
-	int32_t min_d[] = {LF_MIN_SPEED - c_speed[LEFT], LF_MIN_SPEED - c_speed[RIGHT]};
-	
-	
-	int32_t c_spin = c_speed[LEFT]-c_speed[RIGHT];
-	int32_t spin_goal = c_spin+inc;
-	
-	if		(spin_goal>INT32_MAX)
-		spin_goal=INT32_MAX;
-	else if	(spin_goal<INT32_MIN)
-		spin_goal=INT32_MIN;
-		
-	if		(inc<0)
-	
-	
-	
-}
-*/
-
-// These suck. Fix them.
-void lf_turn_left_inc(uint16_t inc) {
-	uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-	int32_t speed_diff_L = LF_MAX_SPEED - c_speed[LEFT];
-//	int32_t speed_diff_R = LF_MAX_SPEED - c_speed[RIGHT];
-
-	if ((c_speed[LEFT] + inc) > LF_MAX_SPEED) {
-		motor_set_speed(c_speed[LEFT]+speed_diff_L,LEFT);
-		if ((c_speed[RIGHT]-inc) < LF_MIN_SPEED)
-			motor_set_speed(LF_MIN_SPEED,RIGHT);
-		else
-			motor_set_speed(c_speed[RIGHT]-(inc-speed_diff_L),RIGHT);
+uint16_t inc_limit(uint16_t * org, uint16_t inc, uint16_t lim) {
+	uint16_t space_left = lim-(*org);
+	uint16_t ret = (inc-space_left);
+	if (ret>0) {
+		*org+=space_left;
+		return ret;
 	}
-	else
-		motor_set_speed(c_speed[LEFT]+inc,LEFT);
-}
-void lf_turn_right_inc(uint16_t inc) {
-	uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-//	int32_t speed_diff_L = LF_MAX_SPEED - c_speed[LEFT];
-	int32_t speed_diff_R = LF_MAX_SPEED - c_speed[RIGHT];
-
-	if ((c_speed[RIGHT] + inc) > LF_MAX_SPEED) {
-		motor_set_speed(c_speed[RIGHT]+speed_diff_R,RIGHT);
-		if ((c_speed[LEFT]-inc) < LF_MIN_SPEED)
-			motor_set_speed(LF_MIN_SPEED,LEFT);
-		else
-			motor_set_speed(c_speed[LEFT]-(inc-speed_diff_R),LEFT);
+	else {
+		*org+=inc;
+		return 0;
 	}
-	else
-		motor_set_speed(c_speed[RIGHT]+inc,RIGHT);
+}
+void lf_turn_inc(uint16_t inc,int8_t dir) {
+	if		(dir>0)
+		mr-=inc_limit(&ml,inc,0xFFFF);
+	else if (dir<0)
+		ml-=inc_limit(&mr,inc,0xFFFF);
 }
 
 void lf_full_speed(void) {

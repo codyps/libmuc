@@ -7,13 +7,16 @@ Globaly Utilized Information
 #define _DEFINES_H_
 
 #include <avr/io.h>
+#include <stdbool.h>
+#include <stdint.h>
+
 #define F_CPU 8000000
 
 /* Amount Defines for Line Following */
 #define LF_ADC_MIX_WIEGHT 5	//Multiplied by the 2 middle adc values to wieght them
 #define LF_INC 100		// Turn Incriment
 #define LF_MAX_SPEED 0xFFFF	
-#define LF_MIN_SPEED 0x0	
+#define LF_MIN_SPEED 0	
 /* A / B defines */
 
 #define M_PWMA OCR1A
@@ -50,5 +53,6 @@ Globaly Utilized Information
 /* Mode/State */
 enum {WAIT,TEST,FOLLOW};
 uint8_t c_mode;
+bool initial;
 
 #endif

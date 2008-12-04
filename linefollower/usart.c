@@ -22,7 +22,9 @@ int usart0_getchar(FILE *stream) {
 	char *cp, *cp2;
 	static char b[RX_BUFSIZE];
 	static char *rxp;
-
+	//if (UCSR0B&(1<<RXCIE0)) // Disable the interrupt while scanf is working.
+	//	UCSR0B &=(uint8_t)~(1<<RXCIE0);
+	
 	if (rxp == 0) {
 		for (cp = b;;) {
 			loop_until_bit_is_set(UCSR0A, RXC0);
@@ -35,6 +37,7 @@ int usart0_getchar(FILE *stream) {
 				*cp = c;
 				usart0_putchar(c, stream);
 				rxp = b;
+			//	UCSR0B |=(1<<RXCIE0); //scanf done?
 				break;
 			}
 			else if (c == '\t') 	c = ' ';
@@ -104,10 +107,13 @@ static int usart0_putchar(char c, FILE *stream) {
   return 0;
 }
 
-
-ISR(USART0_RX_vect) {
-	//UDR0=q_pop(rx_queue);
+/*
+ISR(USART0_RX_vect) { 
 	char c = UDR0;
+	//q_push(rx_queue,c);
+	//if (c=='\n')
+	//	parse_rx();
+		
 	printf_P(PSTR("\nRX_vect got char: %c"),c);
 	if		(toupper(c)=='T')
 		c_mode=TEST;
@@ -117,7 +123,7 @@ ISR(USART0_RX_vect) {
 		c_mode=WAIT;
 	printf_P(PSTR("\nMode now: %d\n"),c_mode);
 }
-
+*/
 /*
 ISR(USART0_TX_vect) {
 	
@@ -143,7 +149,7 @@ void usart_init(void) {
 	/* Enable receiver and transmitter */
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0)	;
 	/* Enable r/t interupts, hangles input when used with some buffering functions */
-	UCSR0B |=(1<<RXCIE0);
+	//UCSR0B |=(1<<RXCIE0);
 	//UCSR0B |=(1<<TXCIE0);
 	/* Set frame format: 8data, 1stop bit */
 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
