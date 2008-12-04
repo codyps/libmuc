@@ -8,8 +8,7 @@
 #include <stdlib.h>
 
 #define error_invalid_motor(_m) printf_P(PSTR("\n[error] Motor: Invalid Motor Number: %d [%s]"),_m,__LINE__)
-#define mr MOTOR_RIGHT
-#define ml MOTOR_LEFT
+
 uint16_t motor_get_speed(uint8_t motor) {
 	uint16_t temp;
 	if		(motor==LEFT)
@@ -89,21 +88,38 @@ uint8_t motor_mode(uint8_t mode, uint8_t motor) {
 
 uint16_t inc_limit(uint16_t * org, uint16_t inc, uint16_t lim) {
 	uint16_t space_left = lim-(*org);
-	uint16_t ret = (inc-space_left);
-	if (ret>0) {
+	if (inc>space_left) {
 		*org+=space_left;
-		return ret;
+		//*org=max;
+		return (inc-space_left);
 	}
 	else {
 		*org+=inc;
 		return 0;
 	}
 }
+
+uint16_t dec_limit(uint16_t * org, uint16_t dec, uint16_t lim) {
+	uint16_t space_left = (*org)-lim;
+	if (dec>space_left) {
+		*org-=space_left;
+		return (dec-space_left);
+	}
+	else {
+		*org-=dec;
+		return 0;
+	}
+}
+
 void lf_turn_inc(uint16_t inc,int8_t dir) {
-	if		(dir>0)
-		mr-=inc_limit(&ml,inc,0xFFFF);
-	else if (dir<0)
-		ml-=inc_limit(&mr,inc,0xFFFF);
+	uint16_t mr = motor_get_speed(RIGHT);
+	uint16_t ml = motor_get_speed(LEFT);
+	if		(dir==POS)
+		dec_limit(&mr,inc_limit(&ml,inc,LF_MAX_SPEED),LF_MIN_SPEED);
+	else if (dir==NEG)
+		dec_limit(&ml,inc_limit(&mr,inc,LF_MAX_SPEED),LF_MIN_SPEED);
+	motor_set_speed(mr,RIGHT);
+	motor_set_speed(ml,LEFT);
 }
 
 void lf_full_speed(void) {

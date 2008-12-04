@@ -14,7 +14,7 @@ Globaly Utilized Information
 
 /* Amount Defines for Line Following */
 #define LF_ADC_MIX_WIEGHT 5	//Multiplied by the 2 middle adc values to wieght them
-#define LF_INC 100		// Turn Incriment
+#define LF_INC 0x256		// Turn Incriment
 #define LF_MAX_SPEED 0xFFFF	
 #define LF_MIN_SPEED 0	
 /* A / B defines */
