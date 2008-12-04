@@ -14,9 +14,9 @@ Globaly Utilized Information
 
 /* Amount Defines for Line Following */
 #define LF_ADC_MIX_WIEGHT 5	//Multiplied by the 2 middle adc values to wieght them
-#define LF_INC 0x256		// Turn Incriment
-#define LF_MAX_SPEED 0xFFFF	
-#define LF_MIN_SPEED 0	
+#define LF_INC 0x200	// Turn Incriment
+#define LF_MAX_SPEED 0x6000	// Software implimentation sucks. anything close to the 0 or ffff
+#define LF_MIN_SPEED 0x1500 // has undefined behavior.
 /* A / B defines */
 
 #define M_PWMA OCR1A

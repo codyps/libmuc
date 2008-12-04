@@ -124,6 +124,8 @@ void init(void) {
 	usart_init();
 	adc_init();
 	timers_init();	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
+	motor_set_speed(LF_MIN_SPEED,LEFT);
+	motor_set_speed(LF_MIN_SPEED,RIGHT);
 	motor_mode(MOTOR_L_FWD,LEFT);
 	motor_mode(MOTOR_R_FWD,RIGHT);
 	sei();
@@ -137,8 +139,8 @@ int main(void) {
 	c_mode=WAIT;
 	initial=true;
 	
-	motor_set_speed(0,LEFT);
-	motor_set_speed(0,RIGHT);
+	motor_set_speed(LF_MIN_SPEED,LEFT);
+	motor_set_speed(LF_MIN_SPEED,RIGHT);
 		
 	for(;;) {
 		if		(c_mode==FOLLOW) {	
@@ -156,31 +158,29 @@ int main(void) {
 											adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
 
 			if (adc_val_mixed[0]>adc_val_mixed[1])
-				lf_turn_inc(LF_INC,-1);
+				lf_turn_inc(LF_INC,NEG);
 			else if (adc_val_mixed[1]>adc_val_mixed[0])
-				lf_turn_inc(LF_INC,1);
+				lf_turn_inc(LF_INC,POS);
 			else
 				lf_full_speed();
 
-			_delay_ms(700);
+			_delay_ms(10);
 			// do at every adc calc or pwm vector.
 		}
 		else if	(c_mode==TEST) {
-			uint16_t sp;
+			if (initial) {
+				motor_mode(MOTOR_L_FWD,LEFT);
+				motor_mode(MOTOR_R_FWD,RIGHT);
+				initial=false;
+			}
+			static uint16_t sp;
 			
-			motor_mode(MOTOR_L_FWD,LEFT);
-			motor_mode(MOTOR_R_FWD,RIGHT);				
-			
-			printf_P(PSTR("\nMotor Speed L (max=%d):"),UINT16_MAX);
-			scanf("%d",&sp);
 			motor_set_speed(sp,LEFT);
-			printf_P(PSTR("\nMotor Speed L is now %d"),motor_get_speed(LEFT));
-			
-			printf_P(PSTR("\nMotor Speed R (max=%d):"),UINT16_MAX);
-			scanf("%x",&sp);
 			motor_set_speed(sp,RIGHT);
-			printf_P(PSTR("\nMotor Speed R is now %d"),motor_get_speed(RIGHT));
-		
+			_delay_ms(2);
+			if (!(sp%0x100))
+				printf("\nsp=%x",sp);
+			++sp;
 		}
 	}	
 } 

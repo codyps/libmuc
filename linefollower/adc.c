@@ -138,6 +138,8 @@ ISR(ADC_vect) {
 	adc_value  =  ADCL;  
 	adc_value += (ADCH<<8);
 	uint8_t real_channel;
+	static uint8_t ct;
+	++ct;
 
 	// the curr_ch now has the chan of the on going conversion, we need the last one
 	if (curr_ch==0)	real_channel = channel_amt-1; //curr_ch==0 
@@ -157,4 +159,8 @@ ISR(ADC_vect) {
 	
 	//TODO: modify for running average (Ave= (Ave*(ct-1)+New)/ct)
 	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
+	
+	if (!(ct%4)) {
+		//all values have been recalculated, update motors.
+	}
 }

@@ -195,13 +195,13 @@
  209               	/* frame size = 0 */
  210               	.LM26:
  211 00b8 60E0      		ldi r22,lo8(0)
- 212 00ba 8FEF      		ldi r24,lo8(-1)
- 213 00bc 9FEF      		ldi r25,hi8(-1)
+ 212 00ba 80E0      		ldi r24,lo8(24576)
+ 213 00bc 90E6      		ldi r25,hi8(24576)
  214 00be 0E94 0000 		call motor_set_speed
  215               	.LM27:
  216 00c2 61E0      		ldi r22,lo8(1)
- 217 00c4 8FEF      		ldi r24,lo8(-1)
- 218 00c6 9FEF      		ldi r25,hi8(-1)
+ 217 00c4 80E0      		ldi r24,lo8(24576)
+ 218 00c6 90E6      		ldi r25,hi8(24576)
  219 00c8 0E94 0000 		call motor_set_speed
  220               	/* epilogue start */
  221               	.LM28:
@@ -325,407 +325,391 @@
  343 0146 EC01      		movw r28,r24
  344               	.LVL17:
  345               	.LM43:
- 346 0148 21E0      		ldi r18,lo8(1)
- 347 014a D216      		cp r13,r18
+ 346 0148 81E0      		ldi r24,lo8(1)
+ 347 014a D816      		cp r13,r24
  348 014c 01F4      		brne .L24
  349               	.LBB48:
  350               	.LBB49:
  351               	.LM44:
- 352 014e 8095      		com r24
- 353 0150 9095      		com r25
+ 352 014e 80E0      		ldi r24,lo8(24576)
+ 353 0150 90E6      		ldi r25,hi8(24576)
  354               	.LVL18:
- 355               	.LM45:
- 356 0152 8E15      		cp r24,r14
- 357 0154 9F05      		cpc r25,r15
- 358 0156 00F4      		brsh .L25
- 359               	.LM46:
- 360 0158 C80F      		add r28,r24
- 361 015a D91F      		adc r29,r25
- 362               	.LM47:
- 363 015c 9701      		movw r18,r14
- 364 015e 281B      		sub r18,r24
- 365 0160 390B      		sbc r19,r25
- 366 0162 C901      		movw r24,r18
- 367               	.LVL19:
- 368               	.LBE49:
- 369               	.LBE48:
- 370               	.LBB51:
- 371               	.LBB52:
- 372               	.LM48:
- 373 0164 0217      		cp r16,r18
- 374 0166 1307      		cpc r17,r19
- 375 0168 00F4      		brsh .L26
- 376 016a 00E0      		ldi r16,lo8(0)
- 377 016c 10E0      		ldi r17,hi8(0)
- 378 016e 00C0      		rjmp .L27
- 379               	.LVL20:
- 380               	.L25:
- 381               	.LBE52:
- 382               	.LBE51:
- 383               	.LBB54:
- 384               	.LBB50:
- 385               	.LM49:
- 386 0170 CE0D      		add r28,r14
- 387 0172 DF1D      		adc r29,r15
- 388 0174 80E0      		ldi r24,lo8(0)
- 389 0176 90E0      		ldi r25,hi8(0)
- 390               	.LVL21:
- 391               	.L26:
- 392               	.LBE50:
- 393               	.LBE54:
- 394               	.LBB55:
- 395               	.LBB53:
- 396               	.LM50:
- 397 0178 081B      		sub r16,r24
- 398 017a 190B      		sbc r17,r25
- 399 017c 00C0      		rjmp .L27
- 400               	.L24:
- 401               	.LBE53:
- 402               	.LBE55:
+ 355 0152 8C1B      		sub r24,r28
+ 356 0154 9D0B      		sbc r25,r29
+ 357               	.LM45:
+ 358 0156 8E15      		cp r24,r14
+ 359 0158 9F05      		cpc r25,r15
+ 360 015a 00F4      		brsh .L25
+ 361               	.LM46:
+ 362 015c 9701      		movw r18,r14
+ 363 015e 281B      		sub r18,r24
+ 364 0160 390B      		sbc r19,r25
+ 365 0162 C0E0      		ldi r28,lo8(24576)
+ 366 0164 D0E6      		ldi r29,hi8(24576)
+ 367 0166 00C0      		rjmp .L26
+ 368               	.L25:
+ 369               	.LM47:
+ 370 0168 CE0D      		add r28,r14
+ 371 016a DF1D      		adc r29,r15
+ 372 016c 20E0      		ldi r18,lo8(0)
+ 373 016e 30E0      		ldi r19,hi8(0)
+ 374               	.L26:
+ 375               	.LBE49:
+ 376               	.LBE48:
+ 377               	.LBB50:
+ 378               	.LBB51:
+ 379               	.LM48:
+ 380 0170 C801      		movw r24,r16
+ 381               	.LVL19:
+ 382 0172 8050      		subi r24,lo8(-(-5376))
+ 383 0174 9541      		sbci r25,hi8(-(-5376))
+ 384 0176 8217      		cp r24,r18
+ 385 0178 9307      		cpc r25,r19
+ 386 017a 00F4      		brsh .L27
+ 387 017c 00E0      		ldi r16,lo8(5376)
+ 388 017e 15E1      		ldi r17,hi8(5376)
+ 389 0180 00C0      		rjmp .L28
+ 390               	.L27:
+ 391               	.LM49:
+ 392 0182 021B      		sub r16,r18
+ 393 0184 130B      		sbc r17,r19
+ 394 0186 00C0      		rjmp .L28
+ 395               	.L24:
+ 396               	.LBE51:
+ 397               	.LBE50:
+ 398               	.LM50:
+ 399 0188 DD20      		tst r13
+ 400 018a 01F4      		brne .L28
+ 401               	.LBB52:
+ 402               	.LBB53:
  403               	.LM51:
- 404 017e DD20      		tst r13
- 405 0180 01F4      		brne .L27
- 406               	.LBB56:
- 407               	.LBB57:
- 408               	.LM52:
- 409 0182 C801      		movw r24,r16
- 410               	.LVL22:
- 411 0184 8095      		com r24
- 412 0186 9095      		com r25
+ 404 018c 80E0      		ldi r24,lo8(24576)
+ 405 018e 90E6      		ldi r25,hi8(24576)
+ 406               	.LVL20:
+ 407 0190 801B      		sub r24,r16
+ 408 0192 910B      		sbc r25,r17
+ 409               	.LM52:
+ 410 0194 8E15      		cp r24,r14
+ 411 0196 9F05      		cpc r25,r15
+ 412 0198 00F4      		brsh .L29
  413               	.LM53:
- 414 0188 8E15      		cp r24,r14
- 415 018a 9F05      		cpc r25,r15
- 416 018c 00F4      		brsh .L28
- 417               	.LM54:
- 418 018e 080F      		add r16,r24
- 419 0190 191F      		adc r17,r25
- 420               	.LM55:
- 421 0192 9701      		movw r18,r14
- 422 0194 281B      		sub r18,r24
- 423 0196 390B      		sbc r19,r25
- 424 0198 C901      		movw r24,r18
- 425               	.LVL23:
- 426               	.LBE57:
- 427               	.LBE56:
- 428               	.LBB59:
- 429               	.LBB60:
- 430               	.LM56:
- 431 019a C217      		cp r28,r18
- 432 019c D307      		cpc r29,r19
- 433 019e 00F4      		brsh .L29
- 434 01a0 C0E0      		ldi r28,lo8(0)
- 435 01a2 D0E0      		ldi r29,hi8(0)
- 436 01a4 00C0      		rjmp .L27
- 437               	.LVL24:
- 438               	.L28:
- 439               	.LBE60:
- 440               	.LBE59:
- 441               	.LBB62:
- 442               	.LBB58:
- 443               	.LM57:
- 444 01a6 0E0D      		add r16,r14
- 445 01a8 1F1D      		adc r17,r15
- 446 01aa 80E0      		ldi r24,lo8(0)
- 447 01ac 90E0      		ldi r25,hi8(0)
- 448               	.LVL25:
- 449               	.L29:
- 450               	.LBE58:
- 451               	.LBE62:
- 452               	.LBB63:
- 453               	.LBB61:
- 454               	.LM58:
- 455 01ae C81B      		sub r28,r24
- 456 01b0 D90B      		sbc r29,r25
- 457               	.L27:
- 458               	.LBE61:
- 459               	.LBE63:
- 460               	.LM59:
- 461 01b2 61E0      		ldi r22,lo8(1)
- 462 01b4 C801      		movw r24,r16
- 463 01b6 0E94 0000 		call motor_set_speed
- 464               	.LM60:
- 465 01ba 60E0      		ldi r22,lo8(0)
- 466 01bc CE01      		movw r24,r28
- 467 01be 0E94 0000 		call motor_set_speed
- 468               	/* epilogue start */
- 469               	.LM61:
- 470 01c2 DF91      		pop r29
- 471 01c4 CF91      		pop r28
- 472               	.LVL26:
- 473 01c6 1F91      		pop r17
- 474 01c8 0F91      		pop r16
- 475               	.LVL27:
- 476 01ca FF90      		pop r15
- 477 01cc EF90      		pop r14
- 478               	.LVL28:
- 479 01ce DF90      		pop r13
- 480               	.LVL29:
- 481 01d0 0895      		ret
- 482               	.LFE13:
- 484               		.data
- 485               	.LC0:
- 486 0000 5269 6768 		.string	"Right"
- 486      7400 
- 487               	.LC1:
- 488 0006 4C65 6674 		.string	"Left"
- 488      00
- 489               	.LC2:
- 490 000b 0A4D 6F74 		.string	"\nMotor: %s mode: %d"
- 490      6F72 3A20 
- 490      2573 206D 
- 490      6F64 653A 
- 490      2025 6400 
- 491               		.text
- 492               	.global	motor_mode
- 494               	motor_mode:
- 495               	.LFB10:
- 496               	.LM62:
- 497               	.LVL30:
- 498 01d2 CF93      		push r28
- 499 01d4 DF93      		push r29
- 500               	/* prologue: function */
- 501               	/* frame size = 0 */
- 502 01d6 782F      		mov r23,r24
- 503               	.LM63:
- 504 01d8 6623      		tst r22
- 505 01da 01F0      		breq .L32
- 506               	.LVL31:
- 507               	.LM64:
- 508 01dc 6130      		cpi r22,lo8(1)
- 509 01de 01F4      		brne .L33
- 510 01e0 55E0      		ldi r21,lo8(5)
- 511               	.LVL32:
- 512 01e2 E7E0      		ldi r30,lo8(7)
- 513               	.LVL33:
- 514 01e4 C0E0      		ldi r28,lo8(c_modes.1676+1)
- 515 01e6 D0E0      		ldi r29,hi8(c_modes.1676+1)
- 516               	.LVL34:
- 517 01e8 00C0      		rjmp .L34
- 518               	.LVL35:
- 519               	.L33:
- 520               	.LM65:
- 521 01ea 89E3      		ldi r24,lo8(57)
- 522 01ec 90E0      		ldi r25,hi8(57)
- 523 01ee 9F93      		push r25
- 524 01f0 8F93      		push r24
- 525 01f2 862F      		mov r24,r22
- 526 01f4 90E0      		ldi r25,lo8(0)
- 527               	.LVL36:
- 528 01f6 9F93      		push r25
- 529 01f8 8F93      		push r24
- 530 01fa 80E0      		ldi r24,lo8(__c.1680)
- 531 01fc 90E0      		ldi r25,hi8(__c.1680)
- 532 01fe 9F93      		push r25
- 533 0200 8F93      		push r24
- 534 0202 0E94 0000 		call printf_P
- 535               	.LVL37:
- 536 0206 87E0      		ldi r24,lo8(7)
- 537 0208 00C0      		rjmp .L44
- 538               	.LVL38:
- 539               	.L32:
- 540               	.LM66:
- 541 020a 51E0      		ldi r21,lo8(1)
- 542               	.LVL39:
- 543 020c E3E0      		ldi r30,lo8(3)
- 544               	.LVL40:
- 545 020e C0E0      		ldi r28,lo8(c_modes.1676)
- 546 0210 D0E0      		ldi r29,hi8(c_modes.1676)
- 547               	.LVL41:
- 548               	.L34:
- 549               	.LM67:
- 550 0212 7230      		cpi r23,lo8(2)
- 551 0214 01F4      		brne .L36
- 552               	.LM68:
- 553 0216 4BB1      		in r20,43-32
- 554 0218 21E0      		ldi r18,lo8(1)
- 555 021a 30E0      		ldi r19,hi8(1)
- 556 021c C901      		movw r24,r18
- 557 021e 00C0      		rjmp 2f
- 558 0220 880F      	1:	lsl r24
- 559 0222 991F      		rol r25
- 560 0224 5A95      	2:	dec r21
- 561 0226 02F4      		brpl 1b
- 562 0228 8095      		com r24
- 563 022a 8423      		and r24,r20
- 564 022c 8BB9      		out 43-32,r24
- 565               	.LM69:
- 566 022e 8BB1      		in r24,43-32
- 567 0230 00C0      		rjmp 2f
- 568 0232 220F      	1:	lsl r18
- 569 0234 331F      		rol r19
- 570 0236 EA95      	2:	dec r30
- 571 0238 02F4      		brpl 1b
- 572 023a 822B      		or r24,r18
- 573 023c 00C0      		rjmp .L45
- 574               	.LVL42:
- 575               	.L36:
+ 414 019a 9701      		movw r18,r14
+ 415 019c 281B      		sub r18,r24
+ 416 019e 390B      		sbc r19,r25
+ 417 01a0 00E0      		ldi r16,lo8(24576)
+ 418 01a2 10E6      		ldi r17,hi8(24576)
+ 419 01a4 00C0      		rjmp .L30
+ 420               	.L29:
+ 421               	.LM54:
+ 422 01a6 0E0D      		add r16,r14
+ 423 01a8 1F1D      		adc r17,r15
+ 424 01aa 20E0      		ldi r18,lo8(0)
+ 425 01ac 30E0      		ldi r19,hi8(0)
+ 426               	.L30:
+ 427               	.LBE53:
+ 428               	.LBE52:
+ 429               	.LBB54:
+ 430               	.LBB55:
+ 431               	.LM55:
+ 432 01ae CE01      		movw r24,r28
+ 433               	.LVL21:
+ 434 01b0 8050      		subi r24,lo8(-(-5376))
+ 435 01b2 9541      		sbci r25,hi8(-(-5376))
+ 436 01b4 8217      		cp r24,r18
+ 437 01b6 9307      		cpc r25,r19
+ 438 01b8 00F4      		brsh .L31
+ 439 01ba C0E0      		ldi r28,lo8(5376)
+ 440 01bc D5E1      		ldi r29,hi8(5376)
+ 441 01be 00C0      		rjmp .L28
+ 442               	.L31:
+ 443               	.LM56:
+ 444 01c0 C21B      		sub r28,r18
+ 445 01c2 D30B      		sbc r29,r19
+ 446               	.L28:
+ 447               	.LBE55:
+ 448               	.LBE54:
+ 449               	.LM57:
+ 450 01c4 61E0      		ldi r22,lo8(1)
+ 451 01c6 C801      		movw r24,r16
+ 452 01c8 0E94 0000 		call motor_set_speed
+ 453               	.LM58:
+ 454 01cc 60E0      		ldi r22,lo8(0)
+ 455 01ce CE01      		movw r24,r28
+ 456 01d0 0E94 0000 		call motor_set_speed
+ 457               	/* epilogue start */
+ 458               	.LM59:
+ 459 01d4 DF91      		pop r29
+ 460 01d6 CF91      		pop r28
+ 461               	.LVL22:
+ 462 01d8 1F91      		pop r17
+ 463 01da 0F91      		pop r16
+ 464               	.LVL23:
+ 465 01dc FF90      		pop r15
+ 466 01de EF90      		pop r14
+ 467               	.LVL24:
+ 468 01e0 DF90      		pop r13
+ 469               	.LVL25:
+ 470 01e2 0895      		ret
+ 471               	.LFE13:
+ 473               		.data
+ 474               	.LC0:
+ 475 0000 0A4D 6F74 		.string	"\nMotor: %c mode: %d"
+ 475      6F72 3A20 
+ 475      2563 206D 
+ 475      6F64 653A 
+ 475      2025 6400 
+ 476               		.text
+ 477               	.global	motor_mode
+ 479               	motor_mode:
+ 480               	.LFB10:
+ 481               	.LM60:
+ 482               	.LVL26:
+ 483 01e4 CF93      		push r28
+ 484 01e6 DF93      		push r29
+ 485               	/* prologue: function */
+ 486               	/* frame size = 0 */
+ 487 01e8 782F      		mov r23,r24
+ 488               	.LM61:
+ 489 01ea 6623      		tst r22
+ 490 01ec 01F0      		breq .L34
+ 491               	.LVL27:
+ 492               	.LM62:
+ 493 01ee 6130      		cpi r22,lo8(1)
+ 494 01f0 01F4      		brne .L35
+ 495 01f2 55E0      		ldi r21,lo8(5)
+ 496               	.LVL28:
+ 497 01f4 E7E0      		ldi r30,lo8(7)
+ 498               	.LVL29:
+ 499 01f6 C0E0      		ldi r28,lo8(c_modes.1676+1)
+ 500 01f8 D0E0      		ldi r29,hi8(c_modes.1676+1)
+ 501               	.LVL30:
+ 502 01fa 00C0      		rjmp .L36
+ 503               	.LVL31:
+ 504               	.L35:
+ 505               	.LM63:
+ 506 01fc 89E3      		ldi r24,lo8(57)
+ 507 01fe 90E0      		ldi r25,hi8(57)
+ 508 0200 9F93      		push r25
+ 509 0202 8F93      		push r24
+ 510 0204 862F      		mov r24,r22
+ 511 0206 90E0      		ldi r25,lo8(0)
+ 512               	.LVL32:
+ 513 0208 9F93      		push r25
+ 514 020a 8F93      		push r24
+ 515 020c 80E0      		ldi r24,lo8(__c.1680)
+ 516 020e 90E0      		ldi r25,hi8(__c.1680)
+ 517 0210 9F93      		push r25
+ 518 0212 8F93      		push r24
+ 519 0214 0E94 0000 		call printf_P
+ 520               	.LVL33:
+ 521 0218 87E0      		ldi r24,lo8(7)
+ 522 021a 00C0      		rjmp .L46
+ 523               	.LVL34:
+ 524               	.L34:
+ 525               	.LM64:
+ 526 021c 51E0      		ldi r21,lo8(1)
+ 527               	.LVL35:
+ 528 021e E3E0      		ldi r30,lo8(3)
+ 529               	.LVL36:
+ 530 0220 C0E0      		ldi r28,lo8(c_modes.1676)
+ 531 0222 D0E0      		ldi r29,hi8(c_modes.1676)
+ 532               	.LVL37:
+ 533               	.L36:
+ 534               	.LM65:
+ 535 0224 7230      		cpi r23,lo8(2)
+ 536 0226 01F4      		brne .L38
+ 537               	.LM66:
+ 538 0228 4BB1      		in r20,43-32
+ 539 022a 21E0      		ldi r18,lo8(1)
+ 540 022c 30E0      		ldi r19,hi8(1)
+ 541 022e C901      		movw r24,r18
+ 542 0230 00C0      		rjmp 2f
+ 543 0232 880F      	1:	lsl r24
+ 544 0234 991F      		rol r25
+ 545 0236 5A95      	2:	dec r21
+ 546 0238 02F4      		brpl 1b
+ 547 023a 8095      		com r24
+ 548 023c 8423      		and r24,r20
+ 549 023e 8BB9      		out 43-32,r24
+ 550               	.LM67:
+ 551 0240 8BB1      		in r24,43-32
+ 552 0242 00C0      		rjmp 2f
+ 553 0244 220F      	1:	lsl r18
+ 554 0246 331F      		rol r19
+ 555 0248 EA95      	2:	dec r30
+ 556 024a 02F4      		brpl 1b
+ 557 024c 822B      		or r24,r18
+ 558 024e 00C0      		rjmp .L47
+ 559               	.LVL38:
+ 560               	.L38:
+ 561               	.LM68:
+ 562 0250 7130      		cpi r23,lo8(1)
+ 563 0252 01F4      		brne .L40
+ 564               	.LM69:
+ 565 0254 4BB1      		in r20,43-32
+ 566 0256 81E0      		ldi r24,lo8(1)
+ 567 0258 90E0      		ldi r25,hi8(1)
+ 568 025a 9C01      		movw r18,r24
+ 569 025c 00C0      		rjmp 2f
+ 570 025e 220F      	1:	lsl r18
+ 571 0260 331F      		rol r19
+ 572 0262 5A95      	2:	dec r21
+ 573 0264 02F4      		brpl 1b
+ 574 0266 422B      		or r20,r18
+ 575 0268 4BB9      		out 43-32,r20
  576               	.LM70:
- 577 023e 7130      		cpi r23,lo8(1)
- 578 0240 01F4      		brne .L38
- 579               	.LM71:
- 580 0242 4BB1      		in r20,43-32
- 581 0244 81E0      		ldi r24,lo8(1)
- 582 0246 90E0      		ldi r25,hi8(1)
- 583 0248 9C01      		movw r18,r24
- 584 024a 00C0      		rjmp 2f
- 585 024c 220F      	1:	lsl r18
- 586 024e 331F      		rol r19
- 587 0250 5A95      	2:	dec r21
- 588 0252 02F4      		brpl 1b
- 589 0254 422B      		or r20,r18
- 590 0256 4BB9      		out 43-32,r20
+ 577 026a 2BB1      		in r18,43-32
+ 578 026c 00C0      		rjmp 2f
+ 579 026e 880F      	1:	lsl r24
+ 580 0270 991F      		rol r25
+ 581 0272 EA95      	2:	dec r30
+ 582 0274 02F4      		brpl 1b
+ 583 0276 8095      		com r24
+ 584 0278 8223      		and r24,r18
+ 585 027a 00C0      		rjmp .L47
+ 586               	.LVL39:
+ 587               	.L40:
+ 588               	.LM71:
+ 589 027c 7330      		cpi r23,lo8(3)
+ 590 027e 01F4      		brne .L41
  591               	.LM72:
- 592 0258 2BB1      		in r18,43-32
- 593 025a 00C0      		rjmp 2f
- 594 025c 880F      	1:	lsl r24
- 595 025e 991F      		rol r25
- 596 0260 EA95      	2:	dec r30
- 597 0262 02F4      		brpl 1b
- 598 0264 8095      		com r24
- 599 0266 8223      		and r24,r18
- 600 0268 00C0      		rjmp .L45
- 601               	.LVL43:
- 602               	.L38:
- 603               	.LM73:
- 604 026a 7330      		cpi r23,lo8(3)
- 605 026c 01F4      		brne .L39
- 606               	.LM74:
- 607 026e 4BB1      		in r20,43-32
- 608 0270 21E0      		ldi r18,lo8(1)
- 609 0272 30E0      		ldi r19,hi8(1)
- 610 0274 C901      		movw r24,r18
- 611 0276 00C0      		rjmp 2f
- 612 0278 880F      	1:	lsl r24
- 613 027a 991F      		rol r25
- 614 027c EA95      	2:	dec r30
- 615 027e 02F4      		brpl 1b
- 616 0280 00C0      		rjmp 2f
- 617 0282 220F      	1:	lsl r18
- 618 0284 331F      		rol r19
- 619 0286 5A95      	2:	dec r21
- 620 0288 02F4      		brpl 1b
- 621 028a 822B      		or r24,r18
- 622 028c 8095      		com r24
- 623 028e 8423      		and r24,r20
- 624               	.L45:
- 625 0290 8BB9      		out 43-32,r24
- 626 0292 00C0      		rjmp .L43
- 627               	.LVL44:
- 628               	.L39:
- 629               	.LM75:
- 630 0294 7430      		cpi r23,lo8(4)
- 631 0296 01F4      		brne .L37
- 632               	.LM76:
- 633 0298 8BB1      		in r24,43-32
- 634 029a 21E0      		ldi r18,lo8(1)
- 635 029c 30E0      		ldi r19,hi8(1)
- 636 029e D901      		movw r26,r18
- 637 02a0 00C0      		rjmp 2f
- 638 02a2 AA0F      	1:	lsl r26
- 639 02a4 BB1F      		rol r27
- 640 02a6 5A95      	2:	dec r21
- 641 02a8 02F4      		brpl 1b
- 642 02aa AD01      		movw r20,r26
- 643 02ac 00C0      		rjmp 2f
- 644 02ae 220F      	1:	lsl r18
- 645 02b0 331F      		rol r19
- 646 02b2 EA95      	2:	dec r30
- 647 02b4 02F4      		brpl 1b
- 648 02b6 422B      		or r20,r18
- 649 02b8 482B      		or r20,r24
- 650 02ba 4BB9      		out 43-32,r20
+ 592 0280 4BB1      		in r20,43-32
+ 593 0282 21E0      		ldi r18,lo8(1)
+ 594 0284 30E0      		ldi r19,hi8(1)
+ 595 0286 C901      		movw r24,r18
+ 596 0288 00C0      		rjmp 2f
+ 597 028a 880F      	1:	lsl r24
+ 598 028c 991F      		rol r25
+ 599 028e EA95      	2:	dec r30
+ 600 0290 02F4      		brpl 1b
+ 601 0292 00C0      		rjmp 2f
+ 602 0294 220F      	1:	lsl r18
+ 603 0296 331F      		rol r19
+ 604 0298 5A95      	2:	dec r21
+ 605 029a 02F4      		brpl 1b
+ 606 029c 822B      		or r24,r18
+ 607 029e 8095      		com r24
+ 608 02a0 8423      		and r24,r20
+ 609               	.L47:
+ 610 02a2 8BB9      		out 43-32,r24
+ 611 02a4 00C0      		rjmp .L45
+ 612               	.LVL40:
+ 613               	.L41:
+ 614               	.LM73:
+ 615 02a6 7430      		cpi r23,lo8(4)
+ 616 02a8 01F4      		brne .L39
+ 617               	.LM74:
+ 618 02aa 8BB1      		in r24,43-32
+ 619 02ac 21E0      		ldi r18,lo8(1)
+ 620 02ae 30E0      		ldi r19,hi8(1)
+ 621 02b0 D901      		movw r26,r18
+ 622 02b2 00C0      		rjmp 2f
+ 623 02b4 AA0F      	1:	lsl r26
+ 624 02b6 BB1F      		rol r27
+ 625 02b8 5A95      	2:	dec r21
+ 626 02ba 02F4      		brpl 1b
+ 627 02bc AD01      		movw r20,r26
+ 628 02be 00C0      		rjmp 2f
+ 629 02c0 220F      	1:	lsl r18
+ 630 02c2 331F      		rol r19
+ 631 02c4 EA95      	2:	dec r30
+ 632 02c6 02F4      		brpl 1b
+ 633 02c8 422B      		or r20,r18
+ 634 02ca 482B      		or r20,r24
+ 635 02cc 4BB9      		out 43-32,r20
+ 636               	.L45:
+ 637               	.LM75:
+ 638 02ce 7883      		st Y,r23
+ 639               	.LVL41:
+ 640               	.L39:
+ 641               	.LM76:
+ 642 02d0 6623      		tst r22
+ 643 02d2 01F0      		breq .L42
+ 644 02d4 22E5      		ldi r18,lo8(82)
+ 645               	.LVL42:
+ 646 02d6 00C0      		rjmp .L43
+ 647               	.LVL43:
+ 648               	.L42:
+ 649 02d8 2CE4      		ldi r18,lo8(76)
+ 650               	.LVL44:
  651               	.L43:
  652               	.LM77:
- 653 02bc 7883      		st Y,r23
- 654               	.LVL45:
- 655               	.L37:
- 656               	.LM78:
- 657 02be 6623      		tst r22
- 658 02c0 01F0      		breq .L40
- 659 02c2 20E0      		ldi r18,lo8(.LC0)
- 660 02c4 30E0      		ldi r19,hi8(.LC0)
- 661               	.LVL46:
- 662 02c6 00C0      		rjmp .L41
- 663               	.LVL47:
- 664               	.L40:
- 665 02c8 20E0      		ldi r18,lo8(.LC1)
- 666 02ca 30E0      		ldi r19,hi8(.LC1)
- 667               	.LVL48:
- 668               	.L41:
- 669               	.LM79:
- 670 02cc 8881      		ld r24,Y
- 671 02ce 90E0      		ldi r25,lo8(0)
- 672 02d0 9F93      		push r25
- 673 02d2 8F93      		push r24
- 674 02d4 3F93      		push r19
- 675 02d6 2F93      		push r18
- 676 02d8 80E0      		ldi r24,lo8(.LC2)
- 677 02da 90E0      		ldi r25,hi8(.LC2)
- 678 02dc 9F93      		push r25
- 679 02de 8F93      		push r24
- 680 02e0 0E94 0000 		call printf
- 681               	.LVL49:
- 682               	.LM80:
- 683 02e4 8881      		ld r24,Y
- 684               	.L44:
- 685 02e6 2DB7      		in r18,__SP_L__
- 686 02e8 3EB7      		in r19,__SP_H__
- 687 02ea 2A5F      		subi r18,lo8(-(6))
- 688 02ec 3F4F      		sbci r19,hi8(-(6))
- 689 02ee 0FB6      		in __tmp_reg__,__SREG__
- 690 02f0 F894      		cli
- 691 02f2 3EBF      		out __SP_H__,r19
- 692 02f4 0FBE      		out __SREG__,__tmp_reg__
- 693 02f6 2DBF      		out __SP_L__,r18
- 694               	/* epilogue start */
- 695               	.LM81:
- 696 02f8 DF91      		pop r29
- 697 02fa CF91      		pop r28
- 698               	.LVL50:
- 699 02fc 0895      		ret
- 700               	.LFE10:
- 702               		.section	.progmem.data,"a",@progbits
- 705               	__c.1680:
- 706 0000 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
- 706      726F 725D 
- 706      204D 6F74 
- 706      6F72 3A20 
- 706      496E 7661 
- 707               		.lcomm c_modes.1676,2
- 710               	__c.1665:
- 711 002e 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
- 711      726F 725D 
- 711      204D 6F74 
- 711      6F72 3A20 
- 711      496E 7661 
- 714               	__c.1643:
- 715 005c 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
- 715      726F 725D 
- 715      204D 6F74 
- 715      6F72 3A20 
- 715      496E 7661 
- 716               		.comm c_mode,1,1
- 717               		.comm initial,1,1
- 790               	.Letext0:
+ 653 02da 8881      		ld r24,Y
+ 654 02dc 90E0      		ldi r25,lo8(0)
+ 655 02de 9F93      		push r25
+ 656 02e0 8F93      		push r24
+ 657 02e2 822F      		mov r24,r18
+ 658 02e4 90E0      		ldi r25,lo8(0)
+ 659               	.LVL45:
+ 660 02e6 9F93      		push r25
+ 661 02e8 8F93      		push r24
+ 662 02ea 80E0      		ldi r24,lo8(.LC0)
+ 663 02ec 90E0      		ldi r25,hi8(.LC0)
+ 664 02ee 9F93      		push r25
+ 665 02f0 8F93      		push r24
+ 666 02f2 0E94 0000 		call printf
+ 667               	.LVL46:
+ 668               	.LM78:
+ 669 02f6 8881      		ld r24,Y
+ 670               	.L46:
+ 671 02f8 2DB7      		in r18,__SP_L__
+ 672 02fa 3EB7      		in r19,__SP_H__
+ 673 02fc 2A5F      		subi r18,lo8(-(6))
+ 674 02fe 3F4F      		sbci r19,hi8(-(6))
+ 675 0300 0FB6      		in __tmp_reg__,__SREG__
+ 676 0302 F894      		cli
+ 677 0304 3EBF      		out __SP_H__,r19
+ 678 0306 0FBE      		out __SREG__,__tmp_reg__
+ 679 0308 2DBF      		out __SP_L__,r18
+ 680               	/* epilogue start */
+ 681               	.LM79:
+ 682 030a DF91      		pop r29
+ 683 030c CF91      		pop r28
+ 684               	.LVL47:
+ 685 030e 0895      		ret
+ 686               	.LFE10:
+ 688               		.section	.progmem.data,"a",@progbits
+ 691               	__c.1680:
+ 692 0000 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
+ 692      726F 725D 
+ 692      204D 6F74 
+ 692      6F72 3A20 
+ 692      496E 7661 
+ 693               		.lcomm c_modes.1676,2
+ 696               	__c.1665:
+ 697 002e 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
+ 697      726F 725D 
+ 697      204D 6F74 
+ 697      6F72 3A20 
+ 697      496E 7661 
+ 700               	__c.1643:
+ 701 005c 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
+ 701      726F 725D 
+ 701      204D 6F74 
+ 701      6F72 3A20 
+ 701      496E 7661 
+ 702               		.comm c_mode,1,1
+ 703               		.comm initial,1,1
+ 776               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:20     .text:00000000 inc_limit
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:69     .text:00000032 dec_limit
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:121    .text:00000068 motor_set_speed
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:710    .progmem.data:0000002e __c.1665
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:205    .text:000000b8 lf_full_speed
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:227    .text:000000ce motor_get_speed
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:714    .progmem.data:0000005c __c.1643
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:318    .text:00000126 lf_turn_inc
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:494    .text:000001d2 motor_mode
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:20     .text:00000000 inc_limit
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:69     .text:00000032 dec_limit
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:121    .text:00000068 motor_set_speed
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:696    .progmem.data:0000002e __c.1665
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:205    .text:000000b8 lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:227    .text:000000ce motor_get_speed
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:700    .progmem.data:0000005c __c.1643
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:318    .text:00000126 lf_turn_inc
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:479    .text:000001e4 motor_mode
                              .bss:00000000 c_modes.1676
-C:\Users\Unknown\AppData\Local\Temp/ccZSxkVI.s:705    .progmem.data:00000000 __c.1680
+C:\Users\Unknown\AppData\Local\Temp/ccDYAnc6.s:691    .progmem.data:00000000 __c.1680
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

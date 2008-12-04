@@ -77,12 +77,12 @@ uint8_t motor_mode(uint8_t mode, uint8_t motor) {
 		*c_mode = mode;
 	}
 
-	char* mname;
+	char mname;
 	if (motor==LEFT)
-		mname="Left";
+		mname='L';
 	else
-		mname="Right";
-	printf("\nMotor: %s mode: %d",mname,*c_mode);
+		mname='R';
+	printf("\nMotor: %c mode: %d",mname,*c_mode);
 	return *c_mode;
 }
 

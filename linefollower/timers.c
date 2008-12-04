@@ -80,7 +80,7 @@ void timer2_init(void) {
 	loop_until_bit_is_clear(ASSR,TCR2UB);
 	
 	// Enable overflow interrupt, disable match.
-	TIMSK2|= (1<<TOIE2);
+	//TIMSK2|= (1<<TOIE2);
 	//TIMSK2&=~(1<<OCIE2A); // Disabled
 	printf_P(PSTR("\t[done]"));
 }
@@ -90,13 +90,11 @@ void timer2_init(void) {
 ISR(TIMER2_OVF_vect) {
 	static uint16_t sec;//=0
 	++sec;
-	//1 Hz (16/16)
 	if (c_mode==WAIT) {
 		//printf("\n\tT: %ds\n",sec);
 		printf_P(PSTR("\nMode: %d"),c_mode);
 	}
-	//print_adc_values();
-	//printf("Current Channel: %d\n", curr_ch);
+
 }
 
 void timer1_init(void) { // Runs the PWMs
@@ -109,7 +107,12 @@ void timer1_init(void) { // Runs the PWMs
 	TCCR1A&= (uint8_t) ~((1<<COM1A1)|(1<<COM1A0)|(1<<COM1B1)|(1<<COM1B0));
 	
 	// Waveform Generation Set to PWM (Phase and frequency correct, mode 8)
-	TCCR1A&= (uint8_t) ~((1<<WGM11)|(1<<WGM10));
+	//TCCR1A&= (uint8_t) ~((1<<WGM11)|(1<<WGM10));
+	
+	// Phase correct only
+	TCCR1A|= (1<<WGM11);
+	TCCR1A&= (uint8_t) ~(1<<WGM11);
+	
 	TCCR1B|= (uint8_t) (1<<5); //Reserved bit
 	TCCR1B|= (uint8_t) (1<<WGM13);
 	TCCR1B&= (uint8_t)~(1<<WGM12);
@@ -149,30 +152,39 @@ static uint8_t timer_2_dir;
 /* Timer/Counter1 Overflow ; BOTTOM */
 ISR(TIMER1_OVF_vect) {
 	timer_2_dir=UP;
-	//printf("\n\tUP\n");
 }
 
 /* Timer/Counter1 ISR1 ; TOP */
 ISR(SIG_INPUT_CAPTURE1) {
 	timer_2_dir=DOWN;
-	//printf("\n\tDN\n");
 }
+
+static char dirtoc(uint8_t dir){
+	if (dir==UP)
+		return 'U';
+	else if (dir==DOWN)
+		return 'D';
+	else
+		return '?';
+}
+
 
 /* Timer/Counter Compare Match A */
 ISR(TIMER1_COMPA_vect) {
-	if (timer_2_dir==DOWN)	
+	if (timer_2_dir==UP)	
 		MOTOR_PWM_PORT&=(uint8_t)~(1<<M_PWMA_PIN);
 	else
 		MOTOR_PWM_PORT|=(1<<M_PWMA_PIN);
-		
+	//printf("\nCA:%c:%x",dirtoc(timer_2_dir),TCNT1);	
 }
 
 /* Timer/Counter Compare Match B */
 ISR(TIMER1_COMPB_vect) {
-	if (timer_2_dir==DOWN)	
+	if (timer_2_dir==UP)	
 		MOTOR_PWM_PORT&=(uint8_t)~(1<<M_PWMB_PIN);
 	else
 		MOTOR_PWM_PORT|=(1<<M_PWMB_PIN);
+	//printf("\nCB:%c:%x",dirtoc(timer_2_dir),TCNT1);
 }
 
 
