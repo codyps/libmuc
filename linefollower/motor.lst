@@ -195,13 +195,13 @@
  209               	/* frame size = 0 */
  210               	.LM26:
  211 00b8 60E0      		ldi r22,lo8(0)
- 212 00ba 80E0      		ldi r24,lo8(24576)
- 213 00bc 90E6      		ldi r25,hi8(24576)
+ 212 00ba 80E0      		ldi r24,lo8(-24576)
+ 213 00bc 90EA      		ldi r25,hi8(-24576)
  214 00be 0E94 0000 		call motor_set_speed
  215               	.LM27:
  216 00c2 61E0      		ldi r22,lo8(1)
- 217 00c4 80E0      		ldi r24,lo8(24576)
- 218 00c6 90E6      		ldi r25,hi8(24576)
+ 217 00c4 80E0      		ldi r24,lo8(-24576)
+ 218 00c6 90EA      		ldi r25,hi8(-24576)
  219 00c8 0E94 0000 		call motor_set_speed
  220               	/* epilogue start */
  221               	.LM28:
@@ -331,8 +331,8 @@
  349               	.LBB48:
  350               	.LBB49:
  351               	.LM44:
- 352 014e 80E0      		ldi r24,lo8(24576)
- 353 0150 90E6      		ldi r25,hi8(24576)
+ 352 014e 80E0      		ldi r24,lo8(-24576)
+ 353 0150 90EA      		ldi r25,hi8(-24576)
  354               	.LVL18:
  355 0152 8C1B      		sub r24,r28
  356 0154 9D0B      		sbc r25,r29
@@ -344,8 +344,8 @@
  362 015c 9701      		movw r18,r14
  363 015e 281B      		sub r18,r24
  364 0160 390B      		sbc r19,r25
- 365 0162 C0E0      		ldi r28,lo8(24576)
- 366 0164 D0E6      		ldi r29,hi8(24576)
+ 365 0162 C0E0      		ldi r28,lo8(-24576)
+ 366 0164 D0EA      		ldi r29,hi8(-24576)
  367 0166 00C0      		rjmp .L26
  368               	.L25:
  369               	.LM47:
@@ -383,8 +383,8 @@
  401               	.LBB52:
  402               	.LBB53:
  403               	.LM51:
- 404 018c 80E0      		ldi r24,lo8(24576)
- 405 018e 90E6      		ldi r25,hi8(24576)
+ 404 018c 80E0      		ldi r24,lo8(-24576)
+ 405 018e 90EA      		ldi r25,hi8(-24576)
  406               	.LVL20:
  407 0190 801B      		sub r24,r16
  408 0192 910B      		sbc r25,r17
@@ -396,8 +396,8 @@
  414 019a 9701      		movw r18,r14
  415 019c 281B      		sub r18,r24
  416 019e 390B      		sbc r19,r25
- 417 01a0 00E0      		ldi r16,lo8(24576)
- 418 01a2 10E6      		ldi r17,hi8(24576)
+ 417 01a0 00E0      		ldi r16,lo8(-24576)
+ 418 01a2 10EA      		ldi r17,hi8(-24576)
  419 01a4 00C0      		rjmp .L30
  420               	.L29:
  421               	.LM54:
@@ -693,23 +693,23 @@
  776               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:20     .text:00000000 inc_limit
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:69     .text:00000032 dec_limit
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:121    .text:00000068 motor_set_speed
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:696    .progmem.data:0000002e __c.1666
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:205    .text:000000b8 lf_full_speed
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:227    .text:000000ce motor_get_speed
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:700    .progmem.data:0000005c __c.1644
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:318    .text:00000126 lf_turn_inc
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:479    .text:000001e4 motor_mode
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:20     .text:00000000 inc_limit
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:69     .text:00000032 dec_limit
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:121    .text:00000068 motor_set_speed
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:696    .progmem.data:0000002e __c.1666
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:205    .text:000000b8 lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:227    .text:000000ce motor_get_speed
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:700    .progmem.data:0000005c __c.1644
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:318    .text:00000126 lf_turn_inc
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:479    .text:000001e4 motor_mode
                              .bss:00000000 c_modes.1677
-C:\Users\Unknown\AppData\Local\Temp/cc3LRZp4.s:691    .progmem.data:00000000 __c.1681
+C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:691    .progmem.data:00000000 __c.1681
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

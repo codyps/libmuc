@@ -13,13 +13,12 @@ Globaly Utilized Information
 #define F_CPU 8000000
 
 /* Amount Defines for Line Following */
-#define LF_ADC_MIX_WIEGHT 5	//Multiplied by the 2 middle adc values to wieght them
-#define LF_INC_LARGE 0x1000
-#define LF_INC_SMALL 0x400
-#define LF_INC_INTEG 0x70
-#define LF_INTEG_MAX 0x2000
+#define LF_INC_LARGE 0x0700
+#define LF_INC_SMALL 0x0200
+#define LF_INC_INTEG 0x0020
+#define LF_INTEG_MAX 0x1000
 
-#define LF_MAX_SPEED 0x7000	// Software implimentation sucks. anything close to the 0 or ffff
+#define LF_MAX_SPEED 0xa000	// Software implimentation sucks. anything close to the 0 or ffff
 #define LF_MIN_SPEED 0x1000 // has undefined behavior.
 /* A / B defines */
 

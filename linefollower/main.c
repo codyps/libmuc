@@ -146,13 +146,13 @@ int main(void) {
 		if		(c_mode==FOLLOW) {	
 			if (initial) {
 				lf_full_speed();
-				printf("\nInitialize Speed.");
+			//	printf("\nInitialize Speed.");
 				initial=false;
 			}
 			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-			printf("\nML: %X",c_speed[0]);
-			printf("\nMR: %X",c_speed[1]);
-			print_adc_values();
+			//printf("\nML: %X",c_speed[0]);
+			//printf("\nMR: %X",c_speed[1]);
+			//print_adc_values();
 			uint16_t adc_vc[4]={adc_get_val(0), adc_get_val(1),adc_get_val(2), adc_get_val(3)};
 //			uint16_t adc_val_mixed [2] = {	adc_get_val(0) + adc_get_val(1) * LF_ADC_MIX_WIEGHT,	\
 //											adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
@@ -177,20 +177,24 @@ int main(void) {
 				lf_turn_inc(LF_INC_LARGE,POS);
 				dir=RIGHT;
 			}
-			else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[2]>adc_vc[3])) {
-				lf_full_speed();
+			else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+				//lf_full_speed();
 				dir=FWD;
 			}
-			/*// Shit is going down, so just keep turning. 
+			else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
+				//lf_full_speed();
+				dir=FWD;
+			}
+			
+			
+			if (dir!=old_dir) {
+				ct=0;
+				//if (old_dir!=FWD)
+				//	lf_full_speed();
+			}
 			else {
 				++ct;
 			}
-			*/
-			
-			if (dir!=old_dir)
-				ct=0;
-			else 
-				++ct;
 			old_dir=dir;
 			uint16_t integ = ct*LF_INC_INTEG;
 			if (integ>LF_INTEG_MAX)
@@ -198,7 +202,7 @@ int main(void) {
 			if (dir!=FWD)
 				lf_turn_inc(integ,dir);
 				
-			_delay_ms(5);
+			//_delay_ms(5);
 			// do at every adc calc or pwm vector.
 		}
 		else if	(c_mode==TEST) {
@@ -212,8 +216,8 @@ int main(void) {
 			motor_set_speed(sp,LEFT);
 			motor_set_speed(sp,RIGHT);
 			_delay_ms(2);
-			if (!(sp%0x100))
-				printf("\nsp=%x",sp);
+			//if (!(sp%0x100))
+			//	printf("\nsp=%x",sp);
 			++sp;
 		}
 	}	

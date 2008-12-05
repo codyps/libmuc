@@ -168,7 +168,7 @@ LDFLAGS += -lm
 #
 AVRDUDE_PROGRAMMER = butterfly
 
-AVRDUDE_PORT = com6	   # programmer connected to serial device
+AVRDUDE_PORT = com7	   # programmer connected to serial device
 #AVRDUDE_PORT = lpt1	# programmer connected to parallel port
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
