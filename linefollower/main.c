@@ -149,7 +149,7 @@ int main(void) {
 			//	printf("\nInitialize Speed.");
 				initial=false;
 			}
-			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
+//			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
 			//printf("\nML: %X",c_speed[0]);
 			//printf("\nMR: %X",c_speed[1]);
 			//print_adc_values();

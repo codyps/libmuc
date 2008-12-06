@@ -693,23 +693,23 @@
  776               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:20     .text:00000000 inc_limit
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:69     .text:00000032 dec_limit
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:121    .text:00000068 motor_set_speed
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:696    .progmem.data:0000002e __c.1666
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:205    .text:000000b8 lf_full_speed
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:227    .text:000000ce motor_get_speed
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:700    .progmem.data:0000005c __c.1644
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:318    .text:00000126 lf_turn_inc
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:479    .text:000001e4 motor_mode
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:20     .text:00000000 inc_limit
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:69     .text:00000032 dec_limit
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:121    .text:00000068 motor_set_speed
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:696    .progmem.data:0000002e __c.1666
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:205    .text:000000b8 lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:227    .text:000000ce motor_get_speed
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:700    .progmem.data:0000005c __c.1644
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:318    .text:00000126 lf_turn_inc
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:479    .text:000001e4 motor_mode
                              .bss:00000000 c_modes.1677
-C:\Users\Unknown\AppData\Local\Temp/ccyBtwph.s:691    .progmem.data:00000000 __c.1681
+C:\Users\Unknown\AppData\Local\Temp/ccV98WZw.s:691    .progmem.data:00000000 __c.1681
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

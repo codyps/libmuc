@@ -159,7 +159,7 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x19bc
+.text           0x00000000     0x19ac
  *(.vectors)
  .vectors       0x00000000       0x5c c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5/crtm169p.o
                 0x00000000                __vectors
@@ -234,89 +234,89 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
                 0x000002ea                __vector_16
                 0x000002ea                __vector_18
                 0x000002ea                __vector_20
- .text          0x000002ee      0x4ae main.o
-                0x000006b4                __vector_3
+ .text          0x000002ee      0x49e main.o
+                0x000006a4                __vector_3
                 0x000002ee                clock_init
                 0x0000032e                __vector_default
                 0x00000468                init
                 0x00000500                main
                 0x00000382                __vector_2
-                0x00000746                print_bin
+                0x00000736                print_bin
                 0x00000304                joy_init
- .text          0x0000079c      0x490 adc.o
-                0x00000984                adc_calibrate_store
-                0x000007e8                adc_set_channel
-                0x000007c2                adc_calibrate_clear
-                0x00000b22                print_adc_values
-                0x00000800                __vector_19
-                0x0000079c                max
-                0x000007a0                adc_get_val
-                0x000008a8                adc_init
-                0x00000996                adc_calibrate_update
-                0x00000a8c                print_adc_calibration
- .text          0x00000c2c      0x208 usart.o
-                0x00000c4e                usart0_getchar
-                0x00000de2                usart_init
- .text          0x00000e34      0x236 timers.o
-                0x00000fb2                timer2_init
-                0x00000e52                __vector_6
-                0x00000eb6                timer1_init
-                0x00001040                timers_init
-                0x00000e6a                __vector_7
-                0x00000f3c                __vector_5
-                0x00000e34                __vector_9
-                0x00000e90                __vector_8
- .text          0x0000106a      0x310 motor.o
-                0x00001138                motor_get_speed
-                0x0000109c                dec_limit
-                0x000010d2                motor_set_speed
-                0x0000106a                inc_limit
-                0x00001122                lf_full_speed
-                0x00001190                lf_turn_inc
-                0x0000124e                motor_mode
- .text          0x0000137a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_divmodhi4.o)
- .text          0x0000137a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
- .text          0x0000137a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
- .text          0x0000137a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
- .text          0x0000137a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_udivmodhi4.o)
- .text          0x0000137a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(iob.o)
- .text          0x0000137a       0x2a c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(printf.o)
-                0x0000137a                printf
- .text          0x000013a4       0x4c c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(printf_p.o)
-                0x000013a4                printf_P
- .text          0x000013f0        0xe c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(putchar.o)
-                0x000013f0                putchar
- .text          0x000013fe      0x3be c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
-                0x000013fe                vfprintf
- .text          0x000017bc       0x16 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
-                0x000017bc                strnlen_P
- .text          0x000017d2       0x16 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
-                0x000017d2                strnlen
- .text          0x000017e8       0x58 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(fputc.o)
-                0x000017e8                fputc
- .text          0x00001840       0xbc c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
-                0x00001840                __ultoa_invert
- .text          0x000018fc        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_prologue.o)
- .text          0x000018fc        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_epilogue.o)
-                0x000018fc                . = ALIGN (0x2)
+ .text          0x0000078c      0x490 adc.o
+                0x00000974                adc_calibrate_store
+                0x000007d8                adc_set_channel
+                0x000007b2                adc_calibrate_clear
+                0x00000b12                print_adc_values
+                0x000007f0                __vector_19
+                0x0000078c                max
+                0x00000790                adc_get_val
+                0x00000898                adc_init
+                0x00000986                adc_calibrate_update
+                0x00000a7c                print_adc_calibration
+ .text          0x00000c1c      0x208 usart.o
+                0x00000c3e                usart0_getchar
+                0x00000dd2                usart_init
+ .text          0x00000e24      0x236 timers.o
+                0x00000fa2                timer2_init
+                0x00000e42                __vector_6
+                0x00000ea6                timer1_init
+                0x00001030                timers_init
+                0x00000e5a                __vector_7
+                0x00000f2c                __vector_5
+                0x00000e24                __vector_9
+                0x00000e80                __vector_8
+ .text          0x0000105a      0x310 motor.o
+                0x00001128                motor_get_speed
+                0x0000108c                dec_limit
+                0x000010c2                motor_set_speed
+                0x0000105a                inc_limit
+                0x00001112                lf_full_speed
+                0x00001180                lf_turn_inc
+                0x0000123e                motor_mode
+ .text          0x0000136a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_divmodhi4.o)
+ .text          0x0000136a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+ .text          0x0000136a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
+ .text          0x0000136a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
+ .text          0x0000136a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text          0x0000136a        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(iob.o)
+ .text          0x0000136a       0x2a c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(printf.o)
+                0x0000136a                printf
+ .text          0x00001394       0x4c c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(printf_p.o)
+                0x00001394                printf_P
+ .text          0x000013e0        0xe c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(putchar.o)
+                0x000013e0                putchar
+ .text          0x000013ee      0x3be c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
+                0x000013ee                vfprintf
+ .text          0x000017ac       0x16 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
+                0x000017ac                strnlen_P
+ .text          0x000017c2       0x16 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
+                0x000017c2                strnlen
+ .text          0x000017d8       0x58 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(fputc.o)
+                0x000017d8                fputc
+ .text          0x00001830       0xbc c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
+                0x00001830                __ultoa_invert
+ .text          0x000018ec        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_prologue.o)
+ .text          0x000018ec        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_epilogue.o)
+                0x000018ec                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x000018fc       0x26 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_divmodhi4.o)
-                0x000018fc                __divmodhi4
-                0x000018fc                _div
- .text.libgcc   0x00001922        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
- .text.libgcc   0x00001922        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
- .text.libgcc   0x00001922        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
- .text.libgcc   0x00001922       0x28 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_udivmodhi4.o)
-                0x00001922                __udivmodhi4
- .text.libgcc   0x0000194a       0x38 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_prologue.o)
-                0x0000194a                __prologue_saves__
- .text.libgcc   0x00001982       0x36 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_epilogue.o)
-                0x00001982                __epilogue_restores__
-                0x000019b8                . = ALIGN (0x2)
+ .text.libgcc   0x000018ec       0x26 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_divmodhi4.o)
+                0x000018ec                __divmodhi4
+                0x000018ec                _div
+ .text.libgcc   0x00001912        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+ .text.libgcc   0x00001912        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_copy_data.o)
+ .text.libgcc   0x00001912        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_clear_bss.o)
+ .text.libgcc   0x00001912       0x28 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_udivmodhi4.o)
+                0x00001912                __udivmodhi4
+ .text.libgcc   0x0000193a       0x38 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_prologue.o)
+                0x0000193a                __prologue_saves__
+ .text.libgcc   0x00001972       0x36 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_epilogue.o)
+                0x00001972                __epilogue_restores__
+                0x000019a8                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000019b8        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
-                0x000019b8                exit
-                0x000019b8                _exit
+ .fini9         0x000019a8        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+                0x000019a8                exit
+                0x000019a8                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -335,11 +335,11 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000019b8        0x4 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x000019a8        0x4 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x000019bc                _etext = .
+                0x000019ac                _etext = .
 
-.data           0x00800100       0x36 load address 0x000019bc
+.data           0x00800100       0x36 load address 0x000019ac
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5/crtm169p.o
@@ -372,7 +372,7 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
                 0x00800136                _edata = .
                 0x00800136                PROVIDE (__data_end, .)
 
-.bss            0x00800136       0xac load address 0x000019f2
+.bss            0x00800136       0xac load address 0x000019e2
                 0x00800136                PROVIDE (__bss_start, .)
  *(.bss)
  .bss           0x00800136        0x0 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5/crtm169p.o
@@ -409,8 +409,8 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  COMMON         0x008001dc        0x6 c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5\libc.a(iob.o)
                 0x008001dc                __iob
                 0x008001e2                PROVIDE (__bss_end, .)
-                0x000019bc                __data_load_start = LOADADDR (.data)
-                0x000019f2                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x000019ac                __data_load_start = LOADADDR (.data)
+                0x000019e2                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x008001e2        0x0
                 0x008001e2                PROVIDE (__noinit_start, .)
@@ -495,13 +495,13 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  .debug_pubnames
                 0x0000030a       0x9e motor.o
 
-.debug_info     0x00000000     0x1656
+.debug_info     0x00000000     0x163b
  *(.debug_info)
- .debug_info    0x00000000      0x54b main.o
- .debug_info    0x0000054b      0x529 adc.o
- .debug_info    0x00000a74      0x289 usart.o
- .debug_info    0x00000cfd      0x38b timers.o
- .debug_info    0x00001088      0x5ce motor.o
+ .debug_info    0x00000000      0x530 main.o
+ .debug_info    0x00000530      0x529 adc.o
+ .debug_info    0x00000a59      0x289 usart.o
+ .debug_info    0x00000ce2      0x38b timers.o
+ .debug_info    0x0000106d      0x5ce motor.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev   0x00000000      0x866
@@ -512,13 +512,13 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  .debug_abbrev  0x00000503      0x157 timers.o
  .debug_abbrev  0x0000065a      0x20c motor.o
 
-.debug_line     0x00000000     0x10df
+.debug_line     0x00000000     0x10cf
  *(.debug_line)
- .debug_line    0x00000000      0x50e main.o
- .debug_line    0x0000050e      0x30c adc.o
- .debug_line    0x0000081a      0x250 usart.o
- .debug_line    0x00000a6a      0x2ec timers.o
- .debug_line    0x00000d56      0x389 motor.o
+ .debug_line    0x00000000      0x4fe main.o
+ .debug_line    0x000004fe      0x30c adc.o
+ .debug_line    0x0000080a      0x250 usart.o
+ .debug_line    0x00000a5a      0x2ec timers.o
+ .debug_line    0x00000d46      0x389 motor.o
 
 .debug_frame    0x00000000      0x290
  *(.debug_frame)
@@ -528,17 +528,17 @@ LOAD c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/avr5\libgcc.a
  .debug_frame   0x00000180       0x90 timers.o
  .debug_frame   0x00000210       0x80 motor.o
 
-.debug_str      0x00000000      0x500
+.debug_str      0x00000000      0x4f8
  *(.debug_str)
- .debug_str     0x00000000      0x276 main.o
-                                0x2c3 (size before relaxing)
- .debug_str     0x00000276       0xe6 adc.o
+ .debug_str     0x00000000      0x26e main.o
+                                0x2bb (size before relaxing)
+ .debug_str     0x0000026e       0xe6 adc.o
                                 0x1ff (size before relaxing)
- .debug_str     0x0000035c       0x69 usart.o
+ .debug_str     0x00000354       0x69 usart.o
                                 0x127 (size before relaxing)
- .debug_str     0x000003c5       0x9e timers.o
+ .debug_str     0x000003bd       0x9e timers.o
                                 0x1aa (size before relaxing)
- .debug_str     0x00000463       0x9d motor.o
+ .debug_str     0x0000045b       0x9d motor.o
                                 0x218 (size before relaxing)
 
 .debug_loc      0x00000000      0x51c
@@ -697,7 +697,6 @@ main                                              main.o
                                                   c:/winavr-20080610/bin/../lib/gcc/avr/4.3.0/../../../../avr/lib/avr5/crtm169p.o
 max                                               adc.o
 motor_get_speed                                   motor.o
-                                                  main.o
 motor_mode                                        motor.o
                                                   main.o
 motor_set_speed                                   motor.o
