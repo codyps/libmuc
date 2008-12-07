@@ -1,7 +1,7 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
-#define F_CPU 8000000
+#define F_CPU 1000000
 
 
 /* LED Ctrl */

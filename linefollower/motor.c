@@ -7,7 +7,11 @@
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
+#ifdef debug
 #define error_invalid_motor(_m) printf_P(PSTR("\n[error] Motor: Invalid Motor Number: %d [%s]"),_m,__LINE__)
+#else
+#define error_invalid_motor(_m) 
+#endif
 
 uint16_t motor_get_speed(uint8_t motor) {
 	uint16_t temp;
@@ -76,13 +80,16 @@ uint8_t motor_mode(uint8_t mode, uint8_t motor) {
 		MOTOR_CTL_PORT|=(1<<M_IN1)|(1<<M_IN2); // IN1 = H, IN2 = H
 		*c_mode = mode;
 	}
-
+	
+	#ifdef debug
 	char mname;
 	if (motor==LEFT)
 		mname='L';
 	else
 		mname='R';
 	printf("\nMotor: %c mode: %d",mname,*c_mode);
+	#endif
+	
 	return *c_mode;
 }
 
@@ -125,4 +132,18 @@ void lf_turn_inc(uint16_t inc,int8_t dir) {
 void lf_full_speed(void) {
 	motor_set_speed(LF_MAX_SPEED,LEFT);
 	motor_set_speed(LF_MAX_SPEED,RIGHT);
+	motor_mode(MOTOR_L_FWD,LEFT);
+	motor_mode(MOTOR_L_FWD,RIGHT);
+}
+
+void lf_stop_speed(void) {
+	motor_mode(MOTOR_MODE_STOP,LEFT);
+	motor_mode(MOTOR_MODE_STOP,RIGHT);
+	motor_set_speed(LF_MIN_SPEED,LEFT);
+	motor_set_speed(LF_MIN_SPEED,RIGHT);
+}
+
+void motors_init(void) {
+	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
+	lf_stop_speed();
 }

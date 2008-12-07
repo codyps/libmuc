@@ -2,13 +2,13 @@
   For the ATMEGA164PV i have on the breadboard
  */
 
-#define F_CPU 1000000
 
 #include "defines.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/power.h>
 #include "usart.h"
+#include "timer.h"
 
 void clock_init(void) {
 	
@@ -32,6 +32,7 @@ void init(void) {
 	usart_init();
 	OCR1A=OCR1B=0;
 	timer1_init();
+	timer2_init();
 }
 
 
@@ -49,6 +50,7 @@ int main(void){
 		PORTA&=0b01;*/
 		if (OCR1A==1)				
 			printf("You Bet\n");
+		_delay_ms(200);
 	}
 	return 0;
 }

@@ -68,28 +68,36 @@ ISR(PCINT0_vect) {
 	uint8_t iPINE = (uint8_t)~PINE;
 	if (iPINE&((1<<2)|(1<<3))) {
 		if (iPINE&(1<<2)) {// Left
-			if (c_mode!=WAIT)
+			if (c_mode!=WAIT) {
 				c_mode=WAIT;
+				lf_stop_speed();
+			}
 			else {
 				initial=true;
 				c_mode=TEST;
 			}
-				
+			#ifdef debug
 			printf_P(PSTR("\nCurrent Mode (T/W) = %d"),c_mode);
+			#endif
 		}
 		if (iPINE&(1<<3)) {// Right
-			if (c_mode!=WAIT)
+			if (c_mode!=WAIT) {
 				c_mode=WAIT;
+				lf_stop_speed();
+			}
 			else {
 				initial=true;
 				c_mode=FOLLOW;
 			}
-				
+			#ifdef debug	
 			printf_P(PSTR("\nCurrent Mode (F/W)= %d"),c_mode);
+			#endif
 		}
 	}
+	#ifdef debug
 	else
 		printf_P(PSTR("\n[debug] PE? Released"));
+	#endif
 }
 
 ISR(PCINT1_vect) {
@@ -98,21 +106,29 @@ ISR(PCINT1_vect) {
 	if (iPINB&((1<<7)|(1<<6)|(1<<4))) {
 		if (iPINB&(1<<7)) {// Down
 			adc_calibrate_update();
+			#ifdef debug
 			print_adc_calibration();
 			print_adc_values();
+			#endif
 		}
 		if (iPINB&(1<<4)) {// In
+			#ifdef debug
 			print_adc_calibration();
 			print_adc_values();
+			#endif
 		}
 		if (iPINB&(1<<6)) {// Up
 			adc_calibrate_clear();
+			#ifdef debug
 			print_adc_calibration();
 			print_adc_values();
+			#endif
 		}
 	}
+	#ifdef debug
 	else
 		printf_P(PSTR("\n[debug] PB? Released"));
+	#endif
 }
 
 void init(void) {
@@ -123,13 +139,12 @@ void init(void) {
 	joy_init();
 	usart_init();
 	adc_init();
-	timers_init();	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
-	motor_set_speed(LF_MIN_SPEED,LEFT);
-	motor_set_speed(LF_MIN_SPEED,RIGHT);
-	motor_mode(MOTOR_L_FWD,LEFT);
-	motor_mode(MOTOR_R_FWD,RIGHT);
+	timers_init();
+	motors_init();
 	sei();
+	#ifdef debug
 	printf_P(PSTR("\nInit: Done\n\n"));
+	#endif
 }
 
 
@@ -139,28 +154,40 @@ int main(void) {
 	c_mode=WAIT;
 	initial=true;
 	
-	motor_set_speed(LF_MIN_SPEED,LEFT);
-	motor_set_speed(LF_MIN_SPEED,RIGHT);
 		
 	for(;;) {
 		if		(c_mode==FOLLOW) {	
 			if (initial) {
 				lf_full_speed();
-			//	printf("\nInitialize Speed.");
 				initial=false;
 			}
 //			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-			//printf("\nML: %X",c_speed[0]);
-			//printf("\nMR: %X",c_speed[1]);
-			//print_adc_values();
-			uint16_t adc_vc[4]={adc_get_val(0), adc_get_val(1),adc_get_val(2), adc_get_val(3)};
-//			uint16_t adc_val_mixed [2] = {	adc_get_val(0) + adc_get_val(1) * LF_ADC_MIX_WIEGHT,	\
-//											adc_get_val(3) + adc_get_val(2) * LF_ADC_MIX_WIEGHT	};
+
+			uint16_t adc_vc[channel_amt];
+			for (uint8_t i=0;i<channel_amt;++i) {
+				adc_vc[i]=adc_get_val(i);
+			}
 			
-			static uint8_t old_dir=FWD;
-			static uint8_t dir=FWD;
-			static uint8_t ct;
+			uint8_t  maxi=channel_amt;
+			uint16_t maxv=0;
+			for (uint8_t i=0;i<channel_amt;++i) {
+				if (adc_vc[i]>maxv) {
+					maxi=i;
+					maxv=adc_vc[i];
+				}
+			}
+			
+			#ifdef debug
+			print_adc_values();
+			printf_P(PSTR("\nMax Channel [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
+			#endif
+			
+			int8_t turn_i = maxi-channel_amt;
+			
+			
+			
 			//0=LEFT, 3=RIGHT
+			/*
 			if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
 				lf_turn_inc(LF_INC_LARGE,NEG);
 				dir=LEFT;
@@ -185,24 +212,9 @@ int main(void) {
 				//lf_full_speed();
 				dir=FWD;
 			}
-			
-			
-			if (dir!=old_dir) {
-				ct=0;
-				//if (old_dir!=FWD)
-				//	lf_full_speed();
-			}
-			else {
-				++ct;
-			}
-			old_dir=dir;
-			uint16_t integ = ct*LF_INC_INTEG;
-			if (integ>LF_INTEG_MAX)
-				integ=LF_INTEG_MAX;
-			if (dir!=FWD)
-				lf_turn_inc(integ,dir);
-				
-			//_delay_ms(5);
+			*/
+
+			_delay_ms(200);
 			// do at every adc calc or pwm vector.
 		}
 		else if	(c_mode==TEST) {

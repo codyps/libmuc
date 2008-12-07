@@ -13,7 +13,9 @@
 
 
 void timer2_init(void) {
+	#ifdef debug
 	printf_P(PSTR("\ntimers: init: timer2"));
+	#endif
 	// External crystal : 32.768KHZ
 	/*
 	a. Disable the Timer/Counter2 interrupts by clearing OCIE2A and TOIE2.
@@ -82,7 +84,9 @@ void timer2_init(void) {
 	// Enable overflow interrupt, disable match.
 	//TIMSK2|= (1<<TOIE2);
 	//TIMSK2&=~(1<<OCIE2A); // Disabled
+	#ifdef debug
 	printf_P(PSTR("\t[done]"));
+	#endif
 }
 
 
@@ -92,13 +96,17 @@ ISR(TIMER2_OVF_vect) {
 	++sec;
 	if (c_mode==WAIT) {
 		//printf("\n\tT: %ds\n",sec);
+		#ifdef debug
 		printf_P(PSTR("\nMode: %d"),c_mode);
+		#endif
 	}
 
 }
 
 void timer1_init(void) { // Runs the PWMs
+	#ifdef debug
 	printf_P(PSTR("\ntimers: init: timer1"));
+	#endif
 	// Set OC1A/B on up, clear on down
 //	TCCR1A|= (uint8_t) (1<<COM1A1)|(1<<COM1A0);
 //	TCCR1A|= (uint8_t) (1<<COM1B1)|(1<<COM1B0);
@@ -143,8 +151,9 @@ void timer1_init(void) { // Runs the PWMs
 	TIMSK1|=((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
 	
 	MOTOR_PWM_DDR|= ((1<<M_PWMA_PIN)|(1<<M_PWMB_PIN));
-	
+	#ifdef debug
 	printf_P(PSTR("\t[done]"));
+	#endif
 }
 
 enum {DOWN, UP};

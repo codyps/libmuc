@@ -10,6 +10,17 @@ Globaly Utilized Information
 #include <stdbool.h>
 #include <stdint.h>
 
+// Debuging 
+#define debug
+#ifdef debug 
+#define debugp_P(__A) printf_P(__A)
+#define debugp(__A) printf(__A)
+#else
+#define debugp_P(__A)  
+#define debugp(__A)  
+#endif
+
+
 #define F_CPU 8000000
 
 /* Amount Defines for Line Following */
@@ -18,8 +29,8 @@ Globaly Utilized Information
 #define LF_INC_INTEG 0x0020
 #define LF_INTEG_MAX 0x1000
 
-#define LF_MAX_SPEED 0xa000	// Software implimentation sucks. anything close to the 0 or ffff
-#define LF_MIN_SPEED 0x1000 // has undefined behavior.
+#define LF_MAX_SPEED 0xc000	// Software implimentation sucks. anything close to the 0 or ffff
+#define LF_MIN_SPEED 0x0500 // has undefined behavior.
 /* A / B defines */
 
 #define M_PWMA OCR1A

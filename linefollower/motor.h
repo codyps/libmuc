@@ -18,5 +18,6 @@ enum {NEG,POS};
 
 void lf_turn_inc(uint16_t incriment,int8_t dir);
 void lf_full_speed(void);
-
+void lf_stop_speed(void);
+void motors_init(void);
 #endif

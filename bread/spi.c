@@ -15,7 +15,26 @@ void init_spi() {
 }
 
 static int spi_putchar(char c, FILE *stream) {
-  loop_until_bit_is_set(SPSR, SPIF);
-  SPIF = c;
-  return 0;
+	loop_until_bit_is_set(SPSR, SPIF);
+	SPIF = c;
+	return 0;
 }
+
+/*
+static char spi_getchar(FILE *stream){
+	loop_until_bit_is_set(SPSR, SPIF);
+	char c = SPIF;
+	return c;
+}
+*/
+
+/*
+ISR(SIG_SPI){
+	// Handle both sending and recieving of bytes.
+	if (recieving)
+		char c = SPIF;
+		
+	if (sending)
+		SPIF=?;
+}
+*/
