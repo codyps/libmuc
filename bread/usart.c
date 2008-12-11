@@ -1,10 +1,11 @@
-#include "usart.h"
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/power.h>
+#include "defines.h"
+#include "usart.h"
 
-static int usart_putchar(char c, FILE *stream);
-static FILE usart_stdout = FDEV_SETUP_STREAM(usart_putchar, NULL,_FDEV_SETUP_WRITE);
+static int usart0_putchar(char c, FILE *stream);
+static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL,_FDEV_SETUP_WRITE);
 
 
 /*
@@ -13,23 +14,26 @@ static int usart_getchar(char c, FILE *stream) {
 }
 */
 
-static int usart_putchar(char c, FILE *stream) {
+static int usart0_putchar(char c, FILE *stream) {
 
   if (c == '\n')
-	usart_putchar('\r', stream);
+	usart0_putchar('\r', stream);
   loop_until_bit_is_set(UCSR0A, UDRE0);
   UDR0 = c;
   return 0;
 }
 
 
-void usart_init(void) {
+void usart0_init(void) {
 	power_usart0_enable();
 
 	/* Set baud rate (12bit) */
+	#define BAUD 19200
+	#include <util/setbaud.h>
 	UBRR0 = UBRR_VALUE;
 	#if USE_2X
-	UCSR0A |= (1 << U2X0);
+	#warning "U2X0 enabled"
+	UCSR0A |=  (1 << U2X0);
 	#else
 	UCSR0A &= ~(1 << U2X0);
 	#endif
@@ -40,5 +44,6 @@ void usart_init(void) {
 	/* Set frame format: 8data, 1stop bit */
 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
 	
-	stdout=&usart_stdout;
+	stdout=&usart0_stdout;
 }
+

@@ -136,12 +136,12 @@ static int usbtiny_initialize (PROGRAMMER *pgm, AVRPART *p )
 }
 
 /* Tell the USBtiny to release the output pins, etc */
-static void usbtiny_powerdown(PROGRAMMER * pgm)
+static void usbtiny_powerdown(usb_dev_handle usb_handle)
 {
-  if (!PDATA(pgm)->usb_handle) {
+  if (usb_handle) {
     return;                 // wasn't connected in the first place
   }
-  usb_control(pgm, USBTINY_POWERDOWN, 0, 0);      // Send USB control command to device
+  usb_control(usb_handle, USBTINY_POWERDOWN, 0, 0);      // Send USB control command to device
 }
 
 /* Send a 4-byte SPI command to the USBtinyISP for execution

@@ -6,12 +6,18 @@
 
 enum {DN, UP};
 
+void timers_init(void) {
+	timer1_init();
+	timer2_init();
+}
+
+// 8-bit timer
 void timer2_init(void) {
 	// Disable Pin outputs
 	TCCR2A&=~((1<<COM2A1)|(1<<COM2A0)|(1<<COM2B1)|(1<<COM2B0));
 	
 	// Mode 2, CTC.
-	TCCR2A|=(1<<WGM21);
+	TCCR2A|= (1<<WGM21);
 	TCCR2A&=~(1<<WGM20);	
 	TCCR2B&=~(1<<WGM22);
 
@@ -20,10 +26,10 @@ void timer2_init(void) {
 	//8000000/125/64  == 1000 Hz
 	//TCCR2B|=(1<<CS22)|(1<<CS21)|(1<<CS20); //1024
 	TCCR2B|=(1<<CS22);TCCR2B&=~((1<<CS21)|(1<<CS20));//64
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		OCR2A=125;
-		//OCR2B=0xFF; //Doesn't check this anyhow
-	}
+
+	OCR2A=125;
+	//OCR2B=0xFF; //Doesn't check this anyhow
+	
 
 	// Enable OCR2A interupt
 	TIMSK2|=(1<<OCIE2A); //ya know, it is probably the overflow vector. might want to check it anyhow.
@@ -42,7 +48,7 @@ struct {
 */
 
 
-/* Heartbeat Control */
+// heartbeat control (8bit)
 ISR(TIMER2_COMPA_vect) {
 	static uint8_t led_dir_A=UP;
 	static uint8_t led_dir_B=DN;
@@ -90,6 +96,7 @@ ISR(TIMER2_COMPA_vect) {
 	}
 }
 
+// 16bit timer.
 void timer1_init() {
 	// Set to pwm p and f correct, pins set with ICR1 as top.
 

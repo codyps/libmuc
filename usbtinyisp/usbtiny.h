@@ -21,8 +21,6 @@
 #ifndef usbtiny_h
 #define usbtiny_h
 
-#include "avrpart.h"
-
 // these are specifically assigned to USBtiny,
 // if you need your own VID and PIDs you can get them for cheap from
 // www.mecanique.co.uk so please don't reuse these. Thanks!
@@ -62,15 +60,5 @@
 
 // The default USB Timeout
 #define	USB_TIMEOUT	500	// msec
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void usbtiny_initpgm (PROGRAMMER * pgm);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* usbtiny_h */
