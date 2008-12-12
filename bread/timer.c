@@ -1,15 +1,48 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
+#include <stdio.h>
 #include "timer.h"
 #include "defines.h"
 
-enum {DN, UP};
-
 void timers_init(void) {
-	timer1_init();
-	timer2_init();
+	
+	LED_A=0;
+	LED_B=0;
+	led_dir_A=UP;
+	led_dir_B=UP;
+	
+	//timer0_init(); //Unused
+	timer1_init(); //PWM
+	timer2_init(); //RTC
 }
+
+/*
+// 8-bit timer
+void timer0_init(void) {
+	// Disable Pin outputs
+	TCCR0A&=~((1<<COM0A1)|(1<<COM0A0)|(1<<COM0B1)|(1<<COM0B0));
+	
+	// Mode 2, CTC.
+	TCCR0A|= (1<<WGM01);
+	TCCR0A&=~(1<<WGM00);	
+	TCCR0B&=~(1<<WGM02);
+
+	// Clock Select
+	//8000000/78/1024 == 100 HZ
+	//8000000/125/64  == 1000 Hz
+	TCCR0B|=(1<<CS02)|(1<<CS01)|(1<<CS00); //1024
+	//TCCR2B|=(1<<CS22);TCCR2B&=~((1<<CS21)|(1<<CS20));//64
+
+	//OCR2A=125;
+	OCR0A=78;
+	
+
+	// Enable OCR2A interupt
+	TIMSK0|=(1<<OCIE0A); //ya know, it is probably the overflow vector. might want to check it anyhow.
+}
+*/
+
 
 // 8-bit timer
 void timer2_init(void) {
@@ -28,30 +61,42 @@ void timer2_init(void) {
 	TCCR2B|=(1<<CS22);TCCR2B&=~((1<<CS21)|(1<<CS20));//64
 
 	OCR2A=125;
-	//OCR2B=0xFF; //Doesn't check this anyhow
+	//OCR2A=78;
 	
 
 	// Enable OCR2A interupt
-	TIMSK2|=(1<<OCIE2A); //ya know, it is probably the overflow vector. might want to check it anyhow.
+	TIMSK2|=(1<<OCIE2A);
+	ASSR&=~((1<<EXCLK)|(1<<AS2));
 }
 
-/*
-struct {
-	uint8_t led_port;
-	uint8_t led_pin;
-	uint8_t led_dir;
-	uint8_t dwell_btm;
-	uint8_t dwell_top;
-	uint8_t dwell;
-	
-} led_beat;
-*/
-
-
-// heartbeat control (8bit)
 ISR(TIMER2_COMPA_vect) {
-	static uint8_t led_dir_A=UP;
-	static uint8_t led_dir_B=DN;
+	//timer.h: dir_t led_dir_A
+	//timer.h: dir_t led_dir_B
+
+	// Led A
+	if (LED_A==LED_TOP_A)
+		led_dir_A=DN;
+	else if (LED_A==0)
+		led_dir_A=UP;
+	
+	if (led_dir_A==UP)
+		LED_A+=LED_STEP_A;
+	else LED_A-=LED_STEP_A;
+	
+	// Led B
+	if (LED_B==LED_TOP_B)
+		led_dir_B=DN;
+	else if (LED_B==0)
+		led_dir_B=UP;
+	
+	if (led_dir_B==UP)
+		LED_B+=LED_STEP_B;
+	else LED_B-=LED_STEP_B;
+	
+	
+	
+	
+	/*
 	static uint8_t dwell_A=0;
 	static uint8_t dwell_B=0;	
 	
@@ -94,6 +139,7 @@ ISR(TIMER2_COMPA_vect) {
 			if (led_dir_B==UP) 	++OCR1B;
 			else				--OCR1B;
 	}
+	*/
 }
 
 // 16bit timer.
@@ -114,7 +160,7 @@ void timer1_init() {
 	TCCR1B|= (uint8_t)(1<<ICNC1);
 	
 	// Set TOP
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {ICR1=0xFFFF;}
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {ICR1=0x00FF;}
 	
 	// Disable Interupts.
 	TIMSK1&= (uint8_t)~((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));

@@ -9,6 +9,7 @@
 #include <avr/power.h>
 #include "usart.h"
 #include "timer.h"
+#include <avr/interrupt.h>
 
 void clock_init(void) {
 	
@@ -34,8 +35,17 @@ void clock_init(void) {
 void init(void) {
 	clock_init();
 	usart0_init();
-	//OCR1A=OCR1B=0;
-	//timers_init();
+	timers_init();
+	sei();
+}
+
+char dirtoc(dir_t d) {
+	if (d==UP)
+		return 'U';
+	else if (d==DN)
+		return 'D';
+	else
+		return '?';
 }
 
 int main(void){ 
@@ -54,6 +64,11 @@ int main(void){
 		OSCCAL++;
 		_delay_ms(70);
 		*/
+		printf("TCNT1: 0x%x\n",TCNT1);
+		printf("TCNT2: 0x%x\n\n",TCNT2);
+		printf("LED_A: 0x%x, %c;\n",LED_A,dirtoc(led_dir_A));
+		printf("LED_B: 0x%x, %c;\n\n",LED_B,dirtoc(led_dir_B));
+		_delay_ms(140);
 		
 	}
 	return 0;
