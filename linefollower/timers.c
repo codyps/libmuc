@@ -108,8 +108,8 @@ void timer1_init(void) { // Runs the PWMs
 	printf_P(PSTR("\ntimers: init: timer1"));
 	#endif
 	// Set OC1A/B on up, clear on down
-//	TCCR1A|= (uint8_t) (1<<COM1A1)|(1<<COM1A0);
-//	TCCR1A|= (uint8_t) (1<<COM1B1)|(1<<COM1B0);
+//	TCCR1A|= (1<<COM1A1)|(1<<COM1A0);
+//	TCCR1A|= (1<<COM1B1)|(1<<COM1B0);
 
 	// OC1A/B disconnected
 	TCCR1A&= (uint8_t) ~((1<<COM1A1)|(1<<COM1A0)|(1<<COM1B1)|(1<<COM1B0));
@@ -126,7 +126,7 @@ void timer1_init(void) { // Runs the PWMs
 	TCCR1B&= (uint8_t)~(1<<WGM12);
 
 	// Disable Input noise canceler
-	TCCR1B|= (uint8_t)(1<<ICNC1);
+	TCCR1B&= (uint8_t)~(1<<ICNC1);
 	
 	// Set TOP
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -148,7 +148,7 @@ void timer1_init(void) { // Runs the PWMs
 	//OCR1A = OCR1B = 0xFFFF; // Max = 65535,0xFFFF
 	
 	// Enable the interupts, used to avoid the fucking speaker.
-	TIMSK1|=((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
+	TIMSK1|=((1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
 	
 	MOTOR_PWM_DDR|= ((1<<M_PWMA_PIN)|(1<<M_PWMB_PIN));
 	#ifdef debug

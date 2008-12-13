@@ -7,6 +7,7 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include <avr/power.h>
+#include <avr/pgmspace.h>
 #include "usart.h"
 #include "timer.h"
 #include <avr/interrupt.h>
@@ -36,6 +37,7 @@ void init(void) {
 	clock_init();
 	usart0_init();
 	timers_init();
+	printf_P(PSTR("\nmain: init:\t[done]\n\n"));
 	sei();
 }
 

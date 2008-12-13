@@ -2,20 +2,11 @@
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 #include <stdio.h>
+#include <avr/pgmspace.h>
 #include "timer.h"
 #include "defines.h"
 
-void timers_init(void) {
-	
-	LED_A=0;
-	LED_B=0;
-	led_dir_A=UP;
-	led_dir_B=UP;
-	
-	//timer0_init(); //Unused
-	timer1_init(); //PWM
-	timer2_init(); //RTC
-}
+
 
 /*
 // 8-bit timer
@@ -46,6 +37,9 @@ void timer0_init(void) {
 
 // 8-bit timer
 void timer2_init(void) {
+	#ifdef debug
+	printf_P(PSTR("\ntimers: init: timer1"));
+	#endif
 	// Disable Pin outputs
 	TCCR2A&=~((1<<COM2A1)|(1<<COM2A0)|(1<<COM2B1)|(1<<COM2B0));
 	
@@ -67,9 +61,14 @@ void timer2_init(void) {
 	// Enable OCR2A interupt
 	TIMSK2|=(1<<OCIE2A);
 	ASSR&=~((1<<EXCLK)|(1<<AS2));
+	
+	#ifdef debug
+	printf_P(PSTR("\t[done]"));
+	#endif
 }
 
 ISR(TIMER2_COMPA_vect) {
+	
 	//timer.h: dir_t led_dir_A
 	//timer.h: dir_t led_dir_B
 
@@ -140,27 +139,41 @@ ISR(TIMER2_COMPA_vect) {
 			else				--OCR1B;
 	}
 	*/
+	
 }
 
 // 16bit timer.
 void timer1_init() {
+	#ifdef debug
+	printf_P(PSTR("\ntimers: init: timer1"));
+	#endif
 	// Set to pwm p and f correct, pins set with ICR1 as top.
+	
+	// 	 OC1A,	  OC1B set to outputs
+	DDRB|= (1<<5)|(1<<4);
 
 	// Clear pins on up count, set on down count. (COM1xn)
-	// Mode 8.
 	TCCR1A|= (1<<COM1A1)|(1<<COM1B1);
-	TCCR1A&= (uint8_t)~((1<<COM1A0)|(1<<COM1B0)|(1<<WGM11)|(1<<WGM10));
-
-	// Mode 8.
+	TCCR1A&= (uint8_t)~((1<<COM1A0)|(1<<COM1B0));
+	
+	
 	TCCR1B|= (1<<5); //Reserved bit
-	TCCR1B|= (1<<WGM13);
-	TCCR1B&= (uint8_t)~(1<<WGM12);
+	
+	// Mode 8.
+//	TCCR1A&= (uint8_t)~((1<<WGM11)|(1<<WGM10));
+//	TCCR1B|= (1<<WGM13);
+//	TCCR1B&= (uint8_t)~(1<<WGM12);
+	
+	// Mode 1.
+	TCCR1A|= (1<<WGM10);
+	TCCR1A&= (uint8_t)~(1<<WGM11);
+	TCCR1B&= (uint8_t)~((1<<WGM13)|(1<<WGM12));
 	
 	// Disable Input noise canceler
-	TCCR1B|= (uint8_t)(1<<ICNC1);
+	TCCR1B&= (uint8_t)~(1<<ICNC1);
 	
 	// Set TOP
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {ICR1=0x00FF;}
+//	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {ICR1=0x00FF;}
 	
 	// Disable Interupts.
 	TIMSK1&= (uint8_t)~((1<<ICIE1)|(1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
@@ -169,7 +182,21 @@ void timer1_init() {
 	TCCR1B&= (uint8_t)~((1<<CS12)|(1<<CS11));
 	TCCR1B|= (uint8_t) (1<<CS10);
 	
-	// 	 OC1A,	  OC1B set to outputs
-	DDRB|= (1<<PD5)|(1<<PD4);
+	#ifdef debug
+	printf_P(PSTR("\t[done]"));
+	#endif
 }
 
+void timers_init(void) {
+	printf_P(PSTR("\ntimers: init: start."));
+	LED_A=0xEE;
+	LED_B=0xEE;
+	led_dir_A=UP;
+	led_dir_B=UP;
+	
+	//timer0_init(); //Unused
+	timer1_init(); //PWM
+	//timer2_init(); //RTC
+	
+	printf_P(PSTR("\ntimers: init:\t[done]"));
+}
