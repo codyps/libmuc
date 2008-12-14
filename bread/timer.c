@@ -52,7 +52,7 @@ void timer1_init(void) { // 16, PWM
 	TCCR1B&= (uint8_t)~((1<<CS12)|(1<<CS11)|(1<<CS10));
 	
 	// 	 OC1A,	  OC1B set to outputs
-	DDRB|= (1<<5)|(1<<4);
+	DDRD|= (1<<5)|(1<<4);
 	
 	// Pin Control
 	TCCR1A|= (1<<COM1A1)|(1<<COM1B1);
@@ -81,7 +81,7 @@ void timer1_init(void) { // 16, PWM
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1B=0;	}
 	
 	// Interupts
-	TIMSK1=(0<<ICIE1)|(0<<OCIE1B)|(1<<OCIE1A)|(0<<TOIE1);
+	TIMSK1=(0<<ICIE1)|(0<<OCIE1B)|(0<<OCIE1A)|(0<<TOIE1);
 
 	// Prescale and Enable.
 	// 1
@@ -91,10 +91,6 @@ void timer1_init(void) { // 16, PWM
 	dpf_P(PSTR("\t[done]"));
 }
 
-
-ISR(TIMER1_COMPA_vect) {
-	dpf_P(PSTR("\n\tWIN 1\n"));
-}
 
 void timer2_init(void) { // 8, RTC
 	dpf_P(PSTR("\ntimers: init: timer2"));
@@ -134,7 +130,6 @@ void timer2_init(void) { // 8, RTC
 ISR(TIMER2_COMPA_vect) {
 	//timer.h: dir_t led_dir_A
 	//timer.h: dir_t led_dir_B
-	//dpf_P(PSTR("\n\tWIN2\n"));
 	static dir_t dir=UP;
 	if (OCR0A==0xFF)
 		dir=DN;
@@ -145,8 +140,11 @@ ISR(TIMER2_COMPA_vect) {
 		OCR0A++;
 	else
 		OCR0A--;
+	
+	
+	static dir_t led_dir_A;
+	static dir_t led_dir_B;
 	// Led A
-	/*
 	if (LED_A==LED_TOP_A)
 		led_dir_A=DN;
 	else if (LED_A==0)
@@ -165,7 +163,7 @@ ISR(TIMER2_COMPA_vect) {
 	if (led_dir_B==UP)
 		LED_B+=LED_STEP_B;
 	else LED_B-=LED_STEP_B;
-	*/
+	
 	/*
 	static uint8_t dwell_A=0;
 	static uint8_t dwell_B=0;	
@@ -217,16 +215,14 @@ ISR(TIMER2_COMPA_vect) {
 void timers_init(void) {
 	printf_P(PSTR("\ntimers: init:\tstart"));
 	
-	timer0_init(); //PWM
-	timer1_init(); //PWM
-	timer2_init(); //RTC
+	timer0_init(); //PWM 8
+	timer1_init(); //PWM 16
+	timer2_init(); //RTC 8
 	
-	LED_A=0x0FFF; //OCR1A
-	LED_B=0x0FFF; //OCR1B
-	led_dir_A=UP;
-	led_dir_B=UP;
-	OCR0A=33;
-	OCR0B=255;
+	//LED_A=0x0FFF; //OCR1A
+	LED_B=0x0AFF; //OCR1B
+	//led_dir_A=UP;
+	//led_dir_B=DN;
 	
 	printf_P(PSTR("\ntimers: init:\t[done]"));
 }

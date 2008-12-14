@@ -63,14 +63,6 @@ int main(void){
 
 	for(;;) {
 		PINA|=(1<<0)|(1<<1);
-		
-			
-			
-		
-		printf("TCNT1: 0x%x\n",TCNT1);
-		printf("TCNT2: 0x%x\n\n",TCNT2);
-		printf("LED_A: 0x%x, %c;\n",LED_A,dirtoc(led_dir_A));
-		printf("LED_B: 0x%x, %c;\n\n",LED_B,dirtoc(led_dir_B));
 		_delay_ms(140);
 		
 	}
