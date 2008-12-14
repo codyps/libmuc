@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <avr/power.h>
 #include <avr/pgmspace.h>
+#include <avr/interrupt.h>
 #include "usart.h"
 #include "timer.h"
-#include <avr/interrupt.h>
 
 void clock_init(void) {
 	
@@ -41,8 +41,8 @@ void init(void) {
 	sei();
 }
 
-char dirtoc(dir_t d) {
-	if (d==UP)
+static char dirtoc(dir_t d) {
+	if		(d==UP)
 		return 'U';
 	else if (d==DN)
 		return 'D';
@@ -50,7 +50,12 @@ char dirtoc(dir_t d) {
 		return '?';
 }
 
+ISR(BADISR_vect){
+	dpf_P(PSTR("\n\tError: Invalid Interupt"));
+}
+
 int main(void){ 
+	
 	init();
 	DDRA |=0b11;
 	PORTA|= (1<<0);
@@ -58,14 +63,10 @@ int main(void){
 
 	for(;;) {
 		PINA|=(1<<0)|(1<<1);
-		/*
-		printf("\n<<[[OSCCAL: 0x%x]]>>\n",OSCCAL);
-		printf("\n<<[[UBRR0 : 0x%x]]>>\n",UBRR0 );
-		printf("\n<<[[CLK PRESCAL: %d]]>>\n",clock_prescale_get() );	
-		_delay_ms(70);
-		OSCCAL++;
-		_delay_ms(70);
-		*/
+		
+			
+			
+		
 		printf("TCNT1: 0x%x\n",TCNT1);
 		printf("TCNT2: 0x%x\n\n",TCNT2);
 		printf("LED_A: 0x%x, %c;\n",LED_A,dirtoc(led_dir_A));

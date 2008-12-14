@@ -2,16 +2,32 @@
 #define _DEFINES_H_ 
 
 #define F_CPU 8000000
-#define debug 1
+
+#define DEBUG 1
+
 
 /* Debuging */
 
-#ifdef debug
+#if (DEBUG==1)
 	#define dpf(__A) printf(__A)
 	#define dpf_P(__A) printf_P(__A)
 #else
 	#define dpf(__A)
 	#define dpf_P(__A)
+#endif
+#if (DEBUG==2)
+	#define dpfv(__A) printf(__A)
+	#define dpfv_P(__A) printf_P(__A)
+#else
+	#define dpfv(__A)
+	#define dpfv_P(__A)
+#endif
+#if (DEBUG==3)
+	#define dpfV(__A) printf(__A)
+	#define dpfV_P(__A) printf_P(__A)
+#else
+	#define dpfV(__A)
+	#define dpfV_P(__A)
 #endif
 
 /* LED Ctrl */
