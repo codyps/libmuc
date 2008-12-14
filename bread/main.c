@@ -63,6 +63,8 @@ int main(void){
 
 	for(;;) {
 		PINA|=(1<<0)|(1<<1);
+		printf("\nA dir: %c\nB dir: %c",dirtoc(led_dir_A),dirtoc(led_dir_B));
+		printf("\nLED_A: 0x%x; LED_B: 0x%x",LED_A,LED_B);
 		_delay_ms(140);
 		
 	}

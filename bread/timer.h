@@ -1,7 +1,8 @@
 
 typedef enum {DN, UP} dir_t;
 
-
+volatile dir_t led_dir_A;
+volatile dir_t led_dir_B;
 #define LED_A OCR1A
 #define LED_B OCR1B
 #define LED_STEP_A 0x10

@@ -141,9 +141,7 @@ ISR(TIMER2_COMPA_vect) {
 	else
 		OCR0A--;
 	
-	
-	static dir_t led_dir_A;
-	static dir_t led_dir_B;
+
 	// Led A
 	if (LED_A==LED_TOP_A)
 		led_dir_A=DN;
