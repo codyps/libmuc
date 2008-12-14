@@ -53,10 +53,6 @@ void timer1_init(void) { // 16, PWM
 	
 	// 	 OC1A,	  OC1B set to outputs
 	DDRB|= (1<<5)|(1<<4);
-
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){TCNT1=0;	}
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1A=0;	}
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1B=0;	}
 	
 	// Pin Control
 	TCCR1A|= (1<<COM1A1)|(1<<COM1B1);
@@ -75,10 +71,14 @@ void timer1_init(void) { // 16, PWM
 	//TCCR1A|= (1<<WGM10);
 	
 	// Input noise canceler (irrelavent in pwm mode 8?)
-	TCCR1B&= (uint8_t)~(1<<ICNC1);
+	//TCCR1B&= (uint8_t)~(1<<ICNC1);
 	
 	// TOP (mode 8, mode 1 top = 0xFF)
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {ICR1=0xFFFF;}
+	
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){TCNT1=0;	}
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1A=0;	}
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1B=0;	}
 	
 	// Interupts
 	TIMSK1=(0<<ICIE1)|(0<<OCIE1B)|(1<<OCIE1A)|(0<<TOIE1);
