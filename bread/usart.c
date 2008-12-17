@@ -11,7 +11,6 @@
 static int usart0_putchar(char c, FILE *stream);
 static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL,_FDEV_SETUP_WRITE);
 
-queue_t tx_q;
 
 /*
 static int usart_getchar(char c, FILE *stream) {
@@ -34,6 +33,7 @@ static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
 	UDR0 = c;
 	#else 	
 	while (q_full(&tx_q));
+	disable_usart0_tx_inter();
 	q_push(&tx_q,c);	
 	enable_usart0_tx_inter();
 	#endif
@@ -65,15 +65,21 @@ void usart0_init(void) {
 	#ifdef USART_QUEUE	
 	//enable_usart0_tx_inter();	
 	#endif
-	//UCSR0B |=(1<<UDRE0); //(1<<RXCIE0)
+	UCSR0B |= (1<<RXCIE0);//(1<<UDRE0)
 		
 	stdout=&usart0_stdout;
 }
 
 ISR(USART0_UDRE_vect) {	
-	if (q_empty(&tx_q))
-		disable_usart0_tx_inter();	
-	else
-		UDR0 = q_pop(&tx_q);	
+	if (tx_q.ct>0) // !q_empty(&tx_q)
+		UDR0 = q_pop(&tx_q);
+	if (tx_q.ct==0)// q_empty(&tx_q)
+		disable_usart0_tx_inter();			
+}
+
+ISR(USART0_RX_vect) {
+	recieved = UDR0;
+	if (recieved == '*')
+		q_init(&tx_q);
 }
 

@@ -52,7 +52,7 @@ void init(void) {
 	usart0_init();
 	#endif
 	
-	timers_init();
+	//timers_init();
 	printf_P(PSTR("\nmain: init:\t[done]\n\n"));
 	sei();
 }
@@ -73,20 +73,20 @@ static char dirtoc(dir_t d) {
 }
 
 ISR(BADISR_vect){
-	dpf_P(PSTR("\n\tError: Invalid Interupt\n"));
+	//dpf_P(PSTR("\n\tError: Invalid Interupt\n"));
 }
 
 int main(void){ 	
 	init();
 
-	DDRB &=(uint8_t)~((1<<1)|(1<<2));
+	//DDRB &=(uint8_t)~((1<<1)|(1<<2));
 	//PORTB|=((1<<1)|(1<<2));
 
-	DDRC &=(uint8_t)~((1<<5)|(1<<6)|(1<<7));
+	//DDRC &=(uint8_t)~((1<<5)|(1<<6)|(1<<7));
 	//PORTC|=((1<<5)|(1<<6)|(1<<7));
 	
 	for(;;) {
-		PORTB&=(uint8_t)~(1<<3);
+		
 		uint8_t data, clk, motion, fdet, edet;
 		data	= (PINB&(1<<1))>>1; //always high ?
 		clk	= (PINB&(1<<2))>>2; //always high ?
@@ -95,7 +95,11 @@ int main(void){
 		edet	= (PINC&(1<<6))>>6; //changes
 		printf("\nDATA: %d; CLK: %d; MOTION: %d; FRONT DETECT: %d; END DETECT: %d",
 			data, clk, motion, fdet, edet);
-		_delay_ms(200);
+		_delay_ms(100);
+/*		static uint8_t c;
+		if (recieved!='w')
+			printf_P(PSTR("12345678901234567890123456%d890123456789012345678901234567890\n"),++c);	
+		_delay_ms(5);*/
 	}
 	return 0;
 }

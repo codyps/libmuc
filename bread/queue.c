@@ -12,23 +12,26 @@ void q_init(queue_t *q) {
 	q->ct		= 0;
 }
 
-void q_push(queue_t *q, QUEUE_BASE_T x)
+int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
         if (q->ct >= QUEUE_SZ){
-        	printf_P(PSTR("Warning: queue overflow push x=%d\n"),x);
+		#ifdef DEBUG        	
+		printf_P(PSTR("Warning: queue overflow push x=%d\n"),x);
+		#endif
+		return -1;
         }
         else {
                 q->buffer[ q->last ] = x;
                 q->last = (q->last+1) % (QUEUE_SZ);
 		++(q->ct);
         }
+	return 0;
 }
 
 void q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz)
 {
 	QUEUE_INDEX_T i;
-        for(i=0;i<sz;++i)
-        	q_push(q,x[i]);
+        for(i=0;i<sz && (q_push(q,x[i])>0);++i);
 }
 
 QUEUE_BASE_T q_pop(queue_t *q)

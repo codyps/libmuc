@@ -5,9 +5,9 @@
 
 #define DEBUG 1
 //#define MAX_SERIAL
-#ifndef MAX_SERIAL 
-//#define USART_QUEUE
-#endif
+#define USART_QUEUE
+
+char recieved;
 
 /* Debuging */
 

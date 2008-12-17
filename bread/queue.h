@@ -2,11 +2,12 @@
 /*	
  * queue.h
 */
-
+#ifndef _QUEUE_H_
+#define _QUEUE_H_ 
 #include <stdint.h>
 #include <stdbool.h>
 
-#define QUEUE_BASE_T	char
+#define QUEUE_BASE_T	uint8_t
 #define QUEUE_BASE_T_MAX 0xFF
 #define QUEUE_INDEX_T	uint8_t
 #define QUEUE_SZ	32
@@ -20,10 +21,11 @@ typedef struct {
 
 
 void q_init(queue_t *q);
-void q_push(queue_t *q, QUEUE_BASE_T x);
+int8_t q_push(queue_t *q, QUEUE_BASE_T x);
 void q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz);
 QUEUE_BASE_T q_pop(queue_t *q);
 void q_apop(queue_t *q, QUEUE_BASE_T * buffer, QUEUE_INDEX_T sz);
 bool q_empty(queue_t *q);
 bool q_full(queue_t *q);
 
+#endif

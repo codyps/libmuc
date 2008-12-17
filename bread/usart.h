@@ -7,7 +7,9 @@ USART
 
 //#include <stdio.h>
 //#include "defines.h"
+#include "queue.h"
 
+queue_t tx_q;
 void usart0_init(void);
 
 #endif
