@@ -6,7 +6,7 @@
 #include "defines.h"
 #include "usart.h"
 
-#define USART_QUEUE
+
 
 static int usart0_putchar(char c, FILE *stream);
 static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL,_FDEV_SETUP_WRITE);
@@ -26,24 +26,22 @@ static void disable_usart0_tx_inter(void) {
 	UCSR0B&=(uint8_t)~(1<<UDRIE0);
 }
 
-static int usart0_putchar(char c, FILE *stream) {
-	PORTB|=(1<<3);
-	
-	if (c == '\n')
+static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
 		usart0_putchar('\r', stream);
   
 	#ifndef	USART_QUEUE
 	loop_until_bit_is_set(UCSR0A, UDRE0);
 	UDR0 = c;
 	#else 	
+	PORTB|=(1<<3);
 	while (q_full(&tx_q));
-	PORTB&=(uint8_t)~(1<<3);
 	q_push(&tx_q,c);	
 	enable_usart0_tx_inter();
+	PORTB&=(uint8_t)~(1<<3);
 	#endif
+
 	return 0;
 }
-
 
 void usart0_init(void) {
 	power_usart0_enable();
@@ -61,7 +59,7 @@ void usart0_init(void) {
 	UCSR0A &= (uint8_t) ~(1 << U2X0);
 	#endif
 	/* Enable receiver and transmitter */
-	UCSR0B = (1<<TXEN0); //(1<<RXEN0)|
+	UCSR0B = (1<<TXEN0)|(1<<RXEN0);
 	/* Enable r/t interupts, hangles input when used with some buffering functions */
 	#ifdef USART_QUEUE	
 	//enable_usart0_tx_inter();	
@@ -76,8 +74,8 @@ void usart0_init(void) {
 ISR(USART0_UDRE_vect) {	
 	if (q_empty(&tx_q))
 		disable_usart0_tx_inter();	
-
-	if (!q_empty(&tx_q))
+	else
+	//if (!q_empty(&tx_q))
 		UDR0 = q_pop(&tx_q);
 	PORTB|=(1<<4);		
 }

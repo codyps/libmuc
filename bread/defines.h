@@ -4,7 +4,10 @@
 #define F_CPU 8000000
 
 #define DEBUG 1
-
+//#define MAX_SERIAL
+#ifndef MAX_SERIAL 
+//#define USART_QUEUE
+#endif
 
 /* Debuging */
 

@@ -9,7 +9,14 @@
 #include <avr/power.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+
+#ifdef MAX_SERIAL
+#include "usart_max.h"
+#else
 #include "usart.h"
+#endif
+
+
 #include "timer.h"
 
 void clock_init(void) {
@@ -38,7 +45,13 @@ void init(void) {
 	power_all_disable();
 	clock_init();
 	MCUCR|=(1<<JTD); // Disable JTAG
+
+	#ifdef MAX_SERIAL
+	Serial_Port_Init();
+	#else
 	usart0_init();
+	#endif
+	
 	timers_init();
 	printf_P(PSTR("\nmain: init:\t[done]\n\n"));
 	sei();
