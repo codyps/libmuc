@@ -19,7 +19,7 @@ void q_push(queue_t *q, QUEUE_BASE_T x)
         }
         else {
                 q->buffer[ q->last ] = x;
-                q->last = (q->last+1) % (QUEUE_SZ-1);
+                q->last = (q->last+1) % (QUEUE_SZ);
 		++(q->ct);
         }
 }
@@ -41,7 +41,7 @@ QUEUE_BASE_T q_pop(queue_t *q)
 	}
         else {
                 x = q->buffer[ q->first ];
-                q->first = (q->first+1) % (QUEUE_SZ-1);
+                q->first = (q->first+1) % (QUEUE_SZ);
 		--(q->ct);
         }
 

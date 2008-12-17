@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <avr/io.h> 
 #include <avr/interrupt.h>
-#include "Serial_Port.h"
+#include <avr/power.h>
+#include "usart_max.h"
 
 
 void delay_ms(uint16_t x); // general purpose delay
@@ -11,6 +12,7 @@ unsigned char count = 0;
 int main (void) 
 { 
 
+	clock_prescale_set(clock_div_1);
 	Serial_Port_Init();
 	
 	sei(); // Enable the Global Interrupt Enable flag so that interrupts can be processed 

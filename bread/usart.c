@@ -33,11 +33,9 @@ static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
 	loop_until_bit_is_set(UCSR0A, UDRE0);
 	UDR0 = c;
 	#else 	
-	PORTB|=(1<<3);
 	while (q_full(&tx_q));
 	q_push(&tx_q,c);	
 	enable_usart0_tx_inter();
-	PORTB&=(uint8_t)~(1<<3);
 	#endif
 
 	return 0;
@@ -51,13 +49,16 @@ void usart0_init(void) {
 	/* Set baud rate (12bit) */
 	#define BAUD 19200
 	#include <util/setbaud.h>
-	UBRR0 = UBRR_VALUE;
+	UBRR0   = UBRR_VALUE;
 	UCSR0A &= (uint8_t)~(1<<UDRE0);
 	#if USE_2X
 	UCSR0A |=  (1 << U2X0);
 	#else
 	UCSR0A &= (uint8_t) ~(1 << U2X0);
 	#endif
+	/* Set frame format: 8data, 1stop bit */
+	UCSR0C = (1<<UCSZ00)|(1<<UCSZ01);
+	
 	/* Enable receiver and transmitter */
 	UCSR0B = (1<<TXEN0)|(1<<RXEN0);
 	/* Enable r/t interupts, hangles input when used with some buffering functions */
@@ -65,9 +66,7 @@ void usart0_init(void) {
 	//enable_usart0_tx_inter();	
 	#endif
 	//UCSR0B |=(1<<UDRE0); //(1<<RXCIE0)
-	/* Set frame format: 8data, 1stop bit */
-	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
-	
+		
 	stdout=&usart0_stdout;
 }
 
@@ -75,8 +74,6 @@ ISR(USART0_UDRE_vect) {
 	if (q_empty(&tx_q))
 		disable_usart0_tx_inter();	
 	else
-	//if (!q_empty(&tx_q))
-		UDR0 = q_pop(&tx_q);
-	PORTB|=(1<<4);		
+		UDR0 = q_pop(&tx_q);	
 }
 
