@@ -2,823 +2,1572 @@
    2               	__SREG__ = 0x3f
    3               	__SP_H__ = 0x3e
    4               	__SP_L__ = 0x3d
-   5               	__CCP__  = 0x34
-   6               	__tmp_reg__ = 0
-   7               	__zero_reg__ = 1
-   8               		.global __do_copy_data
-   9               		.global __do_clear_bss
-  17               	.Ltext0:
-  18               	.global	max
-  20               	max:
-  21               	.LFB7:
-  22               	.LM1:
-  23               	.LVL0:
-  24               	/* prologue: function */
-  25               	/* frame size = 0 */
-  26 0000 862F      		mov r24,r22
-  27               	.LVL1:
-  28               	/* epilogue start */
-  29               	.LM2:
-  30 0002 0895      		ret
-  31               	.LFE7:
-  33               	.global	adc_get_val
-  35               	adc_get_val:
-  36               	.LFB10:
-  37               	.LM3:
-  38               	.LVL2:
-  39               	/* prologue: function */
-  40               	/* frame size = 0 */
-  41               	.LM4:
-  42 0004 E82F      		mov r30,r24
-  43 0006 F0E0      		ldi r31,lo8(0)
-  44 0008 EE0F      		lsl r30
-  45 000a FF1F      		rol r31
-  46               	.LVL3:
-  47 000c DF01      		movw r26,r30
-  48 000e A050      		subi r26,lo8(-(adc_val))
-  49 0010 B040      		sbci r27,hi8(-(adc_val))
-  50 0012 E050      		subi r30,lo8(-(adc_offset))
-  51 0014 F040      		sbci r31,hi8(-(adc_offset))
-  52 0016 2081      		ld r18,Z
-  53 0018 3181      		ldd r19,Z+1
-  54 001a 8D91      		ld r24,X+
-  55 001c 9C91      		ld r25,X
-  56 001e 280F      		add r18,r24
-  57 0020 391F      		adc r19,r25
-  58               	.LM5:
-  59 0022 C901      		movw r24,r18
-  60               	/* epilogue start */
-  61 0024 0895      		ret
-  62               	.LFE10:
-  64               	.global	adc_calibrate_clear
-  66               	adc_calibrate_clear:
-  67               	.LFB13:
-  68               	.LM6:
-  69               	/* prologue: function */
-  70               	/* frame size = 0 */
-  71               	.LBB19:
-  72               	.LM7:
-  73 0026 1092 0000 		sts (adc_offset)+1,__zero_reg__
-  74 002a 1092 0000 		sts adc_offset,__zero_reg__
-  75 002e 1092 0000 		sts (adc_offset+2)+1,__zero_reg__
-  76 0032 1092 0000 		sts adc_offset+2,__zero_reg__
-  77 0036 1092 0000 		sts (adc_offset+4)+1,__zero_reg__
-  78 003a 1092 0000 		sts adc_offset+4,__zero_reg__
-  79 003e 1092 0000 		sts (adc_offset+6)+1,__zero_reg__
-  80 0042 1092 0000 		sts adc_offset+6,__zero_reg__
-  81               	.LBE19:
-  82               	.LM8:
-  83 0046 1092 0000 		sts num_calibrations,__zero_reg__
-  84               	/* epilogue start */
-  85               	.LM9:
-  86 004a 0895      		ret
-  87               	.LFE13:
-  89               	.global	adc_set_channel
-  91               	adc_set_channel:
-  92               	.LFB15:
-  93               	.LM10:
-  94               	.LVL4:
-  95               	/* prologue: function */
-  96               	/* frame size = 0 */
-  97               	.LM11:
-  98 004c ACE7      		ldi r26,lo8(124)
-  99 004e B0E0      		ldi r27,hi8(124)
- 100 0050 9C91      		ld r25,X
- 101 0052 E0E0      		ldi r30,lo8(channels)
- 102 0054 F0E0      		ldi r31,hi8(channels)
- 103 0056 E80F      		add r30,r24
- 104 0058 F11D      		adc r31,__zero_reg__
- 105 005a 907E      		andi r25,lo8(-32)
- 106 005c 8081      		ld r24,Z
- 107               	.LVL5:
- 108 005e 982B      		or r25,r24
- 109 0060 9C93      		st X,r25
- 110               	/* epilogue start */
- 111               	.LM12:
- 112 0062 0895      		ret
- 113               	.LFE15:
- 115               	.global	__vector_19
- 117               	__vector_19:
- 118               	.LFB16:
- 119               	.LM13:
- 120 0064 1F92      		push __zero_reg__
- 121 0066 0F92      		push r0
- 122 0068 0FB6      		in r0,__SREG__
- 123 006a 0F92      		push r0
- 124 006c 1124      		clr __zero_reg__
- 125 006e 2F93      		push r18
- 126 0070 3F93      		push r19
- 127 0072 4F93      		push r20
- 128 0074 8F93      		push r24
- 129 0076 9F93      		push r25
- 130 0078 AF93      		push r26
- 131 007a BF93      		push r27
- 132 007c EF93      		push r30
- 133 007e FF93      		push r31
- 134               	/* prologue: Signal */
- 135               	/* frame size = 0 */
- 136               	.LM14:
- 137 0080 4091 7800 		lds r20,120
- 138               	.LM15:
- 139 0084 3091 7900 		lds r19,121
- 140               	.LM16:
- 141 0088 8091 0000 		lds r24,ct.1881
- 142 008c 8F5F      		subi r24,lo8(-(1))
- 143 008e 8093 0000 		sts ct.1881,r24
- 144               	.LM17:
- 145 0092 2091 0000 		lds r18,curr_ch
- 146 0096 2223      		tst r18
- 147 0098 01F4      		brne .L10
- 148 009a E3E0      		ldi r30,lo8(3)
- 149               	.LVL6:
- 150 009c 00C0      		rjmp .L11
- 151               	.LVL7:
- 152               	.L10:
- 153               	.LM18:
- 154 009e E22F      		mov r30,r18
- 155               	.LVL8:
- 156 00a0 E150      		subi r30,lo8(-(-1))
- 157               	.L11:
- 158               	.LM19:
- 159 00a2 F0E0      		ldi r31,lo8(0)
- 160 00a4 EE0F      		lsl r30
- 161 00a6 FF1F      		rol r31
- 162               	.LVL9:
- 163 00a8 DF01      		movw r26,r30
- 164 00aa A050      		subi r26,lo8(-(adc_val))
- 165 00ac B040      		sbci r27,hi8(-(adc_val))
- 166 00ae 932F      		mov r25,r19
- 167 00b0 80E0      		ldi r24,lo8(0)
- 168 00b2 840F      		add r24,r20
- 169 00b4 911D      		adc r25,__zero_reg__
- 170 00b6 8D93      		st X+,r24
- 171 00b8 9C93      		st X,r25
- 172               	.LM20:
- 173 00ba E050      		subi r30,lo8(-(adc_amt))
- 174 00bc F040      		sbci r31,hi8(-(adc_amt))
- 175 00be 8081      		ld r24,Z
- 176 00c0 9181      		ldd r25,Z+1
- 177 00c2 0196      		adiw r24,1
- 178 00c4 9183      		std Z+1,r25
- 179 00c6 8083      		st Z,r24
- 180               	.LM21:
- 181 00c8 822F      		mov r24,r18
- 182 00ca 8F5F      		subi r24,lo8(-(1))
- 183 00cc 8093 0000 		sts curr_ch,r24
- 184 00d0 8430      		cpi r24,lo8(4)
- 185 00d2 00F0      		brlo .L12
- 186 00d4 1092 0000 		sts curr_ch,__zero_reg__
- 187               	.L12:
- 188               	.LBB20:
- 189               	.LBB21:
- 190               	.LM22:
- 191 00d8 8091 7C00 		lds r24,124
- 192 00dc E091 0000 		lds r30,curr_ch
- 193 00e0 F0E0      		ldi r31,lo8(0)
- 194 00e2 E050      		subi r30,lo8(-(channels))
- 195 00e4 F040      		sbci r31,hi8(-(channels))
- 196 00e6 807E      		andi r24,lo8(-32)
- 197 00e8 9081      		ld r25,Z
- 198 00ea 892B      		or r24,r25
- 199 00ec 8093 7C00 		sts 124,r24
- 200               	/* epilogue start */
- 201               	.LBE21:
- 202               	.LBE20:
- 203               	.LM23:
- 204 00f0 FF91      		pop r31
- 205 00f2 EF91      		pop r30
- 206 00f4 BF91      		pop r27
- 207 00f6 AF91      		pop r26
- 208 00f8 9F91      		pop r25
- 209 00fa 8F91      		pop r24
- 210 00fc 4F91      		pop r20
- 211 00fe 3F91      		pop r19
- 212 0100 2F91      		pop r18
- 213 0102 0F90      		pop r0
- 214 0104 0FBE      		out __SREG__,r0
- 215 0106 0F90      		pop r0
- 216 0108 1F90      		pop __zero_reg__
- 217 010a 1895      		reti
- 218               	.LFE16:
- 220               	.global	adc_init
- 222               	adc_init:
- 223               	.LFB14:
- 224               	.LM24:
- 225 010c EF92      		push r14
- 226 010e FF92      		push r15
- 227 0110 0F93      		push r16
- 228 0112 1F93      		push r17
- 229               	/* prologue: function */
- 230               	/* frame size = 0 */
- 231               	.LM25:
- 232 0114 80E0      		ldi r24,lo8(__c.1822)
- 233 0116 90E0      		ldi r25,hi8(__c.1822)
- 234 0118 9F93      		push r25
- 235 011a 8F93      		push r24
- 236 011c 0E94 0000 		call printf_P
- 237               	.LM26:
- 238 0120 E4E6      		ldi r30,lo8(100)
- 239 0122 F0E0      		ldi r31,hi8(100)
- 240 0124 8081      		ld r24,Z
- 241 0126 8E7F      		andi r24,lo8(-2)
- 242 0128 8083      		st Z,r24
- 243               	.LM27:
- 244 012a 0CE7      		ldi r16,lo8(124)
- 245 012c 10E0      		ldi r17,hi8(124)
- 246 012e F801      		movw r30,r16
- 247 0130 8081      		ld r24,Z
- 248 0132 8064      		ori r24,lo8(64)
- 249 0134 8083      		st Z,r24
- 250               	.LM28:
- 251 0136 8081      		ld r24,Z
- 252 0138 8F77      		andi r24,lo8(127)
- 253 013a 8083      		st Z,r24
- 254               	.LM29:
- 255 013c 2AE7      		ldi r18,lo8(122)
- 256 013e E22E      		mov r14,r18
- 257 0140 F12C      		mov r15,__zero_reg__
- 258 0142 F701      		movw r30,r14
- 259 0144 8081      		ld r24,Z
- 260 0146 886A      		ori r24,lo8(-88)
- 261 0148 8083      		st Z,r24
- 262               	.LM30:
- 263 014a 8081      		ld r24,Z
- 264 014c 887F      		andi r24,lo8(-8)
- 265 014e 8660      		ori r24,lo8(6)
- 266 0150 8083      		st Z,r24
- 267               	.LM31:
- 268 0152 EBE7      		ldi r30,lo8(123)
- 269 0154 F0E0      		ldi r31,hi8(123)
- 270 0156 8081      		ld r24,Z
- 271 0158 8068      		ori r24,lo8(-128)
- 272 015a 8083      		st Z,r24
- 273               	.LM32:
- 274 015c 8081      		ld r24,Z
- 275 015e 887F      		andi r24,lo8(-8)
- 276 0160 8083      		st Z,r24
- 277               	.LM33:
- 278 0162 EEE7      		ldi r30,lo8(126)
- 279 0164 F0E0      		ldi r31,hi8(126)
- 280 0166 8081      		ld r24,Z
- 281 0168 806F      		ori r24,lo8(-16)
- 282 016a 8083      		st Z,r24
- 283               	.LM34:
- 284 016c 83B7      		in r24,83-32
- 285 016e 817F      		andi r24,lo8(-15)
- 286 0170 8260      		ori r24,lo8(2)
- 287 0172 83BF      		out 83-32,r24
- 288               	.LM35:
- 289 0174 80E0      		ldi r24,lo8(__c.1824)
- 290 0176 90E0      		ldi r25,hi8(__c.1824)
- 291 0178 9F93      		push r25
- 292 017a 8F93      		push r24
- 293 017c 0E94 0000 		call printf_P
- 294               	.LM36:
- 295 0180 2091 0000 		lds r18,curr_ch
- 296               	.LBB22:
- 297               	.LBB23:
- 298               	.LM37:
- 299 0184 F801      		movw r30,r16
- 300 0186 8081      		ld r24,Z
- 301 0188 A0E0      		ldi r26,lo8(channels)
- 302 018a B0E0      		ldi r27,hi8(channels)
- 303 018c FD01      		movw r30,r26
- 304 018e E20F      		add r30,r18
- 305 0190 F11D      		adc r31,__zero_reg__
- 306 0192 807E      		andi r24,lo8(-32)
- 307 0194 9081      		ld r25,Z
- 308 0196 892B      		or r24,r25
- 309 0198 F801      		movw r30,r16
- 310 019a 8083      		st Z,r24
- 311               	.LBE23:
- 312               	.LBE22:
- 313               	.LM38:
- 314 019c F701      		movw r30,r14
- 315 019e 8081      		ld r24,Z
- 316 01a0 8064      		ori r24,lo8(64)
- 317 01a2 8083      		st Z,r24
- 318               	.LBB24:
- 319               	.LBB25:
- 320               	.LM39:
- 321 01a4 80E0      		ldi r24,lo8(0)
- 322 01a6 90E0      		ldi r25,hi8(0)
- 323               	.LVL10:
- 324               	/* #APP */
- 325               	 ;  105 "c:/winavr-20080610/lib/gcc/../../avr/include/util/delay_basic.h" 1
- 326 01a8 0197      		1: sbiw r24,1
- 327 01aa 01F4      		brne 1b
- 328               	 ;  0 "" 2
- 329               	/* #NOAPP */
- 330               	.LBE25:
- 331               	.LBE24:
- 332               	.LM40:
- 333 01ac 2F5F      		subi r18,lo8(-(1))
- 334 01ae 2093 0000 		sts curr_ch,r18
- 335               	.LBB26:
- 336               	.LBB27:
- 337               	.LM41:
- 338 01b2 F801      		movw r30,r16
- 339 01b4 8081      		ld r24,Z
- 340               	.LVL11:
- 341 01b6 A20F      		add r26,r18
- 342 01b8 B11D      		adc r27,__zero_reg__
- 343 01ba 807E      		andi r24,lo8(-32)
- 344 01bc 9C91      		ld r25,X
- 345 01be 892B      		or r24,r25
- 346 01c0 8083      		st Z,r24
- 347               	.LBE27:
- 348               	.LBE26:
- 349               	.LM42:
- 350 01c2 80E0      		ldi r24,lo8(__c.1826)
- 351 01c4 90E0      		ldi r25,hi8(__c.1826)
- 352 01c6 9F93      		push r25
- 353 01c8 8F93      		push r24
- 354 01ca 0E94 0000 		call printf_P
- 355 01ce 8DB7      		in r24,__SP_L__
- 356 01d0 9EB7      		in r25,__SP_H__
- 357 01d2 0696      		adiw r24,6
- 358 01d4 0FB6      		in __tmp_reg__,__SREG__
- 359 01d6 F894      		cli
- 360 01d8 9EBF      		out __SP_H__,r25
- 361 01da 0FBE      		out __SREG__,__tmp_reg__
- 362 01dc 8DBF      		out __SP_L__,r24
- 363               	/* epilogue start */
- 364               	.LM43:
- 365 01de 1F91      		pop r17
- 366 01e0 0F91      		pop r16
- 367 01e2 FF90      		pop r15
- 368 01e4 EF90      		pop r14
- 369 01e6 0895      		ret
- 370               	.LFE14:
- 372               	.global	adc_calibrate_store
- 374               	adc_calibrate_store:
- 375               	.LFB12:
- 376               	.LM44:
- 377               	/* prologue: function */
- 378               	/* frame size = 0 */
- 379               	.LM45:
- 380 01e8 80E0      		ldi r24,lo8(__c.1811)
- 381 01ea 90E0      		ldi r25,hi8(__c.1811)
- 382 01ec 9F93      		push r25
- 383 01ee 8F93      		push r24
- 384 01f0 0E94 0000 		call printf_P
- 385 01f4 0F90      		pop __tmp_reg__
- 386 01f6 0F90      		pop __tmp_reg__
- 387               	/* epilogue start */
- 388               	.LM46:
- 389 01f8 0895      		ret
- 390               	.LFE12:
- 392               	.global	adc_calibrate_update
- 394               	adc_calibrate_update:
- 395               	.LFB11:
- 396               	.LM47:
- 397 01fa CF92      		push r12
- 398 01fc DF92      		push r13
- 399 01fe EF92      		push r14
- 400 0200 FF92      		push r15
- 401 0202 0F93      		push r16
- 402 0204 1F93      		push r17
- 403 0206 DF93      		push r29
- 404 0208 CF93      		push r28
- 405 020a CDB7      		in r28,__SP_L__
- 406 020c DEB7      		in r29,__SP_H__
- 407 020e 6097      		sbiw r28,16
- 408 0210 0FB6      		in __tmp_reg__,__SREG__
- 409 0212 F894      		cli
- 410 0214 DEBF      		out __SP_H__,r29
- 411 0216 0FBE      		out __SREG__,__tmp_reg__
- 412 0218 CDBF      		out __SP_L__,r28
- 413               	/* prologue: function */
- 414               	/* frame size = 16 */
- 415               	.LM48:
- 416 021a DE01      		movw r26,r28
- 417 021c 1996      		adiw r26,9
- 418 021e E0E0      		ldi r30,lo8(adc_val)
- 419 0220 F0E0      		ldi r31,hi8(adc_val)
- 420 0222 88E0      		ldi r24,lo8(8)
- 421               	.L19:
- 422 0224 0190      		ld r0,Z+
- 423 0226 0D92      		st X+,r0
- 424 0228 8150      		subi r24,lo8(-(-1))
- 425 022a 01F4      		brne .L19
- 426               	.LBB28:
- 427               	.LM49:
- 428 022c 4985      		ldd r20,Y+9
- 429 022e 5A85      		ldd r21,Y+10
- 430 0230 20E0      		ldi r18,lo8(0)
- 431 0232 30E0      		ldi r19,hi8(0)
- 432 0234 8E01      		movw r16,r28
- 433 0236 0F5F      		subi r16,lo8(-(1))
- 434 0238 1F4F      		sbci r17,hi8(-(1))
- 435 023a BE01      		movw r22,r28
- 436 023c 675F      		subi r22,lo8(-(9))
- 437 023e 7F4F      		sbci r23,hi8(-(9))
- 438               	.L20:
- 439 0240 D801      		movw r26,r16
- 440 0242 A20F      		add r26,r18
- 441 0244 B31F      		adc r27,r19
- 442 0246 FB01      		movw r30,r22
- 443 0248 E20F      		add r30,r18
- 444 024a F31F      		adc r31,r19
- 445 024c 8081      		ld r24,Z
- 446 024e 9181      		ldd r25,Z+1
- 447 0250 FA01      		movw r30,r20
- 448 0252 E81B      		sub r30,r24
- 449 0254 F90B      		sbc r31,r25
- 450 0256 ED93      		st X+,r30
- 451 0258 FC93      		st X,r31
- 452 025a 2E5F      		subi r18,lo8(-(2))
- 453 025c 3F4F      		sbci r19,hi8(-(2))
- 454               	.LM50:
- 455 025e 2830      		cpi r18,8
- 456 0260 3105      		cpc r19,__zero_reg__
- 457 0262 01F4      		brne .L20
- 458               	.LBE28:
- 459               	.LM51:
- 460 0264 8091 0000 		lds r24,num_calibrations
- 461 0268 9E01      		movw r18,r28
- 462 026a 2F5F      		subi r18,lo8(-(1))
- 463 026c 3F4F      		sbci r19,hi8(-(1))
- 464 026e 8823      		tst r24
- 465 0270 01F4      		brne .L21
- 466               	.LM52:
- 467 0272 A0E0      		ldi r26,lo8(adc_offset)
- 468 0274 B0E0      		ldi r27,hi8(adc_offset)
- 469 0276 F901      		movw r30,r18
- 470 0278 88E0      		ldi r24,lo8(8)
- 471               	.L22:
- 472 027a 0190      		ld r0,Z+
- 473 027c 0D92      		st X+,r0
- 474 027e 8150      		subi r24,lo8(-(-1))
- 475 0280 01F4      		brne .L22
- 476 0282 00C0      		rjmp .L23
- 477               	.L21:
- 478 0284 E0E0      		ldi r30,lo8(adc_offset)
- 479 0286 F0E0      		ldi r31,hi8(adc_offset)
- 480 0288 7901      		movw r14,r18
- 481               	.LBB29:
- 482               	.LM53:
- 483 028a 082F      		mov r16,r24
- 484 028c 10E0      		ldi r17,lo8(0)
- 485 028e 6801      		movw r12,r16
- 486 0290 0894      		sec
- 487 0292 C11C      		adc r12,__zero_reg__
- 488 0294 D11C      		adc r13,__zero_reg__
- 489               	.L24:
- 490 0296 8081      		ld r24,Z
- 491 0298 9181      		ldd r25,Z+1
- 492 029a 9C01      		movw r18,r24
- 493 029c 029F      		mul r16,r18
- 494 029e C001      		movw r24,r0
- 495 02a0 039F      		mul r16,r19
- 496 02a2 900D      		add r25,r0
- 497 02a4 129F      		mul r17,r18
- 498 02a6 900D      		add r25,r0
- 499 02a8 1124      		clr r1
- 500 02aa D701      		movw r26,r14
- 501 02ac 2D91      		ld r18,X+
- 502 02ae 3D91      		ld r19,X+
- 503 02b0 7D01      		movw r14,r26
- 504 02b2 820F      		add r24,r18
- 505 02b4 931F      		adc r25,r19
- 506 02b6 B601      		movw r22,r12
- 507 02b8 0E94 0000 		call __divmodhi4
- 508 02bc 6193      		st Z+,r22
- 509 02be 7193      		st Z+,r23
- 510               	.LM54:
- 511 02c0 B0E0      		ldi r27,hi8(adc_offset+8)
- 512 02c2 E030      		cpi r30,lo8(adc_offset+8)
- 513 02c4 FB07      		cpc r31,r27
- 514 02c6 01F4      		brne .L24
- 515               	.L23:
- 516               	.LBE29:
- 517               	.LM55:
- 518 02c8 8091 0000 		lds r24,num_calibrations
- 519 02cc 8F5F      		subi r24,lo8(-(1))
- 520 02ce 8093 0000 		sts num_calibrations,r24
- 521               	/* epilogue start */
- 522               	.LM56:
- 523 02d2 6096      		adiw r28,16
- 524 02d4 0FB6      		in __tmp_reg__,__SREG__
- 525 02d6 F894      		cli
- 526 02d8 DEBF      		out __SP_H__,r29
- 527 02da 0FBE      		out __SREG__,__tmp_reg__
- 528 02dc CDBF      		out __SP_L__,r28
- 529 02de CF91      		pop r28
- 530 02e0 DF91      		pop r29
- 531 02e2 1F91      		pop r17
- 532 02e4 0F91      		pop r16
- 533 02e6 FF90      		pop r15
- 534 02e8 EF90      		pop r14
- 535 02ea DF90      		pop r13
- 536 02ec CF90      		pop r12
- 537 02ee 0895      		ret
- 538               	.LFE11:
- 540               		.data
- 541               	.LC0:
- 542 0000 205B 2025 		.string	" [ %d : %d ] "
- 542      6420 3A20 
- 542      2564 205D 
- 542      2000 
- 543               		.text
- 544               	.global	print_adc_calibration
- 546               	print_adc_calibration:
- 547               	.LFB9:
- 548               	.LM57:
- 549 02f0 0F93      		push r16
- 550 02f2 1F93      		push r17
- 551               	/* prologue: function */
- 552               	/* frame size = 0 */
- 553               	.LM58:
- 554 02f4 80E0      		ldi r24,lo8(__c.1755)
- 555 02f6 90E0      		ldi r25,hi8(__c.1755)
- 556 02f8 9F93      		push r25
- 557 02fa 8F93      		push r24
- 558 02fc 0E94 0000 		call printf_P
- 559               	.LBB30:
- 560               	.LM59:
- 561 0300 8091 0000 		lds r24,adc_offset
- 562 0304 9091 0000 		lds r25,(adc_offset)+1
- 563 0308 9F93      		push r25
- 564 030a 8F93      		push r24
- 565 030c 1F92      		push __zero_reg__
- 566 030e 1F92      		push __zero_reg__
- 567 0310 00E0      		ldi r16,lo8(.LC0)
- 568 0312 10E0      		ldi r17,hi8(.LC0)
- 569 0314 1F93      		push r17
- 570 0316 0F93      		push r16
- 571 0318 0E94 0000 		call printf
- 572 031c 8091 0000 		lds r24,adc_offset+2
- 573 0320 9091 0000 		lds r25,(adc_offset+2)+1
- 574 0324 9F93      		push r25
- 575 0326 8F93      		push r24
- 576 0328 81E0      		ldi r24,lo8(1)
- 577 032a 90E0      		ldi r25,hi8(1)
- 578 032c 9F93      		push r25
- 579 032e 8F93      		push r24
- 580 0330 1F93      		push r17
- 581 0332 0F93      		push r16
- 582 0334 0E94 0000 		call printf
- 583 0338 8091 0000 		lds r24,adc_offset+4
- 584 033c 9091 0000 		lds r25,(adc_offset+4)+1
- 585 0340 9F93      		push r25
- 586 0342 8F93      		push r24
- 587 0344 82E0      		ldi r24,lo8(2)
- 588 0346 90E0      		ldi r25,hi8(2)
- 589 0348 9F93      		push r25
- 590 034a 8F93      		push r24
- 591 034c 1F93      		push r17
- 592 034e 0F93      		push r16
- 593 0350 0E94 0000 		call printf
- 594 0354 8091 0000 		lds r24,adc_offset+6
- 595 0358 9091 0000 		lds r25,(adc_offset+6)+1
- 596 035c 9F93      		push r25
- 597 035e 8F93      		push r24
- 598 0360 83E0      		ldi r24,lo8(3)
- 599 0362 90E0      		ldi r25,hi8(3)
- 600 0364 9F93      		push r25
- 601 0366 8F93      		push r24
- 602 0368 1F93      		push r17
- 603 036a 0F93      		push r16
- 604 036c 0E94 0000 		call printf
- 605 0370 8DB7      		in r24,__SP_L__
- 606 0372 9EB7      		in r25,__SP_H__
- 607 0374 4A96      		adiw r24,26
- 608 0376 0FB6      		in __tmp_reg__,__SREG__
- 609 0378 F894      		cli
- 610 037a 9EBF      		out __SP_H__,r25
- 611 037c 0FBE      		out __SREG__,__tmp_reg__
- 612 037e 8DBF      		out __SP_L__,r24
- 613               	/* epilogue start */
- 614               	.LBE30:
- 615               	.LM60:
- 616 0380 1F91      		pop r17
- 617 0382 0F91      		pop r16
- 618 0384 0895      		ret
- 619               	.LFE9:
- 621               	.global	print_adc_values
- 623               	print_adc_values:
- 624               	.LFB8:
- 625               	.LM61:
- 626 0386 CF92      		push r12
- 627 0388 DF92      		push r13
- 628 038a EF92      		push r14
- 629 038c FF92      		push r15
- 630 038e 0F93      		push r16
- 631 0390 1F93      		push r17
- 632 0392 CF93      		push r28
- 633 0394 DF93      		push r29
- 634               	/* prologue: function */
- 635               	/* frame size = 0 */
- 636               	.LM62:
- 637 0396 80E0      		ldi r24,lo8(__c.1737)
- 638 0398 90E0      		ldi r25,hi8(__c.1737)
- 639 039a 9F93      		push r25
- 640 039c 8F93      		push r24
- 641 039e 0E94 0000 		call printf_P
- 642               	.LBB31:
- 643               	.LM63:
- 644 03a2 8091 0000 		lds r24,adc_val
- 645 03a6 9091 0000 		lds r25,(adc_val)+1
- 646 03aa 9F93      		push r25
- 647 03ac 8F93      		push r24
- 648 03ae 1F92      		push __zero_reg__
- 649 03b0 1F92      		push __zero_reg__
- 650 03b2 00E0      		ldi r16,lo8(.LC0)
- 651 03b4 10E0      		ldi r17,hi8(.LC0)
- 652 03b6 1F93      		push r17
- 653 03b8 0F93      		push r16
- 654 03ba 0E94 0000 		call printf
- 655 03be 8091 0000 		lds r24,adc_val+2
- 656 03c2 9091 0000 		lds r25,(adc_val+2)+1
- 657 03c6 9F93      		push r25
- 658 03c8 8F93      		push r24
- 659 03ca 81E0      		ldi r24,lo8(1)
- 660 03cc 90E0      		ldi r25,hi8(1)
- 661 03ce 9F93      		push r25
- 662 03d0 8F93      		push r24
- 663 03d2 1F93      		push r17
- 664 03d4 0F93      		push r16
- 665 03d6 0E94 0000 		call printf
- 666 03da 8091 0000 		lds r24,adc_val+4
- 667 03de 9091 0000 		lds r25,(adc_val+4)+1
- 668 03e2 9F93      		push r25
- 669 03e4 8F93      		push r24
- 670 03e6 82E0      		ldi r24,lo8(2)
- 671 03e8 90E0      		ldi r25,hi8(2)
- 672 03ea 9F93      		push r25
- 673 03ec 8F93      		push r24
- 674 03ee 1F93      		push r17
- 675 03f0 0F93      		push r16
- 676 03f2 0E94 0000 		call printf
- 677 03f6 8091 0000 		lds r24,adc_val+6
- 678 03fa 9091 0000 		lds r25,(adc_val+6)+1
- 679 03fe 9F93      		push r25
- 680 0400 8F93      		push r24
- 681 0402 83E0      		ldi r24,lo8(3)
- 682 0404 90E0      		ldi r25,hi8(3)
- 683 0406 9F93      		push r25
- 684 0408 8F93      		push r24
- 685 040a 1F93      		push r17
- 686 040c 0F93      		push r16
- 687 040e 0E94 0000 		call printf
- 688               	.LBE31:
- 689               	.LM64:
- 690 0412 80E0      		ldi r24,lo8(__c.1743)
- 691 0414 90E0      		ldi r25,hi8(__c.1743)
- 692 0416 9F93      		push r25
- 693 0418 8F93      		push r24
- 694 041a 0E94 0000 		call printf_P
- 695 041e 40E0      		ldi r20,lo8(adc_val)
- 696 0420 C42E      		mov r12,r20
- 697 0422 40E0      		ldi r20,hi8(adc_val)
- 698 0424 D42E      		mov r13,r20
- 699 0426 30E0      		ldi r19,lo8(adc_offset)
- 700 0428 E32E      		mov r14,r19
- 701 042a 30E0      		ldi r19,hi8(adc_offset)
- 702 042c F32E      		mov r15,r19
- 703 042e C0E0      		ldi r28,lo8(0)
- 704 0430 D0E0      		ldi r29,hi8(0)
- 705 0432 8DB7      		in r24,__SP_L__
- 706 0434 9EB7      		in r25,__SP_H__
- 707 0436 4C96      		adiw r24,28
- 708 0438 0FB6      		in __tmp_reg__,__SREG__
- 709 043a F894      		cli
- 710 043c 9EBF      		out __SP_H__,r25
- 711 043e 0FBE      		out __SREG__,__tmp_reg__
- 712 0440 8DBF      		out __SP_L__,r24
- 713               	.L33:
- 714               	.LBB32:
- 715               	.LM65:
- 716 0442 F701      		movw r30,r14
- 717 0444 8191      		ld r24,Z+
- 718 0446 9191      		ld r25,Z+
- 719 0448 7F01      		movw r14,r30
- 720 044a F601      		movw r30,r12
- 721 044c 2191      		ld r18,Z+
- 722 044e 3191      		ld r19,Z+
- 723 0450 6F01      		movw r12,r30
- 724 0452 820F      		add r24,r18
- 725 0454 931F      		adc r25,r19
- 726 0456 9F93      		push r25
- 727 0458 8F93      		push r24
- 728 045a DF93      		push r29
- 729 045c CF93      		push r28
- 730 045e 1F93      		push r17
- 731 0460 0F93      		push r16
- 732 0462 0E94 0000 		call printf
- 733 0466 2196      		adiw r28,1
- 734               	.LM66:
- 735 0468 8DB7      		in r24,__SP_L__
- 736 046a 9EB7      		in r25,__SP_H__
- 737 046c 0696      		adiw r24,6
- 738 046e 0FB6      		in __tmp_reg__,__SREG__
- 739 0470 F894      		cli
- 740 0472 9EBF      		out __SP_H__,r25
- 741 0474 0FBE      		out __SREG__,__tmp_reg__
- 742 0476 8DBF      		out __SP_L__,r24
- 743 0478 C430      		cpi r28,4
- 744 047a D105      		cpc r29,__zero_reg__
- 745 047c 01F4      		brne .L33
- 746               	/* epilogue start */
- 747               	.LBE32:
- 748               	.LM67:
- 749 047e DF91      		pop r29
- 750 0480 CF91      		pop r28
- 751 0482 1F91      		pop r17
- 752 0484 0F91      		pop r16
- 753 0486 FF90      		pop r15
- 754 0488 EF90      		pop r14
- 755 048a DF90      		pop r13
- 756 048c CF90      		pop r12
- 757 048e 0895      		ret
- 758               	.LFE8:
- 760               		.lcomm ct.1881,1
- 761               		.data
- 764               	channels:
- 765 000e 04        		.byte	4
- 766 000f 06        		.byte	6
- 767 0010 05        		.byte	5
- 768 0011 07        		.byte	7
- 769               		.section	.progmem.data,"a",@progbits
- 772               	__c.1826:
- 773 0000 095B 646F 		.string	"\t[done]"
- 773      6E65 5D00 
- 776               	__c.1824:
- 777 0008 0A61 6463 		.string	"\nadc: init: setup convertions"
- 777      3A20 696E 
- 777      6974 3A20 
- 777      7365 7475 
- 777      7020 636F 
- 780               	__c.1822:
- 781 0026 0A61 6463 		.string	"\nadc: init"
- 781      3A20 696E 
- 781      6974 00
- 784               	__c.1811:
- 785 0031 0A5B 64   		.ascii	"\n[d"
- 786 0034 6562 7567 		.string	"ebug] Warning: unimplimented function adc_calibrate_store called"
- 786      5D20 5761 
- 786      726E 696E 
- 786      673A 2075 
- 786      6E69 6D70 
- 789               	__c.1755:
- 790 0075 0A5B 6465 		.string	"\n[debug] ADC OFFSETS: "
- 790      6275 675D 
- 790      2041 4443 
- 790      204F 4646 
- 790      5345 5453 
- 793               	__c.1743:
- 794 008c 0A5B 6465 		.string	"\n[debug] FIXED ADC: "
- 794      6275 675D 
- 794      2046 4958 
- 794      4544 2041 
- 794      4443 3A20 
- 797               	__c.1737:
- 798 00a1 0A5B 6465 		.string	"\n[debug]   RAW ADC: "
- 798      6275 675D 
- 798      2020 2052 
- 798      4157 2041 
- 798      4443 3A20 
- 799               		.lcomm num_calibrations,1
- 800               		.comm c_mode,1,1
- 801               		.comm initial,1,1
- 802               		.comm adc_val,8,1
- 803               		.comm adc_offset,8,1
- 804               		.comm adc_amt,8,1
- 805               		.comm curr_ch,1,1
- 902               	.Letext0:
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.global __do_copy_data
+   8               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+ 103               	.global	copysign
+ 105               	copysign:
+ 106               		.stabd	46,0,0
+ 108               	.Ltext1:
+   1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /* Copyright (c) 2002,2007 Michael Stumpf
+   2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+   3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    Portions of documentation Copyright (c) 1990 - 1994
+   4:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    The Regents of the University of California.
+   5:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+   6:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    All rights reserved.
+   7:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+   8:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    Redistribution and use in source and binary forms, with or without
+   9:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    modification, are permitted provided that the following conditions are met:
+  10:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  11:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    * Redistributions of source code must retain the above copyright
+  12:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      notice, this list of conditions and the following disclaimer.
+  13:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  14:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    * Redistributions in binary form must reproduce the above copyright
+  15:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      notice, this list of conditions and the following disclaimer in
+  16:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the documentation and/or other materials provided with the
+  17:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      distribution.
+  18:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  19:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    * Neither the name of the copyright holders nor the names of
+  20:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      contributors may be used to endorse or promote products derived
+  21:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      from this software without specific prior written permission.
+  22:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  23:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  24:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  25:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  26:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  27:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  28:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  29:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  30:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  31:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  32:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  33:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  34:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  35:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /* $Id: math.h,v 1.21.2.1 2008/03/17 15:28:49 arcanum Exp $ */
+  36:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  37:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /*
+  38:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    math.h - mathematical functions
+  39:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  40:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    Author : Michael Stumpf
+  41:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****             Michael.Stumpf@t-online.de
+  42:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  43:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    __ATTR_CONST__ added by marekm@linux.org.pl for functions
+  44:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    that "do not examine any values except their arguments, and have
+  45:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    no effects except the return value", for better optimization by gcc.
+  46:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****  */
+  47:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  48:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #ifndef __MATH_H
+  49:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define __MATH_H
+  50:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  51:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /** \file */
+  52:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /** \defgroup avr_math <math.h>: Mathematics
+  53:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     \code #include <math.h> \endcode
+  54:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  55:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     This header file declares basic mathematics constants and
+  56:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     functions.
+  57:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  58:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     \par Notes:
+  59:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     - In order to access the functions delcared herein, it is usually
+  60:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       also required to additionally link against the library \c libm.a.
+  61:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       See also the related \ref faq_libm "FAQ entry".
+  62:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     - Math functions do not raise exceptions and do not change the
+  63:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       \c errno variable. Therefore the majority of them are declared
+  64:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****       with const attribute, for better optimization by GCC.	*/
+  65:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  66:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
+  67:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
+  68:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  69:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    The constant \c pi. */
+  70:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define M_PI 3.141592653589793238462643
+  71:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  72:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
+  73:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
+  74:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  75:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    The square root of 2. */
+  76:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define M_SQRT2 1.4142135623730950488016887
+  77:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  78:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
+  79:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
+  80:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  81:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    NAN constant. */
+  82:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define NAN	__builtin_nan("")
+  83:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  84:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /**
+  85:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    \ingroup avr_math
+  86:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  87:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    INFINITY constant. */
+  88:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #define INFINITY	__builtin_inf()
+  89:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  90:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #ifndef __ATTR_CONST__
+  91:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** # define __ATTR_CONST__ __attribute__((__const__))
+  92:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #endif
+  93:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  94:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #ifdef __cplusplus
+  95:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern "C" {
+  96:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #endif
+  97:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+  98:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+  99:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 100:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 101:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The cos() function returns the cosine of \a __x, measured in radians.
+ 102:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 103:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double cos(double __x) __ATTR_CONST__;
+ 104:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 105:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 106:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 107:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 108:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fabs() function computes the absolute value of a floating-point
+ 109:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      number \a __x.
+ 110:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 111:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fabs(double __x) __ATTR_CONST__;
+ 112:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #if 0
+ 113:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /* fabs seems to be built in already */
+ 114:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern inline double fabs( double __x )
+ 115:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   { double __res;
+ 116:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ __volatile__ ("andi %D0,0x7F \n\t"
+ 117:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 		: "=d" (__res) : "0" (__x) );
+ 118:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __res;
+ 119:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   }
+ 120:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** #endif
+ 121:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 122:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 123:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 124:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 125:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function fmod() returns the floating-point remainder of <em>__x /
+ 126:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      __y</em>.
+ 127:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 128:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fmod(double __x, double __y) __ATTR_CONST__;
+ 129:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 130:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 131:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 132:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 133:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The modf() function breaks the argument \a __x into integral and
+ 134:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      fractional parts, each of which has the same sign as the argument. 
+ 135:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      It stores the integral part as a double in the object pointed to by
+ 136:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __iptr.
+ 137:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 138:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The modf() function returns the signed fractional part of \a __x.
+ 139:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      
+ 140:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note
+ 141:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      This implementation skips writing by zero pointer.
+ 142:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 143:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double modf(double __x, double *__iptr);
+ 144:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 145:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 146:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 147:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 148:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The sin() function returns the sine of \a __x, measured in radians.
+ 149:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 150:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double sin(double __x) __ATTR_CONST__;
+ 151:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 152:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 153:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 154:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 155:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The sqrt() function returns the non-negative square root of \a __x.
+ 156:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 157:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double sqrt(double __x) __ATTR_CONST__;
+ 158:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 159:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 160:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 161:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 162:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The tan() function returns the tangent of \a __x, measured in
+ 163:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      radians.
+ 164:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 165:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double tan(double __x) __ATTR_CONST__;
+ 166:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 167:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 168:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 169:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 170:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The floor() function returns the largest integral value less than or
+ 171:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      equal to \a __x, expressed as a floating-point number.
+ 172:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 173:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double floor(double __x) __ATTR_CONST__;
+ 174:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 175:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 176:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 177:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 178:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The ceil() function returns the smallest integral value greater than
+ 179:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      or equal to \a __x, expressed as a floating-point number.
+ 180:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 181:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double ceil(double __x) __ATTR_CONST__;
+ 182:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 183:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 184:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 185:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 186:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The frexp() function breaks a floating-point number into a normalized
+ 187:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      fraction and an integral power of 2.  It stores the integer in the \c
+ 188:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      int object pointed to by \a __pexp.
+ 189:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 190:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      If \a __x is a normal float point number, the frexp() function
+ 191:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      returns the value \c v, such that \c v has a magnitude in the
+ 192:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      interval [1/2, 1) or zero, and \a __x equals \c v times 2 raised to
+ 193:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the power \a __pexp. If \a __x is zero, both parts of the result are
+ 194:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      zero. If \a __x is not a finite number, the frexp() returns \a __x as
+ 195:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      is and stores 0 by \a __pexp.
+ 196:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 197:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note  This implementation permits a zero pointer as a directive to
+ 198:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      skip a storing the exponent.
+ 199:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 200:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double frexp(double __x, int *__pexp);
+ 201:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 202:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 203:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 204:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 205:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The ldexp() function multiplies a floating-point number by an integral
+ 206:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      power of 2.
+ 207:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 208:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The ldexp() function returns the value of \a __x times 2 raised to
+ 209:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the power \a __exp.
+ 210:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 211:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double ldexp(double __x, int __exp) __ATTR_CONST__;
+ 212:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 213:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 214:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 215:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 216:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The exp() function returns the exponential value of \a __x.
+ 217:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 218:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double exp(double __x) __ATTR_CONST__;
+ 219:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 220:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 221:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 222:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 223:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The cosh() function returns the hyperbolic cosine of \a __x.
+ 224:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 225:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double cosh(double __x) __ATTR_CONST__;
+ 226:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 227:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 228:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 229:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 230:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The sinh() function returns the hyperbolic sine of \a __x.
+ 231:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 232:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double sinh(double __x) __ATTR_CONST__;
+ 233:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 234:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 235:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 236:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 237:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The tanh() function returns the hyperbolic tangent of \a __x.
+ 238:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 239:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double tanh(double __x) __ATTR_CONST__;
+ 240:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 241:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 242:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 243:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 244:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The acos() function computes the principal value of the arc cosine of
+ 245:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __x.  The returned value is in the range [0, pi] radians. A domain
+ 246:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      error occurs for arguments not in the range [-1, +1].
+ 247:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 248:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double acos(double __x) __ATTR_CONST__;
+ 249:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 250:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 251:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 252:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 253:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The asin() function computes the principal value of the arc sine of
+ 254:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __x.  The returned value is in the range [-pi/2, pi/2] radians. A
+ 255:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      domain error occurs for arguments not in the range [-1, +1].
+ 256:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 257:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double asin(double __x) __ATTR_CONST__;
+ 258:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 259:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 260:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 261:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 262:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The atan() function computes the principal value of the arc tangent
+ 263:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      of \a __x.  The returned value is in the range [-pi/2, pi/2] radians.
+ 264:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 265:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double atan(double __x) __ATTR_CONST__;
+ 266:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 267:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 268:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 269:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      
+ 270:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The atan2() function computes the principal value of the arc tangent
+ 271:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      of <em>__y / __x</em>, using the signs of both arguments to determine
+ 272:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      the quadrant of the return value.  The returned value is in the range
+ 273:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      [-pi, +pi] radians.
+ 274:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 275:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double atan2(double __y, double __x) __ATTR_CONST__;
+ 276:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 277:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 278:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 279:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 280:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The log() function returns the natural logarithm of argument \a __x.
+ 281:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    */
+ 282:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double log(double __x) __ATTR_CONST__;
+ 283:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 284:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 285:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 286:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 287:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The log10() function returns the logarithm of argument \a __x to base
+ 288:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      10.
+ 289:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    */
+ 290:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double log10(double __x) __ATTR_CONST__;
+ 291:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 292:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 293:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 294:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 295:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function pow() returns the value of \a __x to the exponent \a __y.
+ 296:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 297:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double pow(double __x, double __y) __ATTR_CONST__;
+ 298:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 299:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 300:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 301:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 302:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function isnan() returns 1 if the argument \a __x represents a
+ 303:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      "not-a-number" (NaN) object, otherwise 0.
+ 304:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 305:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern int isnan(double __x) __ATTR_CONST__;
+ 306:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 307:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 308:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 309:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 310:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function isinf() returns 1 if the argument \a __x is positive
+ 311:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      infinity, -1 if \a __x is negative infinity, and 0 otherwise.
+ 312:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 313:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern int isinf(double __x) __ATTR_CONST__;
+ 314:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 315:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 316:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 317:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 318:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The function square() returns <em>__x * __x</em>.
+ 319:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 320:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note
+ 321:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      This function does not belong to the C standard definition.
+ 322:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 323:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double square(double __x) __ATTR_CONST__;
+ 324:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 325:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 326:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 327:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 328:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The copysign() function returns \a __x but with the sign of \a __y.
+ 329:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      They work even if \a __x or \a __y are NaN or zero.
+ 330:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****  */
+ 331:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** __ATTR_CONST__ extern inline double copysign (double __x, double __y)
+ 332:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** {
+ 333:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ (
+ 110               	.LM0:
+ 111               	.LFBB1:
+ 112               	/* prologue: function */
+ 113               	/* frame size = 0 */
+ 115               	.LM1:
+ 116               	/* #APP */
+ 117               	 ;  333 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
+ 118 0000 57FB      		bst	r21, 7	
+ 119 0002 97F9      		bld	r25, 7	
+ 120               	 ;  0 "" 2
+ 121               	/* epilogue start */
+ 334:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"bst	%D2, 7	\n\t"
+ 335:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"bld	%D0, 7	"
+ 336:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "=r" (__x)
+ 337:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "0" (__x), "r" (__y) );
+ 338:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __x;
+ 339:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** }
+ 123               	.LM2:
+ 124               	/* #NOAPP */
+ 125 0004 0895      		ret
+ 127               	.Lscope1:
+ 129               		.stabd	78,0,0
+ 132               	.global	isfinite
+ 134               	isfinite:
+ 135               		.stabd	46,0,0
+ 340:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 341:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 342:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 343:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 344:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fdim() function returns <em>max(__x - __y, 0)</em>. If \a __x or
+ 345:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __y or both are NaN, NaN is returned.
+ 346:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 347:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fdim (double __x, double __y) __ATTR_CONST__;
+ 348:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 349:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 350:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 351:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 352:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fma() function performs floating-point multiply-add. This is the
+ 353:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      operation <em>(__x * __y) + __z</em>, but the intermediate result is
+ 354:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      not rounded to the destination type.  This can sometimes improve the
+ 355:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      precision of a calculation.
+ 356:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 357:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fma (double __x, double __y, double __z) __ATTR_CONST__;
+ 358:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 359:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 360:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 361:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 362:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fmax() function returns the greater of the two values \a __x and
+ 363:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __y. If an argument is NaN, the other argument is returned. If
+ 364:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      both arguments are NaN, NaN is returned.
+ 365:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 366:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fmax (double __x, double __y) __ATTR_CONST__;
+ 367:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 368:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 369:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 370:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 371:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The fmin() function returns the lesser of the two values \a __x and
+ 372:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \a __y. If an argument is NaN, the other argument is returned. If
+ 373:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      both arguments are NaN, NaN is returned.
+ 374:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 375:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double fmin (double __x, double __y) __ATTR_CONST__;
+ 376:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 377:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 378:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 379:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 380:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The signbit() function returns a nonzero value if the value of \a __x
+ 381:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      has its sign bit set.  This is not the same as `\a __x < 0.0',
+ 382:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      because IEEE 754 floating point allows zero to be signed. The
+ 383:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      comparison `-0.0 < 0.0' is false, but `signbit (-0.0)' will return a
+ 384:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      nonzero value.
+ 385:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      
+ 386:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \note
+ 387:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      This implementation returns 1 if sign bit is set.
+ 388:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 389:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern int signbit (double __x) __ATTR_CONST__;
+ 390:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 391:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 392:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 393:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 394:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The trunc() function rounds \a __x to the nearest integer not larger
+ 395:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      in absolute value.
+ 396:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 397:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** extern double trunc (double __x) __ATTR_CONST__;
+ 398:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 399:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
+ 400:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
+ 401:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
+ 402:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      The isfinite() function returns a nonzero value if \a __x is finite:
+ 403:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      not plus or minus infinity, and not NaN.
+ 404:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
+ 405:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** __ATTR_CONST__ extern inline int isfinite (double __x)
+ 406:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** {
+ 137               	.LM3:
+ 138               	.LFBB2:
+ 139               	/* prologue: function */
+ 140               	/* frame size = 0 */
+ 407:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     unsigned char __exp;
+ 408:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ (
+ 142               	.LM4:
+ 143               	/* #APP */
+ 144               	 ;  408 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
+ 145 0006 682F      		mov	r22, r24		
+ 146 0008 660F      		lsl	r22		
+ 147 000a 692F      		mov	r22, r25		
+ 148 000c 661F      		rol	r22		
+ 149               	 ;  0 "" 2
+ 150               	/* #NOAPP */
+ 151 000e 20E0      		ldi r18,lo8(0)
+ 152 0010 30E0      		ldi r19,hi8(0)
+ 153 0012 6F3F      		cpi r22,lo8(-1)
+ 154 0014 01F0      		breq .L4
+ 155 0016 21E0      		ldi r18,lo8(1)
+ 156 0018 30E0      		ldi r19,hi8(1)
+ 157               	.L4:
+ 409:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"mov	%0, %C1		\n\t"
+ 410:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"lsl	%0		\n\t"
+ 411:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"mov	%0, %D1		\n\t"
+ 412:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"rol	%0		"
+ 413:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "=r" (__exp)
+ 414:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "r" (__x)	);
+ 415:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __exp != 0xff;
+ 416:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** }
+ 159               	.LM5:
+ 160 001a C901      		movw r24,r18
+ 161               	/* epilogue start */
+ 162 001c 0895      		ret
+ 167               	.Lscope2:
+ 169               		.stabd	78,0,0
+ 173               	.global	max
+ 175               	max:
+ 176               		.stabd	46,0,0
+ 178               	.Ltext2:
+   1:adc.c         **** /*
+   2:adc.c         **** Controls and Provides access to the Analog to Digital Converter (ADC) subsystem of the avr
+   3:adc.c         **** */
+   4:adc.c         **** 
+   5:adc.c         **** #include "defines.h"
+   6:adc.c         **** #include "adc.h"
+   7:adc.c         **** #include <avr/interrupt.h>
+   8:adc.c         **** #include <avr/io.h>
+   9:adc.c         **** #include <avr/sleep.h>
+  10:adc.c         **** #include <avr/power.h>
+  11:adc.c         **** #include <stdio.h>
+  12:adc.c         **** #include <math.h>
+  13:adc.c         **** #include <util/delay_basic.h>
+  14:adc.c         **** #include <avr/pgmspace.h>
+  15:adc.c         **** #include <string.h>
+  16:adc.c         **** 
+  17:adc.c         **** uint8_t max(uint16_t val[],uint8_t sz) {
+ 180               	.LM6:
+ 181               	.LFBB3:
+ 182               	/* prologue: function */
+ 183               	/* frame size = 0 */
+ 184 001e 862F      		mov r24,r22
+ 185               	/* epilogue start */
+  18:adc.c         **** 	uint8_t tmpi=sz,tmpv=0;
+  19:adc.c         **** 	for(uint8_t c=0;c<sz;++c)
+  20:adc.c         **** 		if (val[c]<tmpv) {
+  21:adc.c         **** 			tmpi=c;
+  22:adc.c         **** 			tmpv=val[c];
+  23:adc.c         **** 		}
+  24:adc.c         **** 	return tmpi;
+  25:adc.c         **** }
+ 187               	.LM7:
+ 188 0020 0895      		ret
+ 190               	.Lscope3:
+ 192               		.stabd	78,0,0
+ 195               	.global	adc_get_val
+ 197               	adc_get_val:
+ 198               		.stabd	46,0,0
+  26:adc.c         **** 
+  27:adc.c         **** void print_adc_values() {
+  28:adc.c         **** 	printf_P(PSTR("\n[debug]   RAW ADC: "));
+  29:adc.c         **** 	for (uint8_t chan=0;chan<channel_amt;chan++) 
+  30:adc.c         **** 		printf(" [ %d : %d ] ", chan, adc_val[chan]);
+  31:adc.c         **** 	
+  32:adc.c         **** 	printf_P(PSTR("\n[debug] FIXED ADC: "));
+  33:adc.c         **** 	for (uint8_t chan=0;chan<channel_amt;chan++) 
+  34:adc.c         **** 		printf(" [ %d : %d ] ", chan, adc_get_val(chan));
+  35:adc.c         **** }
+  36:adc.c         **** 
+  37:adc.c         **** void print_adc_calibration() {
+  38:adc.c         **** 	printf_P(PSTR("\n[debug] ADC OFFSETS: "));
+  39:adc.c         **** 	for (uint8_t chan=0;chan<channel_amt;chan++) 
+  40:adc.c         **** 		printf(" [ %d : %d ] ", chan, adc_offset[chan]);
+  41:adc.c         **** }
+  42:adc.c         **** 
+  43:adc.c         **** 
+  44:adc.c         **** uint16_t adc_get_val(uint8_t ch) {
+ 200               	.LM8:
+ 201               	.LFBB4:
+ 202               	/* prologue: function */
+ 203               	/* frame size = 0 */
+  45:adc.c         **** 	return adc_val[ch]+adc_offset[ch];
+ 205               	.LM9:
+ 206 0022 E82F      		mov r30,r24
+ 207 0024 F0E0      		ldi r31,lo8(0)
+ 208 0026 EE0F      		lsl r30
+ 209 0028 FF1F      		rol r31
+ 210 002a DF01      		movw r26,r30
+ 211 002c A050      		subi r26,lo8(-(adc_val))
+ 212 002e B040      		sbci r27,hi8(-(adc_val))
+ 213 0030 E050      		subi r30,lo8(-(adc_offset))
+ 214 0032 F040      		sbci r31,hi8(-(adc_offset))
+ 215 0034 2081      		ld r18,Z
+ 216 0036 3181      		ldd r19,Z+1
+ 217 0038 8D91      		ld r24,X+
+ 218 003a 9C91      		ld r25,X
+ 219 003c 280F      		add r18,r24
+ 220 003e 391F      		adc r19,r25
+  46:adc.c         **** }
+ 222               	.LM10:
+ 223 0040 C901      		movw r24,r18
+ 224               	/* epilogue start */
+ 225 0042 0895      		ret
+ 227               	.Lscope4:
+ 229               		.stabd	78,0,0
+ 231               	.global	adc_calibrate_clear
+ 233               	adc_calibrate_clear:
+ 234               		.stabd	46,0,0
+  47:adc.c         **** 
+  48:adc.c         **** static uint8_t num_calibrations;
+  49:adc.c         **** void adc_calibrate_update() {
+  50:adc.c         **** 	int16_t offsets[channel_amt];
+  51:adc.c         **** 	uint16_t adc_val_cpy[channel_amt];
+  52:adc.c         **** 	memcpy(adc_val_cpy,adc_val,sizeof(adc_val));
+  53:adc.c         **** 	
+  54:adc.c         **** 	
+  55:adc.c         **** 	uint8_t i=0,val=0;
+  56:adc.c         **** 	for(uint8_t c=0;c<channel_amt;++c) {
+  57:adc.c         **** 		if(val>adc_val_cpy[c]) {
+  58:adc.c         **** 			i=c;
+  59:adc.c         **** 			val=adc_val_cpy[c];
+  60:adc.c         **** 		}
+  61:adc.c         **** 	}
+  62:adc.c         **** 	
+  63:adc.c         **** 	for(uint8_t c=0;c<channel_amt;++c) {
+  64:adc.c         **** 		offsets[c]=adc_val_cpy[i]-adc_val_cpy[c];
+  65:adc.c         **** 	}
+  66:adc.c         **** 		
+  67:adc.c         **** 	if (num_calibrations==0)
+  68:adc.c         **** 		memcpy(adc_offset,offsets,sizeof(adc_offset));
+  69:adc.c         **** 	else
+  70:adc.c         **** 		for(uint8_t c=0;c<channel_amt;++c) {
+  71:adc.c         **** 			adc_offset[c]=(adc_offset[c] * num_calibrations + offsets[c])/(num_calibrations+1);
+  72:adc.c         **** 		}
+  73:adc.c         **** 			
+  74:adc.c         **** 	++num_calibrations;
+  75:adc.c         **** }
+  76:adc.c         **** 
+  77:adc.c         **** void adc_calibrate_store() {
+  78:adc.c         **** 	printf_P(PSTR("\n[debug] Warning: unimplimented function adc_calibrate_store called"));
+  79:adc.c         **** }
+  80:adc.c         **** 
+  81:adc.c         **** void adc_calibrate_clear() {
+ 236               	.LM11:
+ 237               	.LFBB5:
+ 238               	/* prologue: function */
+ 239               	/* frame size = 0 */
+ 240               	.LBB19:
+  82:adc.c         **** 	for(uint8_t j= 0;j<channel_amt;++j)
+  83:adc.c         **** 		adc_offset[j]=0;
+ 242               	.LM12:
+ 243 0044 1092 0000 		sts (adc_offset)+1,__zero_reg__
+ 244 0048 1092 0000 		sts adc_offset,__zero_reg__
+ 245 004c 1092 0000 		sts (adc_offset+2)+1,__zero_reg__
+ 246 0050 1092 0000 		sts adc_offset+2,__zero_reg__
+ 247 0054 1092 0000 		sts (adc_offset+4)+1,__zero_reg__
+ 248 0058 1092 0000 		sts adc_offset+4,__zero_reg__
+ 249 005c 1092 0000 		sts (adc_offset+6)+1,__zero_reg__
+ 250 0060 1092 0000 		sts adc_offset+6,__zero_reg__
+ 251               	.LBE19:
+  84:adc.c         **** 	num_calibrations = 0;
+ 253               	.LM13:
+ 254 0064 1092 0000 		sts num_calibrations,__zero_reg__
+ 255               	/* epilogue start */
+  85:adc.c         **** }
+ 257               	.LM14:
+ 258 0068 0895      		ret
+ 260               	.Lscope5:
+ 262               		.stabd	78,0,0
+ 265               	.global	adc_set_channel
+ 267               	adc_set_channel:
+ 268               		.stabd	46,0,0
+  86:adc.c         **** 
+  87:adc.c         **** void adc_init() {
+  88:adc.c         **** 	printf_P(PSTR("\nadc: init"));
+  89:adc.c         **** 
+  90:adc.c         **** 	power_adc_enable();
+  91:adc.c         **** 
+  92:adc.c         **** 	//Set Voltage to AVCC with external capacitor at AREF pin
+  93:adc.c         **** 	ADMUX|= (uint8_t)(1<<REFS0);
+  94:adc.c         **** 	ADMUX&=(uint8_t)~(1<<REFS1);
+  95:adc.c         **** 	//ADMUX&=~(1<<ADLAR); // Default disabled
+  96:adc.c         **** 	
+  97:adc.c         **** 	// Enable ADC, Inturupt, Trigger mode and set prescaler
+  98:adc.c         **** 	//ADCSRA=(((1<<ADEN)|(1<<ADIE)|(1<<ADATE))&0b11111000)|(ADC_PRESCALE);
+  99:adc.c         **** 	ADCSRA|= (uint8_t)(1<<ADEN)|(1<<ADIE)|(1<<ADATE);
+ 100:adc.c         **** 	ADCSRA = (uint8_t)(ADCSRA & 0b11111000)|((uint8_t)ADC_PRESCALE);
+ 101:adc.c         **** 	
+ 102:adc.c         **** 	// Enable Free Running Mode 
+ 103:adc.c         **** 	ADCSRB|= (1<<7); //reserved bit.
+ 104:adc.c         **** 	ADCSRB&= (uint8_t)~(0b111); //(ADTS2:0)=0
+ 105:adc.c         **** 	
+ 106:adc.c         **** 	// Disable Digital reads from analog pins
+ 107:adc.c         **** 	DIDR0 |= (uint8_t)((1<<ADC4D)|(1<<ADC5D)|(1<<ADC6D)|(1<<ADC7D));
+ 108:adc.c         **** 	
+ 109:adc.c         **** 	set_sleep_mode(SLEEP_MODE_ADC);
+ 110:adc.c         **** 	printf_P(PSTR("\nadc: init: setup convertions"));
+ 111:adc.c         **** 	adc_set_channel(curr_ch);
+ 112:adc.c         **** 	//Start the convertions
+ 113:adc.c         **** 	ADCSRA|= (1<<ADSC);
+ 114:adc.c         **** 
+ 115:adc.c         **** 	// Wait one adc clock cycle and change the channel, done by interupt later.
+ 116:adc.c         **** 	_delay_loop_2(ADC_CYCLE_DELAY);
+ 117:adc.c         **** 	adc_set_channel(++curr_ch);
+ 118:adc.c         **** 	
+ 119:adc.c         **** 	// Wait for one set of convertions to complete.
+ 120:adc.c         **** 	//_delay_loop_2(ADC_CYCLE_DELAY*26);
+ 121:adc.c         **** 
+ 122:adc.c         **** 	printf_P(PSTR("\t[done]"));
+ 123:adc.c         **** }
+ 124:adc.c         **** 
+ 125:adc.c         **** void adc_set_channel(uint8_t channel) {
+ 270               	.LM15:
+ 271               	.LFBB6:
+ 272               	/* prologue: function */
+ 273               	/* frame size = 0 */
+ 126:adc.c         **** 	//Prescale reset on each "trigger event"s
+ 127:adc.c         **** 	//From Data Sheet: (Switching to Free Running mode (ADTS[2:0]=0) will)
+ 128:adc.c         **** 	//(not cause a trigger event, even if the ADC Interrupt Flag is set.)
+ 129:adc.c         **** 	ADMUX  = (uint8_t)((uint8_t)(ADMUX &0b11100000)|channels[channel]);
+ 275               	.LM16:
+ 276 006a ACE7      		ldi r26,lo8(124)
+ 277 006c B0E0      		ldi r27,hi8(124)
+ 278 006e 9C91      		ld r25,X
+ 279 0070 E0E0      		ldi r30,lo8(channels)
+ 280 0072 F0E0      		ldi r31,hi8(channels)
+ 281 0074 E80F      		add r30,r24
+ 282 0076 F11D      		adc r31,__zero_reg__
+ 283 0078 907E      		andi r25,lo8(-32)
+ 284 007a 8081      		ld r24,Z
+ 285 007c 982B      		or r25,r24
+ 286 007e 9C93      		st X,r25
+ 287               	/* epilogue start */
+ 130:adc.c         **** 	//print_adc_values();
+ 131:adc.c         **** 	//printf("V - chan %X\n",channel);
+ 132:adc.c         **** }
+ 289               	.LM17:
+ 290 0080 0895      		ret
+ 292               	.Lscope6:
+ 294               		.stabd	78,0,0
+ 296               	.global	__vector_19
+ 298               	__vector_19:
+ 299               		.stabd	46,0,0
+ 133:adc.c         **** 
+ 134:adc.c         **** //ADC Interupt handler
+ 135:adc.c         **** ISR(ADC_vect) {
+ 301               	.LM18:
+ 302               	.LFBB7:
+ 303 0082 1F92      		push __zero_reg__
+ 304 0084 0F92      		push r0
+ 305 0086 0FB6      		in r0,__SREG__
+ 306 0088 0F92      		push r0
+ 307 008a 1124      		clr __zero_reg__
+ 308 008c 2F93      		push r18
+ 309 008e 3F93      		push r19
+ 310 0090 4F93      		push r20
+ 311 0092 8F93      		push r24
+ 312 0094 9F93      		push r25
+ 313 0096 AF93      		push r26
+ 314 0098 BF93      		push r27
+ 315 009a EF93      		push r30
+ 316 009c FF93      		push r31
+ 317               	/* prologue: Signal */
+ 318               	/* frame size = 0 */
+ 136:adc.c         **** 	// New conversion has already started.
+ 137:adc.c         **** 	uint16_t adc_value;
+ 138:adc.c         **** 	adc_value  =  ADCL;  
+ 320               	.LM19:
+ 321 009e 4091 7800 		lds r20,120
+ 139:adc.c         **** 	adc_value += (ADCH<<8);
+ 323               	.LM20:
+ 324 00a2 3091 7900 		lds r19,121
+ 140:adc.c         **** 	uint8_t real_channel;
+ 141:adc.c         **** 	static uint8_t ct;
+ 142:adc.c         **** 	++ct;
+ 326               	.LM21:
+ 327 00a6 8091 0000 		lds r24,ct.1881
+ 328 00aa 8F5F      		subi r24,lo8(-(1))
+ 329 00ac 8093 0000 		sts ct.1881,r24
+ 143:adc.c         **** 
+ 144:adc.c         **** 	// the curr_ch now has the chan of the on going conversion, we need the last one
+ 145:adc.c         **** 	if (curr_ch==0)	real_channel = channel_amt-1; //curr_ch==0 
+ 331               	.LM22:
+ 332 00b0 2091 0000 		lds r18,curr_ch
+ 333 00b4 2223      		tst r18
+ 334 00b6 01F4      		brne .L15
+ 335 00b8 E3E0      		ldi r30,lo8(3)
+ 336 00ba 00C0      		rjmp .L16
+ 337               	.L15:
+ 146:adc.c         **** 	else		real_channel = curr_ch-1;
+ 339               	.LM23:
+ 340 00bc E22F      		mov r30,r18
+ 341 00be E150      		subi r30,lo8(-(-1))
+ 342               	.L16:
+ 147:adc.c         **** 
+ 148:adc.c         **** 	adc_val[real_channel] = adc_value;
+ 344               	.LM24:
+ 345 00c0 F0E0      		ldi r31,lo8(0)
+ 346 00c2 EE0F      		lsl r30
+ 347 00c4 FF1F      		rol r31
+ 348 00c6 DF01      		movw r26,r30
+ 349 00c8 A050      		subi r26,lo8(-(adc_val))
+ 350 00ca B040      		sbci r27,hi8(-(adc_val))
+ 351 00cc 932F      		mov r25,r19
+ 352 00ce 80E0      		ldi r24,lo8(0)
+ 353 00d0 840F      		add r24,r20
+ 354 00d2 911D      		adc r25,__zero_reg__
+ 355 00d4 8D93      		st X+,r24
+ 356 00d6 9C93      		st X,r25
+ 149:adc.c         **** 	++adc_amt[real_channel];
+ 358               	.LM25:
+ 359 00d8 E050      		subi r30,lo8(-(adc_amt))
+ 360 00da F040      		sbci r31,hi8(-(adc_amt))
+ 361 00dc 8081      		ld r24,Z
+ 362 00de 9181      		ldd r25,Z+1
+ 363 00e0 0196      		adiw r24,1
+ 364 00e2 9183      		std Z+1,r25
+ 365 00e4 8083      		st Z,r24
+ 150:adc.c         **** 
+ 151:adc.c         **** 	// Change the channel for the conversion after the one currently processing.
+ 152:adc.c         **** 	if (++curr_ch >= channel_amt)	curr_ch = 0;
+ 367               	.LM26:
+ 368 00e6 822F      		mov r24,r18
+ 369 00e8 8F5F      		subi r24,lo8(-(1))
+ 370 00ea 8093 0000 		sts curr_ch,r24
+ 371 00ee 8430      		cpi r24,lo8(4)
+ 372 00f0 00F0      		brlo .L17
+ 373 00f2 1092 0000 		sts curr_ch,__zero_reg__
+ 374               	.L17:
+ 375               	.LBB20:
+ 376               	.LBB21:
+ 378               	.LM27:
+ 379 00f6 8091 7C00 		lds r24,124
+ 380 00fa E091 0000 		lds r30,curr_ch
+ 381 00fe F0E0      		ldi r31,lo8(0)
+ 382 0100 E050      		subi r30,lo8(-(channels))
+ 383 0102 F040      		sbci r31,hi8(-(channels))
+ 384 0104 807E      		andi r24,lo8(-32)
+ 385 0106 9081      		ld r25,Z
+ 386 0108 892B      		or r24,r25
+ 387 010a 8093 7C00 		sts 124,r24
+ 388               	/* epilogue start */
+ 389               	.LBE21:
+ 390               	.LBE20:
+ 153:adc.c         **** 	
+ 154:adc.c         **** 	//Wait for the clock to be set, 1 adc cycle.
+ 155:adc.c         **** 	//_delay_loop2(ADC_CYCLE_DELAY);
+ 156:adc.c         **** 	adc_set_channel(curr_ch);
+ 157:adc.c         **** 	
+ 158:adc.c         **** 	//printf("adc_value: %d",adc_value);
+ 159:adc.c         **** 	
+ 160:adc.c         **** 	//TODO: modify for running average (Ave= (Ave*(ct-1)+New)/ct)
+ 161:adc.c         **** 	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
+ 162:adc.c         **** 	
+ 163:adc.c         **** 	if (!(ct%4)) {
+ 164:adc.c         **** 		//all values have been recalculated, update motors.
+ 165:adc.c         **** 	}
+ 166:adc.c         **** }
+ 392               	.LM28:
+ 393 010e FF91      		pop r31
+ 394 0110 EF91      		pop r30
+ 395 0112 BF91      		pop r27
+ 396 0114 AF91      		pop r26
+ 397 0116 9F91      		pop r25
+ 398 0118 8F91      		pop r24
+ 399 011a 4F91      		pop r20
+ 400 011c 3F91      		pop r19
+ 401 011e 2F91      		pop r18
+ 402 0120 0F90      		pop r0
+ 403 0122 0FBE      		out __SREG__,r0
+ 404 0124 0F90      		pop r0
+ 405 0126 1F90      		pop __zero_reg__
+ 406 0128 1895      		reti
+ 412               	.Lscope7:
+ 414               		.stabd	78,0,0
+ 416               	.global	adc_init
+ 418               	adc_init:
+ 419               		.stabd	46,0,0
+ 421               	.LM29:
+ 422               	.LFBB8:
+ 423 012a EF92      		push r14
+ 424 012c FF92      		push r15
+ 425 012e 0F93      		push r16
+ 426 0130 1F93      		push r17
+ 427               	/* prologue: function */
+ 428               	/* frame size = 0 */
+ 430               	.LM30:
+ 431 0132 80E0      		ldi r24,lo8(__c.1822)
+ 432 0134 90E0      		ldi r25,hi8(__c.1822)
+ 433 0136 9F93      		push r25
+ 434 0138 8F93      		push r24
+ 435 013a 0E94 0000 		call printf_P
+ 437               	.LM31:
+ 438 013e E4E6      		ldi r30,lo8(100)
+ 439 0140 F0E0      		ldi r31,hi8(100)
+ 440 0142 8081      		ld r24,Z
+ 441 0144 8E7F      		andi r24,lo8(-2)
+ 442 0146 8083      		st Z,r24
+ 444               	.LM32:
+ 445 0148 0CE7      		ldi r16,lo8(124)
+ 446 014a 10E0      		ldi r17,hi8(124)
+ 447 014c F801      		movw r30,r16
+ 448 014e 8081      		ld r24,Z
+ 449 0150 8064      		ori r24,lo8(64)
+ 450 0152 8083      		st Z,r24
+ 452               	.LM33:
+ 453 0154 8081      		ld r24,Z
+ 454 0156 8F77      		andi r24,lo8(127)
+ 455 0158 8083      		st Z,r24
+ 457               	.LM34:
+ 458 015a 2AE7      		ldi r18,lo8(122)
+ 459 015c E22E      		mov r14,r18
+ 460 015e F12C      		mov r15,__zero_reg__
+ 461 0160 F701      		movw r30,r14
+ 462 0162 8081      		ld r24,Z
+ 463 0164 886A      		ori r24,lo8(-88)
+ 464 0166 8083      		st Z,r24
+ 466               	.LM35:
+ 467 0168 8081      		ld r24,Z
+ 468 016a 887F      		andi r24,lo8(-8)
+ 469 016c 8660      		ori r24,lo8(6)
+ 470 016e 8083      		st Z,r24
+ 472               	.LM36:
+ 473 0170 EBE7      		ldi r30,lo8(123)
+ 474 0172 F0E0      		ldi r31,hi8(123)
+ 475 0174 8081      		ld r24,Z
+ 476 0176 8068      		ori r24,lo8(-128)
+ 477 0178 8083      		st Z,r24
+ 479               	.LM37:
+ 480 017a 8081      		ld r24,Z
+ 481 017c 887F      		andi r24,lo8(-8)
+ 482 017e 8083      		st Z,r24
+ 484               	.LM38:
+ 485 0180 EEE7      		ldi r30,lo8(126)
+ 486 0182 F0E0      		ldi r31,hi8(126)
+ 487 0184 8081      		ld r24,Z
+ 488 0186 806F      		ori r24,lo8(-16)
+ 489 0188 8083      		st Z,r24
+ 491               	.LM39:
+ 492 018a 83B7      		in r24,83-0x20
+ 493 018c 817F      		andi r24,lo8(-15)
+ 494 018e 8260      		ori r24,lo8(2)
+ 495 0190 83BF      		out 83-0x20,r24
+ 497               	.LM40:
+ 498 0192 80E0      		ldi r24,lo8(__c.1824)
+ 499 0194 90E0      		ldi r25,hi8(__c.1824)
+ 500 0196 9F93      		push r25
+ 501 0198 8F93      		push r24
+ 502 019a 0E94 0000 		call printf_P
+ 504               	.LM41:
+ 505 019e 2091 0000 		lds r18,curr_ch
+ 506               	.LBB22:
+ 507               	.LBB23:
+ 509               	.LM42:
+ 510 01a2 F801      		movw r30,r16
+ 511 01a4 8081      		ld r24,Z
+ 512 01a6 A0E0      		ldi r26,lo8(channels)
+ 513 01a8 B0E0      		ldi r27,hi8(channels)
+ 514 01aa FD01      		movw r30,r26
+ 515 01ac E20F      		add r30,r18
+ 516 01ae F11D      		adc r31,__zero_reg__
+ 517 01b0 807E      		andi r24,lo8(-32)
+ 518 01b2 9081      		ld r25,Z
+ 519 01b4 892B      		or r24,r25
+ 520 01b6 F801      		movw r30,r16
+ 521 01b8 8083      		st Z,r24
+ 522               	.LBE23:
+ 523               	.LBE22:
+ 525               	.LM43:
+ 526 01ba F701      		movw r30,r14
+ 527 01bc 8081      		ld r24,Z
+ 528 01be 8064      		ori r24,lo8(64)
+ 529 01c0 8083      		st Z,r24
+ 530               	.LBB24:
+ 531               	.LBB25:
+ 533               	.Ltext3:
+   1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+   5:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+   8:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  11:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      distribution.
+  15:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  16:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  20:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  32:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  34:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  37:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  39:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \file */
+  40:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     \code
+  42:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     \endcode
+  44:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  45:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  53:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  60:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  62:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** */
+  63:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  64:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #endif
+  68:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  69:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  71:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     register.
+  76:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  77:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** */
+  80:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** void
+  81:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** {
+  83:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+  84:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 	);
+  89:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** }
+  90:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  91:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  93:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  99:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****  */
+ 102:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** void
+ 103:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** {
+ 105:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 535               	.LM44:
+ 536 01c2 80E0      		ldi r24,lo8(0)
+ 537 01c4 90E0      		ldi r25,hi8(0)
+ 538               	/* #APP */
+ 539               	 ;  105 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h" 1
+ 540 01c6 0197      		1: sbiw r24,1
+ 541 01c8 01F4      		brne 1b
+ 542               	 ;  0 "" 2
+ 543               	/* #NOAPP */
+ 544               	.LBE25:
+ 545               	.LBE24:
+ 547               	.Ltext4:
+ 549               	.LM45:
+ 550 01ca 2F5F      		subi r18,lo8(-(1))
+ 551 01cc 2093 0000 		sts curr_ch,r18
+ 552               	.LBB26:
+ 553               	.LBB27:
+ 555               	.LM46:
+ 556 01d0 F801      		movw r30,r16
+ 557 01d2 8081      		ld r24,Z
+ 558 01d4 A20F      		add r26,r18
+ 559 01d6 B11D      		adc r27,__zero_reg__
+ 560 01d8 807E      		andi r24,lo8(-32)
+ 561 01da 9C91      		ld r25,X
+ 562 01dc 892B      		or r24,r25
+ 563 01de 8083      		st Z,r24
+ 564               	.LBE27:
+ 565               	.LBE26:
+ 567               	.LM47:
+ 568 01e0 80E0      		ldi r24,lo8(__c.1826)
+ 569 01e2 90E0      		ldi r25,hi8(__c.1826)
+ 570 01e4 9F93      		push r25
+ 571 01e6 8F93      		push r24
+ 572 01e8 0E94 0000 		call printf_P
+ 573 01ec 8DB7      		in r24,__SP_L__
+ 574 01ee 9EB7      		in r25,__SP_H__
+ 575 01f0 0696      		adiw r24,6
+ 576 01f2 0FB6      		in __tmp_reg__,__SREG__
+ 577 01f4 F894      		cli
+ 578 01f6 9EBF      		out __SP_H__,r25
+ 579 01f8 0FBE      		out __SREG__,__tmp_reg__
+ 580 01fa 8DBF      		out __SP_L__,r24
+ 581               	/* epilogue start */
+ 583               	.LM48:
+ 584 01fc 1F91      		pop r17
+ 585 01fe 0F91      		pop r16
+ 586 0200 FF90      		pop r15
+ 587 0202 EF90      		pop r14
+ 588 0204 0895      		ret
+ 593               	.Lscope8:
+ 595               		.stabd	78,0,0
+ 597               	.global	adc_calibrate_store
+ 599               	adc_calibrate_store:
+ 600               		.stabd	46,0,0
+ 602               	.LM49:
+ 603               	.LFBB9:
+ 604               	/* prologue: function */
+ 605               	/* frame size = 0 */
+ 607               	.LM50:
+ 608 0206 80E0      		ldi r24,lo8(__c.1811)
+ 609 0208 90E0      		ldi r25,hi8(__c.1811)
+ 610 020a 9F93      		push r25
+ 611 020c 8F93      		push r24
+ 612 020e 0E94 0000 		call printf_P
+ 613 0212 0F90      		pop __tmp_reg__
+ 614 0214 0F90      		pop __tmp_reg__
+ 615               	/* epilogue start */
+ 617               	.LM51:
+ 618 0216 0895      		ret
+ 620               	.Lscope9:
+ 622               		.stabd	78,0,0
+ 624               	.global	adc_calibrate_update
+ 626               	adc_calibrate_update:
+ 627               		.stabd	46,0,0
+ 629               	.LM52:
+ 630               	.LFBB10:
+ 631 0218 CF92      		push r12
+ 632 021a DF92      		push r13
+ 633 021c EF92      		push r14
+ 634 021e FF92      		push r15
+ 635 0220 0F93      		push r16
+ 636 0222 1F93      		push r17
+ 637 0224 DF93      		push r29
+ 638 0226 CF93      		push r28
+ 639 0228 CDB7      		in r28,__SP_L__
+ 640 022a DEB7      		in r29,__SP_H__
+ 641 022c 6097      		sbiw r28,16
+ 642 022e 0FB6      		in __tmp_reg__,__SREG__
+ 643 0230 F894      		cli
+ 644 0232 DEBF      		out __SP_H__,r29
+ 645 0234 0FBE      		out __SREG__,__tmp_reg__
+ 646 0236 CDBF      		out __SP_L__,r28
+ 647               	/* prologue: function */
+ 648               	/* frame size = 16 */
+ 650               	.LM53:
+ 651 0238 DE01      		movw r26,r28
+ 652 023a 1996      		adiw r26,9
+ 653 023c E0E0      		ldi r30,lo8(adc_val)
+ 654 023e F0E0      		ldi r31,hi8(adc_val)
+ 655 0240 88E0      		ldi r24,lo8(8)
+ 656               	.L24:
+ 657 0242 0190      		ld r0,Z+
+ 658 0244 0D92      		st X+,r0
+ 659 0246 8150      		subi r24,lo8(-(-1))
+ 660 0248 01F4      		brne .L24
+ 661               	.LBB28:
+ 663               	.LM54:
+ 664 024a 4985      		ldd r20,Y+9
+ 665 024c 5A85      		ldd r21,Y+10
+ 666 024e 20E0      		ldi r18,lo8(0)
+ 667 0250 30E0      		ldi r19,hi8(0)
+ 668 0252 8E01      		movw r16,r28
+ 669 0254 0F5F      		subi r16,lo8(-(1))
+ 670 0256 1F4F      		sbci r17,hi8(-(1))
+ 671 0258 BE01      		movw r22,r28
+ 672 025a 675F      		subi r22,lo8(-(9))
+ 673 025c 7F4F      		sbci r23,hi8(-(9))
+ 674               	.L25:
+ 675 025e D801      		movw r26,r16
+ 676 0260 A20F      		add r26,r18
+ 677 0262 B31F      		adc r27,r19
+ 678 0264 FB01      		movw r30,r22
+ 679 0266 E20F      		add r30,r18
+ 680 0268 F31F      		adc r31,r19
+ 681 026a 8081      		ld r24,Z
+ 682 026c 9181      		ldd r25,Z+1
+ 683 026e FA01      		movw r30,r20
+ 684 0270 E81B      		sub r30,r24
+ 685 0272 F90B      		sbc r31,r25
+ 686 0274 ED93      		st X+,r30
+ 687 0276 FC93      		st X,r31
+ 688 0278 2E5F      		subi r18,lo8(-(2))
+ 689 027a 3F4F      		sbci r19,hi8(-(2))
+ 691               	.LM55:
+ 692 027c 2830      		cpi r18,8
+ 693 027e 3105      		cpc r19,__zero_reg__
+ 694 0280 01F4      		brne .L25
+ 695               	.LBE28:
+ 697               	.LM56:
+ 698 0282 8091 0000 		lds r24,num_calibrations
+ 699 0286 9E01      		movw r18,r28
+ 700 0288 2F5F      		subi r18,lo8(-(1))
+ 701 028a 3F4F      		sbci r19,hi8(-(1))
+ 702 028c 8823      		tst r24
+ 703 028e 01F4      		brne .L26
+ 705               	.LM57:
+ 706 0290 A0E0      		ldi r26,lo8(adc_offset)
+ 707 0292 B0E0      		ldi r27,hi8(adc_offset)
+ 708 0294 F901      		movw r30,r18
+ 709 0296 88E0      		ldi r24,lo8(8)
+ 710               	.L27:
+ 711 0298 0190      		ld r0,Z+
+ 712 029a 0D92      		st X+,r0
+ 713 029c 8150      		subi r24,lo8(-(-1))
+ 714 029e 01F4      		brne .L27
+ 715 02a0 00C0      		rjmp .L28
+ 716               	.L26:
+ 717 02a2 E0E0      		ldi r30,lo8(adc_offset)
+ 718 02a4 F0E0      		ldi r31,hi8(adc_offset)
+ 719 02a6 7901      		movw r14,r18
+ 720               	.LBB29:
+ 722               	.LM58:
+ 723 02a8 082F      		mov r16,r24
+ 724 02aa 10E0      		ldi r17,lo8(0)
+ 725 02ac 6801      		movw r12,r16
+ 726 02ae 0894      		sec
+ 727 02b0 C11C      		adc r12,__zero_reg__
+ 728 02b2 D11C      		adc r13,__zero_reg__
+ 729               	.L29:
+ 730 02b4 8081      		ld r24,Z
+ 731 02b6 9181      		ldd r25,Z+1
+ 732 02b8 9C01      		movw r18,r24
+ 733 02ba 029F      		mul r16,r18
+ 734 02bc C001      		movw r24,r0
+ 735 02be 039F      		mul r16,r19
+ 736 02c0 900D      		add r25,r0
+ 737 02c2 129F      		mul r17,r18
+ 738 02c4 900D      		add r25,r0
+ 739 02c6 1124      		clr r1
+ 740 02c8 D701      		movw r26,r14
+ 741 02ca 2D91      		ld r18,X+
+ 742 02cc 3D91      		ld r19,X+
+ 743 02ce 7D01      		movw r14,r26
+ 744 02d0 820F      		add r24,r18
+ 745 02d2 931F      		adc r25,r19
+ 746 02d4 B601      		movw r22,r12
+ 747 02d6 0E94 0000 		call __divmodhi4
+ 748 02da 6193      		st Z+,r22
+ 749 02dc 7193      		st Z+,r23
+ 751               	.LM59:
+ 752 02de B0E0      		ldi r27,hi8(adc_offset+8)
+ 753 02e0 E030      		cpi r30,lo8(adc_offset+8)
+ 754 02e2 FB07      		cpc r31,r27
+ 755 02e4 01F4      		brne .L29
+ 756               	.L28:
+ 757               	.LBE29:
+ 759               	.LM60:
+ 760 02e6 8091 0000 		lds r24,num_calibrations
+ 761 02ea 8F5F      		subi r24,lo8(-(1))
+ 762 02ec 8093 0000 		sts num_calibrations,r24
+ 763               	/* epilogue start */
+ 765               	.LM61:
+ 766 02f0 6096      		adiw r28,16
+ 767 02f2 0FB6      		in __tmp_reg__,__SREG__
+ 768 02f4 F894      		cli
+ 769 02f6 DEBF      		out __SP_H__,r29
+ 770 02f8 0FBE      		out __SREG__,__tmp_reg__
+ 771 02fa CDBF      		out __SP_L__,r28
+ 772 02fc CF91      		pop r28
+ 773 02fe DF91      		pop r29
+ 774 0300 1F91      		pop r17
+ 775 0302 0F91      		pop r16
+ 776 0304 FF90      		pop r15
+ 777 0306 EF90      		pop r14
+ 778 0308 DF90      		pop r13
+ 779 030a CF90      		pop r12
+ 780 030c 0895      		ret
+ 786               	.Lscope10:
+ 788               		.stabd	78,0,0
+ 789               		.data
+ 790               	.LC0:
+ 791 0000 205B 2025 		.string	" [ %d : %d ] "
+ 791      6420 3A20 
+ 791      2564 205D 
+ 791      2000 
+ 792               		.text
+ 794               	.global	print_adc_calibration
+ 796               	print_adc_calibration:
+ 797               		.stabd	46,0,0
+ 799               	.LM62:
+ 800               	.LFBB11:
+ 801 030e 0F93      		push r16
+ 802 0310 1F93      		push r17
+ 803               	/* prologue: function */
+ 804               	/* frame size = 0 */
+ 806               	.LM63:
+ 807 0312 80E0      		ldi r24,lo8(__c.1755)
+ 808 0314 90E0      		ldi r25,hi8(__c.1755)
+ 809 0316 9F93      		push r25
+ 810 0318 8F93      		push r24
+ 811 031a 0E94 0000 		call printf_P
+ 812               	.LBB30:
+ 814               	.LM64:
+ 815 031e 8091 0000 		lds r24,adc_offset
+ 816 0322 9091 0000 		lds r25,(adc_offset)+1
+ 817 0326 9F93      		push r25
+ 818 0328 8F93      		push r24
+ 819 032a 1F92      		push __zero_reg__
+ 820 032c 1F92      		push __zero_reg__
+ 821 032e 00E0      		ldi r16,lo8(.LC0)
+ 822 0330 10E0      		ldi r17,hi8(.LC0)
+ 823 0332 1F93      		push r17
+ 824 0334 0F93      		push r16
+ 825 0336 0E94 0000 		call printf
+ 826 033a 8091 0000 		lds r24,adc_offset+2
+ 827 033e 9091 0000 		lds r25,(adc_offset+2)+1
+ 828 0342 9F93      		push r25
+ 829 0344 8F93      		push r24
+ 830 0346 81E0      		ldi r24,lo8(1)
+ 831 0348 90E0      		ldi r25,hi8(1)
+ 832 034a 9F93      		push r25
+ 833 034c 8F93      		push r24
+ 834 034e 1F93      		push r17
+ 835 0350 0F93      		push r16
+ 836 0352 0E94 0000 		call printf
+ 837 0356 8091 0000 		lds r24,adc_offset+4
+ 838 035a 9091 0000 		lds r25,(adc_offset+4)+1
+ 839 035e 9F93      		push r25
+ 840 0360 8F93      		push r24
+ 841 0362 82E0      		ldi r24,lo8(2)
+ 842 0364 90E0      		ldi r25,hi8(2)
+ 843 0366 9F93      		push r25
+ 844 0368 8F93      		push r24
+ 845 036a 1F93      		push r17
+ 846 036c 0F93      		push r16
+ 847 036e 0E94 0000 		call printf
+ 848 0372 8091 0000 		lds r24,adc_offset+6
+ 849 0376 9091 0000 		lds r25,(adc_offset+6)+1
+ 850 037a 9F93      		push r25
+ 851 037c 8F93      		push r24
+ 852 037e 83E0      		ldi r24,lo8(3)
+ 853 0380 90E0      		ldi r25,hi8(3)
+ 854 0382 9F93      		push r25
+ 855 0384 8F93      		push r24
+ 856 0386 1F93      		push r17
+ 857 0388 0F93      		push r16
+ 858 038a 0E94 0000 		call printf
+ 859 038e 8DB7      		in r24,__SP_L__
+ 860 0390 9EB7      		in r25,__SP_H__
+ 861 0392 4A96      		adiw r24,26
+ 862 0394 0FB6      		in __tmp_reg__,__SREG__
+ 863 0396 F894      		cli
+ 864 0398 9EBF      		out __SP_H__,r25
+ 865 039a 0FBE      		out __SREG__,__tmp_reg__
+ 866 039c 8DBF      		out __SP_L__,r24
+ 867               	/* epilogue start */
+ 868               	.LBE30:
+ 870               	.LM65:
+ 871 039e 1F91      		pop r17
+ 872 03a0 0F91      		pop r16
+ 873 03a2 0895      		ret
+ 875               	.Lscope11:
+ 877               		.stabd	78,0,0
+ 879               	.global	print_adc_values
+ 881               	print_adc_values:
+ 882               		.stabd	46,0,0
+ 884               	.LM66:
+ 885               	.LFBB12:
+ 886 03a4 CF92      		push r12
+ 887 03a6 DF92      		push r13
+ 888 03a8 EF92      		push r14
+ 889 03aa FF92      		push r15
+ 890 03ac 0F93      		push r16
+ 891 03ae 1F93      		push r17
+ 892 03b0 CF93      		push r28
+ 893 03b2 DF93      		push r29
+ 894               	/* prologue: function */
+ 895               	/* frame size = 0 */
+ 897               	.LM67:
+ 898 03b4 80E0      		ldi r24,lo8(__c.1737)
+ 899 03b6 90E0      		ldi r25,hi8(__c.1737)
+ 900 03b8 9F93      		push r25
+ 901 03ba 8F93      		push r24
+ 902 03bc 0E94 0000 		call printf_P
+ 903               	.LBB31:
+ 905               	.LM68:
+ 906 03c0 8091 0000 		lds r24,adc_val
+ 907 03c4 9091 0000 		lds r25,(adc_val)+1
+ 908 03c8 9F93      		push r25
+ 909 03ca 8F93      		push r24
+ 910 03cc 1F92      		push __zero_reg__
+ 911 03ce 1F92      		push __zero_reg__
+ 912 03d0 00E0      		ldi r16,lo8(.LC0)
+ 913 03d2 10E0      		ldi r17,hi8(.LC0)
+ 914 03d4 1F93      		push r17
+ 915 03d6 0F93      		push r16
+ 916 03d8 0E94 0000 		call printf
+ 917 03dc 8091 0000 		lds r24,adc_val+2
+ 918 03e0 9091 0000 		lds r25,(adc_val+2)+1
+ 919 03e4 9F93      		push r25
+ 920 03e6 8F93      		push r24
+ 921 03e8 81E0      		ldi r24,lo8(1)
+ 922 03ea 90E0      		ldi r25,hi8(1)
+ 923 03ec 9F93      		push r25
+ 924 03ee 8F93      		push r24
+ 925 03f0 1F93      		push r17
+ 926 03f2 0F93      		push r16
+ 927 03f4 0E94 0000 		call printf
+ 928 03f8 8091 0000 		lds r24,adc_val+4
+ 929 03fc 9091 0000 		lds r25,(adc_val+4)+1
+ 930 0400 9F93      		push r25
+ 931 0402 8F93      		push r24
+ 932 0404 82E0      		ldi r24,lo8(2)
+ 933 0406 90E0      		ldi r25,hi8(2)
+ 934 0408 9F93      		push r25
+ 935 040a 8F93      		push r24
+ 936 040c 1F93      		push r17
+ 937 040e 0F93      		push r16
+ 938 0410 0E94 0000 		call printf
+ 939 0414 8091 0000 		lds r24,adc_val+6
+ 940 0418 9091 0000 		lds r25,(adc_val+6)+1
+ 941 041c 9F93      		push r25
+ 942 041e 8F93      		push r24
+ 943 0420 83E0      		ldi r24,lo8(3)
+ 944 0422 90E0      		ldi r25,hi8(3)
+ 945 0424 9F93      		push r25
+ 946 0426 8F93      		push r24
+ 947 0428 1F93      		push r17
+ 948 042a 0F93      		push r16
+ 949 042c 0E94 0000 		call printf
+ 950               	.LBE31:
+ 952               	.LM69:
+ 953 0430 80E0      		ldi r24,lo8(__c.1743)
+ 954 0432 90E0      		ldi r25,hi8(__c.1743)
+ 955 0434 9F93      		push r25
+ 956 0436 8F93      		push r24
+ 957 0438 0E94 0000 		call printf_P
+ 958 043c 40E0      		ldi r20,lo8(adc_val)
+ 959 043e C42E      		mov r12,r20
+ 960 0440 40E0      		ldi r20,hi8(adc_val)
+ 961 0442 D42E      		mov r13,r20
+ 962 0444 30E0      		ldi r19,lo8(adc_offset)
+ 963 0446 E32E      		mov r14,r19
+ 964 0448 30E0      		ldi r19,hi8(adc_offset)
+ 965 044a F32E      		mov r15,r19
+ 966 044c C0E0      		ldi r28,lo8(0)
+ 967 044e D0E0      		ldi r29,hi8(0)
+ 968 0450 8DB7      		in r24,__SP_L__
+ 969 0452 9EB7      		in r25,__SP_H__
+ 970 0454 4C96      		adiw r24,28
+ 971 0456 0FB6      		in __tmp_reg__,__SREG__
+ 972 0458 F894      		cli
+ 973 045a 9EBF      		out __SP_H__,r25
+ 974 045c 0FBE      		out __SREG__,__tmp_reg__
+ 975 045e 8DBF      		out __SP_L__,r24
+ 976               	.L38:
+ 977               	.LBB32:
+ 979               	.LM70:
+ 980 0460 F701      		movw r30,r14
+ 981 0462 8191      		ld r24,Z+
+ 982 0464 9191      		ld r25,Z+
+ 983 0466 7F01      		movw r14,r30
+ 984 0468 F601      		movw r30,r12
+ 985 046a 2191      		ld r18,Z+
+ 986 046c 3191      		ld r19,Z+
+ 987 046e 6F01      		movw r12,r30
+ 988 0470 820F      		add r24,r18
+ 989 0472 931F      		adc r25,r19
+ 990 0474 9F93      		push r25
+ 991 0476 8F93      		push r24
+ 992 0478 DF93      		push r29
+ 993 047a CF93      		push r28
+ 994 047c 1F93      		push r17
+ 995 047e 0F93      		push r16
+ 996 0480 0E94 0000 		call printf
+ 997 0484 2196      		adiw r28,1
+ 999               	.LM71:
+ 1000 0486 8DB7      		in r24,__SP_L__
+ 1001 0488 9EB7      		in r25,__SP_H__
+ 1002 048a 0696      		adiw r24,6
+ 1003 048c 0FB6      		in __tmp_reg__,__SREG__
+ 1004 048e F894      		cli
+ 1005 0490 9EBF      		out __SP_H__,r25
+ 1006 0492 0FBE      		out __SREG__,__tmp_reg__
+ 1007 0494 8DBF      		out __SP_L__,r24
+ 1008 0496 C430      		cpi r28,4
+ 1009 0498 D105      		cpc r29,__zero_reg__
+ 1010 049a 01F4      		brne .L38
+ 1011               	/* epilogue start */
+ 1012               	.LBE32:
+ 1014               	.LM72:
+ 1015 049c DF91      		pop r29
+ 1016 049e CF91      		pop r28
+ 1017 04a0 1F91      		pop r17
+ 1018 04a2 0F91      		pop r16
+ 1019 04a4 FF90      		pop r15
+ 1020 04a6 EF90      		pop r14
+ 1021 04a8 DF90      		pop r13
+ 1022 04aa CF90      		pop r12
+ 1023 04ac 0895      		ret
+ 1025               	.Lscope12:
+ 1027               		.stabd	78,0,0
+ 1028               		.lcomm ct.1881,1
+ 1029               		.data
+ 1032               	channels:
+ 1033 000e 04        		.byte	4
+ 1034 000f 06        		.byte	6
+ 1035 0010 05        		.byte	5
+ 1036 0011 07        		.byte	7
+ 1037               		.section	.progmem.data,"a",@progbits
+ 1040               	__c.1826:
+ 1041 0000 095B 646F 		.string	"\t[done]"
+ 1041      6E65 5D00 
+ 1044               	__c.1824:
+ 1045 0008 0A61 6463 		.string	"\nadc: init: setup convertions"
+ 1045      3A20 696E 
+ 1045      6974 3A20 
+ 1045      7365 7475 
+ 1045      7020 636F 
+ 1048               	__c.1822:
+ 1049 0026 0A61 6463 		.string	"\nadc: init"
+ 1049      3A20 696E 
+ 1049      6974 00
+ 1052               	__c.1811:
+ 1053 0031 0A5B 64   		.ascii	"\n[d"
+ 1054 0034 6562 7567 		.string	"ebug] Warning: unimplimented function adc_calibrate_store called"
+ 1054      5D20 5761 
+ 1054      726E 696E 
+ 1054      673A 2075 
+ 1054      6E69 6D70 
+ 1057               	__c.1755:
+ 1058 0075 0A5B 6465 		.string	"\n[debug] ADC OFFSETS: "
+ 1058      6275 675D 
+ 1058      2041 4443 
+ 1058      204F 4646 
+ 1058      5345 5453 
+ 1061               	__c.1743:
+ 1062 008c 0A5B 6465 		.string	"\n[debug] FIXED ADC: "
+ 1062      6275 675D 
+ 1062      2046 4958 
+ 1062      4544 2041 
+ 1062      4443 3A20 
+ 1065               	__c.1737:
+ 1066 00a1 0A5B 6465 		.string	"\n[debug]   RAW ADC: "
+ 1066      6275 675D 
+ 1066      2020 2052 
+ 1066      4157 2041 
+ 1066      4443 3A20 
+ 1067               		.lcomm num_calibrations,1
+ 1068               		.comm c_mode,1,1
+ 1069               		.comm initial,1,1
+ 1070               		.comm adc_val,8,1
+ 1071               		.comm adc_offset,8,1
+ 1072               		.comm adc_amt,8,1
+ 1073               		.comm curr_ch,1,1
+ 1090               		.text
+ 1092               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 adc.c
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:20     .text:00000000 max
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:35     .text:00000004 adc_get_val
+     /tmp/ccp3uuga.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccp3uuga.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccp3uuga.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccp3uuga.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccp3uuga.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccp3uuga.s:105    .text:00000000 copysign
+     /tmp/ccp3uuga.s:134    .text:00000006 isfinite
+     /tmp/ccp3uuga.s:175    .text:0000001e max
+     /tmp/ccp3uuga.s:197    .text:00000022 adc_get_val
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:66     .text:00000026 adc_calibrate_clear
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:760    .bss:00000001 num_calibrations
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:91     .text:0000004c adc_set_channel
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:764    .data:0000000e channels
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:117    .text:00000064 __vector_19
+     /tmp/ccp3uuga.s:233    .text:00000044 adc_calibrate_clear
+     /tmp/ccp3uuga.s:1028   .bss:00000001 num_calibrations
+     /tmp/ccp3uuga.s:267    .text:0000006a adc_set_channel
+     /tmp/ccp3uuga.s:1032   .data:0000000e channels
+     /tmp/ccp3uuga.s:298    .text:00000082 __vector_19
                              .bss:00000000 ct.1881
                             *COM*:00000001 curr_ch
                             *COM*:00000008 adc_amt
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:222    .text:0000010c adc_init
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:780    .progmem.data:00000026 __c.1822
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:776    .progmem.data:00000008 __c.1824
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:772    .progmem.data:00000000 __c.1826
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:374    .text:000001e8 adc_calibrate_store
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:784    .progmem.data:00000031 __c.1811
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:394    .text:000001fa adc_calibrate_update
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:546    .text:000002f0 print_adc_calibration
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:789    .progmem.data:00000075 __c.1755
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:623    .text:00000386 print_adc_values
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:797    .progmem.data:000000a1 __c.1737
-C:\Users\Unknown\AppData\Local\Temp/ccUUQ3md.s:793    .progmem.data:0000008c __c.1743
+     /tmp/ccp3uuga.s:418    .text:0000012a adc_init
+     /tmp/ccp3uuga.s:1048   .progmem.data:00000026 __c.1822
+     /tmp/ccp3uuga.s:1044   .progmem.data:00000008 __c.1824
+     /tmp/ccp3uuga.s:1040   .progmem.data:00000000 __c.1826
+     /tmp/ccp3uuga.s:599    .text:00000206 adc_calibrate_store
+     /tmp/ccp3uuga.s:1052   .progmem.data:00000031 __c.1811
+     /tmp/ccp3uuga.s:626    .text:00000218 adc_calibrate_update
+     /tmp/ccp3uuga.s:796    .text:0000030e print_adc_calibration
+     /tmp/ccp3uuga.s:1057   .progmem.data:00000075 __c.1755
+     /tmp/ccp3uuga.s:881    .text:000003a4 print_adc_values
+     /tmp/ccp3uuga.s:1065   .progmem.data:000000a1 __c.1737
+     /tmp/ccp3uuga.s:1061   .progmem.data:0000008c __c.1743
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

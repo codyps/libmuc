@@ -9,7 +9,7 @@ MCU = atmega164p
 ADMCU = atmega164p
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c usart.c timer.c
+SRC = $(TARGET).c usart.c timer.c queue.c
 ASRC = 
 OPT = s
 

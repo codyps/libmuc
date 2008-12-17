@@ -4,11 +4,13 @@
 #include <util/atomic.h>
 #include <stdio.h>
 #include <avr/pgmspace.h>
+#include <avr/power.h>
 #include "timer.h"
 
 void timer0_init(void) { // 8, PWM
 	dpf_P(PSTR("\ntimers: init: timer0"));
-	
+	power_timer0_enable();
+
 	// Diable Timer
 	TCCR1B&= (uint8_t)~((1<<CS12)|(1<<CS11)|(1<<CS10));
 	
@@ -21,13 +23,13 @@ void timer0_init(void) { // 8, PWM
 	
 	// Mode 2, CTC.
 	//TCCR0B&=(uint8_t)~	(1<<WGM02);
-	//TCCR0A|=			(1<<WGM01);	
+	//TCCR0A|=		(1<<WGM01);	
 	//TCCR0A&=(uint8_t)~	(1<<WGM00);
 	
 	// Mode 1, PWM.
 	TCCR0B&=(uint8_t)~	(1<<WGM02);
 	TCCR0A&=(uint8_t)~	(1<<WGM01);	
-	TCCR0A|=	(1<<WGM00);
+	TCCR0A|=		(1<<WGM00);
 	
 	TCNT0=0;
 	OCR0A=0;
@@ -47,7 +49,8 @@ void timer0_init(void) { // 8, PWM
 
 void timer1_init(void) { // 16, PWM
 	dpf_P(PSTR("\ntimers: init: timer1"));
-	
+	power_timer1_enable();
+
 	// Disable Timer
 	TCCR1B&= (uint8_t)~((1<<CS12)|(1<<CS11)|(1<<CS10));
 	
@@ -76,9 +79,9 @@ void timer1_init(void) { // 16, PWM
 	// TOP (mode 8, mode 1 top = 0xFF)
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {ICR1=0xFFFF;}
 	
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){TCNT1=0;	}
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1A=0;	}
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1B=0;	}
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){TCNT1=0;}
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1A=0;}
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){OCR1B=0;}
 	
 	// Interupts
 	TIMSK1=(0<<ICIE1)|(0<<OCIE1B)|(0<<OCIE1A)|(0<<TOIE1);
@@ -94,12 +97,13 @@ void timer1_init(void) { // 16, PWM
 
 void timer2_init(void) { // 8, RTC
 	dpf_P(PSTR("\ntimers: init: timer2"));
-	
+	power_timer2_enable();
+
 	// Disable Timer.
 	TCCR2B&=(uint8_t)~((1<<CS22)|(1<<CS21)|(1<<CS20));
 	
 	// Disable Pin outputs
-	TCCR2A&=~((1<<COM2A1)|(1<<COM2A0)|(1<<COM2B1)|(1<<COM2B0));
+	TCCR2A&=(uint8_t)~((1<<COM2A1)|(1<<COM2A0)|(1<<COM2B1)|(1<<COM2B0));
 	
 	// Mode 2, CTC.
 	TCCR2A|= (1<<WGM21);
@@ -107,45 +111,39 @@ void timer2_init(void) { // 8, RTC
 	TCCR2B&=~(1<<WGM22);
 
 	// Enable OCR2A interupt
-	TIMSK2=(1<<OCIE2A)|(0<<OCIE2B);
+	TIMSK2=(1<<OCIE2A);
 	
 	
 	//ASSR&=~((1<<EXCLK)|(1<<AS2));
 	
 	TCNT2=0;
 	OCR2B=0;
+	#if	(T2HZ==1000)	
 	OCR2A=125;
-	//OCR2A=78;
-	
+	#elif	(T2HZ==100)
+	OCR2A=78;
+	#endif
 	
 	// Clock Select
 	//8000000/78/1024 == 100 HZ
 	//8000000/125/64  == 1000 Hz
-	//TCCR2B|=(1<<CS22)|(1<<CS21)|(1<<CS20); //1024
+	#if	(T2HZ==100)	
+	TCCR2B|=(1<<CS22)|(1<<CS21)|(1<<CS20); //1024
+	#elif	(T2HZ==1000)
 	TCCR2B|=(1<<CS22);TCCR2B&=(uint8_t)~((1<<CS21)|(1<<CS20));//64
-	
+	#endif	
+
 	dpf_P(PSTR("\t[done]"));
 }	
 	
 ISR(TIMER2_COMPA_vect) {
 	//timer.h: dir_t led_dir_A
 	//timer.h: dir_t led_dir_B
-	static dir_t dir=UP;
-	if (OCR0A==0xFF)
-		dir=DN;
-	else if (OCR0A==0)
-		dir=UP;
 	
-	if (dir==UP)
-		OCR0A++;
-	else
-		OCR0A--;
-	
-
 	// Led A
-	if (LED_A==LED_TOP_A)
+	if (LED_A>(LED_TOP_A-LED_STEP_A))
 		led_dir_A=DN;
-	else if (LED_A==0)
+	else if (LED_A<LED_STEP_A)
 		led_dir_A=UP;
 	
 	if (led_dir_A==UP)
@@ -153,9 +151,9 @@ ISR(TIMER2_COMPA_vect) {
 	else LED_A-=LED_STEP_A;
 	
 	// Led B
-	if (LED_B==LED_TOP_B)
+	if (LED_B>(LED_TOP_B-LED_STEP_B))
 		led_dir_B=DN;
-	else if (LED_B==0)
+	else if (LED_B<LED_STEP_B)
 		led_dir_B=UP;
 	
 	if (led_dir_B==UP)
@@ -217,10 +215,10 @@ void timers_init(void) {
 	timer1_init(); //PWM 16
 	timer2_init(); //RTC 8
 	
-	//LED_A=0x0FFF; //OCR1A
-	LED_B=0x0AFF; //OCR1B
-	//led_dir_A=UP;
-	//led_dir_B=DN;
+	LED_A=0xFFFF; //OCR1A
+	LED_B=0x0000; //OCR1B
+	led_dir_A=UP;
+	led_dir_B=DN;
 	
 	printf_P(PSTR("\ntimers: init:\t[done]"));
 }

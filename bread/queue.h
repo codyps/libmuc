@@ -1,19 +1,22 @@
 
-/*	queue.h
+/*	
+ * queue.h
 */
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define QUEUE_BASE_T	char
-#define QUEUE_INDEX_T	uint16_t
-#define QUEUE_SZ		UINT16_MAX
+#define QUEUE_BASE_T_MAX 0xFF
+#define QUEUE_INDEX_T	uint8_t
+#define QUEUE_SZ	32
 
 typedef struct {
-        QUEUE_BASE_T  buffer[QUEUE_SZ];	/* buffer */
-        QUEUE_INDEX_T first;			/* position of first element */
-        QUEUE_INDEX_T last;				/* position of last element */
-		QUEUE_INDEX_T ct;
-} queue_t;
+        QUEUE_BASE_T  buffer[QUEUE_SZ];	// buffer
+        QUEUE_INDEX_T first;		// position of first element
+        QUEUE_INDEX_T last;		// position of last element
+	QUEUE_INDEX_T ct;		// One of these can be eliminated. The other can be calculated from the other 2.
+} volatile queue_t;
 
 
 void q_init(queue_t *q);
@@ -23,3 +26,4 @@ QUEUE_BASE_T q_pop(queue_t *q);
 void q_apop(queue_t *q, QUEUE_BASE_T * buffer, QUEUE_INDEX_T sz);
 bool q_empty(queue_t *q);
 bool q_full(queue_t *q);
+

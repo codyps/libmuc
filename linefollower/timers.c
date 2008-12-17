@@ -184,7 +184,7 @@ ISR(TIMER1_COMPA_vect) {
 		MOTOR_PWM_PORT&=(uint8_t)~(1<<M_PWMA_PIN);
 	else
 		MOTOR_PWM_PORT|=(1<<M_PWMA_PIN);
-	//printf("\nCA:%c:%x",dirtoc(timer_2_dir),TCNT1);	
+	//debugpf("\nCA:%c:%x",dirtoc(timer_2_dir),TCNT1);	
 }
 
 /* Timer/Counter Compare Match B */
@@ -193,7 +193,7 @@ ISR(TIMER1_COMPB_vect) {
 		MOTOR_PWM_PORT&=(uint8_t)~(1<<M_PWMB_PIN);
 	else
 		MOTOR_PWM_PORT|=(1<<M_PWMB_PIN);
-	//printf("\nCB:%c:%x",dirtoc(timer_2_dir),TCNT1);
+	//debugpf("\nCB:%c:%x",dirtoc(timer_2_dir),TCNT1);
 }
 
 

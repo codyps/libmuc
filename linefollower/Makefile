@@ -62,7 +62,8 @@ SRC = $(TARGET).c
 SRC += adc.c \
 usart.c \
 timers.c \
-motor.c
+motor.c \
+joystick.c
 
 # bcd.c \
 #lcd_functions.c \

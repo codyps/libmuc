@@ -21,6 +21,7 @@ Globaly Utilized Information
 #endif
 
 
+
 #define F_CPU 8000000
 
 /* Amount Defines for Line Following */

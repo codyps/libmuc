@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/power.h>
+#include <avr/interrupt.h>
+#include "queue.h"
 #include "defines.h"
 #include "usart.h"
+
+#define USART_QUEUE
 
 static int usart0_putchar(char c, FILE *stream);
 static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL,_FDEV_SETUP_WRITE);
 
+queue_t tx_q;
 
 /*
 static int usart_getchar(char c, FILE *stream) {
@@ -14,36 +19,66 @@ static int usart_getchar(char c, FILE *stream) {
 }
 */
 
-static int usart0_putchar(char c, FILE *stream) {
+static void enable_usart0_tx_inter(void) {
+	UCSR0B|=(1<<UDRIE0);
+}
+static void disable_usart0_tx_inter(void) {
+	UCSR0B&=(uint8_t)~(1<<UDRIE0);
+}
 
-  if (c == '\n')
-	usart0_putchar('\r', stream);
-  loop_until_bit_is_set(UCSR0A, UDRE0);
-  UDR0 = c;
-  return 0;
+static int usart0_putchar(char c, FILE *stream) {
+	PORTB|=(1<<3);
+	
+	if (c == '\n')
+		usart0_putchar('\r', stream);
+  
+	#ifndef	USART_QUEUE
+	loop_until_bit_is_set(UCSR0A, UDRE0);
+	UDR0 = c;
+	#else 	
+	while (q_full(&tx_q));
+	PORTB&=(uint8_t)~(1<<3);
+	q_push(&tx_q,c);	
+	enable_usart0_tx_inter();
+	#endif
+	return 0;
 }
 
 
 void usart0_init(void) {
 	power_usart0_enable();
 
+	q_init(&tx_q);
+
 	/* Set baud rate (12bit) */
 	#define BAUD 19200
 	#include <util/setbaud.h>
 	UBRR0 = UBRR_VALUE;
+	UCSR0A &= (uint8_t)~(1<<UDRE0);
 	#if USE_2X
-	#warning "U2X0 enabled"
 	UCSR0A |=  (1 << U2X0);
 	#else
-	UCSR0A &= ~(1 << U2X0);
+	UCSR0A &= (uint8_t) ~(1 << U2X0);
 	#endif
 	/* Enable receiver and transmitter */
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0)	;
+	UCSR0B = (1<<TXEN0); //(1<<RXEN0)|
 	/* Enable r/t interupts, hangles input when used with some buffering functions */
-	//UCSR0B =|(1<<RXCIE0)|(1<<TXCIE0);
+	#ifdef USART_QUEUE	
+	//enable_usart0_tx_inter();	
+	#endif
+	//UCSR0B |=(1<<UDRE0); //(1<<RXCIE0)
 	/* Set frame format: 8data, 1stop bit */
 	UCSR0C = (0<<USBS0)|(1<<UCSZ00)|(1<<UCSZ01);
 	
 	stdout=&usart0_stdout;
+}
+
+ISR(USART0_UDRE_vect) {	
+	if (q_empty(&tx_q))
+		disable_usart0_tx_inter();	
+
+	if (!q_empty(&tx_q))
+		UDR0 = q_pop(&tx_q);
+	PORTB|=(1<<4);		
 }
 

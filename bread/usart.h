@@ -8,12 +8,6 @@ USART
 //#include <stdio.h>
 //#include "defines.h"
 
-
-
-
-
-
 void usart0_init(void);
-
 
 #endif

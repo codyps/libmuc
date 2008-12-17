@@ -9,7 +9,7 @@ MCU = atmega169p
 ADMCU = atmega169
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c adc.c usart.c timers.c motor.c
+SRC = $(TARGET).c adc.c usart.c timers.c motor.c joystick.c
 ASRC = 
 OPT = s
 
