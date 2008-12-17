@@ -7,10 +7,10 @@
 #include "usart.h"
 
 
-
+static int usart0_putchar_direct(char c, FILE *stream);
 static int usart0_putchar(char c, FILE *stream);
 static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL,_FDEV_SETUP_WRITE);
-
+static FILE usart0_stderr = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FDEV_SETUP_WRITE);
 
 /*
 static int usart_getchar(char c, FILE *stream) {
@@ -25,18 +25,21 @@ static void disable_usart0_tx_inter(void) {
 	UCSR0B&=(uint8_t)~(1<<UDRIE0);
 }
 
-static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
-		usart0_putchar('\r', stream);
-  
-	#ifndef	USART_QUEUE
+static int usart0_putchar_direct(char c, FILE *stream) {
+	if (c == '\n')
+		usart0_putchar_direct('\r', stream);
 	loop_until_bit_is_set(UCSR0A, UDRE0);
 	UDR0 = c;
-	#else 	
+	return 0;
+}
+
+static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
+		usart0_putchar('\r', stream);
+
 	while (q_full(&tx_q));
 	disable_usart0_tx_inter();
 	q_push(&tx_q,c);	
 	enable_usart0_tx_inter();
-	#endif
 
 	return 0;
 }
@@ -62,12 +65,10 @@ void usart0_init(void) {
 	/* Enable receiver and transmitter */
 	UCSR0B = (1<<TXEN0)|(1<<RXEN0);
 	/* Enable r/t interupts, hangles input when used with some buffering functions */
-	#ifdef USART_QUEUE	
-	//enable_usart0_tx_inter();	
-	#endif
-	UCSR0B |= (1<<RXCIE0);//(1<<UDRE0)
-		
+	UCSR0B |= (1<<RXCIE0);
+
 	stdout=&usart0_stdout;
+	stderr=&usart0_stderr;
 }
 
 ISR(USART0_UDRE_vect) {	

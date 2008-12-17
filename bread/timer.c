@@ -8,7 +8,7 @@
 #include "timer.h"
 
 void timer0_init(void) { // 8, PWM
-	dpf_P(PSTR("\ntimers: init: timer0"));
+	fprintf_P(stderr,PSTR("\ntimers: init: timer0"));
 	power_timer0_enable();
 
 	// Diable Timer
@@ -44,11 +44,11 @@ void timer0_init(void) { // 8, PWM
 	//TCCR2B|=(1<<CS02);TCCR2B&=~((1<<CS01)|(1<<CS00));				//64
 	
 	
-	dpf_P(PSTR("\t[done]"));
+	fprintf_P(stderr,PSTR("\t[done]"));
 }
 
 void timer1_init(void) { // 16, PWM
-	dpf_P(PSTR("\ntimers: init: timer1"));
+	fprintf_P(stderr,PSTR("\ntimers: init: timer1"));
 	power_timer1_enable();
 
 	// Disable Timer
@@ -91,12 +91,12 @@ void timer1_init(void) { // 16, PWM
 	//TCCR1B&= (uint8_t)~((1<<CS12)|(1<<CS11));
 	TCCR1B|= (uint8_t) (1<<CS10);
 	
-	dpf_P(PSTR("\t[done]"));
+	fprintf_P(stderr,PSTR("\t[done]"));
 }
 
 
 void timer2_init(void) { // 8, RTC
-	dpf_P(PSTR("\ntimers: init: timer2"));
+	fprintf_P(stderr,PSTR("\ntimers: init: timer2"));
 	power_timer2_enable();
 
 	// Disable Timer.
@@ -133,7 +133,7 @@ void timer2_init(void) { // 8, RTC
 	TCCR2B|=(1<<CS22);TCCR2B&=(uint8_t)~((1<<CS21)|(1<<CS20));//64
 	#endif	
 
-	dpf_P(PSTR("\t[done]"));
+	fprintf_P(stderr,PSTR("\t[done]"));
 }	
 	
 ISR(TIMER2_COMPA_vect) {
@@ -209,7 +209,7 @@ ISR(TIMER2_COMPA_vect) {
 
 
 void timers_init(void) {
-	printf_P(PSTR("\ntimers: init:\tstart"));
+	fprintf_P(stderr,PSTR("\ntimers: init:\tstart"));
 	
 	timer0_init(); //PWM 8
 	timer1_init(); //PWM 16
@@ -220,5 +220,5 @@ void timers_init(void) {
 	led_dir_A=UP;
 	led_dir_B=DN;
 	
-	printf_P(PSTR("\ntimers: init:\t[done]"));
+	fprintf_P(stderr,PSTR("\ntimers: init:\t[done]"));
 }
