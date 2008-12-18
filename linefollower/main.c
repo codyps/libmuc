@@ -42,9 +42,8 @@ void  print_bin(uint8_t inp) {
 }
 
 void init(void) {
-	cli();
-	power_lcd_disable();
-	power_spi_disable();
+	cli(); // Starts with interrupts disabled?
+	power_all_disable();
 	clock_init();
 	joy_init();
 	usart_init();
@@ -154,6 +153,6 @@ int main(void) {
 } 
 		
 ISR(BADISR_vect) {
-	printf_P(PSTR("\n\nInvalid Interupt Enabled\n"));
+	fprintf_P(stderr,PSTR("\n\nInvalid Interupt Enabled\n"));
 }
 

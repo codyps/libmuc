@@ -9,7 +9,7 @@ USART
 #include "defines.h"
 #define BAUD 19200
 #include <util/setbaud.h>
+void usart0_init(void);
 void usart_init(void);
-
 
 #endif

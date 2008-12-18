@@ -25,19 +25,19 @@ uint8_t max(uint16_t val[],uint8_t sz) {
 }
 
 void print_adc_values() {
-	printf_P(PSTR("\n[debug]   RAW ADC: "));
+	fprintf_P(stderr,PSTR("\n[debug]   RAW ADC: "));
 	for (uint8_t chan=0;chan<channel_amt;chan++) 
-		printf(" [ %d : %d ] ", chan, adc_val[chan]);
+		fprintf(stderr," [ %d : %d ] ", chan, adc_val[chan]);
 	
-	printf_P(PSTR("\n[debug] FIXED ADC: "));
+	fprintf_P(stderr,PSTR("\n[debug] FIXED ADC: "));
 	for (uint8_t chan=0;chan<channel_amt;chan++) 
-		printf(" [ %d : %d ] ", chan, adc_get_val(chan));
+		fprintf(stderr," [ %d : %d ] ", chan, adc_get_val(chan));
 }
 
 void print_adc_calibration() {
-	printf_P(PSTR("\n[debug] ADC OFFSETS: "));
+	fprintf_P(stderr,PSTR("\n[debug] ADC OFFSETS: "));
 	for (uint8_t chan=0;chan<channel_amt;chan++) 
-		printf(" [ %d : %d ] ", chan, adc_offset[chan]);
+		fprintf(stderr," [ %d : %d ] ", chan, adc_offset[chan]);
 }
 
 
@@ -75,18 +75,20 @@ void adc_calibrate_update() {
 }
 
 void adc_calibrate_store() {
-	printf_P(PSTR("\n[debug] Warning: unimplimented function adc_calibrate_store called"));
+	fprintf_P(stderr,PSTR("\n[debug] Warning: unimplimented function adc_calibrate_store called"));
 }
 
 void adc_calibrate_clear() {
-	for(uint8_t j= 0;j<channel_amt;++j)
-		adc_offset[j]=0;
+	//for(uint8_t j= 0;j<channel_amt;++j)
+	//	adc_offset[j]=0;
+	memset(adc_offset,0,sizeof(adc_offset));
 	num_calibrations = 0;
 }
 
 void adc_init() {
-	printf_P(PSTR("\nadc: init"));
-
+	#ifdef debug
+	fprintf_P(stderr,PSTR("\nadc: init"));
+	#endif
 	power_adc_enable();
 
 	//Set Voltage to AVCC with external capacitor at AREF pin
@@ -107,7 +109,9 @@ void adc_init() {
 	DIDR0 |= (uint8_t)((1<<ADC4D)|(1<<ADC5D)|(1<<ADC6D)|(1<<ADC7D));
 	
 	set_sleep_mode(SLEEP_MODE_ADC);
-	printf_P(PSTR("\nadc: init: setup convertions"));
+	#ifdef debug	
+	fprintf_P(stderr,PSTR("\nadc: init: setup convertions"));
+	#endif
 	adc_set_channel(curr_ch);
 	//Start the convertions
 	ADCSRA|= (1<<ADSC);
@@ -118,8 +122,9 @@ void adc_init() {
 	
 	// Wait for one set of convertions to complete.
 	//_delay_loop_2(ADC_CYCLE_DELAY*26);
-
-	printf_P(PSTR("\t[done]"));
+	#ifdef debug
+	fprintf_P(stderr,PSTR("\t[done]"));
+	#endif
 }
 
 void adc_set_channel(uint8_t channel) {

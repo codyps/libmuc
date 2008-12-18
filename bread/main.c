@@ -37,7 +37,6 @@ void clock_init(void) {
 }
 
 void init(void) {
-	DDRB |=(1<<3)|(1<<4);	
 	power_all_disable();
 	clock_init();
 	MCUCR|=(1<<JTD); // Disable JTAG

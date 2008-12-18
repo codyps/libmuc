@@ -14,8 +14,9 @@
 
 void timer2_init(void) {
 	#ifdef debug
-	printf_P(PSTR("\ntimers: init: timer2"));
+	fprintf_P(stderr,PSTR("\ntimers: init: timer2"));
 	#endif
+	power_timer2_enable();
 	// External crystal : 32.768KHZ
 	/*
 	a. Disable the Timer/Counter2 interrupts by clearing OCIE2A and TOIE2.
@@ -85,7 +86,7 @@ void timer2_init(void) {
 	//TIMSK2|= (1<<TOIE2);
 	//TIMSK2&=~(1<<OCIE2A); // Disabled
 	#ifdef debug
-	printf_P(PSTR("\t[done]"));
+	fprintf_P(stderr,PSTR("\t[done]"));
 	#endif
 }
 
@@ -97,7 +98,7 @@ ISR(TIMER2_OVF_vect) {
 	if (c_mode==WAIT) {
 		//printf("\n\tT: %ds\n",sec);
 		#ifdef debug
-		printf_P(PSTR("\nMode: %d"),c_mode);
+		fprintf_P(stderr,PSTR("\nMode: %d"),c_mode);
 		#endif
 	}
 
@@ -105,8 +106,9 @@ ISR(TIMER2_OVF_vect) {
 
 void timer1_init(void) { // Runs the PWMs
 	#ifdef debug
-	printf_P(PSTR("\ntimers: init: timer1"));
+	frintf_P(stderr,PSTR("\ntimers: init: timer1"));
 	#endif
+	power_timer1_enable();
 	// Set OC1A/B on up, clear on down
 //	TCCR1A|= (1<<COM1A1)|(1<<COM1A0);
 //	TCCR1A|= (1<<COM1B1)|(1<<COM1B0);
@@ -152,7 +154,7 @@ void timer1_init(void) { // Runs the PWMs
 	
 	MOTOR_PWM_DDR|= ((1<<M_PWMA_PIN)|(1<<M_PWMB_PIN));
 	#ifdef debug
-	printf_P(PSTR("\t[done]"));
+	fprintf_P(stderr,PSTR("\t[done]"));
 	#endif
 }
 
@@ -202,10 +204,10 @@ void timer0_init(void) {}
 */
 
 void timers_init(void) {
-	printf_P(PSTR("\ntimers: init: start."));
+	fprintf_P(stderr,PSTR("\ntimers: init: start."));
 //	timer0_init(); // Not implimented.
 	timer1_init(); //PWM
 	timer2_init(); //RTC
-	printf_P(PSTR("\ntimers: init:\t[done]"));
+	fprintf_P(stderr,PSTR("\ntimers: init:\t[done]"));
 	
 }

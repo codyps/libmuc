@@ -43,6 +43,84 @@ static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
 
 	return 0;
 }
+/*
+int usart0_getchar_direct(FILE *stream) {
+	uint8_t c;
+	char *cp, *cp2;
+	static char b[RX_BUFSIZE];
+	static char *rxp;
+	
+	if (rxp == 0) {
+		for (cp = b;;) {
+			loop_until_bit_is_set(UCSR0A, RXC0);
+			if (UCSR0A & _BV(FE0))	return _FDEV_EOF;
+			if (UCSR0A & _BV(DOR0))	return _FDEV_ERR;
+			c = UDR0;
+			// behaviour similar to Unix stty ICRNL
+			if (c == '\r') c = '\n';
+			if (c == '\n') {
+				*cp = c;
+				usart0_putchar(c, stream);
+				rxp = b;
+				break;
+			}
+			else if (c == '\t') 	c = ' ';
+			
+			if ((c >= (uint8_t)' ' && c <= (uint8_t)'\x7e') || c >= (uint8_t)'\xa0') {
+				if (cp == b + RX_BUFSIZE - 1)
+					usart0_putchar('\a', stream);
+				else {
+					*cp++ = c;
+					usart0_putchar(c, stream);
+				}
+				continue;
+			}
+				
+			switch (c) {
+			  case 'c' & 0x1f:
+				return -1;
+				
+			  case '\b':
+			  case '\x7f':
+				if (cp > b) {
+					usart0_putchar('\b', stream);
+					usart0_putchar(' ', stream);
+					usart0_putchar('\b', stream);
+					cp--;
+				}
+				break;
+				
+			  case 'r' & 0x1f:
+				usart0_putchar('\r', stream);
+				for (cp2 = b; cp2 < cp; cp2++)
+					usart0_putchar(*cp2, stream);
+				break;
+				
+			  case 'u' & 0x1f:
+				while (cp > b) {
+					usart0_putchar('\b', stream);
+					usart0_putchar(' ', stream);
+					usart0_putchar('\b', stream);
+					cp--;
+				}
+				break;
+				
+			  case 'w' & 0x1f:
+				while (cp > b && cp[-1] != ' ') {
+					usart0_putchar('\b', stream);
+					usart0_putchar(' ', stream);
+					usart0_putchar('\b', stream);
+					cp--;
+				}
+				break;
+			}
+		}
+	}
+	c = *rxp++;
+	if (c == '\n')	rxp = 0;
+	return c;
+}
+*/
 
 void usart0_init(void) {
 	power_usart0_enable();
@@ -59,12 +137,12 @@ void usart0_init(void) {
 	#else
 	UCSR0A &= (uint8_t) ~(1 << U2X0);
 	#endif
-	/* Set frame format: 8data, 1stop bit */
+	// Set frame format: 8data, 1stop bit
 	UCSR0C = (1<<UCSZ00)|(1<<UCSZ01);
 	
-	/* Enable receiver and transmitter */
+	// Enable receiver and transmitter
 	UCSR0B = (1<<TXEN0)|(1<<RXEN0);
-	/* Enable r/t interupts, hangles input when used with some buffering functions */
+	// Enable rx inter
 	UCSR0B |= (1<<RXCIE0);
 
 	stdout=&usart0_stdout;
