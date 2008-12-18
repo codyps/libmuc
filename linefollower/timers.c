@@ -10,13 +10,15 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <avr/pgmspace.h>
+#include <avr/power.h>
 
 
 void timer2_init(void) {
 	#ifdef debug
 	fprintf_P(stderr,PSTR("\ntimers: init: timer2"));
 	#endif
-	power_timer2_enable();
+	//power_timer2_enable(); // can't be disabled in m169p
+	
 	// External crystal : 32.768KHZ
 	/*
 	a. Disable the Timer/Counter2 interrupts by clearing OCIE2A and TOIE2.
@@ -106,7 +108,7 @@ ISR(TIMER2_OVF_vect) {
 
 void timer1_init(void) { // Runs the PWMs
 	#ifdef debug
-	frintf_P(stderr,PSTR("\ntimers: init: timer1"));
+	fprintf_P(stderr,PSTR("\ntimers: init: timer1"));
 	#endif
 	power_timer1_enable();
 	// Set OC1A/B on up, clear on down

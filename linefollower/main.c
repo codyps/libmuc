@@ -16,6 +16,7 @@ char Author [] ="Cody Schafer";
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+#include <stdlib.h>
 
 
 void clock_init(void) {

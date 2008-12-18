@@ -12,6 +12,7 @@
 
 #define RX_BUFSIZE 127
 
+static int usart0_putchar_direct(char c, FILE *stream);
 static int usart0_putchar(char c, FILE *stream);
 int usart0_getchar(FILE *stream);
 

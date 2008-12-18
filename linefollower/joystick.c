@@ -44,7 +44,7 @@ ISR(PCINT0_vect) {
 				c_mode=TEST;
 			}
 			#ifdef debug
-			printf_P(PSTR("\nCurrent Mode (T/W) = %d"),c_mode);
+			fprintf_P(stderr,PSTR("\nCurrent Mode (T/W) = %d"),c_mode);
 			#endif
 		}
 		if (iPINE&(1<<3)) {// Right
@@ -57,13 +57,13 @@ ISR(PCINT0_vect) {
 				c_mode=FOLLOW;
 			}
 			#ifdef debug	
-			printf_P(PSTR("\nCurrent Mode (F/W)= %d"),c_mode);
+			fprintf_P(stderr,PSTR("\nCurrent Mode (F/W)= %d"),c_mode);
 			#endif
 		}
 	}
 	#ifdef debug
 	else
-		printf_P(PSTR("\n[debug] PE? Released"));
+		fprintf_P(stderr,PSTR("\n[debug] PE? Released"));
 	#endif
 }
 
@@ -94,6 +94,6 @@ ISR(PCINT1_vect) {
 	}
 	#ifdef debug
 	else
-		printf_P(PSTR("\n[debug] PB? Released"));
+		fprintf_P(stderr,PSTR("\n[debug] PB? Released"));
 	#endif
 }

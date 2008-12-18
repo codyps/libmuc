@@ -934,24 +934,24 @@
  1001               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-     /tmp/ccKGtGhx.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccKGtGhx.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccKGtGhx.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccKGtGhx.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/ccKGtGhx.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/ccKGtGhx.s:115    .text:00000000 inc_limit
-     /tmp/ccKGtGhx.s:175    .text:00000032 dec_limit
-     /tmp/ccKGtGhx.s:236    .text:00000068 motor_set_speed
-     /tmp/ccKGtGhx.s:985    .progmem.data:0000002e __c.1670
-     /tmp/ccKGtGhx.s:347    .text:000000b8 motor_get_speed
-     /tmp/ccKGtGhx.s:989    .progmem.data:0000005c __c.1648
-     /tmp/ccKGtGhx.s:470    .text:00000110 lf_turn_inc
-     /tmp/ccKGtGhx.s:654    .text:000001ce motor_mode
+     /tmp/cc6bOlZV.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc6bOlZV.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc6bOlZV.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc6bOlZV.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/cc6bOlZV.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/cc6bOlZV.s:115    .text:00000000 inc_limit
+     /tmp/cc6bOlZV.s:175    .text:00000032 dec_limit
+     /tmp/cc6bOlZV.s:236    .text:00000068 motor_set_speed
+     /tmp/cc6bOlZV.s:985    .progmem.data:0000002e __c.1670
+     /tmp/cc6bOlZV.s:347    .text:000000b8 motor_get_speed
+     /tmp/cc6bOlZV.s:989    .progmem.data:0000005c __c.1648
+     /tmp/cc6bOlZV.s:470    .text:00000110 lf_turn_inc
+     /tmp/cc6bOlZV.s:654    .text:000001ce motor_mode
                              .bss:00000000 c_modes.1681
-     /tmp/ccKGtGhx.s:980    .progmem.data:00000000 __c.1685
-     /tmp/ccKGtGhx.s:874    .text:000002fa lf_stop_speed
-     /tmp/ccKGtGhx.s:914    .text:00000320 motors_init
-     /tmp/ccKGtGhx.s:940    .text:0000032c lf_full_speed
+     /tmp/cc6bOlZV.s:980    .progmem.data:00000000 __c.1685
+     /tmp/cc6bOlZV.s:874    .text:000002fa lf_stop_speed
+     /tmp/cc6bOlZV.s:914    .text:00000320 motors_init
+     /tmp/cc6bOlZV.s:940    .text:0000032c lf_full_speed
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

@@ -8,9 +8,9 @@
    8               		.global __do_clear_bss
   11               		.text
   12               	.Ltext0:
- 108               	.global	clock_init
- 110               	clock_init:
- 111               		.stabd	46,0,0
+ 116               	.global	clock_init
+ 118               	clock_init:
+ 119               		.stabd	46,0,0
    1:main.c        **** /*
    2:main.c        **** //Follow the damn line
    3:main.c        **** char Author [] ="Cody Schafer";
@@ -29,62 +29,62 @@
   16:main.c        **** #include <avr/interrupt.h>
   17:main.c        **** #include <util/delay.h>
   18:main.c        **** #include <avr/pgmspace.h>
-  19:main.c        **** 
+  19:main.c        **** #include <stdlib.h>
   20:main.c        **** 
-  21:main.c        **** void clock_init(void) {
- 113               	.LM0:
- 114               	.LFBB1:
- 115               	/* prologue: function */
- 116               	/* frame size = 0 */
- 117               	.LBB27:
-  22:main.c        **** 	
-  23:main.c        **** 	#if   F_CPU == 1000000
-  24:main.c        **** 		clock_prescale_set(clock_div_8);	
-  25:main.c        **** 	#elif F_CPU == 2000000
-  26:main.c        **** 		clock_prescale_set(clock_div_4);	
-  27:main.c        **** 	#elif F_CPU == 4000000
-  28:main.c        **** 		clock_prescale_set(clock_div_2);	
-  29:main.c        **** 	#elif F_CPU == 8000000
-  30:main.c        **** 		clock_prescale_set(clock_div_1);	
- 119               	.LM1:
- 120 0000 80E0      		ldi r24,lo8(0)
- 121 0002 90E0      		ldi r25,hi8(0)
- 122 0004 20E8      		ldi r18,lo8(-128)
- 123               	/* #APP */
- 124               	 ;  30 "main.c" 1
- 125 0006 0FB6      		in __tmp_reg__,__SREG__
- 126 0008 F894      		cli
- 127 000a 2093 6100 		sts 97, r18
- 128 000e 8093 6100 		sts 97, r24
- 129 0012 0FBE      		out __SREG__, __tmp_reg__
- 130               	 ;  0 "" 2
- 131               	/* epilogue start */
- 132               	/* #NOAPP */
- 133               	.LBE27:
-  31:main.c        **** 	#else
-  32:main.c        **** 		#error "F_CPU Unrecognized"
-  33:main.c        **** 	#endif
-  34:main.c        **** 	
-  35:main.c        **** 	//OSCAL set by the bootloader.
-  36:main.c        **** }
- 135               	.LM2:
- 136 0014 0895      		ret
- 138               	.Lscope1:
- 140               		.stabd	78,0,0
- 142               	.global	__vector_default
- 144               	__vector_default:
- 145               		.stabd	46,0,0
-  37:main.c        **** 
-  38:main.c        **** void  print_bin(uint8_t inp) {
-  39:main.c        **** 	for(int8_t j=7; j>=0; --j) {
-  40:main.c        **** 	   	printf("%c",((inp&(1<<j))>>j)+'0');
-  41:main.c        **** 	}
-  42:main.c        **** }
-  43:main.c        **** 
-  44:main.c        **** void init(void) {
-  45:main.c        **** 	cli();
-  46:main.c        **** 	power_lcd_disable();
-  47:main.c        **** 	power_spi_disable();
+  21:main.c        **** 
+  22:main.c        **** void clock_init(void) {
+ 121               	.LM0:
+ 122               	.LFBB1:
+ 123               	/* prologue: function */
+ 124               	/* frame size = 0 */
+ 125               	.LBB27:
+  23:main.c        **** 	
+  24:main.c        **** 	#if   F_CPU == 1000000
+  25:main.c        **** 		clock_prescale_set(clock_div_8);	
+  26:main.c        **** 	#elif F_CPU == 2000000
+  27:main.c        **** 		clock_prescale_set(clock_div_4);	
+  28:main.c        **** 	#elif F_CPU == 4000000
+  29:main.c        **** 		clock_prescale_set(clock_div_2);	
+  30:main.c        **** 	#elif F_CPU == 8000000
+  31:main.c        **** 		clock_prescale_set(clock_div_1);	
+ 127               	.LM1:
+ 128 0000 80E0      		ldi r24,lo8(0)
+ 129 0002 90E0      		ldi r25,hi8(0)
+ 130 0004 20E8      		ldi r18,lo8(-128)
+ 131               	/* #APP */
+ 132               	 ;  31 "main.c" 1
+ 133 0006 0FB6      		in __tmp_reg__,__SREG__
+ 134 0008 F894      		cli
+ 135 000a 2093 6100 		sts 97, r18
+ 136 000e 8093 6100 		sts 97, r24
+ 137 0012 0FBE      		out __SREG__, __tmp_reg__
+ 138               	 ;  0 "" 2
+ 139               	/* epilogue start */
+ 140               	/* #NOAPP */
+ 141               	.LBE27:
+  32:main.c        **** 	#else
+  33:main.c        **** 		#error "F_CPU Unrecognized"
+  34:main.c        **** 	#endif
+  35:main.c        **** 	
+  36:main.c        **** 	//OSCAL set by the bootloader.
+  37:main.c        **** }
+ 143               	.LM2:
+ 144 0014 0895      		ret
+ 146               	.Lscope1:
+ 148               		.stabd	78,0,0
+ 150               	.global	__vector_default
+ 152               	__vector_default:
+ 153               		.stabd	46,0,0
+  38:main.c        **** 
+  39:main.c        **** void  print_bin(uint8_t inp) {
+  40:main.c        **** 	for(int8_t j=7; j>=0; --j) {
+  41:main.c        **** 	   	printf("%c",((inp&(1<<j))>>j)+'0');
+  42:main.c        **** 	}
+  43:main.c        **** }
+  44:main.c        **** 
+  45:main.c        **** void init(void) {
+  46:main.c        **** 	cli(); // Starts with interrupts disabled?
+  47:main.c        **** 	power_all_disable();
   48:main.c        **** 	clock_init();
   49:main.c        **** 	joy_init();
   50:main.c        **** 	usart_init();
@@ -194,222 +194,224 @@
  154:main.c        **** } 
  155:main.c        **** 		
  156:main.c        **** ISR(BADISR_vect) {
- 147               	.LM3:
- 148               	.LFBB2:
- 149 0016 1F92      		push __zero_reg__
- 150 0018 0F92      		push r0
- 151 001a 0FB6      		in r0,__SREG__
- 152 001c 0F92      		push r0
- 153 001e 1124      		clr __zero_reg__
- 154 0020 8F93      		push r24
- 155 0022 9F93      		push r25
- 156               	/* prologue: Signal */
- 157               	/* frame size = 0 */
- 157:main.c        **** 	printf_P(PSTR("\n\nInvalid Interupt Enabled\n"));
- 159               	.LM4:
- 160 0024 80E0      		ldi r24,lo8(__c.1640)
- 161 0026 90E0      		ldi r25,hi8(__c.1640)
- 162 0028 9F93      		push r25
- 163 002a 8F93      		push r24
- 164 002c 0E94 0000 		call printf_P
- 165 0030 0F90      		pop __tmp_reg__
- 166 0032 0F90      		pop __tmp_reg__
- 167               	/* epilogue start */
+ 155               	.LM3:
+ 156               	.LFBB2:
+ 157 0016 1F92      		push __zero_reg__
+ 158 0018 0F92      		push r0
+ 159 001a 0FB6      		in r0,__SREG__
+ 160 001c 0F92      		push r0
+ 161 001e 1124      		clr __zero_reg__
+ 162 0020 8F93      		push r24
+ 163 0022 9F93      		push r25
+ 164               	/* prologue: Signal */
+ 165               	/* frame size = 0 */
+ 157:main.c        **** 	fprintf_P(stderr,PSTR("\n\nInvalid Interupt Enabled\n"));
+ 167               	.LM4:
+ 168 0024 80E0      		ldi r24,lo8(__c.1747)
+ 169 0026 90E0      		ldi r25,hi8(__c.1747)
+ 170 0028 9F93      		push r25
+ 171 002a 8F93      		push r24
+ 172 002c 8091 0000 		lds r24,__iob+4
+ 173 0030 9091 0000 		lds r25,(__iob+4)+1
+ 174 0034 9F93      		push r25
+ 175 0036 8F93      		push r24
+ 176 0038 0E94 0000 		call fprintf_P
+ 177 003c 0F90      		pop __tmp_reg__
+ 178 003e 0F90      		pop __tmp_reg__
+ 179 0040 0F90      		pop __tmp_reg__
+ 180 0042 0F90      		pop __tmp_reg__
+ 181               	/* epilogue start */
  158:main.c        **** }
- 169               	.LM5:
- 170 0034 9F91      		pop r25
- 171 0036 8F91      		pop r24
- 172 0038 0F90      		pop r0
- 173 003a 0FBE      		out __SREG__,r0
- 174 003c 0F90      		pop r0
- 175 003e 1F90      		pop __zero_reg__
- 176 0040 1895      		reti
- 178               	.Lscope2:
- 180               		.stabd	78,0,0
- 182               	.global	init
- 184               	init:
- 185               		.stabd	46,0,0
- 187               	.LM6:
- 188               	.LFBB3:
- 189               	/* prologue: function */
- 190               	/* frame size = 0 */
- 192               	.LM7:
- 193               	/* #APP */
- 194               	 ;  45 "main.c" 1
- 195 0042 F894      		cli
- 196               	 ;  0 "" 2
- 198               	.LM8:
- 199               	/* #NOAPP */
- 200 0044 E4E6      		ldi r30,lo8(100)
- 201 0046 F0E0      		ldi r31,hi8(100)
- 202 0048 8081      		ld r24,Z
- 203 004a 8061      		ori r24,lo8(16)
- 204 004c 8083      		st Z,r24
- 206               	.LM9:
- 207 004e 8081      		ld r24,Z
- 208 0050 8460      		ori r24,lo8(4)
- 209 0052 8083      		st Z,r24
- 210               	.LBB28:
- 211               	.LBB29:
- 212               	.LBB30:
- 214               	.LM10:
- 215 0054 80E0      		ldi r24,lo8(0)
- 216 0056 90E0      		ldi r25,hi8(0)
- 217 0058 20E8      		ldi r18,lo8(-128)
- 218               	/* #APP */
- 219               	 ;  30 "main.c" 1
- 220 005a 0FB6      		in __tmp_reg__,__SREG__
- 221 005c F894      		cli
- 222 005e 2093 6100 		sts 97, r18
- 223 0062 8093 6100 		sts 97, r24
- 224 0066 0FBE      		out __SREG__, __tmp_reg__
- 225               	 ;  0 "" 2
- 226               	/* #NOAPP */
- 227               	.LBE30:
- 228               	.LBE29:
- 229               	.LBE28:
- 231               	.LM11:
- 232 0068 0E94 0000 		call joy_init
- 234               	.LM12:
- 235 006c 0E94 0000 		call usart_init
- 237               	.LM13:
- 238 0070 0E94 0000 		call adc_init
- 240               	.LM14:
- 241 0074 0E94 0000 		call timers_init
- 243               	.LM15:
- 244 0078 0E94 0000 		call motors_init
- 246               	.LM16:
- 247               	/* #APP */
- 248               	 ;  54 "main.c" 1
- 249 007c 7894      		sei
- 250               	 ;  0 "" 2
- 252               	.LM17:
- 253               	/* #NOAPP */
- 254 007e 80E0      		ldi r24,lo8(__c.1593)
- 255 0080 90E0      		ldi r25,hi8(__c.1593)
- 256 0082 9F93      		push r25
- 257 0084 8F93      		push r24
- 258 0086 0E94 0000 		call printf_P
- 259 008a 0F90      		pop __tmp_reg__
- 260 008c 0F90      		pop __tmp_reg__
- 261               	/* epilogue start */
- 263               	.LM18:
- 264 008e 0895      		ret
- 266               	.Lscope3:
- 268               		.stabd	78,0,0
- 270               	.global	main
- 272               	main:
- 273               		.stabd	46,0,0
- 275               	.LM19:
- 276               	.LFBB4:
- 277               	/* prologue: function */
- 278               	/* frame size = 0 */
- 280               	.LM20:
- 281 0090 0E94 0000 		call init
- 283               	.LM21:
- 284 0094 1092 0000 		sts c_mode,__zero_reg__
- 286               	.LM22:
- 287 0098 81E0      		ldi r24,lo8(1)
- 288 009a 8093 0000 		sts initial,r24
- 289               	.L8:
- 290 009e 00C0      		rjmp .L8
- 292               	.Lscope4:
- 294               		.stabd	78,0,0
- 297               	.global	print_bin
- 299               	print_bin:
- 300               		.stabd	46,0,0
- 302               	.LM23:
- 303               	.LFBB5:
- 304 00a0 EF92      		push r14
- 305 00a2 FF92      		push r15
- 306 00a4 0F93      		push r16
- 307 00a6 1F93      		push r17
- 308 00a8 CF93      		push r28
- 309 00aa DF93      		push r29
- 310               	/* prologue: function */
- 311               	/* frame size = 0 */
- 313               	.LM24:
- 314 00ac C7E0      		ldi r28,lo8(7)
- 315 00ae D0E0      		ldi r29,hi8(7)
- 316               	.LBB31:
- 318               	.LM25:
- 319 00b0 91E0      		ldi r25,lo8(1)
- 320 00b2 E92E      		mov r14,r25
- 321 00b4 F12C      		mov r15,__zero_reg__
- 322 00b6 082F      		mov r16,r24
- 323 00b8 10E0      		ldi r17,lo8(0)
- 324               	.L11:
- 325 00ba C701      		movw r24,r14
- 326 00bc 0C2E      		mov r0,r28
- 327 00be 00C0      		rjmp 2f
- 328 00c0 880F      	1:	lsl r24
- 329 00c2 991F      		rol r25
- 330 00c4 0A94      	2:	dec r0
- 331 00c6 02F4      		brpl 1b
- 332 00c8 8023      		and r24,r16
- 333 00ca 9123      		and r25,r17
- 334 00cc 0C2E      		mov r0,r28
- 335 00ce 00C0      		rjmp 2f
- 336 00d0 9595      	1:	asr r25
- 337 00d2 8795      		ror r24
- 338 00d4 0A94      	2:	dec r0
- 339 00d6 02F4      		brpl 1b
- 340 00d8 C096      		adiw r24,48
- 341 00da 0E94 0000 		call putchar
- 342 00de 2197      		sbiw r28,1
- 344               	.LM26:
- 345 00e0 8FEF      		ldi r24,hi8(-1)
- 346 00e2 CF3F      		cpi r28,lo8(-1)
- 347 00e4 D807      		cpc r29,r24
- 348 00e6 01F4      		brne .L11
- 349               	/* epilogue start */
- 350               	.LBE31:
- 352               	.LM27:
- 353 00e8 DF91      		pop r29
- 354 00ea CF91      		pop r28
- 355 00ec 1F91      		pop r17
- 356 00ee 0F91      		pop r16
- 357 00f0 FF90      		pop r15
- 358 00f2 EF90      		pop r14
- 359 00f4 0895      		ret
- 361               	.Lscope5:
- 363               		.stabd	78,0,0
- 364               		.section	.progmem.data,"a",@progbits
- 367               	__c.1640:
- 368 0000 0A0A 496E 		.string	"\n\nInvalid Interupt Enabled\n"
- 368      7661 6C69 
- 368      6420 496E 
- 368      7465 7275 
- 368      7074 2045 
- 371               	__c.1593:
- 372 001c 0A49 6E69 		.string	"\nInit: Done\n\n"
- 372      743A 2044 
- 372      6F6E 650A 
- 372      0A00 
- 373               		.comm c_mode,1,1
- 374               		.comm initial,1,1
- 375               		.comm adc_val,8,1
- 376               		.comm adc_offset,8,1
- 377               		.comm adc_amt,8,1
- 378               		.comm curr_ch,1,1
- 387               		.text
- 389               	.Letext0:
+ 183               	.LM5:
+ 184 0044 9F91      		pop r25
+ 185 0046 8F91      		pop r24
+ 186 0048 0F90      		pop r0
+ 187 004a 0FBE      		out __SREG__,r0
+ 188 004c 0F90      		pop r0
+ 189 004e 1F90      		pop __zero_reg__
+ 190 0050 1895      		reti
+ 192               	.Lscope2:
+ 194               		.stabd	78,0,0
+ 196               	.global	init
+ 198               	init:
+ 199               		.stabd	46,0,0
+ 201               	.LM6:
+ 202               	.LFBB3:
+ 203               	/* prologue: function */
+ 204               	/* frame size = 0 */
+ 206               	.LM7:
+ 207               	/* #APP */
+ 208               	 ;  46 "main.c" 1
+ 209 0052 F894      		cli
+ 210               	 ;  0 "" 2
+ 212               	.LM8:
+ 213               	/* #NOAPP */
+ 214 0054 E4E6      		ldi r30,lo8(100)
+ 215 0056 F0E0      		ldi r31,hi8(100)
+ 216 0058 8081      		ld r24,Z
+ 217 005a 8F61      		ori r24,lo8(31)
+ 218 005c 8083      		st Z,r24
+ 219               	.LBB28:
+ 220               	.LBB29:
+ 221               	.LBB30:
+ 223               	.LM9:
+ 224 005e 80E0      		ldi r24,lo8(0)
+ 225 0060 90E0      		ldi r25,hi8(0)
+ 226 0062 20E8      		ldi r18,lo8(-128)
+ 227               	/* #APP */
+ 228               	 ;  31 "main.c" 1
+ 229 0064 0FB6      		in __tmp_reg__,__SREG__
+ 230 0066 F894      		cli
+ 231 0068 2093 6100 		sts 97, r18
+ 232 006c 8093 6100 		sts 97, r24
+ 233 0070 0FBE      		out __SREG__, __tmp_reg__
+ 234               	 ;  0 "" 2
+ 235               	/* #NOAPP */
+ 236               	.LBE30:
+ 237               	.LBE29:
+ 238               	.LBE28:
+ 240               	.LM10:
+ 241 0072 0E94 0000 		call joy_init
+ 243               	.LM11:
+ 244 0076 0E94 0000 		call usart_init
+ 246               	.LM12:
+ 247 007a 0E94 0000 		call adc_init
+ 249               	.LM13:
+ 250 007e 0E94 0000 		call timers_init
+ 252               	.LM14:
+ 253 0082 0E94 0000 		call motors_init
+ 255               	.LM15:
+ 256               	/* #APP */
+ 257               	 ;  54 "main.c" 1
+ 258 0086 7894      		sei
+ 259               	 ;  0 "" 2
+ 261               	.LM16:
+ 262               	/* #NOAPP */
+ 263 0088 80E0      		ldi r24,lo8(__c.1702)
+ 264 008a 90E0      		ldi r25,hi8(__c.1702)
+ 265 008c 9F93      		push r25
+ 266 008e 8F93      		push r24
+ 267 0090 0E94 0000 		call printf_P
+ 268 0094 0F90      		pop __tmp_reg__
+ 269 0096 0F90      		pop __tmp_reg__
+ 270               	/* epilogue start */
+ 272               	.LM17:
+ 273 0098 0895      		ret
+ 275               	.Lscope3:
+ 277               		.stabd	78,0,0
+ 279               	.global	main
+ 281               	main:
+ 282               		.stabd	46,0,0
+ 284               	.LM18:
+ 285               	.LFBB4:
+ 286               	/* prologue: function */
+ 287               	/* frame size = 0 */
+ 289               	.LM19:
+ 290 009a 0E94 0000 		call init
+ 292               	.LM20:
+ 293 009e 1092 0000 		sts c_mode,__zero_reg__
+ 295               	.LM21:
+ 296 00a2 81E0      		ldi r24,lo8(1)
+ 297 00a4 8093 0000 		sts initial,r24
+ 298               	.L8:
+ 299 00a8 00C0      		rjmp .L8
+ 301               	.Lscope4:
+ 303               		.stabd	78,0,0
+ 306               	.global	print_bin
+ 308               	print_bin:
+ 309               		.stabd	46,0,0
+ 311               	.LM22:
+ 312               	.LFBB5:
+ 313 00aa EF92      		push r14
+ 314 00ac FF92      		push r15
+ 315 00ae 0F93      		push r16
+ 316 00b0 1F93      		push r17
+ 317 00b2 CF93      		push r28
+ 318 00b4 DF93      		push r29
+ 319               	/* prologue: function */
+ 320               	/* frame size = 0 */
+ 322               	.LM23:
+ 323 00b6 C7E0      		ldi r28,lo8(7)
+ 324 00b8 D0E0      		ldi r29,hi8(7)
+ 325               	.LBB31:
+ 327               	.LM24:
+ 328 00ba 91E0      		ldi r25,lo8(1)
+ 329 00bc E92E      		mov r14,r25
+ 330 00be F12C      		mov r15,__zero_reg__
+ 331 00c0 082F      		mov r16,r24
+ 332 00c2 10E0      		ldi r17,lo8(0)
+ 333               	.L11:
+ 334 00c4 C701      		movw r24,r14
+ 335 00c6 0C2E      		mov r0,r28
+ 336 00c8 00C0      		rjmp 2f
+ 337 00ca 880F      	1:	lsl r24
+ 338 00cc 991F      		rol r25
+ 339 00ce 0A94      	2:	dec r0
+ 340 00d0 02F4      		brpl 1b
+ 341 00d2 8023      		and r24,r16
+ 342 00d4 9123      		and r25,r17
+ 343 00d6 0C2E      		mov r0,r28
+ 344 00d8 00C0      		rjmp 2f
+ 345 00da 9595      	1:	asr r25
+ 346 00dc 8795      		ror r24
+ 347 00de 0A94      	2:	dec r0
+ 348 00e0 02F4      		brpl 1b
+ 349 00e2 C096      		adiw r24,48
+ 350 00e4 0E94 0000 		call putchar
+ 351 00e8 2197      		sbiw r28,1
+ 353               	.LM25:
+ 354 00ea 8FEF      		ldi r24,hi8(-1)
+ 355 00ec CF3F      		cpi r28,lo8(-1)
+ 356 00ee D807      		cpc r29,r24
+ 357 00f0 01F4      		brne .L11
+ 358               	/* epilogue start */
+ 359               	.LBE31:
+ 361               	.LM26:
+ 362 00f2 DF91      		pop r29
+ 363 00f4 CF91      		pop r28
+ 364 00f6 1F91      		pop r17
+ 365 00f8 0F91      		pop r16
+ 366 00fa FF90      		pop r15
+ 367 00fc EF90      		pop r14
+ 368 00fe 0895      		ret
+ 370               	.Lscope5:
+ 372               		.stabd	78,0,0
+ 373               		.section	.progmem.data,"a",@progbits
+ 376               	__c.1747:
+ 377 0000 0A0A 496E 		.string	"\n\nInvalid Interupt Enabled\n"
+ 377      7661 6C69 
+ 377      6420 496E 
+ 377      7465 7275 
+ 377      7074 2045 
+ 380               	__c.1702:
+ 381 001c 0A49 6E69 		.string	"\nInit: Done\n\n"
+ 381      743A 2044 
+ 381      6F6E 650A 
+ 381      0A00 
+ 382               		.comm c_mode,1,1
+ 383               		.comm initial,1,1
+ 384               		.comm adc_val,8,1
+ 385               		.comm adc_offset,8,1
+ 386               		.comm adc_amt,8,1
+ 387               		.comm curr_ch,1,1
+ 396               		.text
+ 398               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/cc1N3fI2.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc1N3fI2.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc1N3fI2.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc1N3fI2.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/cc1N3fI2.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/cc1N3fI2.s:110    .text:00000000 clock_init
-     /tmp/cc1N3fI2.s:144    .text:00000016 __vector_default
-     /tmp/cc1N3fI2.s:367    .progmem.data:00000000 __c.1640
-     /tmp/cc1N3fI2.s:184    .text:00000042 init
-     /tmp/cc1N3fI2.s:371    .progmem.data:0000001c __c.1593
-     /tmp/cc1N3fI2.s:272    .text:00000090 main
+     /tmp/cck9ci4f.s:2      *ABS*:0000003f __SREG__
+     /tmp/cck9ci4f.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cck9ci4f.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cck9ci4f.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/cck9ci4f.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/cck9ci4f.s:118    .text:00000000 clock_init
+     /tmp/cck9ci4f.s:152    .text:00000016 __vector_default
+     /tmp/cck9ci4f.s:376    .progmem.data:00000000 __c.1747
+     /tmp/cck9ci4f.s:198    .text:00000052 init
+     /tmp/cck9ci4f.s:380    .progmem.data:0000001c __c.1702
+     /tmp/cck9ci4f.s:281    .text:0000009a main
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
-     /tmp/cc1N3fI2.s:299    .text:000000a0 print_bin
+     /tmp/cck9ci4f.s:308    .text:000000aa print_bin
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt
@@ -418,10 +420,12 @@ DEFINED SYMBOLS
 UNDEFINED SYMBOLS
 __do_copy_data
 __do_clear_bss
-printf_P
+__iob
+fprintf_P
 joy_init
 usart_init
 adc_init
 timers_init
 motors_init
+printf_P
 putchar
