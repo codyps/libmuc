@@ -334,8 +334,8 @@
  260               	/* prologue: function */
  261               	/* frame size = 0 */
  263               	.LM17:
- 264 0082 80E0      		ldi r24,lo8(__c.1578)
- 265 0084 90E0      		ldi r25,hi8(__c.1578)
+ 264 0082 80E0      		ldi r24,lo8(__c.1580)
+ 265 0084 90E0      		ldi r25,hi8(__c.1580)
  266 0086 9F93      		push r25
  267 0088 8F93      		push r24
  268 008a 8091 0000 		lds r24,__iob+4
@@ -503,8 +503,8 @@
  380 0104 8C60      		ori r24,lo8(12)
  381 0106 84B9      		out 36-0x20,r24
  383               	.LM35:
- 384 0108 80E0      		ldi r24,lo8(__c.1585)
- 385 010a 90E0      		ldi r25,hi8(__c.1585)
+ 384 0108 80E0      		ldi r24,lo8(__c.1587)
+ 385 010a 90E0      		ldi r25,hi8(__c.1587)
  386 010c 9F93      		push r25
  387 010e 8F93      		push r24
  388 0110 8091 0000 		lds r24,__iob+4
@@ -540,139 +540,141 @@
  424               	/* prologue: Signal */
  425               	/* frame size = 0 */
  427               	.LM38:
- 428 0140 8091 0000 		lds r24,sec.1567
- 429 0144 9091 0000 		lds r25,(sec.1567)+1
+ 428 0140 8091 0000 		lds r24,sec.1568
+ 429 0144 9091 0000 		lds r25,(sec.1568)+1
  430 0148 0196      		adiw r24,1
- 431 014a 9093 0000 		sts (sec.1567)+1,r25
- 432 014e 8093 0000 		sts sec.1567,r24
+ 431 014a 9093 0000 		sts (sec.1568)+1,r25
+ 432 014e 8093 0000 		sts sec.1568,r24
  434               	.LM39:
  435 0152 8091 0000 		lds r24,c_mode
  436 0156 8823      		tst r24
  437 0158 01F4      		brne .L17
  439               	.LM40:
- 440 015a 1F92      		push __zero_reg__
- 441 015c 1F92      		push __zero_reg__
- 442 015e 80E0      		ldi r24,lo8(__c.1568)
- 443 0160 90E0      		ldi r25,hi8(__c.1568)
- 444 0162 9F93      		push r25
- 445 0164 8F93      		push r24
- 446 0166 8091 0000 		lds r24,__iob+4
- 447 016a 9091 0000 		lds r25,(__iob+4)+1
- 448 016e 9F93      		push r25
- 449 0170 8F93      		push r24
- 450 0172 0E94 0000 		call fprintf_P
- 451 0176 8DB7      		in r24,__SP_L__
- 452 0178 9EB7      		in r25,__SP_H__
- 453 017a 0696      		adiw r24,6
- 454 017c 0FB6      		in __tmp_reg__,__SREG__
- 455 017e F894      		cli
- 456 0180 9EBF      		out __SP_H__,r25
- 457 0182 0FBE      		out __SREG__,__tmp_reg__
- 458 0184 8DBF      		out __SP_L__,r24
- 459               	.L17:
- 460               	/* epilogue start */
- 462               	.LM41:
- 463 0186 9F91      		pop r25
- 464 0188 8F91      		pop r24
- 465 018a 0F90      		pop r0
- 466 018c 0FBE      		out __SREG__,r0
- 467 018e 0F90      		pop r0
- 468 0190 1F90      		pop __zero_reg__
- 469 0192 1895      		reti
- 474               	.Lscope6:
- 476               		.stabd	78,0,0
- 478               	.global	timer2_init
- 480               	timer2_init:
- 481               		.stabd	46,0,0
- 483               	.LM42:
- 484               	.LFBB7:
- 485               	/* prologue: function */
- 486               	/* frame size = 0 */
- 488               	.LM43:
- 489 0194 80E0      		ldi r24,lo8(__c.1521)
- 490 0196 90E0      		ldi r25,hi8(__c.1521)
- 491 0198 9F93      		push r25
- 492 019a 8F93      		push r24
- 493 019c 8091 0000 		lds r24,__iob+4
- 494 01a0 9091 0000 		lds r25,(__iob+4)+1
- 495 01a4 9F93      		push r25
- 496 01a6 8F93      		push r24
- 497 01a8 0E94 0000 		call fprintf_P
- 499               	.LM44:
- 500 01ac 8091 7000 		lds r24,112
- 501 01b0 8C7F      		andi r24,lo8(-4)
- 502 01b2 8093 7000 		sts 112,r24
- 504               	.LM45:
- 505 01b6 8091 B600 		lds r24,182
- 506 01ba 8F7E      		andi r24,lo8(-17)
- 507 01bc 8093 B600 		sts 182,r24
- 509               	.LM46:
- 510 01c0 8091 B600 		lds r24,182
- 511 01c4 8860      		ori r24,lo8(8)
- 512 01c6 8093 B600 		sts 182,r24
- 514               	.LM47:
- 515 01ca 1092 B200 		sts 178,__zero_reg__
- 517               	.LM48:
- 518 01ce 8091 B000 		lds r24,176
- 519 01d2 8F77      		andi r24,lo8(127)
- 520 01d4 8093 B000 		sts 176,r24
- 522               	.LM49:
- 523 01d8 8091 B000 		lds r24,176
- 524 01dc 877B      		andi r24,lo8(-73)
- 525 01de 8093 B000 		sts 176,r24
- 527               	.LM50:
- 528 01e2 8091 B000 		lds r24,176
- 529 01e6 8F7C      		andi r24,lo8(-49)
- 530 01e8 8093 B000 		sts 176,r24
- 532               	.LM51:
- 533 01ec 8091 B000 		lds r24,176
- 534 01f0 8560      		ori r24,lo8(5)
- 535 01f2 8093 B000 		sts 176,r24
- 537               	.LM52:
- 538 01f6 8091 B000 		lds r24,176
- 539 01fa 8D7F      		andi r24,lo8(-3)
- 540 01fc 8093 B000 		sts 176,r24
- 541 0200 0F90      		pop __tmp_reg__
- 542 0202 0F90      		pop __tmp_reg__
- 543 0204 0F90      		pop __tmp_reg__
- 544 0206 0F90      		pop __tmp_reg__
- 545               	.L19:
- 547               	.LM53:
- 548 0208 8091 B600 		lds r24,182
- 549 020c 82FD      		sbrc r24,2
- 550 020e 00C0      		rjmp .L19
- 551               	.L24:
- 553               	.LM54:
- 554 0210 8091 B600 		lds r24,182
- 555 0214 81FD      		sbrc r24,1
- 556 0216 00C0      		rjmp .L24
- 557               	.L23:
- 559               	.LM55:
- 560 0218 8091 B600 		lds r24,182
- 561 021c 80FD      		sbrc r24,0
- 562 021e 00C0      		rjmp .L23
- 564               	.LM56:
- 565 0220 80E0      		ldi r24,lo8(__c.1529)
- 566 0222 90E0      		ldi r25,hi8(__c.1529)
- 567 0224 9F93      		push r25
- 568 0226 8F93      		push r24
- 569 0228 8091 0000 		lds r24,__iob+4
- 570 022c 9091 0000 		lds r25,(__iob+4)+1
- 571 0230 9F93      		push r25
- 572 0232 8F93      		push r24
- 573 0234 0E94 0000 		call fprintf_P
- 574 0238 0F90      		pop __tmp_reg__
- 575 023a 0F90      		pop __tmp_reg__
- 576 023c 0F90      		pop __tmp_reg__
- 577 023e 0F90      		pop __tmp_reg__
- 578               	/* epilogue start */
- 580               	.LM57:
- 581 0240 0895      		ret
- 583               	.Lscope7:
- 585               		.stabd	78,0,0
- 587               	.global	timers_init
- 589               	timers_init:
- 590               		.stabd	46,0,0
+ 440 015a 8091 0000 		lds r24,c_mode
+ 441 015e 90E0      		ldi r25,lo8(0)
+ 442 0160 9F93      		push r25
+ 443 0162 8F93      		push r24
+ 444 0164 80E0      		ldi r24,lo8(__c.1569)
+ 445 0166 90E0      		ldi r25,hi8(__c.1569)
+ 446 0168 9F93      		push r25
+ 447 016a 8F93      		push r24
+ 448 016c 8091 0000 		lds r24,__iob+4
+ 449 0170 9091 0000 		lds r25,(__iob+4)+1
+ 450 0174 9F93      		push r25
+ 451 0176 8F93      		push r24
+ 452 0178 0E94 0000 		call fprintf_P
+ 453 017c 8DB7      		in r24,__SP_L__
+ 454 017e 9EB7      		in r25,__SP_H__
+ 455 0180 0696      		adiw r24,6
+ 456 0182 0FB6      		in __tmp_reg__,__SREG__
+ 457 0184 F894      		cli
+ 458 0186 9EBF      		out __SP_H__,r25
+ 459 0188 0FBE      		out __SREG__,__tmp_reg__
+ 460 018a 8DBF      		out __SP_L__,r24
+ 461               	.L17:
+ 462               	/* epilogue start */
+ 464               	.LM41:
+ 465 018c 9F91      		pop r25
+ 466 018e 8F91      		pop r24
+ 467 0190 0F90      		pop r0
+ 468 0192 0FBE      		out __SREG__,r0
+ 469 0194 0F90      		pop r0
+ 470 0196 1F90      		pop __zero_reg__
+ 471 0198 1895      		reti
+ 476               	.Lscope6:
+ 478               		.stabd	78,0,0
+ 480               	.global	timer2_init
+ 482               	timer2_init:
+ 483               		.stabd	46,0,0
+ 485               	.LM42:
+ 486               	.LFBB7:
+ 487               	/* prologue: function */
+ 488               	/* frame size = 0 */
+ 490               	.LM43:
+ 491 019a 80E0      		ldi r24,lo8(__c.1522)
+ 492 019c 90E0      		ldi r25,hi8(__c.1522)
+ 493 019e 9F93      		push r25
+ 494 01a0 8F93      		push r24
+ 495 01a2 8091 0000 		lds r24,__iob+4
+ 496 01a6 9091 0000 		lds r25,(__iob+4)+1
+ 497 01aa 9F93      		push r25
+ 498 01ac 8F93      		push r24
+ 499 01ae 0E94 0000 		call fprintf_P
+ 501               	.LM44:
+ 502 01b2 8091 7000 		lds r24,112
+ 503 01b6 8C7F      		andi r24,lo8(-4)
+ 504 01b8 8093 7000 		sts 112,r24
+ 506               	.LM45:
+ 507 01bc 8091 B600 		lds r24,182
+ 508 01c0 8F7E      		andi r24,lo8(-17)
+ 509 01c2 8093 B600 		sts 182,r24
+ 511               	.LM46:
+ 512 01c6 8091 B600 		lds r24,182
+ 513 01ca 8860      		ori r24,lo8(8)
+ 514 01cc 8093 B600 		sts 182,r24
+ 516               	.LM47:
+ 517 01d0 1092 B200 		sts 178,__zero_reg__
+ 519               	.LM48:
+ 520 01d4 8091 B000 		lds r24,176
+ 521 01d8 8F77      		andi r24,lo8(127)
+ 522 01da 8093 B000 		sts 176,r24
+ 524               	.LM49:
+ 525 01de 8091 B000 		lds r24,176
+ 526 01e2 877B      		andi r24,lo8(-73)
+ 527 01e4 8093 B000 		sts 176,r24
+ 529               	.LM50:
+ 530 01e8 8091 B000 		lds r24,176
+ 531 01ec 8F7C      		andi r24,lo8(-49)
+ 532 01ee 8093 B000 		sts 176,r24
+ 534               	.LM51:
+ 535 01f2 8091 B000 		lds r24,176
+ 536 01f6 8560      		ori r24,lo8(5)
+ 537 01f8 8093 B000 		sts 176,r24
+ 539               	.LM52:
+ 540 01fc 8091 B000 		lds r24,176
+ 541 0200 8D7F      		andi r24,lo8(-3)
+ 542 0202 8093 B000 		sts 176,r24
+ 543 0206 0F90      		pop __tmp_reg__
+ 544 0208 0F90      		pop __tmp_reg__
+ 545 020a 0F90      		pop __tmp_reg__
+ 546 020c 0F90      		pop __tmp_reg__
+ 547               	.L19:
+ 549               	.LM53:
+ 550 020e 8091 B600 		lds r24,182
+ 551 0212 82FD      		sbrc r24,2
+ 552 0214 00C0      		rjmp .L19
+ 553               	.L24:
+ 555               	.LM54:
+ 556 0216 8091 B600 		lds r24,182
+ 557 021a 81FD      		sbrc r24,1
+ 558 021c 00C0      		rjmp .L24
+ 559               	.L23:
+ 561               	.LM55:
+ 562 021e 8091 B600 		lds r24,182
+ 563 0222 80FD      		sbrc r24,0
+ 564 0224 00C0      		rjmp .L23
+ 566               	.LM56:
+ 567 0226 80E0      		ldi r24,lo8(__c.1530)
+ 568 0228 90E0      		ldi r25,hi8(__c.1530)
+ 569 022a 9F93      		push r25
+ 570 022c 8F93      		push r24
+ 571 022e 8091 0000 		lds r24,__iob+4
+ 572 0232 9091 0000 		lds r25,(__iob+4)+1
+ 573 0236 9F93      		push r25
+ 574 0238 8F93      		push r24
+ 575 023a 0E94 0000 		call fprintf_P
+ 576 023e 0F90      		pop __tmp_reg__
+ 577 0240 0F90      		pop __tmp_reg__
+ 578 0242 0F90      		pop __tmp_reg__
+ 579 0244 0F90      		pop __tmp_reg__
+ 580               	/* epilogue start */
+ 582               	.LM57:
+ 583 0246 0895      		ret
+ 585               	.Lscope7:
+ 587               		.stabd	78,0,0
+ 589               	.global	timers_init
+ 591               	timers_init:
+ 592               		.stabd	46,0,0
  202:timers.c      **** 
  203:timers.c      **** 
  204:timers.c      **** /*
@@ -680,128 +682,130 @@
  206:timers.c      **** */
  207:timers.c      **** 
  208:timers.c      **** void timers_init(void) {
- 592               	.LM58:
- 593               	.LFBB8:
- 594               	/* prologue: function */
- 595               	/* frame size = 0 */
+ 594               	.LM58:
+ 595               	.LFBB8:
+ 596               	/* prologue: function */
+ 597               	/* frame size = 0 */
  209:timers.c      **** 	fprintf_P(stderr,PSTR("\ntimers: init: start."));
- 597               	.LM59:
- 598 0242 80E0      		ldi r24,lo8(__c.1664)
- 599 0244 90E0      		ldi r25,hi8(__c.1664)
- 600 0246 9F93      		push r25
- 601 0248 8F93      		push r24
- 602 024a 8091 0000 		lds r24,__iob+4
- 603 024e 9091 0000 		lds r25,(__iob+4)+1
- 604 0252 9F93      		push r25
- 605 0254 8F93      		push r24
- 606 0256 0E94 0000 		call fprintf_P
+ 599               	.LM59:
+ 600 0248 80E0      		ldi r24,lo8(__c.1666)
+ 601 024a 90E0      		ldi r25,hi8(__c.1666)
+ 602 024c 9F93      		push r25
+ 603 024e 8F93      		push r24
+ 604 0250 8091 0000 		lds r24,__iob+4
+ 605 0254 9091 0000 		lds r25,(__iob+4)+1
+ 606 0258 9F93      		push r25
+ 607 025a 8F93      		push r24
+ 608 025c 0E94 0000 		call fprintf_P
  210:timers.c      **** //	timer0_init(); // Not implimented.
  211:timers.c      **** 	timer1_init(); //PWM
- 608               	.LM60:
- 609 025a 0E94 0000 		call timer1_init
+ 610               	.LM60:
+ 611 0260 0E94 0000 		call timer1_init
  212:timers.c      **** 	timer2_init(); //RTC
- 611               	.LM61:
- 612 025e 0E94 0000 		call timer2_init
+ 613               	.LM61:
+ 614 0264 0E94 0000 		call timer2_init
  213:timers.c      **** 	fprintf_P(stderr,PSTR("\ntimers: init:\t[done]"));
- 614               	.LM62:
- 615 0262 80E0      		ldi r24,lo8(__c.1666)
- 616 0264 90E0      		ldi r25,hi8(__c.1666)
- 617 0266 9F93      		push r25
- 618 0268 8F93      		push r24
- 619 026a 8091 0000 		lds r24,__iob+4
- 620 026e 9091 0000 		lds r25,(__iob+4)+1
- 621 0272 9F93      		push r25
- 622 0274 8F93      		push r24
- 623 0276 0E94 0000 		call fprintf_P
- 624 027a 8DB7      		in r24,__SP_L__
- 625 027c 9EB7      		in r25,__SP_H__
- 626 027e 0896      		adiw r24,8
- 627 0280 0FB6      		in __tmp_reg__,__SREG__
- 628 0282 F894      		cli
- 629 0284 9EBF      		out __SP_H__,r25
- 630 0286 0FBE      		out __SREG__,__tmp_reg__
- 631 0288 8DBF      		out __SP_L__,r24
- 632               	/* epilogue start */
+ 616               	.LM62:
+ 617 0268 80E0      		ldi r24,lo8(__c.1668)
+ 618 026a 90E0      		ldi r25,hi8(__c.1668)
+ 619 026c 9F93      		push r25
+ 620 026e 8F93      		push r24
+ 621 0270 8091 0000 		lds r24,__iob+4
+ 622 0274 9091 0000 		lds r25,(__iob+4)+1
+ 623 0278 9F93      		push r25
+ 624 027a 8F93      		push r24
+ 625 027c 0E94 0000 		call fprintf_P
+ 626 0280 8DB7      		in r24,__SP_L__
+ 627 0282 9EB7      		in r25,__SP_H__
+ 628 0284 0896      		adiw r24,8
+ 629 0286 0FB6      		in __tmp_reg__,__SREG__
+ 630 0288 F894      		cli
+ 631 028a 9EBF      		out __SP_H__,r25
+ 632 028c 0FBE      		out __SREG__,__tmp_reg__
+ 633 028e 8DBF      		out __SP_L__,r24
+ 634               	/* epilogue start */
  214:timers.c      **** 	
  215:timers.c      **** }
- 634               	.LM63:
- 635 028a 0895      		ret
- 637               	.Lscope8:
- 639               		.stabd	78,0,0
- 640               		.section	.progmem.data,"a",@progbits
- 643               	__c.1666:
- 644 0000 0A74 696D 		.string	"\ntimers: init:\t[done]"
- 644      6572 733A 
- 644      2069 6E69 
- 644      743A 095B 
- 644      646F 6E65 
- 647               	__c.1664:
- 648 0016 0A74 696D 		.string	"\ntimers: init: start."
- 648      6572 733A 
- 648      2069 6E69 
- 648      743A 2073 
- 648      7461 7274 
- 651               	__c.1585:
- 652 002c 095B 646F 		.string	"\t[done]"
- 652      6E65 5D00 
- 655               	__c.1578:
- 656 0034 0A74 696D 		.string	"\ntimers: init: timer1"
- 656      6572 733A 
- 656      2069 6E69 
- 656      743A 2074 
- 656      696D 6572 
- 659               	__c.1568:
- 660 004a 0A4D 6F64 		.string	"\nMode: %d"
- 660      653A 2025 
- 660      6400 
- 661               		.lcomm sec.1567,2
- 664               	__c.1529:
- 665 0054 095B 646F 		.string	"\t[done]"
- 665      6E65 5D00 
- 668               	__c.1521:
- 669 005c 0A74 696D 		.string	"\ntimers: init: timer2"
- 669      6572 733A 
- 669      2069 6E69 
- 669      743A 2074 
- 669      696D 6572 
- 670               		.lcomm timer_2_dir,1
- 671               		.comm adc_val,8,1
- 672               		.comm adc_offset,8,1
- 673               		.comm adc_amt,8,1
- 674               		.comm curr_ch,1,1
- 675               		.comm c_mode,1,1
- 676               		.comm initial,1,1
- 692               		.text
- 694               	.Letext0:
+ 636               	.LM63:
+ 637 0290 0895      		ret
+ 639               	.Lscope8:
+ 641               		.stabd	78,0,0
+ 642               		.section	.progmem.data,"a",@progbits
+ 645               	__c.1668:
+ 646 0000 0A74 696D 		.string	"\ntimers: init:\t[done]"
+ 646      6572 733A 
+ 646      2069 6E69 
+ 646      743A 095B 
+ 646      646F 6E65 
+ 649               	__c.1666:
+ 650 0016 0A74 696D 		.string	"\ntimers: init: start."
+ 650      6572 733A 
+ 650      2069 6E69 
+ 650      743A 2073 
+ 650      7461 7274 
+ 653               	__c.1587:
+ 654 002c 095B 646F 		.string	"\t[done]"
+ 654      6E65 5D00 
+ 657               	__c.1580:
+ 658 0034 0A74 696D 		.string	"\ntimers: init: timer1"
+ 658      6572 733A 
+ 658      2069 6E69 
+ 658      743A 2074 
+ 658      696D 6572 
+ 661               	__c.1569:
+ 662 004a 0A4D 6F64 		.string	"\nMode: %d"
+ 662      653A 2025 
+ 662      6400 
+ 663               		.lcomm sec.1568,2
+ 666               	__c.1530:
+ 667 0054 095B 646F 		.string	"\t[done]"
+ 667      6E65 5D00 
+ 670               	__c.1522:
+ 671 005c 0A74 696D 		.string	"\ntimers: init: timer2"
+ 671      6572 733A 
+ 671      2069 6E69 
+ 671      743A 2074 
+ 671      696D 6572 
+ 672               		.lcomm timer_2_dir,1
+ 673               		.comm adc_val,8,1
+ 674               		.comm adc_offset,8,1
+ 675               		.comm adc_amt,8,1
+ 676               		.comm curr_ch,1,1
+ 677               		.comm new_adc_data,1,1
+ 678               		.comm c_mode,1,1
+ 679               		.comm initial,1,1
+ 696               		.text
+ 698               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 timers.c
-     /tmp/ccW1nCva.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccW1nCva.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccW1nCva.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccW1nCva.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/ccW1nCva.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/ccW1nCva.s:106    .text:00000000 __vector_9
-     /tmp/ccW1nCva.s:661    .bss:00000002 timer_2_dir
-     /tmp/ccW1nCva.s:139    .text:0000001e __vector_6
-     /tmp/ccW1nCva.s:169    .text:00000036 __vector_7
-     /tmp/ccW1nCva.s:212    .text:0000005c __vector_8
-     /tmp/ccW1nCva.s:255    .text:00000082 timer1_init
-     /tmp/ccW1nCva.s:655    .progmem.data:00000034 __c.1578
-     /tmp/ccW1nCva.s:651    .progmem.data:0000002c __c.1585
-     /tmp/ccW1nCva.s:412    .text:00000132 __vector_5
-                             .bss:00000000 sec.1567
+     /tmp/ccWR9522.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccWR9522.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccWR9522.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccWR9522.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccWR9522.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccWR9522.s:106    .text:00000000 __vector_9
+     /tmp/ccWR9522.s:663    .bss:00000002 timer_2_dir
+     /tmp/ccWR9522.s:139    .text:0000001e __vector_6
+     /tmp/ccWR9522.s:169    .text:00000036 __vector_7
+     /tmp/ccWR9522.s:212    .text:0000005c __vector_8
+     /tmp/ccWR9522.s:255    .text:00000082 timer1_init
+     /tmp/ccWR9522.s:657    .progmem.data:00000034 __c.1580
+     /tmp/ccWR9522.s:653    .progmem.data:0000002c __c.1587
+     /tmp/ccWR9522.s:412    .text:00000132 __vector_5
+                             .bss:00000000 sec.1568
                             *COM*:00000001 c_mode
-     /tmp/ccW1nCva.s:659    .progmem.data:0000004a __c.1568
-     /tmp/ccW1nCva.s:480    .text:00000194 timer2_init
-     /tmp/ccW1nCva.s:668    .progmem.data:0000005c __c.1521
-     /tmp/ccW1nCva.s:664    .progmem.data:00000054 __c.1529
-     /tmp/ccW1nCva.s:589    .text:00000242 timers_init
-     /tmp/ccW1nCva.s:647    .progmem.data:00000016 __c.1664
-     /tmp/ccW1nCva.s:643    .progmem.data:00000000 __c.1666
+     /tmp/ccWR9522.s:661    .progmem.data:0000004a __c.1569
+     /tmp/ccWR9522.s:482    .text:0000019a timer2_init
+     /tmp/ccWR9522.s:670    .progmem.data:0000005c __c.1522
+     /tmp/ccWR9522.s:666    .progmem.data:00000054 __c.1530
+     /tmp/ccWR9522.s:591    .text:00000248 timers_init
+     /tmp/ccWR9522.s:649    .progmem.data:00000016 __c.1666
+     /tmp/ccWR9522.s:645    .progmem.data:00000000 __c.1668
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt
                             *COM*:00000001 curr_ch
+                            *COM*:00000001 new_adc_data
                             *COM*:00000001 initial
 
 UNDEFINED SYMBOLS

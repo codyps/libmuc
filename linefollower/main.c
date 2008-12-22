@@ -73,7 +73,8 @@ int main(void) {
 					lf_full_speed();
 					initial=false;
 				}
-
+				
+				// gen copy of fixed adc inputs.
 				uint16_t adc_vc[channel_amt];
 				for (uint8_t i=0;i<channel_amt;++i) {
 					adc_vc[i]=adc_get_val(i);
@@ -90,31 +91,47 @@ int main(void) {
 			
 				#ifdef debug
 				print_adc_values();
-				printf_P(PSTR("\nMax Channel [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
+				printf_P(PSTR("\nMax Chan [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
 				#endif
 
 				int8_t turn_i;			
-				turn_i = maxi-channel_amt/2; // Needs to work for even numbers....
-			
+				turn_i = maxi-channel_amt/2; 
 				// Correction needed for even numbers of sensors.
 				#if (!(channel_amt%2))
 				if (turn_i>0)
 					++turn_i;	
 				#endif
 
-
 				//Find Sensor "next to" max sensor.
+				uint8_t nexti, nextv;
+				if (maxi>0)
+					nexti=maxi-1;
+				else if (maxi<0)
+					nexti=maxi+1;
+				
+				//Hack for lack of zero sensor on even sensored bots.
+				#if (!(channel_amt%2))
+				if (nexti==0) {
+					if (maxi<0)
+						++nexti;
+					else // maxi>0
+						--nexti;
+				}
+				#endif	
 
-
-
-				// Hackish, should be removed.
-				lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);			
+				nextv=adc_vc[nexti];
+				
+				//TODO: Use next[vi], max[vi] to find a turn increment.
+				lf_turn_inc(maxv-nextv,maxi>=0);				
+	
+				//lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);
 
 
 				printf_P(PSTR("\nTurn Increment: %d"),LF_INC_SMALL*turn_i);
 			
-				uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-				printf_P(PSTR("\nCurrent Motors: %d; %d"),c_speed[0],c_speed[1]);
+				uint16_t cspeed [2] = {	motor_get_speed(LEFT ),\
+							motor_get_speed(RIGHT)};
+				printf_P(PSTR("\nCurr Motors: L:%d %d:R"),cspeed[0],cspeed[1]);
 				//0=LEFT, 3=RIGHT
 				/*
 				if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {

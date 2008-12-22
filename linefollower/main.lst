@@ -6,10 +6,11 @@
    6               	__zero_reg__ = 1
    7               		.global __do_copy_data
    8               		.global __do_clear_bss
-  10               		.text
-  11               	.Ltext0:
- 115               	.global	clock_init
- 117               	clock_init:
+  11               		.text
+  12               	.Ltext0:
+ 116               	.global	clock_init
+ 118               	clock_init:
+ 119               		.stabd	46,0,0
    1:main.c        **** /*
    2:main.c        **** //Follow the damn line
    3:main.c        **** char Author [] ="Cody Schafer";
@@ -32,11 +33,11 @@
   20:main.c        **** 
   21:main.c        **** 
   22:main.c        **** void clock_init(void) {
- 119               	.LM0:
- 120               	.LFBB1:
- 121               	/* prologue: function */
- 122               	/* frame size = 0 */
- 123               	.LBB23:
+ 121               	.LM0:
+ 122               	.LFBB1:
+ 123               	/* prologue: function */
+ 124               	/* frame size = 0 */
+ 125               	.LBB23:
   23:main.c        **** 	
   24:main.c        **** 	#if   F_CPU == 1000000
   25:main.c        **** 		clock_prescale_set(clock_div_8);	
@@ -46,32 +47,34 @@
   29:main.c        **** 		clock_prescale_set(clock_div_2);	
   30:main.c        **** 	#elif F_CPU == 8000000
   31:main.c        **** 		clock_prescale_set(clock_div_1);	
- 125               	.LM1:
- 126 0000 80E0      		ldi r24,lo8(0)
- 127 0002 90E0      		ldi r25,hi8(0)
- 128 0004 20E8      		ldi r18,lo8(-128)
- 129               	/* #APP */
- 130               	 ;  31 "main.c" 1
- 131 0006 0FB6      		in __tmp_reg__,__SREG__
- 132 0008 F894      		cli
- 133 000a 2093 6100 		sts 97, r18
- 134 000e 8093 6100 		sts 97, r24
- 135 0012 0FBE      		out __SREG__, __tmp_reg__
- 136               	 ;  0 "" 2
- 137               	/* epilogue start */
- 138               	/* #NOAPP */
- 139               	.LBE23:
+ 127               	.LM1:
+ 128 0000 80E0      		ldi r24,lo8(0)
+ 129 0002 90E0      		ldi r25,hi8(0)
+ 130 0004 20E8      		ldi r18,lo8(-128)
+ 131               	/* #APP */
+ 132               	 ;  31 "main.c" 1
+ 133 0006 0FB6      		in __tmp_reg__,__SREG__
+ 134 0008 F894      		cli
+ 135 000a 2093 6100 		sts 97, r18
+ 136 000e 8093 6100 		sts 97, r24
+ 137 0012 0FBE      		out __SREG__, __tmp_reg__
+ 138               	 ;  0 "" 2
+ 139               	/* epilogue start */
+ 140               	/* #NOAPP */
+ 141               	.LBE23:
   32:main.c        **** 	#else
   33:main.c        **** 		#error "F_CPU Unrecognized"
   34:main.c        **** 	#endif
   35:main.c        **** 	
   36:main.c        **** 	//OSCAL set by the bootloader.
   37:main.c        **** }
- 141               	.LM2:
- 142 0014 0895      		ret
- 144               	.Lscope1:
- 146               	.global	__vector_default
- 148               	__vector_default:
+ 143               	.LM2:
+ 144 0014 0895      		ret
+ 146               	.Lscope1:
+ 148               		.stabd	78,0,0
+ 150               	.global	__vector_default
+ 152               	__vector_default:
+ 153               		.stabd	46,0,0
   38:main.c        **** 
   39:main.c        **** void  print_bin(uint8_t inp) {
   40:main.c        **** 	for(int8_t j=7; j>=0; --j) {
@@ -110,326 +113,766 @@
   73:main.c        **** 					lf_full_speed();
   74:main.c        **** 					initial=false;
   75:main.c        **** 				}
-  76:main.c        **** 
-  77:main.c        **** 				uint16_t adc_vc[channel_amt];
-  78:main.c        **** 				for (uint8_t i=0;i<channel_amt;++i) {
-  79:main.c        **** 					adc_vc[i]=adc_get_val(i);
-  80:main.c        **** 				}
-  81:main.c        **** 		
-  82:main.c        **** 				uint8_t  maxi=channel_amt;
-  83:main.c        **** 				uint16_t maxv=0;
-  84:main.c        **** 				for (uint8_t i=0;i<channel_amt;++i) {
-  85:main.c        **** 					if (adc_vc[i]>maxv) {
-  86:main.c        **** 						maxi=i;
-  87:main.c        **** 						maxv=adc_vc[i];
-  88:main.c        **** 					}
-  89:main.c        **** 				}
-  90:main.c        **** 			
-  91:main.c        **** 				#ifdef debug
-  92:main.c        **** 				print_adc_values();
-  93:main.c        **** 				printf_P(PSTR("\nMax Channel [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
-  94:main.c        **** 				#endif
-  95:main.c        **** 
-  96:main.c        **** 				int8_t turn_i;			
-  97:main.c        **** 				turn_i = maxi-channel_amt/2; // Needs to work for even numbers....
-  98:main.c        **** 			
+  76:main.c        **** 				
+  77:main.c        **** 				// gen copy of fixed adc inputs.
+  78:main.c        **** 				uint16_t adc_vc[channel_amt];
+  79:main.c        **** 				for (uint8_t i=0;i<channel_amt;++i) {
+  80:main.c        **** 					adc_vc[i]=adc_get_val(i);
+  81:main.c        **** 				}
+  82:main.c        **** 		
+  83:main.c        **** 				uint8_t  maxi=channel_amt;
+  84:main.c        **** 				uint16_t maxv=0;
+  85:main.c        **** 				for (uint8_t i=0;i<channel_amt;++i) {
+  86:main.c        **** 					if (adc_vc[i]>maxv) {
+  87:main.c        **** 						maxi=i;
+  88:main.c        **** 						maxv=adc_vc[i];
+  89:main.c        **** 					}
+  90:main.c        **** 				}
+  91:main.c        **** 			
+  92:main.c        **** 				#ifdef debug
+  93:main.c        **** 				print_adc_values();
+  94:main.c        **** 				printf_P(PSTR("\nMax Chan [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
+  95:main.c        **** 				#endif
+  96:main.c        **** 
+  97:main.c        **** 				int8_t turn_i;			
+  98:main.c        **** 				turn_i = maxi-channel_amt/2; 
   99:main.c        **** 				// Correction needed for even numbers of sensors.
  100:main.c        **** 				#if (!(channel_amt%2))
  101:main.c        **** 				if (turn_i>0)
  102:main.c        **** 					++turn_i;	
  103:main.c        **** 				#endif
  104:main.c        **** 
- 105:main.c        **** 
- 106:main.c        **** 				//Find Sensor "next to" max sensor.
- 107:main.c        **** 
- 108:main.c        **** 
- 109:main.c        **** 
- 110:main.c        **** 				// Hackish, should be removed.
- 111:main.c        **** 				lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);			
- 112:main.c        **** 
- 113:main.c        **** 
- 114:main.c        **** 				printf_P(PSTR("\nTurn Increment: %d"),LF_INC_SMALL*turn_i);
- 115:main.c        **** 			
- 116:main.c        **** 				uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
- 117:main.c        **** 				printf_P(PSTR("\nCurrent Motors: %d; %d"),c_speed[0],c_speed[1]);
- 118:main.c        **** 				//0=LEFT, 3=RIGHT
- 119:main.c        **** 				/*
- 120:main.c        **** 				if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
- 121:main.c        **** 					lf_turn_inc(LF_INC_LARGE,NEG);
- 122:main.c        **** 					dir=LEFT;
- 123:main.c        **** 				}
- 124:main.c        **** 				else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
- 125:main.c        **** 					lf_turn_inc(LF_INC_LARGE,POS);
- 126:main.c        **** 					dir=RIGHT;
- 127:main.c        **** 				}
- 128:main.c        **** 				else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
- 129:main.c        **** 					lf_turn_inc(LF_INC_SMALL,NEG);
- 130:main.c        **** 					dir=LEFT;
- 131:main.c        **** 				}
- 132:main.c        **** 				else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
- 133:main.c        **** 					lf_turn_inc(LF_INC_LARGE,POS);
- 134:main.c        **** 					dir=RIGHT;
- 135:main.c        **** 				}
- 136:main.c        **** 				else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
- 137:main.c        **** 					//lf_full_speed();
- 138:main.c        **** 					dir=FWD;
- 139:main.c        **** 				}
- 140:main.c        **** 				else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
- 141:main.c        **** 					//lf_full_speed();
- 142:main.c        **** 					dir=FWD;
- 143:main.c        **** 				}
- 144:main.c        **** 				*/
- 145:main.c        **** 			
- 146:main.c        **** 		
- 147:main.c        **** 			}
- 148:main.c        **** 			else { // if !new_adc_data
- 149:main.c        **** 				// Sleep? (need adc, timers, pwm outputs (IO clock), 
- 150:main.c        **** 			}
- 151:main.c        **** 		}
- 152:main.c        **** 		else if	(c_mode==TEST) {
- 153:main.c        **** 			if (initial) {
- 154:main.c        **** 				motor_mode(MOTOR_L_FWD,LEFT);
- 155:main.c        **** 				motor_mode(MOTOR_R_FWD,RIGHT);
- 156:main.c        **** 				initial=false;
- 157:main.c        **** 			}
- 158:main.c        **** 			static uint16_t sp;
- 159:main.c        **** 			
- 160:main.c        **** 			motor_set_speed(sp,LEFT);
- 161:main.c        **** 			motor_set_speed(sp,RIGHT);
- 162:main.c        **** 			_delay_ms(2);
- 163:main.c        **** 			//if (!(sp%0x100))
- 164:main.c        **** 			//	printf("\nsp=%x",sp);
- 165:main.c        **** 			++sp;
- 166:main.c        **** 		}
- 167:main.c        **** 	}	
- 168:main.c        **** } 
- 169:main.c        **** 		
- 170:main.c        **** ISR(BADISR_vect) {
- 150               	.LM3:
- 151               	.LFBB2:
- 152 0016 1F92      		push __zero_reg__
- 153 0018 0F92      		push r0
- 154 001a 0FB6      		in r0,__SREG__
- 155 001c 0F92      		push r0
- 156 001e 1124      		clr __zero_reg__
- 157 0020 8F93      		push r24
- 158 0022 9F93      		push r25
- 159               	/* prologue: Signal */
- 160               	/* frame size = 0 */
- 171:main.c        **** 	fprintf_P(stderr,PSTR("\n\nInvalid Interupt Enabled\n"));
- 162               	.LM4:
- 163 0024 80E0      		ldi r24,lo8(__c.1765)
- 164 0026 90E0      		ldi r25,hi8(__c.1765)
- 165 0028 9F93      		push r25
- 166 002a 8F93      		push r24
- 167 002c 8091 0000 		lds r24,__iob+4
- 168 0030 9091 0000 		lds r25,(__iob+4)+1
- 169 0034 9F93      		push r25
- 170 0036 8F93      		push r24
- 171 0038 0E94 0000 		call fprintf_P
- 172 003c 0F90      		pop __tmp_reg__
- 173 003e 0F90      		pop __tmp_reg__
- 174 0040 0F90      		pop __tmp_reg__
- 175 0042 0F90      		pop __tmp_reg__
- 176               	/* epilogue start */
- 172:main.c        **** }
- 178               	.LM5:
- 179 0044 9F91      		pop r25
- 180 0046 8F91      		pop r24
- 181 0048 0F90      		pop r0
- 182 004a 0FBE      		out __SREG__,r0
- 183 004c 0F90      		pop r0
- 184 004e 1F90      		pop __zero_reg__
- 185 0050 1895      		reti
- 187               	.Lscope2:
- 189               	.global	init
- 191               	init:
- 193               	.LM6:
- 194               	.LFBB3:
- 195               	/* prologue: function */
- 196               	/* frame size = 0 */
- 198               	.LM7:
- 199               	/* #APP */
- 200               	 ;  46 "main.c" 1
- 201 0052 F894      		cli
- 202               	 ;  0 "" 2
- 204               	.LM8:
- 205               	/* #NOAPP */
- 206 0054 E4E6      		ldi r30,lo8(100)
- 207 0056 F0E0      		ldi r31,hi8(100)
- 208 0058 8081      		ld r24,Z
- 209 005a 8F61      		ori r24,lo8(31)
- 210 005c 8083      		st Z,r24
- 212               	.LM9:
- 213 005e 1DBA      		out 61-0x20,__zero_reg__
- 214 0060 8DB3      		in r24,61-0x20
- 215 0062 EBE6      		ldi r30,lo8(107)
- 216 0064 F0E0      		ldi r31,hi8(107)
- 217 0066 8083      		st Z,r24
- 218 0068 8081      		ld r24,Z
- 219 006a 8093 6C00 		sts 108,r24
- 220               	.LBB24:
- 221               	.LBB25:
- 222               	.LBB26:
- 224               	.LM10:
- 225 006e 80E0      		ldi r24,lo8(0)
- 226 0070 90E0      		ldi r25,hi8(0)
- 227 0072 20E8      		ldi r18,lo8(-128)
- 228               	/* #APP */
- 229               	 ;  31 "main.c" 1
- 230 0074 0FB6      		in __tmp_reg__,__SREG__
- 231 0076 F894      		cli
- 232 0078 2093 6100 		sts 97, r18
- 233 007c 8093 6100 		sts 97, r24
- 234 0080 0FBE      		out __SREG__, __tmp_reg__
- 235               	 ;  0 "" 2
- 236               	/* #NOAPP */
- 237               	.LBE26:
- 238               	.LBE25:
- 239               	.LBE24:
- 241               	.LM11:
- 242 0082 0E94 0000 		call joy_init
- 244               	.LM12:
- 245 0086 0E94 0000 		call usart_init
- 247               	.LM13:
- 248 008a 0E94 0000 		call adc_init
- 250               	.LM14:
- 251 008e 0E94 0000 		call timers_init
- 253               	.LM15:
- 254 0092 0E94 0000 		call motors_init
- 256               	.LM16:
- 257               	/* #APP */
- 258               	 ;  55 "main.c" 1
- 259 0096 7894      		sei
- 260               	 ;  0 "" 2
- 262               	.LM17:
- 263               	/* #NOAPP */
- 264 0098 80E0      		ldi r24,lo8(__c.1703)
- 265 009a 90E0      		ldi r25,hi8(__c.1703)
- 266 009c 9F93      		push r25
- 267 009e 8F93      		push r24
- 268 00a0 0E94 0000 		call printf_P
- 269 00a4 0F90      		pop __tmp_reg__
- 270 00a6 0F90      		pop __tmp_reg__
- 271               	/* epilogue start */
- 273               	.LM18:
- 274 00a8 0895      		ret
- 276               	.Lscope3:
- 278               	.global	main
- 280               	main:
- 282               	.LM19:
- 283               	.LFBB4:
- 284               	/* prologue: function */
- 285               	/* frame size = 0 */
- 287               	.LM20:
- 288 00aa 0E94 0000 		call init
- 290               	.LM21:
- 291 00ae 1092 0000 		sts c_mode,__zero_reg__
- 293               	.LM22:
- 294 00b2 81E0      		ldi r24,lo8(1)
- 295 00b4 8093 0000 		sts initial,r24
- 296               	.L8:
- 297 00b8 00C0      		rjmp .L8
- 299               	.Lscope4:
- 302               	.global	print_bin
- 304               	print_bin:
- 306               	.LM23:
- 307               	.LFBB5:
- 308 00ba EF92      		push r14
- 309 00bc FF92      		push r15
- 310 00be 0F93      		push r16
- 311 00c0 1F93      		push r17
- 312 00c2 CF93      		push r28
- 313 00c4 DF93      		push r29
- 314               	/* prologue: function */
- 315               	/* frame size = 0 */
- 317               	.LM24:
- 318 00c6 C7E0      		ldi r28,lo8(7)
- 319 00c8 D0E0      		ldi r29,hi8(7)
- 320               	.LBB27:
- 322               	.LM25:
- 323 00ca 91E0      		ldi r25,lo8(1)
- 324 00cc E92E      		mov r14,r25
- 325 00ce F12C      		mov r15,__zero_reg__
- 326 00d0 082F      		mov r16,r24
- 327 00d2 10E0      		ldi r17,lo8(0)
- 328               	.L11:
- 329 00d4 C701      		movw r24,r14
- 330 00d6 0C2E      		mov r0,r28
- 331 00d8 00C0      		rjmp 2f
- 332 00da 880F      	1:	lsl r24
- 333 00dc 991F      		rol r25
- 334 00de 0A94      	2:	dec r0
- 335 00e0 02F4      		brpl 1b
- 336 00e2 8023      		and r24,r16
- 337 00e4 9123      		and r25,r17
- 338 00e6 0C2E      		mov r0,r28
- 339 00e8 00C0      		rjmp 2f
- 340 00ea 9595      	1:	asr r25
- 341 00ec 8795      		ror r24
- 342 00ee 0A94      	2:	dec r0
- 343 00f0 02F4      		brpl 1b
- 344 00f2 C096      		adiw r24,48
- 345 00f4 0E94 0000 		call putchar
- 346 00f8 2197      		sbiw r28,1
- 348               	.LM26:
- 349 00fa 8FEF      		ldi r24,hi8(-1)
- 350 00fc CF3F      		cpi r28,lo8(-1)
- 351 00fe D807      		cpc r29,r24
- 352 0100 01F4      		brne .L11
- 353               	/* epilogue start */
- 354               	.LBE27:
- 356               	.LM27:
- 357 0102 DF91      		pop r29
- 358 0104 CF91      		pop r28
- 359 0106 1F91      		pop r17
- 360 0108 0F91      		pop r16
- 361 010a FF90      		pop r15
- 362 010c EF90      		pop r14
- 363 010e 0895      		ret
- 365               	.Lscope5:
- 366               		.section	.progmem.data,"a",@progbits
- 369               	__c.1765:
- 370 0000 0A0A 496E 		.string	"\n\nInvalid Interupt Enabled\n"
- 370      7661 6C69 
- 370      6420 496E 
- 370      7465 7275 
- 370      7074 2045 
- 373               	__c.1703:
- 374 001c 0A49 6E69 		.string	"\nInit: Done\n\n"
- 374      743A 2044 
- 374      6F6E 650A 
- 374      0A00 
- 375               		.comm c_mode,1,1
- 376               		.comm initial,1,1
- 377               		.comm adc_val,8,1
- 378               		.comm adc_offset,8,1
- 379               		.comm adc_amt,8,1
- 380               		.comm curr_ch,1,1
- 381               		.comm new_adc_data,1,1
- 391               		.text
- 393               	.Letext0:
+ 105:main.c        **** 				//Find Sensor "next to" max sensor.
+ 106:main.c        **** 				uint8_t nexti, nextv;
+ 107:main.c        **** 				if (maxi>0)
+ 108:main.c        **** 					nexti=maxi-1;
+ 109:main.c        **** 				else if (maxi<0)
+ 110:main.c        **** 					nexti=maxi+1;
+ 111:main.c        **** 				
+ 112:main.c        **** 				//Hack for lack of zero sensor on even sensored bots.
+ 113:main.c        **** 				#if (!(channel_amt%2))
+ 114:main.c        **** 				if (nexti==0) {
+ 115:main.c        **** 					if (maxi<0)
+ 116:main.c        **** 						++nexti;
+ 117:main.c        **** 					else // maxi>0
+ 118:main.c        **** 						--nexti;
+ 119:main.c        **** 				}
+ 120:main.c        **** 				#endif	
+ 121:main.c        **** 
+ 122:main.c        **** 				nextv=adc_vc[nexti];
+ 123:main.c        **** 				
+ 124:main.c        **** 				//TODO: Use next[vi], max[vi] to find a turn increment.
+ 125:main.c        **** 				lf_turn_inc(maxv-nextv,maxi>=0);				
+ 126:main.c        **** 	
+ 127:main.c        **** 				//lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);
+ 128:main.c        **** 
+ 129:main.c        **** 
+ 130:main.c        **** 				printf_P(PSTR("\nTurn Increment: %d"),LF_INC_SMALL*turn_i);
+ 131:main.c        **** 			
+ 132:main.c        **** 				uint16_t cspeed [2] = {	motor_get_speed(LEFT ),\
+ 133:main.c        **** 							motor_get_speed(RIGHT)};
+ 134:main.c        **** 				printf_P(PSTR("\nCurr Motors: L:%d %d:R"),cspeed[0],cspeed[1]);
+ 135:main.c        **** 				//0=LEFT, 3=RIGHT
+ 136:main.c        **** 				/*
+ 137:main.c        **** 				if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
+ 138:main.c        **** 					lf_turn_inc(LF_INC_LARGE,NEG);
+ 139:main.c        **** 					dir=LEFT;
+ 140:main.c        **** 				}
+ 141:main.c        **** 				else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
+ 142:main.c        **** 					lf_turn_inc(LF_INC_LARGE,POS);
+ 143:main.c        **** 					dir=RIGHT;
+ 144:main.c        **** 				}
+ 145:main.c        **** 				else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+ 146:main.c        **** 					lf_turn_inc(LF_INC_SMALL,NEG);
+ 147:main.c        **** 					dir=LEFT;
+ 148:main.c        **** 				}
+ 149:main.c        **** 				else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
+ 150:main.c        **** 					lf_turn_inc(LF_INC_LARGE,POS);
+ 151:main.c        **** 					dir=RIGHT;
+ 152:main.c        **** 				}
+ 153:main.c        **** 				else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+ 154:main.c        **** 					//lf_full_speed();
+ 155:main.c        **** 					dir=FWD;
+ 156:main.c        **** 				}
+ 157:main.c        **** 				else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
+ 158:main.c        **** 					//lf_full_speed();
+ 159:main.c        **** 					dir=FWD;
+ 160:main.c        **** 				}
+ 161:main.c        **** 				*/
+ 162:main.c        **** 			
+ 163:main.c        **** 		
+ 164:main.c        **** 			}
+ 165:main.c        **** 			else { // if !new_adc_data
+ 166:main.c        **** 				// Sleep? (need adc, timers, pwm outputs (IO clock), 
+ 167:main.c        **** 			}
+ 168:main.c        **** 		}
+ 169:main.c        **** 		else if	(c_mode==TEST) {
+ 170:main.c        **** 			if (initial) {
+ 171:main.c        **** 				motor_mode(MOTOR_L_FWD,LEFT);
+ 172:main.c        **** 				motor_mode(MOTOR_R_FWD,RIGHT);
+ 173:main.c        **** 				initial=false;
+ 174:main.c        **** 			}
+ 175:main.c        **** 			static uint16_t sp;
+ 176:main.c        **** 			
+ 177:main.c        **** 			motor_set_speed(sp,LEFT);
+ 178:main.c        **** 			motor_set_speed(sp,RIGHT);
+ 179:main.c        **** 			_delay_ms(2);
+ 180:main.c        **** 			//if (!(sp%0x100))
+ 181:main.c        **** 			//	printf("\nsp=%x",sp);
+ 182:main.c        **** 			++sp;
+ 183:main.c        **** 		}
+ 184:main.c        **** 	}	
+ 185:main.c        **** } 
+ 186:main.c        **** 		
+ 187:main.c        **** ISR(BADISR_vect) {
+ 155               	.LM3:
+ 156               	.LFBB2:
+ 157 0016 1F92      		push __zero_reg__
+ 158 0018 0F92      		push r0
+ 159 001a 0FB6      		in r0,__SREG__
+ 160 001c 0F92      		push r0
+ 161 001e 1124      		clr __zero_reg__
+ 162 0020 8F93      		push r24
+ 163 0022 9F93      		push r25
+ 164               	/* prologue: Signal */
+ 165               	/* frame size = 0 */
+ 188:main.c        **** 	fprintf_P(stderr,PSTR("\n\nInvalid Interupt Enabled\n"));
+ 167               	.LM4:
+ 168 0024 80E0      		ldi r24,lo8(__c.1771)
+ 169 0026 90E0      		ldi r25,hi8(__c.1771)
+ 170 0028 9F93      		push r25
+ 171 002a 8F93      		push r24
+ 172 002c 8091 0000 		lds r24,__iob+4
+ 173 0030 9091 0000 		lds r25,(__iob+4)+1
+ 174 0034 9F93      		push r25
+ 175 0036 8F93      		push r24
+ 176 0038 0E94 0000 		call fprintf_P
+ 177 003c 0F90      		pop __tmp_reg__
+ 178 003e 0F90      		pop __tmp_reg__
+ 179 0040 0F90      		pop __tmp_reg__
+ 180 0042 0F90      		pop __tmp_reg__
+ 181               	/* epilogue start */
+ 189:main.c        **** }
+ 183               	.LM5:
+ 184 0044 9F91      		pop r25
+ 185 0046 8F91      		pop r24
+ 186 0048 0F90      		pop r0
+ 187 004a 0FBE      		out __SREG__,r0
+ 188 004c 0F90      		pop r0
+ 189 004e 1F90      		pop __zero_reg__
+ 190 0050 1895      		reti
+ 192               	.Lscope2:
+ 194               		.stabd	78,0,0
+ 196               	.global	init
+ 198               	init:
+ 199               		.stabd	46,0,0
+ 201               	.LM6:
+ 202               	.LFBB3:
+ 203               	/* prologue: function */
+ 204               	/* frame size = 0 */
+ 206               	.LM7:
+ 207               	/* #APP */
+ 208               	 ;  46 "main.c" 1
+ 209 0052 F894      		cli
+ 210               	 ;  0 "" 2
+ 212               	.LM8:
+ 213               	/* #NOAPP */
+ 214 0054 E4E6      		ldi r30,lo8(100)
+ 215 0056 F0E0      		ldi r31,hi8(100)
+ 216 0058 8081      		ld r24,Z
+ 217 005a 8F61      		ori r24,lo8(31)
+ 218 005c 8083      		st Z,r24
+ 220               	.LM9:
+ 221 005e 1DBA      		out 61-0x20,__zero_reg__
+ 222 0060 8DB3      		in r24,61-0x20
+ 223 0062 EBE6      		ldi r30,lo8(107)
+ 224 0064 F0E0      		ldi r31,hi8(107)
+ 225 0066 8083      		st Z,r24
+ 226 0068 8081      		ld r24,Z
+ 227 006a 8093 6C00 		sts 108,r24
+ 228               	.LBB24:
+ 229               	.LBB25:
+ 230               	.LBB26:
+ 232               	.LM10:
+ 233 006e 80E0      		ldi r24,lo8(0)
+ 234 0070 90E0      		ldi r25,hi8(0)
+ 235 0072 20E8      		ldi r18,lo8(-128)
+ 236               	/* #APP */
+ 237               	 ;  31 "main.c" 1
+ 238 0074 0FB6      		in __tmp_reg__,__SREG__
+ 239 0076 F894      		cli
+ 240 0078 2093 6100 		sts 97, r18
+ 241 007c 8093 6100 		sts 97, r24
+ 242 0080 0FBE      		out __SREG__, __tmp_reg__
+ 243               	 ;  0 "" 2
+ 244               	/* #NOAPP */
+ 245               	.LBE26:
+ 246               	.LBE25:
+ 247               	.LBE24:
+ 249               	.LM11:
+ 250 0082 0E94 0000 		call joy_init
+ 252               	.LM12:
+ 253 0086 0E94 0000 		call usart_init
+ 255               	.LM13:
+ 256 008a 0E94 0000 		call adc_init
+ 258               	.LM14:
+ 259 008e 0E94 0000 		call timers_init
+ 261               	.LM15:
+ 262 0092 0E94 0000 		call motors_init
+ 264               	.LM16:
+ 265               	/* #APP */
+ 266               	 ;  55 "main.c" 1
+ 267 0096 7894      		sei
+ 268               	 ;  0 "" 2
+ 270               	.LM17:
+ 271               	/* #NOAPP */
+ 272 0098 80E0      		ldi r24,lo8(__c.1703)
+ 273 009a 90E0      		ldi r25,hi8(__c.1703)
+ 274 009c 9F93      		push r25
+ 275 009e 8F93      		push r24
+ 276 00a0 0E94 0000 		call printf_P
+ 277 00a4 0F90      		pop __tmp_reg__
+ 278 00a6 0F90      		pop __tmp_reg__
+ 279               	/* epilogue start */
+ 281               	.LM18:
+ 282 00a8 0895      		ret
+ 284               	.Lscope3:
+ 286               		.stabd	78,0,0
+ 288               	.global	main
+ 290               	main:
+ 291               		.stabd	46,0,0
+ 293               	.LM19:
+ 294               	.LFBB4:
+ 295 00aa 2F92      		push r2
+ 296 00ac 3F92      		push r3
+ 297 00ae 4F92      		push r4
+ 298 00b0 5F92      		push r5
+ 299 00b2 6F92      		push r6
+ 300 00b4 7F92      		push r7
+ 301 00b6 8F92      		push r8
+ 302 00b8 9F92      		push r9
+ 303 00ba BF92      		push r11
+ 304 00bc CF92      		push r12
+ 305 00be DF92      		push r13
+ 306 00c0 EF92      		push r14
+ 307 00c2 FF92      		push r15
+ 308 00c4 0F93      		push r16
+ 309 00c6 1F93      		push r17
+ 310 00c8 DF93      		push r29
+ 311 00ca CF93      		push r28
+ 312 00cc CDB7      		in r28,__SP_L__
+ 313 00ce DEB7      		in r29,__SP_H__
+ 314 00d0 2897      		sbiw r28,8
+ 315 00d2 0FB6      		in __tmp_reg__,__SREG__
+ 316 00d4 F894      		cli
+ 317 00d6 DEBF      		out __SP_H__,r29
+ 318 00d8 0FBE      		out __SREG__,__tmp_reg__
+ 319 00da CDBF      		out __SP_L__,r28
+ 320               	/* prologue: function */
+ 321               	/* frame size = 8 */
+ 323               	.LM20:
+ 324 00dc 0E94 0000 		call init
+ 326               	.LM21:
+ 327 00e0 1092 0000 		sts c_mode,__zero_reg__
+ 329               	.LM22:
+ 330 00e4 81E0      		ldi r24,lo8(1)
+ 331 00e6 8093 0000 		sts initial,r24
+ 332               	.LBB27:
+ 334               	.LM23:
+ 335 00ea 4E01      		movw r8,r28
+ 336 00ec 0894      		sec
+ 337 00ee 811C      		adc r8,__zero_reg__
+ 338 00f0 911C      		adc r9,__zero_reg__
+ 340               	.LM24:
+ 341 00f2 E0E0      		ldi r30,lo8(__c.1732)
+ 342 00f4 2E2E      		mov r2,r30
+ 343 00f6 E0E0      		ldi r30,hi8(__c.1732)
+ 344 00f8 3E2E      		mov r3,r30
+ 346               	.LM25:
+ 347 00fa 70E0      		ldi r23,lo8(__c.1735)
+ 348 00fc 472E      		mov r4,r23
+ 349 00fe 70E0      		ldi r23,hi8(__c.1735)
+ 350 0100 572E      		mov r5,r23
+ 351               	.LBE27:
+ 352               	.LBB30:
+ 353               	.LBB31:
+ 354               	.LBB32:
+ 355               	.LBB33:
+ 356               	.LBB34:
+ 358               	.Ltext1:
+   1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+   5:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+   8:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  11:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      distribution.
+  15:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  16:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  20:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  32:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  34:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  37:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  39:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \file */
+  40:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     \code
+  42:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     \endcode
+  44:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  45:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  53:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  60:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  62:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** */
+  63:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  64:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** #endif
+  68:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  69:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  71:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     register.
+  76:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  77:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** */
+  80:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** void
+  81:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** {
+  83:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+  84:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 	);
+  89:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** }
+  90:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  91:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  93:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 
+  99:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****  */
+ 102:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** void
+ 103:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** {
+ 105:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 360               	.LM26:
+ 361 0102 60EA      		ldi r22,lo8(4000)
+ 362 0104 662E      		mov r6,r22
+ 363 0106 6FE0      		ldi r22,hi8(4000)
+ 364 0108 762E      		mov r7,r22
+ 365               	.L24:
+ 366               	.LBE34:
+ 367               	.LBE33:
+ 368               	.LBE32:
+ 369               	.LBE31:
+ 370               	.LBE30:
+ 372               	.Ltext2:
+ 374               	.LM27:
+ 375 010a 8091 0000 		lds r24,c_mode
+ 376 010e 8230      		cpi r24,lo8(2)
+ 377 0110 01F0      		breq .+2
+ 378 0112 00C0      		rjmp .L8
+ 379 0114 8091 0000 		lds r24,new_adc_data
+ 380 0118 8823      		tst r24
+ 381 011a 01F4      		brne .+2
+ 382 011c 00C0      		rjmp .L8
+ 384               	.LM28:
+ 385 011e 8091 0000 		lds r24,new_adc_data
+ 386 0122 8823      		tst r24
+ 387 0124 01F0      		breq .L24
+ 388               	.LBB39:
+ 390               	.LM29:
+ 391 0126 1092 0000 		sts new_adc_data,__zero_reg__
+ 393               	.LM30:
+ 394 012a 8091 0000 		lds r24,initial
+ 395 012e 8823      		tst r24
+ 396 0130 01F0      		breq .L10
+ 398               	.LM31:
+ 399 0132 0E94 0000 		call lf_full_speed
+ 401               	.LM32:
+ 402 0136 1092 0000 		sts initial,__zero_reg__
+ 403               	.L10:
+ 404 013a 6401      		movw r12,r8
+ 405 013c 7401      		movw r14,r8
+ 406 013e 00E0      		ldi r16,lo8(0)
+ 407               	.L11:
+ 408               	.LBB28:
+ 410               	.LM33:
+ 411 0140 802F      		mov r24,r16
+ 412 0142 0E94 0000 		call adc_get_val
+ 413 0146 F701      		movw r30,r14
+ 414 0148 8193      		st Z+,r24
+ 415 014a 9193      		st Z+,r25
+ 416 014c 7F01      		movw r14,r30
+ 418               	.LM34:
+ 419 014e 0F5F      		subi r16,lo8(-(1))
+ 420 0150 0430      		cpi r16,lo8(4)
+ 421 0152 01F4      		brne .L11
+ 422 0154 54E0      		ldi r21,lo8(4)
+ 423 0156 F52E      		mov r15,r21
+ 424 0158 80E0      		ldi r24,lo8(0)
+ 425 015a 90E0      		ldi r25,hi8(0)
+ 426 015c 20E0      		ldi r18,lo8(0)
+ 427               	.L15:
+ 428               	.LBE28:
+ 429               	.LBB29:
+ 431               	.LM35:
+ 432 015e F601      		movw r30,r12
+ 433 0160 0081      		ld r16,Z
+ 434 0162 1181      		ldd r17,Z+1
+ 435 0164 8017      		cp r24,r16
+ 436 0166 9107      		cpc r25,r17
+ 437 0168 00F0      		brlo .L12
+ 438 016a 8C01      		movw r16,r24
+ 439 016c 00C0      		rjmp .L13
+ 440               	.L12:
+ 441 016e F22E      		mov r15,r18
+ 442               	.L13:
+ 444               	.LM36:
+ 445 0170 2F5F      		subi r18,lo8(-(1))
+ 446 0172 82E0      		ldi r24,lo8(2)
+ 447 0174 90E0      		ldi r25,hi8(2)
+ 448 0176 C80E      		add r12,r24
+ 449 0178 D91E      		adc r13,r25
+ 450 017a 2430      		cpi r18,lo8(4)
+ 451 017c 01F0      		breq .L14
+ 452 017e C801      		movw r24,r16
+ 453 0180 00C0      		rjmp .L15
+ 454               	.L14:
+ 455               	.LBE29:
+ 457               	.LM37:
+ 458 0182 0E94 0000 		call print_adc_values
+ 460               	.LM38:
+ 461 0186 1F93      		push r17
+ 462 0188 0F93      		push r16
+ 463 018a 8F2D      		mov r24,r15
+ 464 018c 90E0      		ldi r25,lo8(0)
+ 465 018e 9F93      		push r25
+ 466 0190 8F93      		push r24
+ 467 0192 E0E0      		ldi r30,lo8(__c.1727)
+ 468 0194 F0E0      		ldi r31,hi8(__c.1727)
+ 469 0196 FF93      		push r31
+ 470 0198 EF93      		push r30
+ 471 019a 0E94 0000 		call printf_P
+ 473               	.LM39:
+ 474 019e 4EEF      		ldi r20,lo8(-2)
+ 475 01a0 E42E      		mov r14,r20
+ 476 01a2 EF0C      		add r14,r15
+ 478               	.LM40:
+ 479 01a4 2DB7      		in r18,__SP_L__
+ 480 01a6 3EB7      		in r19,__SP_H__
+ 481 01a8 2A5F      		subi r18,lo8(-(6))
+ 482 01aa 3F4F      		sbci r19,hi8(-(6))
+ 483 01ac 0FB6      		in __tmp_reg__,__SREG__
+ 484 01ae F894      		cli
+ 485 01b0 3EBF      		out __SP_H__,r19
+ 486 01b2 0FBE      		out __SREG__,__tmp_reg__
+ 487 01b4 2DBF      		out __SP_L__,r18
+ 488 01b6 1E14      		cp __zero_reg__,r14
+ 489 01b8 04F4      		brge .L16
+ 491               	.LM41:
+ 492 01ba EF2C      		mov r14,r15
+ 493 01bc EA94      		dec r14
+ 494               	.L16:
+ 496               	.LM42:
+ 497 01be FF20      		tst r15
+ 498 01c0 01F0      		breq .L17
+ 500               	.LM43:
+ 501 01c2 BF2C      		mov r11,r15
+ 502 01c4 BA94      		dec r11
+ 503               	.L17:
+ 505               	.LM44:
+ 506 01c6 BB20      		tst r11
+ 507 01c8 01F4      		brne .L18
+ 508 01ca BB24      		clr r11
+ 509 01cc BA94      		dec r11
+ 510               	.L18:
+ 512               	.LM45:
+ 513 01ce EB2D      		mov r30,r11
+ 514 01d0 F0E0      		ldi r31,lo8(0)
+ 515 01d2 EE0F      		lsl r30
+ 516 01d4 FF1F      		rol r31
+ 517 01d6 E80D      		add r30,r8
+ 518 01d8 F91D      		adc r31,r9
+ 519 01da 8081      		ld r24,Z
+ 520 01dc 61E0      		ldi r22,lo8(1)
+ 521 01de F801      		movw r30,r16
+ 522 01e0 E81B      		sub r30,r24
+ 523 01e2 F109      		sbc r31,__zero_reg__
+ 524 01e4 CF01      		movw r24,r30
+ 525 01e6 0E94 0000 		call lf_turn_inc
+ 527               	.LM46:
+ 528 01ea 8E2D      		mov r24,r14
+ 529 01ec 9927      		clr r25
+ 530 01ee 87FD      		sbrc r24,7
+ 531 01f0 9095      		com r25
+ 532 01f2 982F      		mov r25,r24
+ 533 01f4 8827      		clr r24
+ 534 01f6 990F      		lsl r25
+ 535 01f8 9F93      		push r25
+ 536 01fa 8F93      		push r24
+ 537 01fc 3F92      		push r3
+ 538 01fe 2F92      		push r2
+ 539 0200 0E94 0000 		call printf_P
+ 541               	.LM47:
+ 542 0204 80E0      		ldi r24,lo8(0)
+ 543 0206 0E94 0000 		call motor_get_speed
+ 544 020a 8C01      		movw r16,r24
+ 545 020c 81E0      		ldi r24,lo8(1)
+ 546 020e 0E94 0000 		call motor_get_speed
+ 548               	.LM48:
+ 549 0212 9F93      		push r25
+ 550 0214 8F93      		push r24
+ 551 0216 1F93      		push r17
+ 552 0218 0F93      		push r16
+ 553 021a 5F92      		push r5
+ 554 021c 4F92      		push r4
+ 555 021e 0E94 0000 		call printf_P
+ 556 0222 2DB7      		in r18,__SP_L__
+ 557 0224 3EB7      		in r19,__SP_H__
+ 558 0226 265F      		subi r18,lo8(-(10))
+ 559 0228 3F4F      		sbci r19,hi8(-(10))
+ 560 022a 0FB6      		in __tmp_reg__,__SREG__
+ 561 022c F894      		cli
+ 562 022e 3EBF      		out __SP_H__,r19
+ 563 0230 0FBE      		out __SREG__,__tmp_reg__
+ 564 0232 2DBF      		out __SP_L__,r18
+ 565 0234 00C0      		rjmp .L24
+ 566               	.L8:
+ 567               	.LBE39:
+ 569               	.LM49:
+ 570 0236 8091 0000 		lds r24,c_mode
+ 571 023a 8130      		cpi r24,lo8(1)
+ 572 023c 01F0      		breq .+2
+ 573 023e 00C0      		rjmp .L24
+ 574               	.LBB40:
+ 576               	.LM50:
+ 577 0240 8091 0000 		lds r24,initial
+ 578 0244 8823      		tst r24
+ 579 0246 01F0      		breq .L19
+ 581               	.LM51:
+ 582 0248 60E0      		ldi r22,lo8(0)
+ 583 024a 81E0      		ldi r24,lo8(1)
+ 584 024c 0E94 0000 		call motor_mode
+ 586               	.LM52:
+ 587 0250 61E0      		ldi r22,lo8(1)
+ 588 0252 81E0      		ldi r24,lo8(1)
+ 589 0254 0E94 0000 		call motor_mode
+ 591               	.LM53:
+ 592 0258 1092 0000 		sts initial,__zero_reg__
+ 593               	.L19:
+ 595               	.LM54:
+ 596 025c 60E0      		ldi r22,lo8(0)
+ 597 025e 8091 0000 		lds r24,sp.1737
+ 598 0262 9091 0000 		lds r25,(sp.1737)+1
+ 599 0266 0E94 0000 		call motor_set_speed
+ 601               	.LM55:
+ 602 026a 61E0      		ldi r22,lo8(1)
+ 603 026c 8091 0000 		lds r24,sp.1737
+ 604 0270 9091 0000 		lds r25,(sp.1737)+1
+ 605 0274 0E94 0000 		call motor_set_speed
+ 606               	.LBB38:
+ 607               	.LBB37:
+ 608               	.LBB36:
+ 609               	.LBB35:
+ 611               	.Ltext3:
+ 613               	.LM56:
+ 614 0278 C301      		movw r24,r6
+ 615               	/* #APP */
+ 616               	 ;  105 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h" 1
+ 617 027a 0197      		1: sbiw r24,1
+ 618 027c 01F4      		brne 1b
+ 619               	 ;  0 "" 2
+ 620               	/* #NOAPP */
+ 621               	.LBE35:
+ 622               	.LBE36:
+ 623               	.LBE37:
+ 624               	.LBE38:
+ 626               	.Ltext4:
+ 628               	.LM57:
+ 629 027e 8091 0000 		lds r24,sp.1737
+ 630 0282 9091 0000 		lds r25,(sp.1737)+1
+ 631 0286 0196      		adiw r24,1
+ 632 0288 9093 0000 		sts (sp.1737)+1,r25
+ 633 028c 8093 0000 		sts sp.1737,r24
+ 634 0290 00C0      		rjmp .L24
+ 635               	.LBE40:
+ 663               	.Lscope4:
+ 665               		.stabd	78,0,0
+ 668               	.global	print_bin
+ 670               	print_bin:
+ 671               		.stabd	46,0,0
+ 673               	.LM58:
+ 674               	.LFBB5:
+ 675 0292 EF92      		push r14
+ 676 0294 FF92      		push r15
+ 677 0296 0F93      		push r16
+ 678 0298 1F93      		push r17
+ 679 029a CF93      		push r28
+ 680 029c DF93      		push r29
+ 681               	/* prologue: function */
+ 682               	/* frame size = 0 */
+ 684               	.LM59:
+ 685 029e C7E0      		ldi r28,lo8(7)
+ 686 02a0 D0E0      		ldi r29,hi8(7)
+ 687               	.LBB41:
+ 689               	.LM60:
+ 690 02a2 F1E0      		ldi r31,lo8(1)
+ 691 02a4 EF2E      		mov r14,r31
+ 692 02a6 F12C      		mov r15,__zero_reg__
+ 693 02a8 082F      		mov r16,r24
+ 694 02aa 10E0      		ldi r17,lo8(0)
+ 695               	.L26:
+ 696 02ac C701      		movw r24,r14
+ 697 02ae 0C2E      		mov r0,r28
+ 698 02b0 00C0      		rjmp 2f
+ 699 02b2 880F      	1:	lsl r24
+ 700 02b4 991F      		rol r25
+ 701 02b6 0A94      	2:	dec r0
+ 702 02b8 02F4      		brpl 1b
+ 703 02ba 8023      		and r24,r16
+ 704 02bc 9123      		and r25,r17
+ 705 02be 0C2E      		mov r0,r28
+ 706 02c0 00C0      		rjmp 2f
+ 707 02c2 9595      	1:	asr r25
+ 708 02c4 8795      		ror r24
+ 709 02c6 0A94      	2:	dec r0
+ 710 02c8 02F4      		brpl 1b
+ 711 02ca C096      		adiw r24,48
+ 712 02cc 0E94 0000 		call putchar
+ 713 02d0 2197      		sbiw r28,1
+ 715               	.LM61:
+ 716 02d2 8FEF      		ldi r24,hi8(-1)
+ 717 02d4 CF3F      		cpi r28,lo8(-1)
+ 718 02d6 D807      		cpc r29,r24
+ 719 02d8 01F4      		brne .L26
+ 720               	/* epilogue start */
+ 721               	.LBE41:
+ 723               	.LM62:
+ 724 02da DF91      		pop r29
+ 725 02dc CF91      		pop r28
+ 726 02de 1F91      		pop r17
+ 727 02e0 0F91      		pop r16
+ 728 02e2 FF90      		pop r15
+ 729 02e4 EF90      		pop r14
+ 730 02e6 0895      		ret
+ 732               	.Lscope5:
+ 734               		.stabd	78,0,0
+ 735               		.section	.progmem.data,"a",@progbits
+ 738               	__c.1771:
+ 739 0000 0A0A 496E 		.string	"\n\nInvalid Interupt Enabled\n"
+ 739      7661 6C69 
+ 739      6420 496E 
+ 739      7465 7275 
+ 739      7074 2045 
+ 740               		.lcomm sp.1737,2
+ 743               	__c.1735:
+ 744 001c 0A43 7572 		.string	"\nCurr Motors: L:%d %d:R"
+ 744      7220 4D6F 
+ 744      746F 7273 
+ 744      3A20 4C3A 
+ 744      2564 2025 
+ 747               	__c.1732:
+ 748 0034 0A54 7572 		.string	"\nTurn Increment: %d"
+ 748      6E20 496E 
+ 748      6372 656D 
+ 748      656E 743A 
+ 748      2025 6400 
+ 751               	__c.1727:
+ 752 0048 0A4D 6178 		.string	"\nMax Chan [L 0 1 2 3 R]: %d;v=%d"
+ 752      2043 6861 
+ 752      6E20 5B4C 
+ 752      2030 2031 
+ 752      2032 2033 
+ 755               	__c.1703:
+ 756 0069 0A49 6E69 		.string	"\nInit: Done\n\n"
+ 756      743A 2044 
+ 756      6F6E 650A 
+ 756      0A00 
+ 757               		.comm c_mode,1,1
+ 758               		.comm initial,1,1
+ 759               		.comm adc_val,8,1
+ 760               		.comm adc_offset,8,1
+ 761               		.comm adc_amt,8,1
+ 762               		.comm curr_ch,1,1
+ 763               		.comm new_adc_data,1,1
+ 777               		.text
+ 779               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/ccHlAAPO.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccHlAAPO.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccHlAAPO.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccHlAAPO.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/ccHlAAPO.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/ccHlAAPO.s:117    .text:00000000 clock_init
-     /tmp/ccHlAAPO.s:148    .text:00000016 __vector_default
-     /tmp/ccHlAAPO.s:369    .progmem.data:00000000 __c.1765
-     /tmp/ccHlAAPO.s:191    .text:00000052 init
-     /tmp/ccHlAAPO.s:373    .progmem.data:0000001c __c.1703
-     /tmp/ccHlAAPO.s:280    .text:000000aa main
+     /tmp/ccOMpUhz.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccOMpUhz.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccOMpUhz.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccOMpUhz.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccOMpUhz.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccOMpUhz.s:118    .text:00000000 clock_init
+     /tmp/ccOMpUhz.s:152    .text:00000016 __vector_default
+     /tmp/ccOMpUhz.s:738    .progmem.data:00000000 __c.1771
+     /tmp/ccOMpUhz.s:198    .text:00000052 init
+     /tmp/ccOMpUhz.s:755    .progmem.data:00000069 __c.1703
+     /tmp/ccOMpUhz.s:290    .text:000000aa main
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
-     /tmp/ccHlAAPO.s:304    .text:000000ba print_bin
+     /tmp/ccOMpUhz.s:747    .progmem.data:00000034 __c.1732
+     /tmp/ccOMpUhz.s:743    .progmem.data:0000001c __c.1735
+                            *COM*:00000001 new_adc_data
+     /tmp/ccOMpUhz.s:751    .progmem.data:00000048 __c.1727
+                             .bss:00000000 sp.1737
+     /tmp/ccOMpUhz.s:670    .text:00000292 print_bin
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt
                             *COM*:00000001 curr_ch
-                            *COM*:00000001 new_adc_data
 
 UNDEFINED SYMBOLS
 __do_copy_data
@@ -442,4 +885,11 @@ adc_init
 timers_init
 motors_init
 printf_P
+lf_full_speed
+adc_get_val
+print_adc_values
+lf_turn_inc
+motor_get_speed
+motor_mode
+motor_set_speed
 putchar

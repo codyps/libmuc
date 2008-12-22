@@ -6,11 +6,12 @@
    6               	__zero_reg__ = 1
    7               		.global __do_copy_data
    8               		.global __do_clear_bss
-  10               		.text
-  11               	.Ltext0:
- 102               	.global	copysign
- 104               	copysign:
- 106               	.Ltext1:
+  11               		.text
+  12               	.Ltext0:
+ 103               	.global	copysign
+ 105               	copysign:
+ 106               		.stabd	46,0,0
+ 108               	.Ltext1:
    1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** /* Copyright (c) 2002,2007 Michael Stumpf
    2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
    3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****    Portions of documentation Copyright (c) 1990 - 1994
@@ -344,29 +345,31 @@
  331:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** __ATTR_CONST__ extern inline double copysign (double __x, double __y)
  332:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** {
  333:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ (
- 108               	.LM0:
- 109               	.LFBB1:
- 110               	/* prologue: function */
- 111               	/* frame size = 0 */
- 113               	.LM1:
- 114               	/* #APP */
- 115               	 ;  333 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
- 116 0000 57FB      		bst	r21, 7	
- 117 0002 97F9      		bld	r25, 7	
- 118               	 ;  0 "" 2
- 119               	/* epilogue start */
+ 110               	.LM0:
+ 111               	.LFBB1:
+ 112               	/* prologue: function */
+ 113               	/* frame size = 0 */
+ 115               	.LM1:
+ 116               	/* #APP */
+ 117               	 ;  333 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
+ 118 0000 57FB      		bst	r21, 7	
+ 119 0002 97F9      		bld	r25, 7	
+ 120               	 ;  0 "" 2
+ 121               	/* epilogue start */
  334:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"bst	%D2, 7	\n\t"
  335:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"bld	%D0, 7	"
  336:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "=r" (__x)
  337:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "0" (__x), "r" (__y) );
  338:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __x;
  339:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** }
- 121               	.LM2:
- 122               	/* #NOAPP */
- 123 0004 0895      		ret
- 125               	.Lscope1:
- 128               	.global	isfinite
- 130               	isfinite:
+ 123               	.LM2:
+ 124               	/* #NOAPP */
+ 125 0004 0895      		ret
+ 127               	.Lscope1:
+ 129               		.stabd	78,0,0
+ 132               	.global	isfinite
+ 134               	isfinite:
+ 135               		.stabd	46,0,0
  340:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 
  341:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   /**
  342:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****      \ingroup avr_math
@@ -434,28 +437,28 @@
  404:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****   */
  405:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** __ATTR_CONST__ extern inline int isfinite (double __x)
  406:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** {
- 132               	.LM3:
- 133               	.LFBB2:
- 134               	/* prologue: function */
- 135               	/* frame size = 0 */
+ 137               	.LM3:
+ 138               	.LFBB2:
+ 139               	/* prologue: function */
+ 140               	/* frame size = 0 */
  407:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     unsigned char __exp;
  408:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     __asm__ (
- 137               	.LM4:
- 138               	/* #APP */
- 139               	 ;  408 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
- 140 0006 682F      		mov	r22, r24		
- 141 0008 660F      		lsl	r22		
- 142 000a 692F      		mov	r22, r25		
- 143 000c 661F      		rol	r22		
- 144               	 ;  0 "" 2
- 145               	/* #NOAPP */
- 146 000e 20E0      		ldi r18,lo8(0)
- 147 0010 30E0      		ldi r19,hi8(0)
- 148 0012 6F3F      		cpi r22,lo8(-1)
- 149 0014 01F0      		breq .L4
- 150 0016 21E0      		ldi r18,lo8(1)
- 151 0018 30E0      		ldi r19,hi8(1)
- 152               	.L4:
+ 142               	.LM4:
+ 143               	/* #APP */
+ 144               	 ;  408 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h" 1
+ 145 0006 682F      		mov	r22, r24		
+ 146 0008 660F      		lsl	r22		
+ 147 000a 692F      		mov	r22, r25		
+ 148 000c 661F      		rol	r22		
+ 149               	 ;  0 "" 2
+ 150               	/* #NOAPP */
+ 151 000e 20E0      		ldi r18,lo8(0)
+ 152 0010 30E0      		ldi r19,hi8(0)
+ 153 0012 6F3F      		cpi r22,lo8(-1)
+ 154 0014 01F0      		breq .L4
+ 155 0016 21E0      		ldi r18,lo8(1)
+ 156 0018 30E0      		ldi r19,hi8(1)
+ 157               	.L4:
  409:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"mov	%0, %C1		\n\t"
  410:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"lsl	%0		\n\t"
  411:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	"mov	%0, %D1		\n\t"
@@ -464,14 +467,16 @@
  414:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** 	: "r" (__x)	);
  415:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h ****     return __exp != 0xff;
  416:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/math.h **** }
- 154               	.LM5:
- 155 001a C901      		movw r24,r18
- 156               	/* epilogue start */
- 157 001c 0895      		ret
- 162               	.Lscope2:
- 166               	.global	max
- 168               	max:
- 170               	.Ltext2:
+ 159               	.LM5:
+ 160 001a C901      		movw r24,r18
+ 161               	/* epilogue start */
+ 162 001c 0895      		ret
+ 167               	.Lscope2:
+ 169               		.stabd	78,0,0
+ 173               	.global	max
+ 175               	max:
+ 176               		.stabd	46,0,0
+ 178               	.Ltext2:
    1:adc.c         **** /*
    2:adc.c         **** Controls and Provides access to the Analog to Digital Converter (ADC) subsystem of the avr
    3:adc.c         **** */
@@ -489,12 +494,12 @@
   15:adc.c         **** #include <string.h>
   16:adc.c         **** 
   17:adc.c         **** uint8_t max(uint16_t val[],uint8_t sz) {
- 172               	.LM6:
- 173               	.LFBB3:
- 174               	/* prologue: function */
- 175               	/* frame size = 0 */
- 176 001e 862F      		mov r24,r22
- 177               	/* epilogue start */
+ 180               	.LM6:
+ 181               	.LFBB3:
+ 182               	/* prologue: function */
+ 183               	/* frame size = 0 */
+ 184 001e 862F      		mov r24,r22
+ 185               	/* epilogue start */
   18:adc.c         **** 	uint8_t tmpi=sz,tmpv=0;
   19:adc.c         **** 	for(uint8_t c=0;c<sz;++c)
   20:adc.c         **** 		if (val[c]<tmpv) {
@@ -503,11 +508,13 @@
   23:adc.c         **** 		}
   24:adc.c         **** 	return tmpi;
   25:adc.c         **** }
- 179               	.LM7:
- 180 0020 0895      		ret
- 182               	.Lscope3:
- 185               	.global	adc_get_val
- 187               	adc_get_val:
+ 187               	.LM7:
+ 188 0020 0895      		ret
+ 190               	.Lscope3:
+ 192               		.stabd	78,0,0
+ 195               	.global	adc_get_val
+ 197               	adc_get_val:
+ 198               		.stabd	46,0,0
   26:adc.c         **** 
   27:adc.c         **** void print_adc_values() {
   28:adc.c         **** 	fprintf_P(stderr,PSTR("\n[debug]   RAW ADC: "));
@@ -527,35 +534,37 @@
   42:adc.c         **** 
   43:adc.c         **** 
   44:adc.c         **** uint16_t adc_get_val(uint8_t ch) {
- 189               	.LM8:
- 190               	.LFBB4:
- 191               	/* prologue: function */
- 192               	/* frame size = 0 */
+ 200               	.LM8:
+ 201               	.LFBB4:
+ 202               	/* prologue: function */
+ 203               	/* frame size = 0 */
   45:adc.c         **** 	return adc_val[ch]+adc_offset[ch];
- 194               	.LM9:
- 195 0022 E82F      		mov r30,r24
- 196 0024 F0E0      		ldi r31,lo8(0)
- 197 0026 EE0F      		lsl r30
- 198 0028 FF1F      		rol r31
- 199 002a DF01      		movw r26,r30
- 200 002c A050      		subi r26,lo8(-(adc_val))
- 201 002e B040      		sbci r27,hi8(-(adc_val))
- 202 0030 E050      		subi r30,lo8(-(adc_offset))
- 203 0032 F040      		sbci r31,hi8(-(adc_offset))
- 204 0034 2081      		ld r18,Z
- 205 0036 3181      		ldd r19,Z+1
- 206 0038 8D91      		ld r24,X+
- 207 003a 9C91      		ld r25,X
- 208 003c 280F      		add r18,r24
- 209 003e 391F      		adc r19,r25
+ 205               	.LM9:
+ 206 0022 E82F      		mov r30,r24
+ 207 0024 F0E0      		ldi r31,lo8(0)
+ 208 0026 EE0F      		lsl r30
+ 209 0028 FF1F      		rol r31
+ 210 002a DF01      		movw r26,r30
+ 211 002c A050      		subi r26,lo8(-(adc_val))
+ 212 002e B040      		sbci r27,hi8(-(adc_val))
+ 213 0030 E050      		subi r30,lo8(-(adc_offset))
+ 214 0032 F040      		sbci r31,hi8(-(adc_offset))
+ 215 0034 2081      		ld r18,Z
+ 216 0036 3181      		ldd r19,Z+1
+ 217 0038 8D91      		ld r24,X+
+ 218 003a 9C91      		ld r25,X
+ 219 003c 280F      		add r18,r24
+ 220 003e 391F      		adc r19,r25
   46:adc.c         **** }
- 211               	.LM10:
- 212 0040 C901      		movw r24,r18
- 213               	/* epilogue start */
- 214 0042 0895      		ret
- 216               	.Lscope4:
- 219               	.global	adc_set_channel
- 221               	adc_set_channel:
+ 222               	.LM10:
+ 223 0040 C901      		movw r24,r18
+ 224               	/* epilogue start */
+ 225 0042 0895      		ret
+ 227               	.Lscope4:
+ 229               		.stabd	78,0,0
+ 232               	.global	adc_set_channel
+ 234               	adc_set_channel:
+ 235               		.stabd	46,0,0
   47:adc.c         **** 
   48:adc.c         **** static uint8_t num_calibrations;
   49:adc.c         **** void adc_calibrate_update() {
@@ -640,138 +649,141 @@
  128:adc.c         **** }
  129:adc.c         **** 
  130:adc.c         **** void adc_set_channel(uint8_t channel) {
- 223               	.LM11:
- 224               	.LFBB5:
- 225               	/* prologue: function */
- 226               	/* frame size = 0 */
+ 237               	.LM11:
+ 238               	.LFBB5:
+ 239               	/* prologue: function */
+ 240               	/* frame size = 0 */
  131:adc.c         **** 	//Prescale reset on each "trigger event"s
  132:adc.c         **** 	//From Data Sheet: (Switching to Free Running mode (ADTS[2:0]=0) will)
  133:adc.c         **** 	//(not cause a trigger event, even if the ADC Interrupt Flag is set.)
  134:adc.c         **** 	ADMUX  = (uint8_t)((uint8_t)(ADMUX &0b11100000)|channels[channel]);
- 228               	.LM12:
- 229 0044 ACE7      		ldi r26,lo8(124)
- 230 0046 B0E0      		ldi r27,hi8(124)
- 231 0048 9C91      		ld r25,X
- 232 004a E0E0      		ldi r30,lo8(channels)
- 233 004c F0E0      		ldi r31,hi8(channels)
- 234 004e E80F      		add r30,r24
- 235 0050 F11D      		adc r31,__zero_reg__
- 236 0052 907E      		andi r25,lo8(-32)
- 237 0054 8081      		ld r24,Z
- 238 0056 982B      		or r25,r24
- 239 0058 9C93      		st X,r25
- 240               	/* epilogue start */
+ 242               	.LM12:
+ 243 0044 ACE7      		ldi r26,lo8(124)
+ 244 0046 B0E0      		ldi r27,hi8(124)
+ 245 0048 9C91      		ld r25,X
+ 246 004a E0E0      		ldi r30,lo8(channels)
+ 247 004c F0E0      		ldi r31,hi8(channels)
+ 248 004e E80F      		add r30,r24
+ 249 0050 F11D      		adc r31,__zero_reg__
+ 250 0052 907E      		andi r25,lo8(-32)
+ 251 0054 8081      		ld r24,Z
+ 252 0056 982B      		or r25,r24
+ 253 0058 9C93      		st X,r25
+ 254               	/* epilogue start */
  135:adc.c         **** 	//print_adc_values();
  136:adc.c         **** 	//printf("V - chan %X\n",channel);
  137:adc.c         **** }
- 242               	.LM13:
- 243 005a 0895      		ret
- 245               	.Lscope5:
- 247               	.global	__vector_19
- 249               	__vector_19:
+ 256               	.LM13:
+ 257 005a 0895      		ret
+ 259               	.Lscope5:
+ 261               		.stabd	78,0,0
+ 263               	.global	__vector_19
+ 265               	__vector_19:
+ 266               		.stabd	46,0,0
  138:adc.c         **** 
  139:adc.c         **** //ADC Interupt handler
  140:adc.c         **** ISR(ADC_vect) {
- 251               	.LM14:
- 252               	.LFBB6:
- 253 005c 1F92      		push __zero_reg__
- 254 005e 0F92      		push r0
- 255 0060 0FB6      		in r0,__SREG__
- 256 0062 0F92      		push r0
- 257 0064 1124      		clr __zero_reg__
- 258 0066 2F93      		push r18
- 259 0068 3F93      		push r19
- 260 006a 4F93      		push r20
- 261 006c 5F93      		push r21
- 262 006e 8F93      		push r24
- 263 0070 9F93      		push r25
- 264 0072 AF93      		push r26
- 265 0074 BF93      		push r27
- 266 0076 EF93      		push r30
- 267 0078 FF93      		push r31
- 268               	/* prologue: Signal */
- 269               	/* frame size = 0 */
+ 268               	.LM14:
+ 269               	.LFBB6:
+ 270 005c 1F92      		push __zero_reg__
+ 271 005e 0F92      		push r0
+ 272 0060 0FB6      		in r0,__SREG__
+ 273 0062 0F92      		push r0
+ 274 0064 1124      		clr __zero_reg__
+ 275 0066 2F93      		push r18
+ 276 0068 3F93      		push r19
+ 277 006a 4F93      		push r20
+ 278 006c 8F93      		push r24
+ 279 006e 9F93      		push r25
+ 280 0070 AF93      		push r26
+ 281 0072 BF93      		push r27
+ 282 0074 EF93      		push r30
+ 283 0076 FF93      		push r31
+ 284               	/* prologue: Signal */
+ 285               	/* frame size = 0 */
  141:adc.c         **** 	// New conversion has already started.
  142:adc.c         **** 	uint16_t adc_value;
  143:adc.c         **** 	adc_value  =  ADCL;  
- 271               	.LM15:
- 272 007a 5091 7800 		lds r21,120
+ 287               	.LM15:
+ 288 0078 4091 7800 		lds r20,120
  144:adc.c         **** 	adc_value += (ADCH<<8);
- 274               	.LM16:
- 275 007e 4091 7900 		lds r20,121
+ 290               	.LM16:
+ 291 007c 3091 7900 		lds r19,121
  145:adc.c         **** 	uint8_t real_channel;
  146:adc.c         **** 	static uint8_t ct;
  147:adc.c         **** 	++ct;
- 277               	.LM17:
- 278 0082 3091 0000 		lds r19,ct.1881
- 279 0086 3F5F      		subi r19,lo8(-(1))
- 280 0088 3093 0000 		sts ct.1881,r19
+ 293               	.LM17:
+ 294 0080 2091 0000 		lds r18,ct.1883
+ 295 0084 2F5F      		subi r18,lo8(-(1))
+ 296 0086 2093 0000 		sts ct.1883,r18
  148:adc.c         **** 
  149:adc.c         **** 	// the curr_ch now has the chan of the on going conversion, we need the last one
  150:adc.c         **** 	if (curr_ch==0)	real_channel = channel_amt-1; //curr_ch==0 
- 282               	.LM18:
- 283 008c 2091 0000 		lds r18,curr_ch
- 284 0090 2223      		tst r18
- 285 0092 01F4      		brne .L13
- 286 0094 E3E0      		ldi r30,lo8(3)
- 287 0096 00C0      		rjmp .L14
- 288               	.L13:
+ 298               	.LM18:
+ 299 008a 8091 0000 		lds r24,curr_ch
+ 300 008e 8823      		tst r24
+ 301 0090 01F4      		brne .L13
+ 302 0092 E3E0      		ldi r30,lo8(3)
+ 303 0094 00C0      		rjmp .L14
+ 304               	.L13:
  151:adc.c         **** 	else		real_channel = curr_ch-1;
- 290               	.LM19:
- 291 0098 E22F      		mov r30,r18
- 292 009a E150      		subi r30,lo8(-(-1))
- 293               	.L14:
+ 306               	.LM19:
+ 307 0096 E091 0000 		lds r30,curr_ch
+ 308 009a E150      		subi r30,lo8(-(-1))
+ 309               	.L14:
  152:adc.c         **** 
  153:adc.c         **** 	adc_val[real_channel] = adc_value;
- 295               	.LM20:
- 296 009c F0E0      		ldi r31,lo8(0)
- 297 009e EE0F      		lsl r30
- 298 00a0 FF1F      		rol r31
- 299 00a2 DF01      		movw r26,r30
- 300 00a4 A050      		subi r26,lo8(-(adc_val))
- 301 00a6 B040      		sbci r27,hi8(-(adc_val))
- 302 00a8 942F      		mov r25,r20
- 303 00aa 80E0      		ldi r24,lo8(0)
- 304 00ac 850F      		add r24,r21
- 305 00ae 911D      		adc r25,__zero_reg__
- 306 00b0 8D93      		st X+,r24
- 307 00b2 9C93      		st X,r25
+ 311               	.LM20:
+ 312 009c F0E0      		ldi r31,lo8(0)
+ 313 009e EE0F      		lsl r30
+ 314 00a0 FF1F      		rol r31
+ 315 00a2 DF01      		movw r26,r30
+ 316 00a4 A050      		subi r26,lo8(-(adc_val))
+ 317 00a6 B040      		sbci r27,hi8(-(adc_val))
+ 318 00a8 932F      		mov r25,r19
+ 319 00aa 80E0      		ldi r24,lo8(0)
+ 320 00ac 840F      		add r24,r20
+ 321 00ae 911D      		adc r25,__zero_reg__
+ 322 00b0 8D93      		st X+,r24
+ 323 00b2 9C93      		st X,r25
  154:adc.c         **** 	++adc_amt[real_channel];
- 309               	.LM21:
- 310 00b4 E050      		subi r30,lo8(-(adc_amt))
- 311 00b6 F040      		sbci r31,hi8(-(adc_amt))
- 312 00b8 8081      		ld r24,Z
- 313 00ba 9181      		ldd r25,Z+1
- 314 00bc 0196      		adiw r24,1
- 315 00be 9183      		std Z+1,r25
- 316 00c0 8083      		st Z,r24
+ 325               	.LM21:
+ 326 00b4 E050      		subi r30,lo8(-(adc_amt))
+ 327 00b6 F040      		sbci r31,hi8(-(adc_amt))
+ 328 00b8 8081      		ld r24,Z
+ 329 00ba 9181      		ldd r25,Z+1
+ 330 00bc 0196      		adiw r24,1
+ 331 00be 9183      		std Z+1,r25
+ 332 00c0 8083      		st Z,r24
  155:adc.c         **** 
  156:adc.c         **** 	// Change the channel for the conversion after the one currently processing.
  157:adc.c         **** 	if (++curr_ch >= channel_amt)	curr_ch = 0;
- 318               	.LM22:
- 319 00c2 822F      		mov r24,r18
- 320 00c4 8F5F      		subi r24,lo8(-(1))
- 321 00c6 8093 0000 		sts curr_ch,r24
- 322 00ca 8430      		cpi r24,lo8(4)
- 323 00cc 00F0      		brlo .L15
- 324 00ce 1092 0000 		sts curr_ch,__zero_reg__
- 325               	.L15:
- 326               	.LBB19:
- 327               	.LBB20:
- 329               	.LM23:
- 330 00d2 9091 7C00 		lds r25,124
- 331 00d6 E091 0000 		lds r30,curr_ch
- 332 00da F0E0      		ldi r31,lo8(0)
- 333 00dc E050      		subi r30,lo8(-(channels))
- 334 00de F040      		sbci r31,hi8(-(channels))
- 335 00e0 907E      		andi r25,lo8(-32)
- 336 00e2 8081      		ld r24,Z
- 337 00e4 982B      		or r25,r24
- 338 00e6 9093 7C00 		sts 124,r25
- 339               	.LBE20:
- 340               	.LBE19:
+ 334               	.LM22:
+ 335 00c2 8091 0000 		lds r24,curr_ch
+ 336 00c6 8F5F      		subi r24,lo8(-(1))
+ 337 00c8 8093 0000 		sts curr_ch,r24
+ 338 00cc 8091 0000 		lds r24,curr_ch
+ 339 00d0 8430      		cpi r24,lo8(4)
+ 340 00d2 00F0      		brlo .L15
+ 341 00d4 1092 0000 		sts curr_ch,__zero_reg__
+ 342               	.L15:
  158:adc.c         **** 	
  159:adc.c         **** 	adc_set_channel(curr_ch);
+ 344               	.LM23:
+ 345 00d8 E091 0000 		lds r30,curr_ch
+ 346               	.LBB19:
+ 347               	.LBB20:
+ 349               	.LM24:
+ 350 00dc 8091 7C00 		lds r24,124
+ 351 00e0 F0E0      		ldi r31,lo8(0)
+ 352 00e2 E050      		subi r30,lo8(-(channels))
+ 353 00e4 F040      		sbci r31,hi8(-(channels))
+ 354 00e6 807E      		andi r24,lo8(-32)
+ 355 00e8 9081      		ld r25,Z
+ 356 00ea 892B      		or r24,r25
+ 357 00ec 8093 7C00 		sts 124,r24
+ 358               	.LBE20:
+ 359               	.LBE19:
  160:adc.c         **** 	
  161:adc.c         **** 	//printf("adc_value: %d",adc_value);
  162:adc.c         **** 	
@@ -779,146 +791,147 @@
  164:adc.c         **** 	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
  165:adc.c         **** 	
  166:adc.c         **** 	if (!(ct%channel_amt)) {
- 342               	.LM24:
- 343 00ea 832F      		mov r24,r19
- 344 00ec 90E0      		ldi r25,lo8(0)
- 345 00ee 8370      		andi r24,lo8(3)
- 346 00f0 9070      		andi r25,hi8(3)
- 347 00f2 892B      		or r24,r25
- 348 00f4 01F4      		brne .L17
+ 361               	.LM25:
+ 362 00f0 822F      		mov r24,r18
+ 363 00f2 90E0      		ldi r25,lo8(0)
+ 364 00f4 8370      		andi r24,lo8(3)
+ 365 00f6 9070      		andi r25,hi8(3)
+ 366 00f8 892B      		or r24,r25
+ 367 00fa 01F4      		brne .L17
  167:adc.c         **** 		new_adc_data=true;//all values have been recalculated, update motors.
- 350               	.LM25:
- 351 00f6 81E0      		ldi r24,lo8(1)
- 352 00f8 8093 0000 		sts new_adc_data,r24
- 353               	.L17:
- 354               	/* epilogue start */
+ 369               	.LM26:
+ 370 00fc 81E0      		ldi r24,lo8(1)
+ 371 00fe 8093 0000 		sts new_adc_data,r24
+ 372               	.L17:
+ 373               	/* epilogue start */
  168:adc.c         **** 	}
  169:adc.c         **** }
- 356               	.LM26:
- 357 00fc FF91      		pop r31
- 358 00fe EF91      		pop r30
- 359 0100 BF91      		pop r27
- 360 0102 AF91      		pop r26
- 361 0104 9F91      		pop r25
- 362 0106 8F91      		pop r24
- 363 0108 5F91      		pop r21
- 364 010a 4F91      		pop r20
- 365 010c 3F91      		pop r19
- 366 010e 2F91      		pop r18
- 367 0110 0F90      		pop r0
- 368 0112 0FBE      		out __SREG__,r0
- 369 0114 0F90      		pop r0
- 370 0116 1F90      		pop __zero_reg__
- 371 0118 1895      		reti
- 377               	.Lscope6:
- 379               	.global	adc_init
- 381               	adc_init:
- 383               	.LM27:
- 384               	.LFBB7:
- 385 011a EF92      		push r14
- 386 011c FF92      		push r15
- 387 011e 0F93      		push r16
- 388 0120 1F93      		push r17
- 389               	/* prologue: function */
- 390               	/* frame size = 0 */
- 392               	.LM28:
- 393 0122 80E0      		ldi r24,lo8(__c.1821)
- 394 0124 90E0      		ldi r25,hi8(__c.1821)
- 395 0126 9F93      		push r25
- 396 0128 8F93      		push r24
- 397 012a 8091 0000 		lds r24,__iob+4
- 398 012e 9091 0000 		lds r25,(__iob+4)+1
- 399 0132 9F93      		push r25
- 400 0134 8F93      		push r24
- 401 0136 0E94 0000 		call fprintf_P
- 403               	.LM29:
- 404 013a E4E6      		ldi r30,lo8(100)
- 405 013c F0E0      		ldi r31,hi8(100)
- 406 013e 8081      		ld r24,Z
- 407 0140 8E7F      		andi r24,lo8(-2)
- 408 0142 8083      		st Z,r24
- 410               	.LM30:
- 411 0144 0CE7      		ldi r16,lo8(124)
- 412 0146 10E0      		ldi r17,hi8(124)
- 413 0148 F801      		movw r30,r16
- 414 014a 8081      		ld r24,Z
- 415 014c 8064      		ori r24,lo8(64)
- 416 014e 8083      		st Z,r24
- 418               	.LM31:
- 419 0150 8081      		ld r24,Z
- 420 0152 8F77      		andi r24,lo8(127)
- 421 0154 8083      		st Z,r24
- 423               	.LM32:
- 424 0156 2AE7      		ldi r18,lo8(122)
- 425 0158 E22E      		mov r14,r18
- 426 015a F12C      		mov r15,__zero_reg__
- 427 015c F701      		movw r30,r14
- 428 015e 8081      		ld r24,Z
- 429 0160 886A      		ori r24,lo8(-88)
- 430 0162 8083      		st Z,r24
- 432               	.LM33:
- 433 0164 8081      		ld r24,Z
- 434 0166 887F      		andi r24,lo8(-8)
- 435 0168 8660      		ori r24,lo8(6)
- 436 016a 8083      		st Z,r24
- 438               	.LM34:
- 439 016c EBE7      		ldi r30,lo8(123)
- 440 016e F0E0      		ldi r31,hi8(123)
- 441 0170 8081      		ld r24,Z
- 442 0172 8068      		ori r24,lo8(-128)
- 443 0174 8083      		st Z,r24
- 445               	.LM35:
- 446 0176 8081      		ld r24,Z
- 447 0178 887F      		andi r24,lo8(-8)
- 448 017a 8083      		st Z,r24
- 450               	.LM36:
- 451 017c EEE7      		ldi r30,lo8(126)
- 452 017e F0E0      		ldi r31,hi8(126)
- 453 0180 8081      		ld r24,Z
- 454 0182 806F      		ori r24,lo8(-16)
- 455 0184 8083      		st Z,r24
- 457               	.LM37:
- 458 0186 83B7      		in r24,83-0x20
- 459 0188 817F      		andi r24,lo8(-15)
- 460 018a 8260      		ori r24,lo8(2)
- 461 018c 83BF      		out 83-0x20,r24
- 463               	.LM38:
- 464 018e 80E0      		ldi r24,lo8(__c.1823)
- 465 0190 90E0      		ldi r25,hi8(__c.1823)
- 466 0192 9F93      		push r25
- 467 0194 8F93      		push r24
- 468 0196 8091 0000 		lds r24,__iob+4
- 469 019a 9091 0000 		lds r25,(__iob+4)+1
- 470 019e 9F93      		push r25
- 471 01a0 8F93      		push r24
- 472 01a2 0E94 0000 		call fprintf_P
- 474               	.LM39:
- 475 01a6 2091 0000 		lds r18,curr_ch
- 476               	.LBB21:
- 477               	.LBB22:
- 479               	.LM40:
- 480 01aa F801      		movw r30,r16
- 481 01ac 8081      		ld r24,Z
- 482 01ae A0E0      		ldi r26,lo8(channels)
- 483 01b0 B0E0      		ldi r27,hi8(channels)
- 484 01b2 FD01      		movw r30,r26
- 485 01b4 E20F      		add r30,r18
- 486 01b6 F11D      		adc r31,__zero_reg__
- 487 01b8 807E      		andi r24,lo8(-32)
- 488 01ba 9081      		ld r25,Z
- 489 01bc 892B      		or r24,r25
- 490 01be F801      		movw r30,r16
- 491 01c0 8083      		st Z,r24
- 492               	.LBE22:
- 493               	.LBE21:
- 495               	.LM41:
- 496 01c2 F701      		movw r30,r14
- 497 01c4 8081      		ld r24,Z
- 498 01c6 8064      		ori r24,lo8(64)
- 499 01c8 8083      		st Z,r24
- 500               	.LBB23:
- 501               	.LBB24:
- 503               	.Ltext3:
+ 375               	.LM27:
+ 376 0102 FF91      		pop r31
+ 377 0104 EF91      		pop r30
+ 378 0106 BF91      		pop r27
+ 379 0108 AF91      		pop r26
+ 380 010a 9F91      		pop r25
+ 381 010c 8F91      		pop r24
+ 382 010e 4F91      		pop r20
+ 383 0110 3F91      		pop r19
+ 384 0112 2F91      		pop r18
+ 385 0114 0F90      		pop r0
+ 386 0116 0FBE      		out __SREG__,r0
+ 387 0118 0F90      		pop r0
+ 388 011a 1F90      		pop __zero_reg__
+ 389 011c 1895      		reti
+ 395               	.Lscope6:
+ 397               		.stabd	78,0,0
+ 399               	.global	adc_init
+ 401               	adc_init:
+ 402               		.stabd	46,0,0
+ 404               	.LM28:
+ 405               	.LFBB7:
+ 406 011e EF92      		push r14
+ 407 0120 FF92      		push r15
+ 408 0122 0F93      		push r16
+ 409 0124 1F93      		push r17
+ 410               	/* prologue: function */
+ 411               	/* frame size = 0 */
+ 413               	.LM29:
+ 414 0126 80E0      		ldi r24,lo8(__c.1821)
+ 415 0128 90E0      		ldi r25,hi8(__c.1821)
+ 416 012a 9F93      		push r25
+ 417 012c 8F93      		push r24
+ 418 012e 8091 0000 		lds r24,__iob+4
+ 419 0132 9091 0000 		lds r25,(__iob+4)+1
+ 420 0136 9F93      		push r25
+ 421 0138 8F93      		push r24
+ 422 013a 0E94 0000 		call fprintf_P
+ 424               	.LM30:
+ 425 013e E4E6      		ldi r30,lo8(100)
+ 426 0140 F0E0      		ldi r31,hi8(100)
+ 427 0142 8081      		ld r24,Z
+ 428 0144 8E7F      		andi r24,lo8(-2)
+ 429 0146 8083      		st Z,r24
+ 431               	.LM31:
+ 432 0148 0CE7      		ldi r16,lo8(124)
+ 433 014a 10E0      		ldi r17,hi8(124)
+ 434 014c F801      		movw r30,r16
+ 435 014e 8081      		ld r24,Z
+ 436 0150 8064      		ori r24,lo8(64)
+ 437 0152 8083      		st Z,r24
+ 439               	.LM32:
+ 440 0154 8081      		ld r24,Z
+ 441 0156 8F77      		andi r24,lo8(127)
+ 442 0158 8083      		st Z,r24
+ 444               	.LM33:
+ 445 015a 2AE7      		ldi r18,lo8(122)
+ 446 015c E22E      		mov r14,r18
+ 447 015e F12C      		mov r15,__zero_reg__
+ 448 0160 F701      		movw r30,r14
+ 449 0162 8081      		ld r24,Z
+ 450 0164 886A      		ori r24,lo8(-88)
+ 451 0166 8083      		st Z,r24
+ 453               	.LM34:
+ 454 0168 8081      		ld r24,Z
+ 455 016a 887F      		andi r24,lo8(-8)
+ 456 016c 8660      		ori r24,lo8(6)
+ 457 016e 8083      		st Z,r24
+ 459               	.LM35:
+ 460 0170 EBE7      		ldi r30,lo8(123)
+ 461 0172 F0E0      		ldi r31,hi8(123)
+ 462 0174 8081      		ld r24,Z
+ 463 0176 8068      		ori r24,lo8(-128)
+ 464 0178 8083      		st Z,r24
+ 466               	.LM36:
+ 467 017a 8081      		ld r24,Z
+ 468 017c 887F      		andi r24,lo8(-8)
+ 469 017e 8083      		st Z,r24
+ 471               	.LM37:
+ 472 0180 EEE7      		ldi r30,lo8(126)
+ 473 0182 F0E0      		ldi r31,hi8(126)
+ 474 0184 8081      		ld r24,Z
+ 475 0186 806F      		ori r24,lo8(-16)
+ 476 0188 8083      		st Z,r24
+ 478               	.LM38:
+ 479 018a 83B7      		in r24,83-0x20
+ 480 018c 817F      		andi r24,lo8(-15)
+ 481 018e 8260      		ori r24,lo8(2)
+ 482 0190 83BF      		out 83-0x20,r24
+ 484               	.LM39:
+ 485 0192 80E0      		ldi r24,lo8(__c.1823)
+ 486 0194 90E0      		ldi r25,hi8(__c.1823)
+ 487 0196 9F93      		push r25
+ 488 0198 8F93      		push r24
+ 489 019a 8091 0000 		lds r24,__iob+4
+ 490 019e 9091 0000 		lds r25,(__iob+4)+1
+ 491 01a2 9F93      		push r25
+ 492 01a4 8F93      		push r24
+ 493 01a6 0E94 0000 		call fprintf_P
+ 495               	.LM40:
+ 496 01aa 9091 0000 		lds r25,curr_ch
+ 497               	.LBB21:
+ 498               	.LBB22:
+ 500               	.LM41:
+ 501 01ae F801      		movw r30,r16
+ 502 01b0 8081      		ld r24,Z
+ 503 01b2 A0E0      		ldi r26,lo8(channels)
+ 504 01b4 B0E0      		ldi r27,hi8(channels)
+ 505 01b6 FD01      		movw r30,r26
+ 506 01b8 E90F      		add r30,r25
+ 507 01ba F11D      		adc r31,__zero_reg__
+ 508 01bc 807E      		andi r24,lo8(-32)
+ 509 01be 9081      		ld r25,Z
+ 510 01c0 892B      		or r24,r25
+ 511 01c2 F801      		movw r30,r16
+ 512 01c4 8083      		st Z,r24
+ 513               	.LBE22:
+ 514               	.LBE21:
+ 516               	.LM42:
+ 517 01c6 F701      		movw r30,r14
+ 518 01c8 8081      		ld r24,Z
+ 519 01ca 8064      		ori r24,lo8(64)
+ 520 01cc 8083      		st Z,r24
+ 521               	.LBB23:
+ 522               	.LBB24:
+ 524               	.Ltext3:
    1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
    2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
    3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h ****    All rights reserved.
@@ -1024,611 +1037,624 @@
  103:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
  104:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** {
  105:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
- 505               	.LM42:
- 506 01ca 80E0      		ldi r24,lo8(0)
- 507 01cc 90E0      		ldi r25,hi8(0)
- 508               	/* #APP */
- 509               	 ;  105 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h" 1
- 510 01ce 0197      		1: sbiw r24,1
- 511 01d0 01F4      		brne 1b
- 512               	 ;  0 "" 2
- 513               	/* #NOAPP */
- 514               	.LBE24:
- 515               	.LBE23:
- 517               	.Ltext4:
- 519               	.LM43:
- 520 01d2 2F5F      		subi r18,lo8(-(1))
- 521 01d4 2093 0000 		sts curr_ch,r18
- 522               	.LBB25:
- 523               	.LBB26:
- 525               	.LM44:
- 526 01d8 F801      		movw r30,r16
- 527 01da 8081      		ld r24,Z
- 528 01dc A20F      		add r26,r18
- 529 01de B11D      		adc r27,__zero_reg__
- 530 01e0 807E      		andi r24,lo8(-32)
- 531 01e2 9C91      		ld r25,X
- 532 01e4 892B      		or r24,r25
- 533 01e6 8083      		st Z,r24
- 534               	.LBE26:
- 535               	.LBE25:
- 537               	.LM45:
- 538 01e8 80E0      		ldi r24,lo8(__c.1825)
- 539 01ea 90E0      		ldi r25,hi8(__c.1825)
- 540 01ec 9F93      		push r25
- 541 01ee 8F93      		push r24
- 542 01f0 8091 0000 		lds r24,__iob+4
- 543 01f4 9091 0000 		lds r25,(__iob+4)+1
- 544 01f8 9F93      		push r25
- 545 01fa 8F93      		push r24
- 546 01fc 0E94 0000 		call fprintf_P
- 547 0200 8DB7      		in r24,__SP_L__
- 548 0202 9EB7      		in r25,__SP_H__
- 549 0204 0C96      		adiw r24,12
- 550 0206 0FB6      		in __tmp_reg__,__SREG__
- 551 0208 F894      		cli
- 552 020a 9EBF      		out __SP_H__,r25
- 553 020c 0FBE      		out __SREG__,__tmp_reg__
- 554 020e 8DBF      		out __SP_L__,r24
- 555               	/* epilogue start */
- 557               	.LM46:
- 558 0210 1F91      		pop r17
- 559 0212 0F91      		pop r16
- 560 0214 FF90      		pop r15
- 561 0216 EF90      		pop r14
- 562 0218 0895      		ret
- 567               	.Lscope7:
- 569               	.global	adc_calibrate_store
- 571               	adc_calibrate_store:
- 573               	.LM47:
- 574               	.LFBB8:
- 575               	/* prologue: function */
- 576               	/* frame size = 0 */
- 578               	.LM48:
- 579 021a 80E0      		ldi r24,lo8(__c.1814)
- 580 021c 90E0      		ldi r25,hi8(__c.1814)
- 581 021e 9F93      		push r25
- 582 0220 8F93      		push r24
- 583 0222 8091 0000 		lds r24,__iob+4
- 584 0226 9091 0000 		lds r25,(__iob+4)+1
- 585 022a 9F93      		push r25
- 586 022c 8F93      		push r24
- 587 022e 0E94 0000 		call fprintf_P
- 588 0232 0F90      		pop __tmp_reg__
- 589 0234 0F90      		pop __tmp_reg__
- 590 0236 0F90      		pop __tmp_reg__
- 591 0238 0F90      		pop __tmp_reg__
- 592               	/* epilogue start */
- 594               	.LM49:
- 595 023a 0895      		ret
- 597               	.Lscope8:
- 599               	.global	adc_calibrate_clear
- 601               	adc_calibrate_clear:
- 603               	.LM50:
- 604               	.LFBB9:
- 605               	/* prologue: function */
- 606               	/* frame size = 0 */
- 608               	.LM51:
- 609 023c 88E0      		ldi r24,lo8(8)
- 610 023e E0E0      		ldi r30,lo8(adc_offset)
- 611 0240 F0E0      		ldi r31,hi8(adc_offset)
- 612 0242 DF01      		movw r26,r30
- 613 0244 1D92      		st X+,__zero_reg__
- 614 0246 8A95      	        dec r24
- 615 0248 01F4      		brne .-6
- 617               	.LM52:
- 618 024a 1092 0000 		sts num_calibrations,__zero_reg__
- 619               	/* epilogue start */
- 621               	.LM53:
- 622 024e 0895      		ret
- 624               	.Lscope9:
- 626               	.global	adc_calibrate_update
- 628               	adc_calibrate_update:
- 630               	.LM54:
- 631               	.LFBB10:
- 632 0250 CF92      		push r12
- 633 0252 DF92      		push r13
- 634 0254 EF92      		push r14
- 635 0256 FF92      		push r15
- 636 0258 0F93      		push r16
- 637 025a 1F93      		push r17
- 638 025c DF93      		push r29
- 639 025e CF93      		push r28
- 640 0260 CDB7      		in r28,__SP_L__
- 641 0262 DEB7      		in r29,__SP_H__
- 642 0264 6097      		sbiw r28,16
- 643 0266 0FB6      		in __tmp_reg__,__SREG__
- 644 0268 F894      		cli
- 645 026a DEBF      		out __SP_H__,r29
- 646 026c 0FBE      		out __SREG__,__tmp_reg__
- 647 026e CDBF      		out __SP_L__,r28
- 648               	/* prologue: function */
- 649               	/* frame size = 16 */
- 651               	.LM55:
- 652 0270 DE01      		movw r26,r28
- 653 0272 1996      		adiw r26,9
- 654 0274 E0E0      		ldi r30,lo8(adc_val)
- 655 0276 F0E0      		ldi r31,hi8(adc_val)
- 656 0278 88E0      		ldi r24,lo8(8)
- 657               	.L25:
- 658 027a 0190      		ld r0,Z+
- 659 027c 0D92      		st X+,r0
- 660 027e 8150      		subi r24,lo8(-(-1))
- 661 0280 01F4      		brne .L25
- 662               	.LBB27:
- 664               	.LM56:
- 665 0282 4985      		ldd r20,Y+9
- 666 0284 5A85      		ldd r21,Y+10
- 667 0286 20E0      		ldi r18,lo8(0)
- 668 0288 30E0      		ldi r19,hi8(0)
- 669 028a 8E01      		movw r16,r28
- 670 028c 0F5F      		subi r16,lo8(-(1))
- 671 028e 1F4F      		sbci r17,hi8(-(1))
- 672 0290 BE01      		movw r22,r28
- 673 0292 675F      		subi r22,lo8(-(9))
- 674 0294 7F4F      		sbci r23,hi8(-(9))
- 675               	.L26:
- 676 0296 D801      		movw r26,r16
- 677 0298 A20F      		add r26,r18
- 678 029a B31F      		adc r27,r19
- 679 029c FB01      		movw r30,r22
- 680 029e E20F      		add r30,r18
- 681 02a0 F31F      		adc r31,r19
- 682 02a2 8081      		ld r24,Z
- 683 02a4 9181      		ldd r25,Z+1
- 684 02a6 FA01      		movw r30,r20
- 685 02a8 E81B      		sub r30,r24
- 686 02aa F90B      		sbc r31,r25
- 687 02ac ED93      		st X+,r30
- 688 02ae FC93      		st X,r31
- 689 02b0 2E5F      		subi r18,lo8(-(2))
- 690 02b2 3F4F      		sbci r19,hi8(-(2))
- 692               	.LM57:
- 693 02b4 2830      		cpi r18,8
- 694 02b6 3105      		cpc r19,__zero_reg__
- 695 02b8 01F4      		brne .L26
- 696               	.LBE27:
- 698               	.LM58:
- 699 02ba 8091 0000 		lds r24,num_calibrations
- 700 02be 9E01      		movw r18,r28
- 701 02c0 2F5F      		subi r18,lo8(-(1))
- 702 02c2 3F4F      		sbci r19,hi8(-(1))
- 703 02c4 8823      		tst r24
- 704 02c6 01F4      		brne .L27
- 706               	.LM59:
- 707 02c8 A0E0      		ldi r26,lo8(adc_offset)
- 708 02ca B0E0      		ldi r27,hi8(adc_offset)
- 709 02cc F901      		movw r30,r18
- 710 02ce 88E0      		ldi r24,lo8(8)
- 711               	.L28:
- 712 02d0 0190      		ld r0,Z+
- 713 02d2 0D92      		st X+,r0
- 714 02d4 8150      		subi r24,lo8(-(-1))
- 715 02d6 01F4      		brne .L28
- 716 02d8 00C0      		rjmp .L29
- 717               	.L27:
- 718 02da E0E0      		ldi r30,lo8(adc_offset)
- 719 02dc F0E0      		ldi r31,hi8(adc_offset)
- 720 02de 7901      		movw r14,r18
- 721               	.LBB28:
- 723               	.LM60:
- 724 02e0 082F      		mov r16,r24
- 725 02e2 10E0      		ldi r17,lo8(0)
- 726 02e4 6801      		movw r12,r16
- 727 02e6 0894      		sec
- 728 02e8 C11C      		adc r12,__zero_reg__
- 729 02ea D11C      		adc r13,__zero_reg__
- 730               	.L30:
- 731 02ec 8081      		ld r24,Z
- 732 02ee 9181      		ldd r25,Z+1
- 733 02f0 9C01      		movw r18,r24
- 734 02f2 029F      		mul r16,r18
- 735 02f4 C001      		movw r24,r0
- 736 02f6 039F      		mul r16,r19
- 737 02f8 900D      		add r25,r0
- 738 02fa 129F      		mul r17,r18
- 739 02fc 900D      		add r25,r0
- 740 02fe 1124      		clr r1
- 741 0300 D701      		movw r26,r14
- 742 0302 2D91      		ld r18,X+
- 743 0304 3D91      		ld r19,X+
- 744 0306 7D01      		movw r14,r26
- 745 0308 820F      		add r24,r18
- 746 030a 931F      		adc r25,r19
- 747 030c B601      		movw r22,r12
- 748 030e 0E94 0000 		call __divmodhi4
- 749 0312 6193      		st Z+,r22
- 750 0314 7193      		st Z+,r23
- 752               	.LM61:
- 753 0316 B0E0      		ldi r27,hi8(adc_offset+8)
- 754 0318 E030      		cpi r30,lo8(adc_offset+8)
- 755 031a FB07      		cpc r31,r27
- 756 031c 01F4      		brne .L30
- 757               	.L29:
- 758               	.LBE28:
- 760               	.LM62:
- 761 031e 8091 0000 		lds r24,num_calibrations
- 762 0322 8F5F      		subi r24,lo8(-(1))
- 763 0324 8093 0000 		sts num_calibrations,r24
- 764               	/* epilogue start */
- 766               	.LM63:
- 767 0328 6096      		adiw r28,16
- 768 032a 0FB6      		in __tmp_reg__,__SREG__
- 769 032c F894      		cli
- 770 032e DEBF      		out __SP_H__,r29
- 771 0330 0FBE      		out __SREG__,__tmp_reg__
- 772 0332 CDBF      		out __SP_L__,r28
- 773 0334 CF91      		pop r28
- 774 0336 DF91      		pop r29
- 775 0338 1F91      		pop r17
- 776 033a 0F91      		pop r16
- 777 033c FF90      		pop r15
- 778 033e EF90      		pop r14
- 779 0340 DF90      		pop r13
- 780 0342 CF90      		pop r12
- 781 0344 0895      		ret
- 787               	.Lscope10:
- 788               		.data
- 789               	.LC0:
- 790 0000 205B 2025 		.string	" [ %d : %d ] "
- 790      6420 3A20 
- 790      2564 205D 
- 790      2000 
- 791               		.text
- 793               	.global	print_adc_calibration
- 795               	print_adc_calibration:
- 797               	.LM64:
- 798               	.LFBB11:
- 799 0346 0F93      		push r16
- 800 0348 1F93      		push r17
- 801               	/* prologue: function */
- 802               	/* frame size = 0 */
- 804               	.LM65:
- 805 034a 80E0      		ldi r24,lo8(__c.1757)
- 806 034c 90E0      		ldi r25,hi8(__c.1757)
- 807 034e 9F93      		push r25
- 808 0350 8F93      		push r24
- 809 0352 8091 0000 		lds r24,__iob+4
- 810 0356 9091 0000 		lds r25,(__iob+4)+1
- 811 035a 9F93      		push r25
- 812 035c 8F93      		push r24
- 813 035e 0E94 0000 		call fprintf_P
- 814               	.LBB29:
- 816               	.LM66:
- 817 0362 8091 0000 		lds r24,adc_offset
- 818 0366 9091 0000 		lds r25,(adc_offset)+1
- 819 036a 9F93      		push r25
- 820 036c 8F93      		push r24
- 821 036e 1F92      		push __zero_reg__
- 822 0370 1F92      		push __zero_reg__
- 823 0372 00E0      		ldi r16,lo8(.LC0)
- 824 0374 10E0      		ldi r17,hi8(.LC0)
- 825 0376 1F93      		push r17
- 826 0378 0F93      		push r16
- 827 037a 8091 0000 		lds r24,__iob+4
- 828 037e 9091 0000 		lds r25,(__iob+4)+1
- 829 0382 9F93      		push r25
- 830 0384 8F93      		push r24
- 831 0386 0E94 0000 		call fprintf
- 832 038a 8091 0000 		lds r24,adc_offset+2
- 833 038e 9091 0000 		lds r25,(adc_offset+2)+1
- 834 0392 9F93      		push r25
- 835 0394 8F93      		push r24
- 836 0396 81E0      		ldi r24,lo8(1)
- 837 0398 90E0      		ldi r25,hi8(1)
- 838 039a 9F93      		push r25
- 839 039c 8F93      		push r24
- 840 039e 1F93      		push r17
- 841 03a0 0F93      		push r16
- 842 03a2 8091 0000 		lds r24,__iob+4
- 843 03a6 9091 0000 		lds r25,(__iob+4)+1
- 844 03aa 9F93      		push r25
- 845 03ac 8F93      		push r24
- 846 03ae 0E94 0000 		call fprintf
- 847 03b2 8091 0000 		lds r24,adc_offset+4
- 848 03b6 9091 0000 		lds r25,(adc_offset+4)+1
- 849 03ba 9F93      		push r25
- 850 03bc 8F93      		push r24
- 851 03be 82E0      		ldi r24,lo8(2)
- 852 03c0 90E0      		ldi r25,hi8(2)
- 853 03c2 9F93      		push r25
- 854 03c4 8F93      		push r24
- 855 03c6 1F93      		push r17
- 856 03c8 0F93      		push r16
- 857 03ca 8091 0000 		lds r24,__iob+4
- 858 03ce 9091 0000 		lds r25,(__iob+4)+1
- 859 03d2 9F93      		push r25
- 860 03d4 8F93      		push r24
- 861 03d6 0E94 0000 		call fprintf
- 862 03da 8091 0000 		lds r24,adc_offset+6
- 863 03de 9091 0000 		lds r25,(adc_offset+6)+1
- 864 03e2 9F93      		push r25
- 865 03e4 8F93      		push r24
- 866 03e6 83E0      		ldi r24,lo8(3)
- 867 03e8 90E0      		ldi r25,hi8(3)
- 868 03ea 9F93      		push r25
- 869 03ec 8F93      		push r24
- 870 03ee 1F93      		push r17
- 871 03f0 0F93      		push r16
- 872 03f2 8091 0000 		lds r24,__iob+4
- 873 03f6 9091 0000 		lds r25,(__iob+4)+1
- 874 03fa 9F93      		push r25
- 875 03fc 8F93      		push r24
- 876 03fe 0E94 0000 		call fprintf
- 877 0402 8DB7      		in r24,__SP_L__
- 878 0404 9EB7      		in r25,__SP_H__
- 879 0406 8496      		adiw r24,36
- 880 0408 0FB6      		in __tmp_reg__,__SREG__
- 881 040a F894      		cli
- 882 040c 9EBF      		out __SP_H__,r25
- 883 040e 0FBE      		out __SREG__,__tmp_reg__
- 884 0410 8DBF      		out __SP_L__,r24
- 885               	/* epilogue start */
- 886               	.LBE29:
- 888               	.LM67:
- 889 0412 1F91      		pop r17
- 890 0414 0F91      		pop r16
- 891 0416 0895      		ret
- 893               	.Lscope11:
- 895               	.global	print_adc_values
- 897               	print_adc_values:
- 899               	.LM68:
- 900               	.LFBB12:
- 901 0418 CF92      		push r12
- 902 041a DF92      		push r13
- 903 041c EF92      		push r14
- 904 041e FF92      		push r15
- 905 0420 0F93      		push r16
- 906 0422 1F93      		push r17
- 907 0424 CF93      		push r28
- 908 0426 DF93      		push r29
- 909               	/* prologue: function */
- 910               	/* frame size = 0 */
- 912               	.LM69:
- 913 0428 80E0      		ldi r24,lo8(__c.1738)
- 914 042a 90E0      		ldi r25,hi8(__c.1738)
- 915 042c 9F93      		push r25
- 916 042e 8F93      		push r24
- 917 0430 8091 0000 		lds r24,__iob+4
- 918 0434 9091 0000 		lds r25,(__iob+4)+1
- 919 0438 9F93      		push r25
- 920 043a 8F93      		push r24
- 921 043c 0E94 0000 		call fprintf_P
- 922               	.LBB30:
- 924               	.LM70:
- 925 0440 8091 0000 		lds r24,adc_val
- 926 0444 9091 0000 		lds r25,(adc_val)+1
- 927 0448 9F93      		push r25
- 928 044a 8F93      		push r24
- 929 044c 1F92      		push __zero_reg__
- 930 044e 1F92      		push __zero_reg__
- 931 0450 00E0      		ldi r16,lo8(.LC0)
- 932 0452 10E0      		ldi r17,hi8(.LC0)
- 933 0454 1F93      		push r17
- 934 0456 0F93      		push r16
- 935 0458 8091 0000 		lds r24,__iob+4
- 936 045c 9091 0000 		lds r25,(__iob+4)+1
- 937 0460 9F93      		push r25
- 938 0462 8F93      		push r24
- 939 0464 0E94 0000 		call fprintf
- 940 0468 8091 0000 		lds r24,adc_val+2
- 941 046c 9091 0000 		lds r25,(adc_val+2)+1
- 942 0470 9F93      		push r25
- 943 0472 8F93      		push r24
- 944 0474 81E0      		ldi r24,lo8(1)
- 945 0476 90E0      		ldi r25,hi8(1)
- 946 0478 9F93      		push r25
- 947 047a 8F93      		push r24
- 948 047c 1F93      		push r17
- 949 047e 0F93      		push r16
- 950 0480 8091 0000 		lds r24,__iob+4
- 951 0484 9091 0000 		lds r25,(__iob+4)+1
- 952 0488 9F93      		push r25
- 953 048a 8F93      		push r24
- 954 048c 0E94 0000 		call fprintf
- 955 0490 8091 0000 		lds r24,adc_val+4
- 956 0494 9091 0000 		lds r25,(adc_val+4)+1
- 957 0498 9F93      		push r25
- 958 049a 8F93      		push r24
- 959 049c 82E0      		ldi r24,lo8(2)
- 960 049e 90E0      		ldi r25,hi8(2)
- 961 04a0 9F93      		push r25
- 962 04a2 8F93      		push r24
- 963 04a4 1F93      		push r17
- 964 04a6 0F93      		push r16
- 965 04a8 8091 0000 		lds r24,__iob+4
- 966 04ac 9091 0000 		lds r25,(__iob+4)+1
- 967 04b0 9F93      		push r25
- 968 04b2 8F93      		push r24
- 969 04b4 0E94 0000 		call fprintf
- 970 04b8 8091 0000 		lds r24,adc_val+6
- 971 04bc 9091 0000 		lds r25,(adc_val+6)+1
- 972 04c0 9F93      		push r25
- 973 04c2 8F93      		push r24
- 974 04c4 83E0      		ldi r24,lo8(3)
- 975 04c6 90E0      		ldi r25,hi8(3)
- 976 04c8 9F93      		push r25
- 977 04ca 8F93      		push r24
- 978 04cc 1F93      		push r17
- 979 04ce 0F93      		push r16
- 980 04d0 8091 0000 		lds r24,__iob+4
- 981 04d4 9091 0000 		lds r25,(__iob+4)+1
- 982 04d8 9F93      		push r25
- 983 04da 8F93      		push r24
- 984 04dc 0E94 0000 		call fprintf
- 985               	.LBE30:
- 987               	.LM71:
- 988 04e0 8DB7      		in r24,__SP_L__
- 989 04e2 9EB7      		in r25,__SP_H__
- 990 04e4 8496      		adiw r24,36
- 991 04e6 0FB6      		in __tmp_reg__,__SREG__
- 992 04e8 F894      		cli
- 993 04ea 9EBF      		out __SP_H__,r25
- 994 04ec 0FBE      		out __SREG__,__tmp_reg__
- 995 04ee 8DBF      		out __SP_L__,r24
- 996 04f0 80E0      		ldi r24,lo8(__c.1744)
- 997 04f2 90E0      		ldi r25,hi8(__c.1744)
- 998 04f4 9F93      		push r25
- 999 04f6 8F93      		push r24
- 1000 04f8 8091 0000 		lds r24,__iob+4
- 1001 04fc 9091 0000 		lds r25,(__iob+4)+1
- 1002 0500 9F93      		push r25
- 1003 0502 8F93      		push r24
- 1004 0504 0E94 0000 		call fprintf_P
- 1005 0508 40E0      		ldi r20,lo8(adc_val)
- 1006 050a C42E      		mov r12,r20
- 1007 050c 40E0      		ldi r20,hi8(adc_val)
- 1008 050e D42E      		mov r13,r20
- 1009 0510 30E0      		ldi r19,lo8(adc_offset)
- 1010 0512 E32E      		mov r14,r19
- 1011 0514 30E0      		ldi r19,hi8(adc_offset)
- 1012 0516 F32E      		mov r15,r19
- 1013 0518 C0E0      		ldi r28,lo8(0)
- 1014 051a D0E0      		ldi r29,hi8(0)
- 1015 051c 0F90      		pop __tmp_reg__
- 1016 051e 0F90      		pop __tmp_reg__
- 1017 0520 0F90      		pop __tmp_reg__
- 1018 0522 0F90      		pop __tmp_reg__
- 1019               	.L39:
- 1020               	.LBB31:
- 1022               	.LM72:
- 1023 0524 F701      		movw r30,r14
- 1024 0526 8191      		ld r24,Z+
- 1025 0528 9191      		ld r25,Z+
- 1026 052a 7F01      		movw r14,r30
- 1027 052c F601      		movw r30,r12
- 1028 052e 2191      		ld r18,Z+
- 1029 0530 3191      		ld r19,Z+
- 1030 0532 6F01      		movw r12,r30
- 1031 0534 820F      		add r24,r18
- 1032 0536 931F      		adc r25,r19
- 1033 0538 9F93      		push r25
- 1034 053a 8F93      		push r24
- 1035 053c DF93      		push r29
- 1036 053e CF93      		push r28
- 1037 0540 1F93      		push r17
- 1038 0542 0F93      		push r16
- 1039 0544 8091 0000 		lds r24,__iob+4
- 1040 0548 9091 0000 		lds r25,(__iob+4)+1
- 1041 054c 9F93      		push r25
- 1042 054e 8F93      		push r24
- 1043 0550 0E94 0000 		call fprintf
- 1044 0554 2196      		adiw r28,1
- 1046               	.LM73:
- 1047 0556 8DB7      		in r24,__SP_L__
- 1048 0558 9EB7      		in r25,__SP_H__
- 1049 055a 0896      		adiw r24,8
- 1050 055c 0FB6      		in __tmp_reg__,__SREG__
- 1051 055e F894      		cli
- 1052 0560 9EBF      		out __SP_H__,r25
- 1053 0562 0FBE      		out __SREG__,__tmp_reg__
- 1054 0564 8DBF      		out __SP_L__,r24
- 1055 0566 C430      		cpi r28,4
- 1056 0568 D105      		cpc r29,__zero_reg__
- 1057 056a 01F4      		brne .L39
- 1058               	/* epilogue start */
- 1059               	.LBE31:
- 1061               	.LM74:
- 1062 056c DF91      		pop r29
- 1063 056e CF91      		pop r28
- 1064 0570 1F91      		pop r17
- 1065 0572 0F91      		pop r16
- 1066 0574 FF90      		pop r15
- 1067 0576 EF90      		pop r14
- 1068 0578 DF90      		pop r13
- 1069 057a CF90      		pop r12
- 1070 057c 0895      		ret
- 1072               	.Lscope12:
- 1073               		.lcomm ct.1881,1
- 1074               		.data
- 1077               	channels:
- 1078 000e 04        		.byte	4
- 1079 000f 06        		.byte	6
- 1080 0010 05        		.byte	5
- 1081 0011 07        		.byte	7
- 1082               		.section	.progmem.data,"a",@progbits
- 1085               	__c.1825:
- 1086 0000 095B 646F 		.string	"\t[done]"
- 1086      6E65 5D00 
- 1089               	__c.1823:
- 1090 0008 0A61 6463 		.string	"\nadc: init: setup convertions"
- 1090      3A20 696E 
- 1090      6974 3A20 
- 1090      7365 7475 
- 1090      7020 636F 
- 1093               	__c.1821:
- 1094 0026 0A61 6463 		.string	"\nadc: init"
- 1094      3A20 696E 
- 1094      6974 00
- 1097               	__c.1814:
- 1098 0031 0A5B 64   		.ascii	"\n[d"
- 1099 0034 6562 7567 		.string	"ebug] Warning: unimplimented function adc_calibrate_store called"
- 1099      5D20 5761 
- 1099      726E 696E 
- 1099      673A 2075 
- 1099      6E69 6D70 
- 1102               	__c.1757:
- 1103 0075 0A5B 6465 		.string	"\n[debug] ADC OFFSETS: "
- 1103      6275 675D 
- 1103      2041 4443 
- 1103      204F 4646 
- 1103      5345 5453 
- 1106               	__c.1744:
- 1107 008c 0A5B 6465 		.string	"\n[debug] FIXED ADC: "
- 1107      6275 675D 
- 1107      2046 4958 
- 1107      4544 2041 
- 1107      4443 3A20 
- 1110               	__c.1738:
- 1111 00a1 0A5B 6465 		.string	"\n[debug]   RAW ADC: "
- 1111      6275 675D 
- 1111      2020 2052 
- 1111      4157 2041 
- 1111      4443 3A20 
- 1112               		.lcomm num_calibrations,1
- 1113               		.comm c_mode,1,1
- 1114               		.comm initial,1,1
- 1115               		.comm adc_val,8,1
- 1116               		.comm adc_offset,8,1
- 1117               		.comm adc_amt,8,1
- 1118               		.comm curr_ch,1,1
- 1119               		.comm new_adc_data,1,1
- 1137               		.text
- 1139               	.Letext0:
+ 526               	.LM43:
+ 527 01ce 80E0      		ldi r24,lo8(0)
+ 528 01d0 90E0      		ldi r25,hi8(0)
+ 529               	/* #APP */
+ 530               	 ;  105 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/delay_basic.h" 1
+ 531 01d2 0197      		1: sbiw r24,1
+ 532 01d4 01F4      		brne 1b
+ 533               	 ;  0 "" 2
+ 534               	/* #NOAPP */
+ 535               	.LBE24:
+ 536               	.LBE23:
+ 538               	.Ltext4:
+ 540               	.LM44:
+ 541 01d6 8091 0000 		lds r24,curr_ch
+ 542 01da 8F5F      		subi r24,lo8(-(1))
+ 543 01dc 8093 0000 		sts curr_ch,r24
+ 544 01e0 9091 0000 		lds r25,curr_ch
+ 545               	.LBB25:
+ 546               	.LBB26:
+ 548               	.LM45:
+ 549 01e4 F801      		movw r30,r16
+ 550 01e6 8081      		ld r24,Z
+ 551 01e8 A90F      		add r26,r25
+ 552 01ea B11D      		adc r27,__zero_reg__
+ 553 01ec 807E      		andi r24,lo8(-32)
+ 554 01ee 9C91      		ld r25,X
+ 555 01f0 892B      		or r24,r25
+ 556 01f2 8083      		st Z,r24
+ 557               	.LBE26:
+ 558               	.LBE25:
+ 560               	.LM46:
+ 561 01f4 80E0      		ldi r24,lo8(__c.1825)
+ 562 01f6 90E0      		ldi r25,hi8(__c.1825)
+ 563 01f8 9F93      		push r25
+ 564 01fa 8F93      		push r24
+ 565 01fc 8091 0000 		lds r24,__iob+4
+ 566 0200 9091 0000 		lds r25,(__iob+4)+1
+ 567 0204 9F93      		push r25
+ 568 0206 8F93      		push r24
+ 569 0208 0E94 0000 		call fprintf_P
+ 570 020c 8DB7      		in r24,__SP_L__
+ 571 020e 9EB7      		in r25,__SP_H__
+ 572 0210 0C96      		adiw r24,12
+ 573 0212 0FB6      		in __tmp_reg__,__SREG__
+ 574 0214 F894      		cli
+ 575 0216 9EBF      		out __SP_H__,r25
+ 576 0218 0FBE      		out __SREG__,__tmp_reg__
+ 577 021a 8DBF      		out __SP_L__,r24
+ 578               	/* epilogue start */
+ 580               	.LM47:
+ 581 021c 1F91      		pop r17
+ 582 021e 0F91      		pop r16
+ 583 0220 FF90      		pop r15
+ 584 0222 EF90      		pop r14
+ 585 0224 0895      		ret
+ 590               	.Lscope7:
+ 592               		.stabd	78,0,0
+ 594               	.global	adc_calibrate_store
+ 596               	adc_calibrate_store:
+ 597               		.stabd	46,0,0
+ 599               	.LM48:
+ 600               	.LFBB8:
+ 601               	/* prologue: function */
+ 602               	/* frame size = 0 */
+ 604               	.LM49:
+ 605 0226 80E0      		ldi r24,lo8(__c.1814)
+ 606 0228 90E0      		ldi r25,hi8(__c.1814)
+ 607 022a 9F93      		push r25
+ 608 022c 8F93      		push r24
+ 609 022e 8091 0000 		lds r24,__iob+4
+ 610 0232 9091 0000 		lds r25,(__iob+4)+1
+ 611 0236 9F93      		push r25
+ 612 0238 8F93      		push r24
+ 613 023a 0E94 0000 		call fprintf_P
+ 614 023e 0F90      		pop __tmp_reg__
+ 615 0240 0F90      		pop __tmp_reg__
+ 616 0242 0F90      		pop __tmp_reg__
+ 617 0244 0F90      		pop __tmp_reg__
+ 618               	/* epilogue start */
+ 620               	.LM50:
+ 621 0246 0895      		ret
+ 623               	.Lscope8:
+ 625               		.stabd	78,0,0
+ 627               	.global	adc_calibrate_clear
+ 629               	adc_calibrate_clear:
+ 630               		.stabd	46,0,0
+ 632               	.LM51:
+ 633               	.LFBB9:
+ 634               	/* prologue: function */
+ 635               	/* frame size = 0 */
+ 637               	.LM52:
+ 638 0248 88E0      		ldi r24,lo8(8)
+ 639 024a E0E0      		ldi r30,lo8(adc_offset)
+ 640 024c F0E0      		ldi r31,hi8(adc_offset)
+ 641 024e DF01      		movw r26,r30
+ 642 0250 1D92      		st X+,__zero_reg__
+ 643 0252 8A95      	        dec r24
+ 644 0254 01F4      		brne .-6
+ 646               	.LM53:
+ 647 0256 1092 0000 		sts num_calibrations,__zero_reg__
+ 648               	/* epilogue start */
+ 650               	.LM54:
+ 651 025a 0895      		ret
+ 653               	.Lscope9:
+ 655               		.stabd	78,0,0
+ 657               	.global	adc_calibrate_update
+ 659               	adc_calibrate_update:
+ 660               		.stabd	46,0,0
+ 662               	.LM55:
+ 663               	.LFBB10:
+ 664 025c CF92      		push r12
+ 665 025e DF92      		push r13
+ 666 0260 EF92      		push r14
+ 667 0262 FF92      		push r15
+ 668 0264 0F93      		push r16
+ 669 0266 1F93      		push r17
+ 670 0268 DF93      		push r29
+ 671 026a CF93      		push r28
+ 672 026c CDB7      		in r28,__SP_L__
+ 673 026e DEB7      		in r29,__SP_H__
+ 674 0270 6097      		sbiw r28,16
+ 675 0272 0FB6      		in __tmp_reg__,__SREG__
+ 676 0274 F894      		cli
+ 677 0276 DEBF      		out __SP_H__,r29
+ 678 0278 0FBE      		out __SREG__,__tmp_reg__
+ 679 027a CDBF      		out __SP_L__,r28
+ 680               	/* prologue: function */
+ 681               	/* frame size = 16 */
+ 683               	.LM56:
+ 684 027c DE01      		movw r26,r28
+ 685 027e 1996      		adiw r26,9
+ 686 0280 E0E0      		ldi r30,lo8(adc_val)
+ 687 0282 F0E0      		ldi r31,hi8(adc_val)
+ 688 0284 88E0      		ldi r24,lo8(8)
+ 689               	.L25:
+ 690 0286 0190      		ld r0,Z+
+ 691 0288 0D92      		st X+,r0
+ 692 028a 8150      		subi r24,lo8(-(-1))
+ 693 028c 01F4      		brne .L25
+ 694               	.LBB27:
+ 696               	.LM57:
+ 697 028e 4985      		ldd r20,Y+9
+ 698 0290 5A85      		ldd r21,Y+10
+ 699 0292 20E0      		ldi r18,lo8(0)
+ 700 0294 30E0      		ldi r19,hi8(0)
+ 701 0296 8E01      		movw r16,r28
+ 702 0298 0F5F      		subi r16,lo8(-(1))
+ 703 029a 1F4F      		sbci r17,hi8(-(1))
+ 704 029c BE01      		movw r22,r28
+ 705 029e 675F      		subi r22,lo8(-(9))
+ 706 02a0 7F4F      		sbci r23,hi8(-(9))
+ 707               	.L26:
+ 708 02a2 D801      		movw r26,r16
+ 709 02a4 A20F      		add r26,r18
+ 710 02a6 B31F      		adc r27,r19
+ 711 02a8 FB01      		movw r30,r22
+ 712 02aa E20F      		add r30,r18
+ 713 02ac F31F      		adc r31,r19
+ 714 02ae 8081      		ld r24,Z
+ 715 02b0 9181      		ldd r25,Z+1
+ 716 02b2 FA01      		movw r30,r20
+ 717 02b4 E81B      		sub r30,r24
+ 718 02b6 F90B      		sbc r31,r25
+ 719 02b8 ED93      		st X+,r30
+ 720 02ba FC93      		st X,r31
+ 721 02bc 2E5F      		subi r18,lo8(-(2))
+ 722 02be 3F4F      		sbci r19,hi8(-(2))
+ 724               	.LM58:
+ 725 02c0 2830      		cpi r18,8
+ 726 02c2 3105      		cpc r19,__zero_reg__
+ 727 02c4 01F4      		brne .L26
+ 728               	.LBE27:
+ 730               	.LM59:
+ 731 02c6 8091 0000 		lds r24,num_calibrations
+ 732 02ca 9E01      		movw r18,r28
+ 733 02cc 2F5F      		subi r18,lo8(-(1))
+ 734 02ce 3F4F      		sbci r19,hi8(-(1))
+ 735 02d0 8823      		tst r24
+ 736 02d2 01F4      		brne .L27
+ 738               	.LM60:
+ 739 02d4 A0E0      		ldi r26,lo8(adc_offset)
+ 740 02d6 B0E0      		ldi r27,hi8(adc_offset)
+ 741 02d8 F901      		movw r30,r18
+ 742 02da 88E0      		ldi r24,lo8(8)
+ 743               	.L28:
+ 744 02dc 0190      		ld r0,Z+
+ 745 02de 0D92      		st X+,r0
+ 746 02e0 8150      		subi r24,lo8(-(-1))
+ 747 02e2 01F4      		brne .L28
+ 748 02e4 00C0      		rjmp .L29
+ 749               	.L27:
+ 750 02e6 E0E0      		ldi r30,lo8(adc_offset)
+ 751 02e8 F0E0      		ldi r31,hi8(adc_offset)
+ 752 02ea 7901      		movw r14,r18
+ 753               	.LBB28:
+ 755               	.LM61:
+ 756 02ec 082F      		mov r16,r24
+ 757 02ee 10E0      		ldi r17,lo8(0)
+ 758 02f0 6801      		movw r12,r16
+ 759 02f2 0894      		sec
+ 760 02f4 C11C      		adc r12,__zero_reg__
+ 761 02f6 D11C      		adc r13,__zero_reg__
+ 762               	.L30:
+ 763 02f8 8081      		ld r24,Z
+ 764 02fa 9181      		ldd r25,Z+1
+ 765 02fc 9C01      		movw r18,r24
+ 766 02fe 029F      		mul r16,r18
+ 767 0300 C001      		movw r24,r0
+ 768 0302 039F      		mul r16,r19
+ 769 0304 900D      		add r25,r0
+ 770 0306 129F      		mul r17,r18
+ 771 0308 900D      		add r25,r0
+ 772 030a 1124      		clr r1
+ 773 030c D701      		movw r26,r14
+ 774 030e 2D91      		ld r18,X+
+ 775 0310 3D91      		ld r19,X+
+ 776 0312 7D01      		movw r14,r26
+ 777 0314 820F      		add r24,r18
+ 778 0316 931F      		adc r25,r19
+ 779 0318 B601      		movw r22,r12
+ 780 031a 0E94 0000 		call __divmodhi4
+ 781 031e 6193      		st Z+,r22
+ 782 0320 7193      		st Z+,r23
+ 784               	.LM62:
+ 785 0322 B0E0      		ldi r27,hi8(adc_offset+8)
+ 786 0324 E030      		cpi r30,lo8(adc_offset+8)
+ 787 0326 FB07      		cpc r31,r27
+ 788 0328 01F4      		brne .L30
+ 789               	.L29:
+ 790               	.LBE28:
+ 792               	.LM63:
+ 793 032a 8091 0000 		lds r24,num_calibrations
+ 794 032e 8F5F      		subi r24,lo8(-(1))
+ 795 0330 8093 0000 		sts num_calibrations,r24
+ 796               	/* epilogue start */
+ 798               	.LM64:
+ 799 0334 6096      		adiw r28,16
+ 800 0336 0FB6      		in __tmp_reg__,__SREG__
+ 801 0338 F894      		cli
+ 802 033a DEBF      		out __SP_H__,r29
+ 803 033c 0FBE      		out __SREG__,__tmp_reg__
+ 804 033e CDBF      		out __SP_L__,r28
+ 805 0340 CF91      		pop r28
+ 806 0342 DF91      		pop r29
+ 807 0344 1F91      		pop r17
+ 808 0346 0F91      		pop r16
+ 809 0348 FF90      		pop r15
+ 810 034a EF90      		pop r14
+ 811 034c DF90      		pop r13
+ 812 034e CF90      		pop r12
+ 813 0350 0895      		ret
+ 819               	.Lscope10:
+ 821               		.stabd	78,0,0
+ 822               		.data
+ 823               	.LC0:
+ 824 0000 205B 2025 		.string	" [ %d : %d ] "
+ 824      6420 3A20 
+ 824      2564 205D 
+ 824      2000 
+ 825               		.text
+ 827               	.global	print_adc_calibration
+ 829               	print_adc_calibration:
+ 830               		.stabd	46,0,0
+ 832               	.LM65:
+ 833               	.LFBB11:
+ 834 0352 0F93      		push r16
+ 835 0354 1F93      		push r17
+ 836               	/* prologue: function */
+ 837               	/* frame size = 0 */
+ 839               	.LM66:
+ 840 0356 80E0      		ldi r24,lo8(__c.1757)
+ 841 0358 90E0      		ldi r25,hi8(__c.1757)
+ 842 035a 9F93      		push r25
+ 843 035c 8F93      		push r24
+ 844 035e 8091 0000 		lds r24,__iob+4
+ 845 0362 9091 0000 		lds r25,(__iob+4)+1
+ 846 0366 9F93      		push r25
+ 847 0368 8F93      		push r24
+ 848 036a 0E94 0000 		call fprintf_P
+ 849               	.LBB29:
+ 851               	.LM67:
+ 852 036e 8091 0000 		lds r24,adc_offset
+ 853 0372 9091 0000 		lds r25,(adc_offset)+1
+ 854 0376 9F93      		push r25
+ 855 0378 8F93      		push r24
+ 856 037a 1F92      		push __zero_reg__
+ 857 037c 1F92      		push __zero_reg__
+ 858 037e 00E0      		ldi r16,lo8(.LC0)
+ 859 0380 10E0      		ldi r17,hi8(.LC0)
+ 860 0382 1F93      		push r17
+ 861 0384 0F93      		push r16
+ 862 0386 8091 0000 		lds r24,__iob+4
+ 863 038a 9091 0000 		lds r25,(__iob+4)+1
+ 864 038e 9F93      		push r25
+ 865 0390 8F93      		push r24
+ 866 0392 0E94 0000 		call fprintf
+ 867 0396 8091 0000 		lds r24,adc_offset+2
+ 868 039a 9091 0000 		lds r25,(adc_offset+2)+1
+ 869 039e 9F93      		push r25
+ 870 03a0 8F93      		push r24
+ 871 03a2 81E0      		ldi r24,lo8(1)
+ 872 03a4 90E0      		ldi r25,hi8(1)
+ 873 03a6 9F93      		push r25
+ 874 03a8 8F93      		push r24
+ 875 03aa 1F93      		push r17
+ 876 03ac 0F93      		push r16
+ 877 03ae 8091 0000 		lds r24,__iob+4
+ 878 03b2 9091 0000 		lds r25,(__iob+4)+1
+ 879 03b6 9F93      		push r25
+ 880 03b8 8F93      		push r24
+ 881 03ba 0E94 0000 		call fprintf
+ 882 03be 8091 0000 		lds r24,adc_offset+4
+ 883 03c2 9091 0000 		lds r25,(adc_offset+4)+1
+ 884 03c6 9F93      		push r25
+ 885 03c8 8F93      		push r24
+ 886 03ca 82E0      		ldi r24,lo8(2)
+ 887 03cc 90E0      		ldi r25,hi8(2)
+ 888 03ce 9F93      		push r25
+ 889 03d0 8F93      		push r24
+ 890 03d2 1F93      		push r17
+ 891 03d4 0F93      		push r16
+ 892 03d6 8091 0000 		lds r24,__iob+4
+ 893 03da 9091 0000 		lds r25,(__iob+4)+1
+ 894 03de 9F93      		push r25
+ 895 03e0 8F93      		push r24
+ 896 03e2 0E94 0000 		call fprintf
+ 897 03e6 8091 0000 		lds r24,adc_offset+6
+ 898 03ea 9091 0000 		lds r25,(adc_offset+6)+1
+ 899 03ee 9F93      		push r25
+ 900 03f0 8F93      		push r24
+ 901 03f2 83E0      		ldi r24,lo8(3)
+ 902 03f4 90E0      		ldi r25,hi8(3)
+ 903 03f6 9F93      		push r25
+ 904 03f8 8F93      		push r24
+ 905 03fa 1F93      		push r17
+ 906 03fc 0F93      		push r16
+ 907 03fe 8091 0000 		lds r24,__iob+4
+ 908 0402 9091 0000 		lds r25,(__iob+4)+1
+ 909 0406 9F93      		push r25
+ 910 0408 8F93      		push r24
+ 911 040a 0E94 0000 		call fprintf
+ 912 040e 8DB7      		in r24,__SP_L__
+ 913 0410 9EB7      		in r25,__SP_H__
+ 914 0412 8496      		adiw r24,36
+ 915 0414 0FB6      		in __tmp_reg__,__SREG__
+ 916 0416 F894      		cli
+ 917 0418 9EBF      		out __SP_H__,r25
+ 918 041a 0FBE      		out __SREG__,__tmp_reg__
+ 919 041c 8DBF      		out __SP_L__,r24
+ 920               	/* epilogue start */
+ 921               	.LBE29:
+ 923               	.LM68:
+ 924 041e 1F91      		pop r17
+ 925 0420 0F91      		pop r16
+ 926 0422 0895      		ret
+ 928               	.Lscope11:
+ 930               		.stabd	78,0,0
+ 932               	.global	print_adc_values
+ 934               	print_adc_values:
+ 935               		.stabd	46,0,0
+ 937               	.LM69:
+ 938               	.LFBB12:
+ 939 0424 CF92      		push r12
+ 940 0426 DF92      		push r13
+ 941 0428 EF92      		push r14
+ 942 042a FF92      		push r15
+ 943 042c 0F93      		push r16
+ 944 042e 1F93      		push r17
+ 945 0430 CF93      		push r28
+ 946 0432 DF93      		push r29
+ 947               	/* prologue: function */
+ 948               	/* frame size = 0 */
+ 950               	.LM70:
+ 951 0434 80E0      		ldi r24,lo8(__c.1738)
+ 952 0436 90E0      		ldi r25,hi8(__c.1738)
+ 953 0438 9F93      		push r25
+ 954 043a 8F93      		push r24
+ 955 043c 8091 0000 		lds r24,__iob+4
+ 956 0440 9091 0000 		lds r25,(__iob+4)+1
+ 957 0444 9F93      		push r25
+ 958 0446 8F93      		push r24
+ 959 0448 0E94 0000 		call fprintf_P
+ 960               	.LBB30:
+ 962               	.LM71:
+ 963 044c 8091 0000 		lds r24,adc_val
+ 964 0450 9091 0000 		lds r25,(adc_val)+1
+ 965 0454 9F93      		push r25
+ 966 0456 8F93      		push r24
+ 967 0458 1F92      		push __zero_reg__
+ 968 045a 1F92      		push __zero_reg__
+ 969 045c 00E0      		ldi r16,lo8(.LC0)
+ 970 045e 10E0      		ldi r17,hi8(.LC0)
+ 971 0460 1F93      		push r17
+ 972 0462 0F93      		push r16
+ 973 0464 8091 0000 		lds r24,__iob+4
+ 974 0468 9091 0000 		lds r25,(__iob+4)+1
+ 975 046c 9F93      		push r25
+ 976 046e 8F93      		push r24
+ 977 0470 0E94 0000 		call fprintf
+ 978 0474 8091 0000 		lds r24,adc_val+2
+ 979 0478 9091 0000 		lds r25,(adc_val+2)+1
+ 980 047c 9F93      		push r25
+ 981 047e 8F93      		push r24
+ 982 0480 81E0      		ldi r24,lo8(1)
+ 983 0482 90E0      		ldi r25,hi8(1)
+ 984 0484 9F93      		push r25
+ 985 0486 8F93      		push r24
+ 986 0488 1F93      		push r17
+ 987 048a 0F93      		push r16
+ 988 048c 8091 0000 		lds r24,__iob+4
+ 989 0490 9091 0000 		lds r25,(__iob+4)+1
+ 990 0494 9F93      		push r25
+ 991 0496 8F93      		push r24
+ 992 0498 0E94 0000 		call fprintf
+ 993 049c 8091 0000 		lds r24,adc_val+4
+ 994 04a0 9091 0000 		lds r25,(adc_val+4)+1
+ 995 04a4 9F93      		push r25
+ 996 04a6 8F93      		push r24
+ 997 04a8 82E0      		ldi r24,lo8(2)
+ 998 04aa 90E0      		ldi r25,hi8(2)
+ 999 04ac 9F93      		push r25
+ 1000 04ae 8F93      		push r24
+ 1001 04b0 1F93      		push r17
+ 1002 04b2 0F93      		push r16
+ 1003 04b4 8091 0000 		lds r24,__iob+4
+ 1004 04b8 9091 0000 		lds r25,(__iob+4)+1
+ 1005 04bc 9F93      		push r25
+ 1006 04be 8F93      		push r24
+ 1007 04c0 0E94 0000 		call fprintf
+ 1008 04c4 8091 0000 		lds r24,adc_val+6
+ 1009 04c8 9091 0000 		lds r25,(adc_val+6)+1
+ 1010 04cc 9F93      		push r25
+ 1011 04ce 8F93      		push r24
+ 1012 04d0 83E0      		ldi r24,lo8(3)
+ 1013 04d2 90E0      		ldi r25,hi8(3)
+ 1014 04d4 9F93      		push r25
+ 1015 04d6 8F93      		push r24
+ 1016 04d8 1F93      		push r17
+ 1017 04da 0F93      		push r16
+ 1018 04dc 8091 0000 		lds r24,__iob+4
+ 1019 04e0 9091 0000 		lds r25,(__iob+4)+1
+ 1020 04e4 9F93      		push r25
+ 1021 04e6 8F93      		push r24
+ 1022 04e8 0E94 0000 		call fprintf
+ 1023               	.LBE30:
+ 1025               	.LM72:
+ 1026 04ec 8DB7      		in r24,__SP_L__
+ 1027 04ee 9EB7      		in r25,__SP_H__
+ 1028 04f0 8496      		adiw r24,36
+ 1029 04f2 0FB6      		in __tmp_reg__,__SREG__
+ 1030 04f4 F894      		cli
+ 1031 04f6 9EBF      		out __SP_H__,r25
+ 1032 04f8 0FBE      		out __SREG__,__tmp_reg__
+ 1033 04fa 8DBF      		out __SP_L__,r24
+ 1034 04fc 80E0      		ldi r24,lo8(__c.1744)
+ 1035 04fe 90E0      		ldi r25,hi8(__c.1744)
+ 1036 0500 9F93      		push r25
+ 1037 0502 8F93      		push r24
+ 1038 0504 8091 0000 		lds r24,__iob+4
+ 1039 0508 9091 0000 		lds r25,(__iob+4)+1
+ 1040 050c 9F93      		push r25
+ 1041 050e 8F93      		push r24
+ 1042 0510 0E94 0000 		call fprintf_P
+ 1043 0514 40E0      		ldi r20,lo8(adc_val)
+ 1044 0516 C42E      		mov r12,r20
+ 1045 0518 40E0      		ldi r20,hi8(adc_val)
+ 1046 051a D42E      		mov r13,r20
+ 1047 051c 30E0      		ldi r19,lo8(adc_offset)
+ 1048 051e E32E      		mov r14,r19
+ 1049 0520 30E0      		ldi r19,hi8(adc_offset)
+ 1050 0522 F32E      		mov r15,r19
+ 1051 0524 C0E0      		ldi r28,lo8(0)
+ 1052 0526 D0E0      		ldi r29,hi8(0)
+ 1053 0528 0F90      		pop __tmp_reg__
+ 1054 052a 0F90      		pop __tmp_reg__
+ 1055 052c 0F90      		pop __tmp_reg__
+ 1056 052e 0F90      		pop __tmp_reg__
+ 1057               	.L39:
+ 1058               	.LBB31:
+ 1060               	.LM73:
+ 1061 0530 F701      		movw r30,r14
+ 1062 0532 8191      		ld r24,Z+
+ 1063 0534 9191      		ld r25,Z+
+ 1064 0536 7F01      		movw r14,r30
+ 1065 0538 F601      		movw r30,r12
+ 1066 053a 2191      		ld r18,Z+
+ 1067 053c 3191      		ld r19,Z+
+ 1068 053e 6F01      		movw r12,r30
+ 1069 0540 820F      		add r24,r18
+ 1070 0542 931F      		adc r25,r19
+ 1071 0544 9F93      		push r25
+ 1072 0546 8F93      		push r24
+ 1073 0548 DF93      		push r29
+ 1074 054a CF93      		push r28
+ 1075 054c 1F93      		push r17
+ 1076 054e 0F93      		push r16
+ 1077 0550 8091 0000 		lds r24,__iob+4
+ 1078 0554 9091 0000 		lds r25,(__iob+4)+1
+ 1079 0558 9F93      		push r25
+ 1080 055a 8F93      		push r24
+ 1081 055c 0E94 0000 		call fprintf
+ 1082 0560 2196      		adiw r28,1
+ 1084               	.LM74:
+ 1085 0562 8DB7      		in r24,__SP_L__
+ 1086 0564 9EB7      		in r25,__SP_H__
+ 1087 0566 0896      		adiw r24,8
+ 1088 0568 0FB6      		in __tmp_reg__,__SREG__
+ 1089 056a F894      		cli
+ 1090 056c 9EBF      		out __SP_H__,r25
+ 1091 056e 0FBE      		out __SREG__,__tmp_reg__
+ 1092 0570 8DBF      		out __SP_L__,r24
+ 1093 0572 C430      		cpi r28,4
+ 1094 0574 D105      		cpc r29,__zero_reg__
+ 1095 0576 01F4      		brne .L39
+ 1096               	/* epilogue start */
+ 1097               	.LBE31:
+ 1099               	.LM75:
+ 1100 0578 DF91      		pop r29
+ 1101 057a CF91      		pop r28
+ 1102 057c 1F91      		pop r17
+ 1103 057e 0F91      		pop r16
+ 1104 0580 FF90      		pop r15
+ 1105 0582 EF90      		pop r14
+ 1106 0584 DF90      		pop r13
+ 1107 0586 CF90      		pop r12
+ 1108 0588 0895      		ret
+ 1110               	.Lscope12:
+ 1112               		.stabd	78,0,0
+ 1113               		.lcomm ct.1883,1
+ 1114               		.data
+ 1117               	channels:
+ 1118 000e 04        		.byte	4
+ 1119 000f 06        		.byte	6
+ 1120 0010 05        		.byte	5
+ 1121 0011 07        		.byte	7
+ 1122               		.section	.progmem.data,"a",@progbits
+ 1125               	__c.1825:
+ 1126 0000 095B 646F 		.string	"\t[done]"
+ 1126      6E65 5D00 
+ 1129               	__c.1823:
+ 1130 0008 0A61 6463 		.string	"\nadc: init: setup convertions"
+ 1130      3A20 696E 
+ 1130      6974 3A20 
+ 1130      7365 7475 
+ 1130      7020 636F 
+ 1133               	__c.1821:
+ 1134 0026 0A61 6463 		.string	"\nadc: init"
+ 1134      3A20 696E 
+ 1134      6974 00
+ 1137               	__c.1814:
+ 1138 0031 0A5B 64   		.ascii	"\n[d"
+ 1139 0034 6562 7567 		.string	"ebug] Warning: unimplimented function adc_calibrate_store called"
+ 1139      5D20 5761 
+ 1139      726E 696E 
+ 1139      673A 2075 
+ 1139      6E69 6D70 
+ 1142               	__c.1757:
+ 1143 0075 0A5B 6465 		.string	"\n[debug] ADC OFFSETS: "
+ 1143      6275 675D 
+ 1143      2041 4443 
+ 1143      204F 4646 
+ 1143      5345 5453 
+ 1146               	__c.1744:
+ 1147 008c 0A5B 6465 		.string	"\n[debug] FIXED ADC: "
+ 1147      6275 675D 
+ 1147      2046 4958 
+ 1147      4544 2041 
+ 1147      4443 3A20 
+ 1150               	__c.1738:
+ 1151 00a1 0A5B 6465 		.string	"\n[debug]   RAW ADC: "
+ 1151      6275 675D 
+ 1151      2020 2052 
+ 1151      4157 2041 
+ 1151      4443 3A20 
+ 1152               		.lcomm num_calibrations,1
+ 1153               		.comm c_mode,1,1
+ 1154               		.comm initial,1,1
+ 1155               		.comm adc_val,8,1
+ 1156               		.comm adc_offset,8,1
+ 1157               		.comm adc_amt,8,1
+ 1158               		.comm curr_ch,1,1
+ 1159               		.comm new_adc_data,1,1
+ 1177               		.text
+ 1179               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 adc.c
-     /tmp/cc0Fmz6U.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc0Fmz6U.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc0Fmz6U.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc0Fmz6U.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/cc0Fmz6U.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/cc0Fmz6U.s:104    .text:00000000 copysign
-     /tmp/cc0Fmz6U.s:130    .text:00000006 isfinite
-     /tmp/cc0Fmz6U.s:168    .text:0000001e max
-     /tmp/cc0Fmz6U.s:187    .text:00000022 adc_get_val
+     /tmp/ccqLpQCI.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccqLpQCI.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccqLpQCI.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccqLpQCI.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccqLpQCI.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccqLpQCI.s:105    .text:00000000 copysign
+     /tmp/ccqLpQCI.s:134    .text:00000006 isfinite
+     /tmp/ccqLpQCI.s:175    .text:0000001e max
+     /tmp/ccqLpQCI.s:197    .text:00000022 adc_get_val
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
-     /tmp/cc0Fmz6U.s:221    .text:00000044 adc_set_channel
-     /tmp/cc0Fmz6U.s:1077   .data:0000000e channels
-     /tmp/cc0Fmz6U.s:249    .text:0000005c __vector_19
-                             .bss:00000000 ct.1881
+     /tmp/ccqLpQCI.s:234    .text:00000044 adc_set_channel
+     /tmp/ccqLpQCI.s:1117   .data:0000000e channels
+     /tmp/ccqLpQCI.s:265    .text:0000005c __vector_19
+                             .bss:00000000 ct.1883
                             *COM*:00000001 curr_ch
                             *COM*:00000008 adc_amt
                             *COM*:00000001 new_adc_data
-     /tmp/cc0Fmz6U.s:381    .text:0000011a adc_init
-     /tmp/cc0Fmz6U.s:1093   .progmem.data:00000026 __c.1821
-     /tmp/cc0Fmz6U.s:1089   .progmem.data:00000008 __c.1823
-     /tmp/cc0Fmz6U.s:1085   .progmem.data:00000000 __c.1825
-     /tmp/cc0Fmz6U.s:571    .text:0000021a adc_calibrate_store
-     /tmp/cc0Fmz6U.s:1097   .progmem.data:00000031 __c.1814
-     /tmp/cc0Fmz6U.s:601    .text:0000023c adc_calibrate_clear
-     /tmp/cc0Fmz6U.s:1073   .bss:00000001 num_calibrations
-     /tmp/cc0Fmz6U.s:628    .text:00000250 adc_calibrate_update
-     /tmp/cc0Fmz6U.s:795    .text:00000346 print_adc_calibration
-     /tmp/cc0Fmz6U.s:1102   .progmem.data:00000075 __c.1757
-     /tmp/cc0Fmz6U.s:897    .text:00000418 print_adc_values
-     /tmp/cc0Fmz6U.s:1110   .progmem.data:000000a1 __c.1738
-     /tmp/cc0Fmz6U.s:1106   .progmem.data:0000008c __c.1744
+     /tmp/ccqLpQCI.s:401    .text:0000011e adc_init
+     /tmp/ccqLpQCI.s:1133   .progmem.data:00000026 __c.1821
+     /tmp/ccqLpQCI.s:1129   .progmem.data:00000008 __c.1823
+     /tmp/ccqLpQCI.s:1125   .progmem.data:00000000 __c.1825
+     /tmp/ccqLpQCI.s:596    .text:00000226 adc_calibrate_store
+     /tmp/ccqLpQCI.s:1137   .progmem.data:00000031 __c.1814
+     /tmp/ccqLpQCI.s:629    .text:00000248 adc_calibrate_clear
+     /tmp/ccqLpQCI.s:1113   .bss:00000001 num_calibrations
+     /tmp/ccqLpQCI.s:659    .text:0000025c adc_calibrate_update
+     /tmp/ccqLpQCI.s:829    .text:00000352 print_adc_calibration
+     /tmp/ccqLpQCI.s:1142   .progmem.data:00000075 __c.1757
+     /tmp/ccqLpQCI.s:934    .text:00000424 print_adc_values
+     /tmp/ccqLpQCI.s:1150   .progmem.data:000000a1 __c.1738
+     /tmp/ccqLpQCI.s:1146   .progmem.data:0000008c __c.1744
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

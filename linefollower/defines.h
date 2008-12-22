@@ -67,7 +67,7 @@ Globaly Utilized Information
 
 /* Mode/State */
 enum {WAIT,TEST,FOLLOW};
-uint8_t c_mode;
-bool initial;
+uint8_t volatile c_mode;
+bool volatile initial;
 
 #endif
