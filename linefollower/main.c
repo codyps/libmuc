@@ -45,6 +45,7 @@ void  print_bin(uint8_t inp) {
 void init(void) {
 	cli(); // Starts with interrupts disabled?
 	power_all_disable();
+	PCMSK1=PCMSK0=EIMSK=0; // Butterfly doesn't remove it's interupts, block them.
 	clock_init();
 	joy_init();
 	usart_init();
@@ -63,77 +64,90 @@ int main(void) {
 	init();
 	c_mode=WAIT;
 	initial=true;
-	
 		
 	for(;;) {
-		if	(c_mode==FOLLOW) {	
-			if (initial) {
-				lf_full_speed();
-				initial=false;
-			}
-//			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-
-			uint16_t adc_vc[channel_amt];
-			for (uint8_t i=0;i<channel_amt;++i) {
-				adc_vc[i]=adc_get_val(i);
-			}
-			
-			uint8_t  maxi=channel_amt;
-			uint16_t maxv=0;
-			for (uint8_t i=0;i<channel_amt;++i) {
-				if (adc_vc[i]>maxv) {
-					maxi=i;
-					maxv=adc_vc[i];
+		if	(c_mode==FOLLOW && new_adc_data) {
+			if (new_adc_data) {
+				new_adc_data=false;
+				if (initial) {
+					lf_full_speed();
+					initial=false;
 				}
-			}
-			
-			#ifdef debug
-			print_adc_values();
-			printf_P(PSTR("\nMax Channel [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
-			#endif
 
-			int8_t turn_i;			
-			turn_i = maxi-channel_amt/2; // Needs to work for even numbers....
+				uint16_t adc_vc[channel_amt];
+				for (uint8_t i=0;i<channel_amt;++i) {
+					adc_vc[i]=adc_get_val(i);
+				}
+		
+				uint8_t  maxi=channel_amt;
+				uint16_t maxv=0;
+				for (uint8_t i=0;i<channel_amt;++i) {
+					if (adc_vc[i]>maxv) {
+						maxi=i;
+						maxv=adc_vc[i];
+					}
+				}
 			
-			// Correction needed for even numbers of sensors.
-			#if (!(channel_amt%2))
-			if (turn_i>0)
-				++turn_i;	
-			#endif
+				#ifdef debug
+				print_adc_values();
+				printf_P(PSTR("\nMax Channel [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
+				#endif
 
-			lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);
+				int8_t turn_i;			
+				turn_i = maxi-channel_amt/2; // Needs to work for even numbers....
 			
-			
-			//0=LEFT, 3=RIGHT
-			/*
-			if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
-				lf_turn_inc(LF_INC_LARGE,NEG);
-				dir=LEFT;
-			}
-			else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
-				lf_turn_inc(LF_INC_LARGE,POS);
-				dir=RIGHT;
-			}
-			else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
-				lf_turn_inc(LF_INC_SMALL,NEG);
-				dir=LEFT;
-			}
-			else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
-				lf_turn_inc(LF_INC_LARGE,POS);
-				dir=RIGHT;
-			}
-			else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
-				//lf_full_speed();
-				dir=FWD;
-			}
-			else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
-				//lf_full_speed();
-				dir=FWD;
-			}
-			*/
+				// Correction needed for even numbers of sensors.
+				#if (!(channel_amt%2))
+				if (turn_i>0)
+					++turn_i;	
+				#endif
 
-			_delay_ms(200);
-			// do at every adc calc or pwm vector.
+
+				//Find Sensor "next to" max sensor.
+
+
+
+				// Hackish, should be removed.
+				lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);			
+
+
+				printf_P(PSTR("\nTurn Increment: %d"),LF_INC_SMALL*turn_i);
+			
+				uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
+				printf_P(PSTR("\nCurrent Motors: %d; %d"),c_speed[0],c_speed[1]);
+				//0=LEFT, 3=RIGHT
+				/*
+				if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
+					lf_turn_inc(LF_INC_LARGE,NEG);
+					dir=LEFT;
+				}
+				else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
+					lf_turn_inc(LF_INC_LARGE,POS);
+					dir=RIGHT;
+				}
+				else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+					lf_turn_inc(LF_INC_SMALL,NEG);
+					dir=LEFT;
+				}
+				else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
+					lf_turn_inc(LF_INC_LARGE,POS);
+					dir=RIGHT;
+				}
+				else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+					//lf_full_speed();
+					dir=FWD;
+				}
+				else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
+					//lf_full_speed();
+					dir=FWD;
+				}
+				*/
+			
+		
+			}
+			else { // if !new_adc_data
+				// Sleep? (need adc, timers, pwm outputs (IO clock), 
+			}
 		}
 		else if	(c_mode==TEST) {
 			if (initial) {

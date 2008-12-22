@@ -21,6 +21,8 @@ int16_t adc_offset [channel_amt]; //Offsets to apply to each channel so they are
 uint16_t adc_amt [channel_amt];
 uint8_t curr_ch; //=0 //Current 'Virtual' Channel
 
+uint8_t new_adc_data; // True when all the channels have been recalced.
+
 // Functions:
 uint16_t adc_get_val(uint8_t ch);
 void adc_calibrate_update(void);

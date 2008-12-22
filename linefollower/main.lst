@@ -6,11 +6,10 @@
    6               	__zero_reg__ = 1
    7               		.global __do_copy_data
    8               		.global __do_clear_bss
-  11               		.text
-  12               	.Ltext0:
- 116               	.global	clock_init
- 118               	clock_init:
- 119               		.stabd	46,0,0
+  10               		.text
+  11               	.Ltext0:
+ 115               	.global	clock_init
+ 117               	clock_init:
    1:main.c        **** /*
    2:main.c        **** //Follow the damn line
    3:main.c        **** char Author [] ="Cody Schafer";
@@ -33,11 +32,11 @@
   20:main.c        **** 
   21:main.c        **** 
   22:main.c        **** void clock_init(void) {
- 121               	.LM0:
- 122               	.LFBB1:
- 123               	/* prologue: function */
- 124               	/* frame size = 0 */
- 125               	.LBB27:
+ 119               	.LM0:
+ 120               	.LFBB1:
+ 121               	/* prologue: function */
+ 122               	/* frame size = 0 */
+ 123               	.LBB23:
   23:main.c        **** 	
   24:main.c        **** 	#if   F_CPU == 1000000
   25:main.c        **** 		clock_prescale_set(clock_div_8);	
@@ -47,34 +46,32 @@
   29:main.c        **** 		clock_prescale_set(clock_div_2);	
   30:main.c        **** 	#elif F_CPU == 8000000
   31:main.c        **** 		clock_prescale_set(clock_div_1);	
- 127               	.LM1:
- 128 0000 80E0      		ldi r24,lo8(0)
- 129 0002 90E0      		ldi r25,hi8(0)
- 130 0004 20E8      		ldi r18,lo8(-128)
- 131               	/* #APP */
- 132               	 ;  31 "main.c" 1
- 133 0006 0FB6      		in __tmp_reg__,__SREG__
- 134 0008 F894      		cli
- 135 000a 2093 6100 		sts 97, r18
- 136 000e 8093 6100 		sts 97, r24
- 137 0012 0FBE      		out __SREG__, __tmp_reg__
- 138               	 ;  0 "" 2
- 139               	/* epilogue start */
- 140               	/* #NOAPP */
- 141               	.LBE27:
+ 125               	.LM1:
+ 126 0000 80E0      		ldi r24,lo8(0)
+ 127 0002 90E0      		ldi r25,hi8(0)
+ 128 0004 20E8      		ldi r18,lo8(-128)
+ 129               	/* #APP */
+ 130               	 ;  31 "main.c" 1
+ 131 0006 0FB6      		in __tmp_reg__,__SREG__
+ 132 0008 F894      		cli
+ 133 000a 2093 6100 		sts 97, r18
+ 134 000e 8093 6100 		sts 97, r24
+ 135 0012 0FBE      		out __SREG__, __tmp_reg__
+ 136               	 ;  0 "" 2
+ 137               	/* epilogue start */
+ 138               	/* #NOAPP */
+ 139               	.LBE23:
   32:main.c        **** 	#else
   33:main.c        **** 		#error "F_CPU Unrecognized"
   34:main.c        **** 	#endif
   35:main.c        **** 	
   36:main.c        **** 	//OSCAL set by the bootloader.
   37:main.c        **** }
- 143               	.LM2:
- 144 0014 0895      		ret
- 146               	.Lscope1:
- 148               		.stabd	78,0,0
- 150               	.global	__vector_default
- 152               	__vector_default:
- 153               		.stabd	46,0,0
+ 141               	.LM2:
+ 142 0014 0895      		ret
+ 144               	.Lscope1:
+ 146               	.global	__vector_default
+ 148               	__vector_default:
   38:main.c        **** 
   39:main.c        **** void  print_bin(uint8_t inp) {
   40:main.c        **** 	for(int8_t j=7; j>=0; --j) {
@@ -85,337 +82,354 @@
   45:main.c        **** void init(void) {
   46:main.c        **** 	cli(); // Starts with interrupts disabled?
   47:main.c        **** 	power_all_disable();
-  48:main.c        **** 	clock_init();
-  49:main.c        **** 	joy_init();
-  50:main.c        **** 	usart_init();
-  51:main.c        **** 	adc_init();
-  52:main.c        **** 	timers_init();
-  53:main.c        **** 	motors_init();
-  54:main.c        **** 	sei();
-  55:main.c        **** 	#ifdef debug
-  56:main.c        **** 	printf_P(PSTR("\nInit: Done\n\n"));
-  57:main.c        **** 	#endif
-  58:main.c        **** }
-  59:main.c        **** 
+  48:main.c        **** 	PCMSK1=PCMSK0=EIMSK=0; // Butterfly doesn't remove it's interupts, block them.
+  49:main.c        **** 	clock_init();
+  50:main.c        **** 	joy_init();
+  51:main.c        **** 	usart_init();
+  52:main.c        **** 	adc_init();
+  53:main.c        **** 	timers_init();
+  54:main.c        **** 	motors_init();
+  55:main.c        **** 	sei();
+  56:main.c        **** 	#ifdef debug
+  57:main.c        **** 	printf_P(PSTR("\nInit: Done\n\n"));
+  58:main.c        **** 	#endif
+  59:main.c        **** }
   60:main.c        **** 
   61:main.c        **** 
-  62:main.c        **** int main(void) {
-  63:main.c        **** 	init();
-  64:main.c        **** 	c_mode=WAIT;
-  65:main.c        **** 	initial=true;
-  66:main.c        **** 	
+  62:main.c        **** 
+  63:main.c        **** int main(void) {
+  64:main.c        **** 	init();
+  65:main.c        **** 	c_mode=WAIT;
+  66:main.c        **** 	initial=true;
   67:main.c        **** 		
   68:main.c        **** 	for(;;) {
-  69:main.c        **** 		if	(c_mode==FOLLOW) {	
-  70:main.c        **** 			if (initial) {
-  71:main.c        **** 				lf_full_speed();
-  72:main.c        **** 				initial=false;
-  73:main.c        **** 			}
-  74:main.c        **** //			uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
-  75:main.c        **** 
-  76:main.c        **** 			uint16_t adc_vc[channel_amt];
-  77:main.c        **** 			for (uint8_t i=0;i<channel_amt;++i) {
-  78:main.c        **** 				adc_vc[i]=adc_get_val(i);
-  79:main.c        **** 			}
-  80:main.c        **** 			
-  81:main.c        **** 			uint8_t  maxi=channel_amt;
-  82:main.c        **** 			uint16_t maxv=0;
-  83:main.c        **** 			for (uint8_t i=0;i<channel_amt;++i) {
-  84:main.c        **** 				if (adc_vc[i]>maxv) {
-  85:main.c        **** 					maxi=i;
-  86:main.c        **** 					maxv=adc_vc[i];
-  87:main.c        **** 				}
-  88:main.c        **** 			}
-  89:main.c        **** 			
-  90:main.c        **** 			#ifdef debug
-  91:main.c        **** 			print_adc_values();
-  92:main.c        **** 			printf_P(PSTR("\nMax Channel [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
-  93:main.c        **** 			#endif
-  94:main.c        **** 
-  95:main.c        **** 			int8_t turn_i;			
-  96:main.c        **** 			turn_i = maxi-channel_amt/2; // Needs to work for even numbers....
-  97:main.c        **** 			
-  98:main.c        **** 			// Correction needed for even numbers of sensors.
-  99:main.c        **** 			#if (!(channel_amt%2))
- 100:main.c        **** 			if (turn_i>0)
- 101:main.c        **** 				++turn_i;	
- 102:main.c        **** 			#endif
- 103:main.c        **** 
- 104:main.c        **** 			lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);
- 105:main.c        **** 			
- 106:main.c        **** 			
- 107:main.c        **** 			//0=LEFT, 3=RIGHT
- 108:main.c        **** 			/*
- 109:main.c        **** 			if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
- 110:main.c        **** 				lf_turn_inc(LF_INC_LARGE,NEG);
- 111:main.c        **** 				dir=LEFT;
- 112:main.c        **** 			}
- 113:main.c        **** 			else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
- 114:main.c        **** 				lf_turn_inc(LF_INC_LARGE,POS);
- 115:main.c        **** 				dir=RIGHT;
- 116:main.c        **** 			}
- 117:main.c        **** 			else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
- 118:main.c        **** 				lf_turn_inc(LF_INC_SMALL,NEG);
- 119:main.c        **** 				dir=LEFT;
- 120:main.c        **** 			}
- 121:main.c        **** 			else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
- 122:main.c        **** 				lf_turn_inc(LF_INC_LARGE,POS);
- 123:main.c        **** 				dir=RIGHT;
- 124:main.c        **** 			}
- 125:main.c        **** 			else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
- 126:main.c        **** 				//lf_full_speed();
- 127:main.c        **** 				dir=FWD;
- 128:main.c        **** 			}
- 129:main.c        **** 			else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
- 130:main.c        **** 				//lf_full_speed();
- 131:main.c        **** 				dir=FWD;
- 132:main.c        **** 			}
- 133:main.c        **** 			*/
- 134:main.c        **** 
- 135:main.c        **** 			_delay_ms(200);
- 136:main.c        **** 			// do at every adc calc or pwm vector.
- 137:main.c        **** 		}
- 138:main.c        **** 		else if	(c_mode==TEST) {
- 139:main.c        **** 			if (initial) {
- 140:main.c        **** 				motor_mode(MOTOR_L_FWD,LEFT);
- 141:main.c        **** 				motor_mode(MOTOR_R_FWD,RIGHT);
- 142:main.c        **** 				initial=false;
- 143:main.c        **** 			}
- 144:main.c        **** 			static uint16_t sp;
+  69:main.c        **** 		if	(c_mode==FOLLOW && new_adc_data) {
+  70:main.c        **** 			if (new_adc_data) {
+  71:main.c        **** 				new_adc_data=false;
+  72:main.c        **** 				if (initial) {
+  73:main.c        **** 					lf_full_speed();
+  74:main.c        **** 					initial=false;
+  75:main.c        **** 				}
+  76:main.c        **** 
+  77:main.c        **** 				uint16_t adc_vc[channel_amt];
+  78:main.c        **** 				for (uint8_t i=0;i<channel_amt;++i) {
+  79:main.c        **** 					adc_vc[i]=adc_get_val(i);
+  80:main.c        **** 				}
+  81:main.c        **** 		
+  82:main.c        **** 				uint8_t  maxi=channel_amt;
+  83:main.c        **** 				uint16_t maxv=0;
+  84:main.c        **** 				for (uint8_t i=0;i<channel_amt;++i) {
+  85:main.c        **** 					if (adc_vc[i]>maxv) {
+  86:main.c        **** 						maxi=i;
+  87:main.c        **** 						maxv=adc_vc[i];
+  88:main.c        **** 					}
+  89:main.c        **** 				}
+  90:main.c        **** 			
+  91:main.c        **** 				#ifdef debug
+  92:main.c        **** 				print_adc_values();
+  93:main.c        **** 				printf_P(PSTR("\nMax Channel [L 0 1 2 3 R]: %d;v=%d"),maxi,maxv);
+  94:main.c        **** 				#endif
+  95:main.c        **** 
+  96:main.c        **** 				int8_t turn_i;			
+  97:main.c        **** 				turn_i = maxi-channel_amt/2; // Needs to work for even numbers....
+  98:main.c        **** 			
+  99:main.c        **** 				// Correction needed for even numbers of sensors.
+ 100:main.c        **** 				#if (!(channel_amt%2))
+ 101:main.c        **** 				if (turn_i>0)
+ 102:main.c        **** 					++turn_i;	
+ 103:main.c        **** 				#endif
+ 104:main.c        **** 
+ 105:main.c        **** 
+ 106:main.c        **** 				//Find Sensor "next to" max sensor.
+ 107:main.c        **** 
+ 108:main.c        **** 
+ 109:main.c        **** 
+ 110:main.c        **** 				// Hackish, should be removed.
+ 111:main.c        **** 				lf_turn_inc(abs(LF_INC_SMALL*turn_i),turn_i>=0);			
+ 112:main.c        **** 
+ 113:main.c        **** 
+ 114:main.c        **** 				printf_P(PSTR("\nTurn Increment: %d"),LF_INC_SMALL*turn_i);
+ 115:main.c        **** 			
+ 116:main.c        **** 				uint16_t c_speed [2] = {motor_get_speed(LEFT),motor_get_speed(RIGHT)};
+ 117:main.c        **** 				printf_P(PSTR("\nCurrent Motors: %d; %d"),c_speed[0],c_speed[1]);
+ 118:main.c        **** 				//0=LEFT, 3=RIGHT
+ 119:main.c        **** 				/*
+ 120:main.c        **** 				if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
+ 121:main.c        **** 					lf_turn_inc(LF_INC_LARGE,NEG);
+ 122:main.c        **** 					dir=LEFT;
+ 123:main.c        **** 				}
+ 124:main.c        **** 				else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
+ 125:main.c        **** 					lf_turn_inc(LF_INC_LARGE,POS);
+ 126:main.c        **** 					dir=RIGHT;
+ 127:main.c        **** 				}
+ 128:main.c        **** 				else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+ 129:main.c        **** 					lf_turn_inc(LF_INC_SMALL,NEG);
+ 130:main.c        **** 					dir=LEFT;
+ 131:main.c        **** 				}
+ 132:main.c        **** 				else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
+ 133:main.c        **** 					lf_turn_inc(LF_INC_LARGE,POS);
+ 134:main.c        **** 					dir=RIGHT;
+ 135:main.c        **** 				}
+ 136:main.c        **** 				else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
+ 137:main.c        **** 					//lf_full_speed();
+ 138:main.c        **** 					dir=FWD;
+ 139:main.c        **** 				}
+ 140:main.c        **** 				else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
+ 141:main.c        **** 					//lf_full_speed();
+ 142:main.c        **** 					dir=FWD;
+ 143:main.c        **** 				}
+ 144:main.c        **** 				*/
  145:main.c        **** 			
- 146:main.c        **** 			motor_set_speed(sp,LEFT);
- 147:main.c        **** 			motor_set_speed(sp,RIGHT);
- 148:main.c        **** 			_delay_ms(2);
- 149:main.c        **** 			//if (!(sp%0x100))
- 150:main.c        **** 			//	printf("\nsp=%x",sp);
- 151:main.c        **** 			++sp;
- 152:main.c        **** 		}
- 153:main.c        **** 	}	
- 154:main.c        **** } 
- 155:main.c        **** 		
- 156:main.c        **** ISR(BADISR_vect) {
- 155               	.LM3:
- 156               	.LFBB2:
- 157 0016 1F92      		push __zero_reg__
- 158 0018 0F92      		push r0
- 159 001a 0FB6      		in r0,__SREG__
- 160 001c 0F92      		push r0
- 161 001e 1124      		clr __zero_reg__
- 162 0020 8F93      		push r24
- 163 0022 9F93      		push r25
- 164               	/* prologue: Signal */
- 165               	/* frame size = 0 */
- 157:main.c        **** 	fprintf_P(stderr,PSTR("\n\nInvalid Interupt Enabled\n"));
- 167               	.LM4:
- 168 0024 80E0      		ldi r24,lo8(__c.1747)
- 169 0026 90E0      		ldi r25,hi8(__c.1747)
- 170 0028 9F93      		push r25
- 171 002a 8F93      		push r24
- 172 002c 8091 0000 		lds r24,__iob+4
- 173 0030 9091 0000 		lds r25,(__iob+4)+1
- 174 0034 9F93      		push r25
- 175 0036 8F93      		push r24
- 176 0038 0E94 0000 		call fprintf_P
- 177 003c 0F90      		pop __tmp_reg__
- 178 003e 0F90      		pop __tmp_reg__
- 179 0040 0F90      		pop __tmp_reg__
- 180 0042 0F90      		pop __tmp_reg__
- 181               	/* epilogue start */
- 158:main.c        **** }
- 183               	.LM5:
- 184 0044 9F91      		pop r25
- 185 0046 8F91      		pop r24
- 186 0048 0F90      		pop r0
- 187 004a 0FBE      		out __SREG__,r0
- 188 004c 0F90      		pop r0
- 189 004e 1F90      		pop __zero_reg__
- 190 0050 1895      		reti
- 192               	.Lscope2:
- 194               		.stabd	78,0,0
- 196               	.global	init
- 198               	init:
- 199               		.stabd	46,0,0
- 201               	.LM6:
- 202               	.LFBB3:
- 203               	/* prologue: function */
- 204               	/* frame size = 0 */
- 206               	.LM7:
- 207               	/* #APP */
- 208               	 ;  46 "main.c" 1
- 209 0052 F894      		cli
- 210               	 ;  0 "" 2
- 212               	.LM8:
- 213               	/* #NOAPP */
- 214 0054 E4E6      		ldi r30,lo8(100)
- 215 0056 F0E0      		ldi r31,hi8(100)
- 216 0058 8081      		ld r24,Z
- 217 005a 8F61      		ori r24,lo8(31)
- 218 005c 8083      		st Z,r24
- 219               	.LBB28:
- 220               	.LBB29:
- 221               	.LBB30:
- 223               	.LM9:
- 224 005e 80E0      		ldi r24,lo8(0)
- 225 0060 90E0      		ldi r25,hi8(0)
- 226 0062 20E8      		ldi r18,lo8(-128)
- 227               	/* #APP */
- 228               	 ;  31 "main.c" 1
- 229 0064 0FB6      		in __tmp_reg__,__SREG__
- 230 0066 F894      		cli
- 231 0068 2093 6100 		sts 97, r18
- 232 006c 8093 6100 		sts 97, r24
- 233 0070 0FBE      		out __SREG__, __tmp_reg__
- 234               	 ;  0 "" 2
- 235               	/* #NOAPP */
- 236               	.LBE30:
- 237               	.LBE29:
- 238               	.LBE28:
- 240               	.LM10:
- 241 0072 0E94 0000 		call joy_init
- 243               	.LM11:
- 244 0076 0E94 0000 		call usart_init
- 246               	.LM12:
- 247 007a 0E94 0000 		call adc_init
- 249               	.LM13:
- 250 007e 0E94 0000 		call timers_init
- 252               	.LM14:
- 253 0082 0E94 0000 		call motors_init
- 255               	.LM15:
- 256               	/* #APP */
- 257               	 ;  54 "main.c" 1
- 258 0086 7894      		sei
- 259               	 ;  0 "" 2
- 261               	.LM16:
- 262               	/* #NOAPP */
- 263 0088 80E0      		ldi r24,lo8(__c.1702)
- 264 008a 90E0      		ldi r25,hi8(__c.1702)
- 265 008c 9F93      		push r25
- 266 008e 8F93      		push r24
- 267 0090 0E94 0000 		call printf_P
- 268 0094 0F90      		pop __tmp_reg__
- 269 0096 0F90      		pop __tmp_reg__
- 270               	/* epilogue start */
- 272               	.LM17:
- 273 0098 0895      		ret
- 275               	.Lscope3:
- 277               		.stabd	78,0,0
- 279               	.global	main
- 281               	main:
- 282               		.stabd	46,0,0
- 284               	.LM18:
- 285               	.LFBB4:
- 286               	/* prologue: function */
- 287               	/* frame size = 0 */
- 289               	.LM19:
- 290 009a 0E94 0000 		call init
- 292               	.LM20:
- 293 009e 1092 0000 		sts c_mode,__zero_reg__
- 295               	.LM21:
- 296 00a2 81E0      		ldi r24,lo8(1)
- 297 00a4 8093 0000 		sts initial,r24
- 298               	.L8:
- 299 00a8 00C0      		rjmp .L8
- 301               	.Lscope4:
- 303               		.stabd	78,0,0
- 306               	.global	print_bin
- 308               	print_bin:
- 309               		.stabd	46,0,0
- 311               	.LM22:
- 312               	.LFBB5:
- 313 00aa EF92      		push r14
- 314 00ac FF92      		push r15
- 315 00ae 0F93      		push r16
- 316 00b0 1F93      		push r17
- 317 00b2 CF93      		push r28
- 318 00b4 DF93      		push r29
- 319               	/* prologue: function */
- 320               	/* frame size = 0 */
- 322               	.LM23:
- 323 00b6 C7E0      		ldi r28,lo8(7)
- 324 00b8 D0E0      		ldi r29,hi8(7)
- 325               	.LBB31:
- 327               	.LM24:
- 328 00ba 91E0      		ldi r25,lo8(1)
- 329 00bc E92E      		mov r14,r25
- 330 00be F12C      		mov r15,__zero_reg__
- 331 00c0 082F      		mov r16,r24
- 332 00c2 10E0      		ldi r17,lo8(0)
- 333               	.L11:
- 334 00c4 C701      		movw r24,r14
- 335 00c6 0C2E      		mov r0,r28
- 336 00c8 00C0      		rjmp 2f
- 337 00ca 880F      	1:	lsl r24
- 338 00cc 991F      		rol r25
- 339 00ce 0A94      	2:	dec r0
- 340 00d0 02F4      		brpl 1b
- 341 00d2 8023      		and r24,r16
- 342 00d4 9123      		and r25,r17
- 343 00d6 0C2E      		mov r0,r28
- 344 00d8 00C0      		rjmp 2f
- 345 00da 9595      	1:	asr r25
- 346 00dc 8795      		ror r24
- 347 00de 0A94      	2:	dec r0
- 348 00e0 02F4      		brpl 1b
- 349 00e2 C096      		adiw r24,48
- 350 00e4 0E94 0000 		call putchar
- 351 00e8 2197      		sbiw r28,1
- 353               	.LM25:
- 354 00ea 8FEF      		ldi r24,hi8(-1)
- 355 00ec CF3F      		cpi r28,lo8(-1)
- 356 00ee D807      		cpc r29,r24
- 357 00f0 01F4      		brne .L11
- 358               	/* epilogue start */
- 359               	.LBE31:
- 361               	.LM26:
- 362 00f2 DF91      		pop r29
- 363 00f4 CF91      		pop r28
- 364 00f6 1F91      		pop r17
- 365 00f8 0F91      		pop r16
- 366 00fa FF90      		pop r15
- 367 00fc EF90      		pop r14
- 368 00fe 0895      		ret
- 370               	.Lscope5:
- 372               		.stabd	78,0,0
- 373               		.section	.progmem.data,"a",@progbits
- 376               	__c.1747:
- 377 0000 0A0A 496E 		.string	"\n\nInvalid Interupt Enabled\n"
- 377      7661 6C69 
- 377      6420 496E 
- 377      7465 7275 
- 377      7074 2045 
- 380               	__c.1702:
- 381 001c 0A49 6E69 		.string	"\nInit: Done\n\n"
- 381      743A 2044 
- 381      6F6E 650A 
- 381      0A00 
- 382               		.comm c_mode,1,1
- 383               		.comm initial,1,1
- 384               		.comm adc_val,8,1
- 385               		.comm adc_offset,8,1
- 386               		.comm adc_amt,8,1
- 387               		.comm curr_ch,1,1
- 396               		.text
- 398               	.Letext0:
+ 146:main.c        **** 		
+ 147:main.c        **** 			}
+ 148:main.c        **** 			else { // if !new_adc_data
+ 149:main.c        **** 				// Sleep? (need adc, timers, pwm outputs (IO clock), 
+ 150:main.c        **** 			}
+ 151:main.c        **** 		}
+ 152:main.c        **** 		else if	(c_mode==TEST) {
+ 153:main.c        **** 			if (initial) {
+ 154:main.c        **** 				motor_mode(MOTOR_L_FWD,LEFT);
+ 155:main.c        **** 				motor_mode(MOTOR_R_FWD,RIGHT);
+ 156:main.c        **** 				initial=false;
+ 157:main.c        **** 			}
+ 158:main.c        **** 			static uint16_t sp;
+ 159:main.c        **** 			
+ 160:main.c        **** 			motor_set_speed(sp,LEFT);
+ 161:main.c        **** 			motor_set_speed(sp,RIGHT);
+ 162:main.c        **** 			_delay_ms(2);
+ 163:main.c        **** 			//if (!(sp%0x100))
+ 164:main.c        **** 			//	printf("\nsp=%x",sp);
+ 165:main.c        **** 			++sp;
+ 166:main.c        **** 		}
+ 167:main.c        **** 	}	
+ 168:main.c        **** } 
+ 169:main.c        **** 		
+ 170:main.c        **** ISR(BADISR_vect) {
+ 150               	.LM3:
+ 151               	.LFBB2:
+ 152 0016 1F92      		push __zero_reg__
+ 153 0018 0F92      		push r0
+ 154 001a 0FB6      		in r0,__SREG__
+ 155 001c 0F92      		push r0
+ 156 001e 1124      		clr __zero_reg__
+ 157 0020 8F93      		push r24
+ 158 0022 9F93      		push r25
+ 159               	/* prologue: Signal */
+ 160               	/* frame size = 0 */
+ 171:main.c        **** 	fprintf_P(stderr,PSTR("\n\nInvalid Interupt Enabled\n"));
+ 162               	.LM4:
+ 163 0024 80E0      		ldi r24,lo8(__c.1765)
+ 164 0026 90E0      		ldi r25,hi8(__c.1765)
+ 165 0028 9F93      		push r25
+ 166 002a 8F93      		push r24
+ 167 002c 8091 0000 		lds r24,__iob+4
+ 168 0030 9091 0000 		lds r25,(__iob+4)+1
+ 169 0034 9F93      		push r25
+ 170 0036 8F93      		push r24
+ 171 0038 0E94 0000 		call fprintf_P
+ 172 003c 0F90      		pop __tmp_reg__
+ 173 003e 0F90      		pop __tmp_reg__
+ 174 0040 0F90      		pop __tmp_reg__
+ 175 0042 0F90      		pop __tmp_reg__
+ 176               	/* epilogue start */
+ 172:main.c        **** }
+ 178               	.LM5:
+ 179 0044 9F91      		pop r25
+ 180 0046 8F91      		pop r24
+ 181 0048 0F90      		pop r0
+ 182 004a 0FBE      		out __SREG__,r0
+ 183 004c 0F90      		pop r0
+ 184 004e 1F90      		pop __zero_reg__
+ 185 0050 1895      		reti
+ 187               	.Lscope2:
+ 189               	.global	init
+ 191               	init:
+ 193               	.LM6:
+ 194               	.LFBB3:
+ 195               	/* prologue: function */
+ 196               	/* frame size = 0 */
+ 198               	.LM7:
+ 199               	/* #APP */
+ 200               	 ;  46 "main.c" 1
+ 201 0052 F894      		cli
+ 202               	 ;  0 "" 2
+ 204               	.LM8:
+ 205               	/* #NOAPP */
+ 206 0054 E4E6      		ldi r30,lo8(100)
+ 207 0056 F0E0      		ldi r31,hi8(100)
+ 208 0058 8081      		ld r24,Z
+ 209 005a 8F61      		ori r24,lo8(31)
+ 210 005c 8083      		st Z,r24
+ 212               	.LM9:
+ 213 005e 1DBA      		out 61-0x20,__zero_reg__
+ 214 0060 8DB3      		in r24,61-0x20
+ 215 0062 EBE6      		ldi r30,lo8(107)
+ 216 0064 F0E0      		ldi r31,hi8(107)
+ 217 0066 8083      		st Z,r24
+ 218 0068 8081      		ld r24,Z
+ 219 006a 8093 6C00 		sts 108,r24
+ 220               	.LBB24:
+ 221               	.LBB25:
+ 222               	.LBB26:
+ 224               	.LM10:
+ 225 006e 80E0      		ldi r24,lo8(0)
+ 226 0070 90E0      		ldi r25,hi8(0)
+ 227 0072 20E8      		ldi r18,lo8(-128)
+ 228               	/* #APP */
+ 229               	 ;  31 "main.c" 1
+ 230 0074 0FB6      		in __tmp_reg__,__SREG__
+ 231 0076 F894      		cli
+ 232 0078 2093 6100 		sts 97, r18
+ 233 007c 8093 6100 		sts 97, r24
+ 234 0080 0FBE      		out __SREG__, __tmp_reg__
+ 235               	 ;  0 "" 2
+ 236               	/* #NOAPP */
+ 237               	.LBE26:
+ 238               	.LBE25:
+ 239               	.LBE24:
+ 241               	.LM11:
+ 242 0082 0E94 0000 		call joy_init
+ 244               	.LM12:
+ 245 0086 0E94 0000 		call usart_init
+ 247               	.LM13:
+ 248 008a 0E94 0000 		call adc_init
+ 250               	.LM14:
+ 251 008e 0E94 0000 		call timers_init
+ 253               	.LM15:
+ 254 0092 0E94 0000 		call motors_init
+ 256               	.LM16:
+ 257               	/* #APP */
+ 258               	 ;  55 "main.c" 1
+ 259 0096 7894      		sei
+ 260               	 ;  0 "" 2
+ 262               	.LM17:
+ 263               	/* #NOAPP */
+ 264 0098 80E0      		ldi r24,lo8(__c.1703)
+ 265 009a 90E0      		ldi r25,hi8(__c.1703)
+ 266 009c 9F93      		push r25
+ 267 009e 8F93      		push r24
+ 268 00a0 0E94 0000 		call printf_P
+ 269 00a4 0F90      		pop __tmp_reg__
+ 270 00a6 0F90      		pop __tmp_reg__
+ 271               	/* epilogue start */
+ 273               	.LM18:
+ 274 00a8 0895      		ret
+ 276               	.Lscope3:
+ 278               	.global	main
+ 280               	main:
+ 282               	.LM19:
+ 283               	.LFBB4:
+ 284               	/* prologue: function */
+ 285               	/* frame size = 0 */
+ 287               	.LM20:
+ 288 00aa 0E94 0000 		call init
+ 290               	.LM21:
+ 291 00ae 1092 0000 		sts c_mode,__zero_reg__
+ 293               	.LM22:
+ 294 00b2 81E0      		ldi r24,lo8(1)
+ 295 00b4 8093 0000 		sts initial,r24
+ 296               	.L8:
+ 297 00b8 00C0      		rjmp .L8
+ 299               	.Lscope4:
+ 302               	.global	print_bin
+ 304               	print_bin:
+ 306               	.LM23:
+ 307               	.LFBB5:
+ 308 00ba EF92      		push r14
+ 309 00bc FF92      		push r15
+ 310 00be 0F93      		push r16
+ 311 00c0 1F93      		push r17
+ 312 00c2 CF93      		push r28
+ 313 00c4 DF93      		push r29
+ 314               	/* prologue: function */
+ 315               	/* frame size = 0 */
+ 317               	.LM24:
+ 318 00c6 C7E0      		ldi r28,lo8(7)
+ 319 00c8 D0E0      		ldi r29,hi8(7)
+ 320               	.LBB27:
+ 322               	.LM25:
+ 323 00ca 91E0      		ldi r25,lo8(1)
+ 324 00cc E92E      		mov r14,r25
+ 325 00ce F12C      		mov r15,__zero_reg__
+ 326 00d0 082F      		mov r16,r24
+ 327 00d2 10E0      		ldi r17,lo8(0)
+ 328               	.L11:
+ 329 00d4 C701      		movw r24,r14
+ 330 00d6 0C2E      		mov r0,r28
+ 331 00d8 00C0      		rjmp 2f
+ 332 00da 880F      	1:	lsl r24
+ 333 00dc 991F      		rol r25
+ 334 00de 0A94      	2:	dec r0
+ 335 00e0 02F4      		brpl 1b
+ 336 00e2 8023      		and r24,r16
+ 337 00e4 9123      		and r25,r17
+ 338 00e6 0C2E      		mov r0,r28
+ 339 00e8 00C0      		rjmp 2f
+ 340 00ea 9595      	1:	asr r25
+ 341 00ec 8795      		ror r24
+ 342 00ee 0A94      	2:	dec r0
+ 343 00f0 02F4      		brpl 1b
+ 344 00f2 C096      		adiw r24,48
+ 345 00f4 0E94 0000 		call putchar
+ 346 00f8 2197      		sbiw r28,1
+ 348               	.LM26:
+ 349 00fa 8FEF      		ldi r24,hi8(-1)
+ 350 00fc CF3F      		cpi r28,lo8(-1)
+ 351 00fe D807      		cpc r29,r24
+ 352 0100 01F4      		brne .L11
+ 353               	/* epilogue start */
+ 354               	.LBE27:
+ 356               	.LM27:
+ 357 0102 DF91      		pop r29
+ 358 0104 CF91      		pop r28
+ 359 0106 1F91      		pop r17
+ 360 0108 0F91      		pop r16
+ 361 010a FF90      		pop r15
+ 362 010c EF90      		pop r14
+ 363 010e 0895      		ret
+ 365               	.Lscope5:
+ 366               		.section	.progmem.data,"a",@progbits
+ 369               	__c.1765:
+ 370 0000 0A0A 496E 		.string	"\n\nInvalid Interupt Enabled\n"
+ 370      7661 6C69 
+ 370      6420 496E 
+ 370      7465 7275 
+ 370      7074 2045 
+ 373               	__c.1703:
+ 374 001c 0A49 6E69 		.string	"\nInit: Done\n\n"
+ 374      743A 2044 
+ 374      6F6E 650A 
+ 374      0A00 
+ 375               		.comm c_mode,1,1
+ 376               		.comm initial,1,1
+ 377               		.comm adc_val,8,1
+ 378               		.comm adc_offset,8,1
+ 379               		.comm adc_amt,8,1
+ 380               		.comm curr_ch,1,1
+ 381               		.comm new_adc_data,1,1
+ 391               		.text
+ 393               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/cck9ci4f.s:2      *ABS*:0000003f __SREG__
-     /tmp/cck9ci4f.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cck9ci4f.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cck9ci4f.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/cck9ci4f.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/cck9ci4f.s:118    .text:00000000 clock_init
-     /tmp/cck9ci4f.s:152    .text:00000016 __vector_default
-     /tmp/cck9ci4f.s:376    .progmem.data:00000000 __c.1747
-     /tmp/cck9ci4f.s:198    .text:00000052 init
-     /tmp/cck9ci4f.s:380    .progmem.data:0000001c __c.1702
-     /tmp/cck9ci4f.s:281    .text:0000009a main
+     /tmp/ccHlAAPO.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccHlAAPO.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccHlAAPO.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccHlAAPO.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccHlAAPO.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccHlAAPO.s:117    .text:00000000 clock_init
+     /tmp/ccHlAAPO.s:148    .text:00000016 __vector_default
+     /tmp/ccHlAAPO.s:369    .progmem.data:00000000 __c.1765
+     /tmp/ccHlAAPO.s:191    .text:00000052 init
+     /tmp/ccHlAAPO.s:373    .progmem.data:0000001c __c.1703
+     /tmp/ccHlAAPO.s:280    .text:000000aa main
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
-     /tmp/cck9ci4f.s:308    .text:000000aa print_bin
+     /tmp/ccHlAAPO.s:304    .text:000000ba print_bin
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt
                             *COM*:00000001 curr_ch
+                            *COM*:00000001 new_adc_data
 
 UNDEFINED SYMBOLS
 __do_copy_data

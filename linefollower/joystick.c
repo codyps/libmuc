@@ -24,9 +24,9 @@ void joy_init(void) {
 	// Enable Pin Change interupts. Disable INT0
 	//EIMSK|=((1<<PCIE1)|(1<<PCIE0));
 	//EIMSK&=(uint8_t)~(1<<INT0);
-	EIMSK=(1<<PCIE1)|(1<<PCIE0);
-	PCMSK1=(1<<PCINT15)|(1<<PCINT14)|(1<<PCINT12);
-	PCMSK0=(1<<PCINT3)|(1<<PCINT2);	
+	EIMSK|=(1<<PCIE1)|(1<<PCIE0);
+	PCMSK1|=(1<<PCINT15)|(1<<PCINT14)|(1<<PCINT12);
+	PCMSK0|=(1<<PCINT3)|(1<<PCINT2);	
 	
 }
 

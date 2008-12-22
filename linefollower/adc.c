@@ -156,8 +156,6 @@ ISR(ADC_vect) {
 	// Change the channel for the conversion after the one currently processing.
 	if (++curr_ch >= channel_amt)	curr_ch = 0;
 	
-	//Wait for the clock to be set, 1 adc cycle.
-	//_delay_loop2(ADC_CYCLE_DELAY);
 	adc_set_channel(curr_ch);
 	
 	//printf("adc_value: %d",adc_value);
@@ -165,7 +163,7 @@ ISR(ADC_vect) {
 	//TODO: modify for running average (Ave= (Ave*(ct-1)+New)/ct)
 	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
 	
-	if (!(ct%4)) {
-		//all values have been recalculated, update motors.
+	if (!(ct%channel_amt)) {
+		new_adc_data=true;//all values have been recalculated, update motors.
 	}
 }

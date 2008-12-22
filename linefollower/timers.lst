@@ -775,29 +775,29 @@
  694               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 timers.c
-     /tmp/ccP7jG5b.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccP7jG5b.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccP7jG5b.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccP7jG5b.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/ccP7jG5b.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/ccP7jG5b.s:106    .text:00000000 __vector_9
-     /tmp/ccP7jG5b.s:661    .bss:00000002 timer_2_dir
-     /tmp/ccP7jG5b.s:139    .text:0000001e __vector_6
-     /tmp/ccP7jG5b.s:169    .text:00000036 __vector_7
-     /tmp/ccP7jG5b.s:212    .text:0000005c __vector_8
-     /tmp/ccP7jG5b.s:255    .text:00000082 timer1_init
-     /tmp/ccP7jG5b.s:655    .progmem.data:00000034 __c.1578
-     /tmp/ccP7jG5b.s:651    .progmem.data:0000002c __c.1585
-     /tmp/ccP7jG5b.s:412    .text:00000132 __vector_5
+     /tmp/ccW1nCva.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccW1nCva.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccW1nCva.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccW1nCva.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccW1nCva.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccW1nCva.s:106    .text:00000000 __vector_9
+     /tmp/ccW1nCva.s:661    .bss:00000002 timer_2_dir
+     /tmp/ccW1nCva.s:139    .text:0000001e __vector_6
+     /tmp/ccW1nCva.s:169    .text:00000036 __vector_7
+     /tmp/ccW1nCva.s:212    .text:0000005c __vector_8
+     /tmp/ccW1nCva.s:255    .text:00000082 timer1_init
+     /tmp/ccW1nCva.s:655    .progmem.data:00000034 __c.1578
+     /tmp/ccW1nCva.s:651    .progmem.data:0000002c __c.1585
+     /tmp/ccW1nCva.s:412    .text:00000132 __vector_5
                              .bss:00000000 sec.1567
                             *COM*:00000001 c_mode
-     /tmp/ccP7jG5b.s:659    .progmem.data:0000004a __c.1568
-     /tmp/ccP7jG5b.s:480    .text:00000194 timer2_init
-     /tmp/ccP7jG5b.s:668    .progmem.data:0000005c __c.1521
-     /tmp/ccP7jG5b.s:664    .progmem.data:00000054 __c.1529
-     /tmp/ccP7jG5b.s:589    .text:00000242 timers_init
-     /tmp/ccP7jG5b.s:647    .progmem.data:00000016 __c.1664
-     /tmp/ccP7jG5b.s:643    .progmem.data:00000000 __c.1666
+     /tmp/ccW1nCva.s:659    .progmem.data:0000004a __c.1568
+     /tmp/ccW1nCva.s:480    .text:00000194 timer2_init
+     /tmp/ccW1nCva.s:668    .progmem.data:0000005c __c.1521
+     /tmp/ccW1nCva.s:664    .progmem.data:00000054 __c.1529
+     /tmp/ccW1nCva.s:589    .text:00000242 timers_init
+     /tmp/ccW1nCva.s:647    .progmem.data:00000016 __c.1664
+     /tmp/ccW1nCva.s:643    .progmem.data:00000000 __c.1666
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt
