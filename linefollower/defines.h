@@ -12,6 +12,8 @@ Globaly Utilized Information
 
 // Debuging 
 #define debug
+#define DEBUG 1
+
 #ifdef debug 
 #define debugp_P(__A) printf_P(__A)
 #define debugp(__A) printf(__A)
@@ -21,6 +23,8 @@ Globaly Utilized Information
 #endif
 
 
+#define SENSOR_NUM_ODD  (channel_amt%2)
+#define SENSOR_NUM_EVEN (!(channel_amt%2))
 
 #define F_CPU 8000000
 
@@ -66,8 +70,8 @@ Globaly Utilized Information
 #define MOTOR_R_BWD MOTOR_MODE_CCW
 
 /* Mode/State */
-enum {WAIT,TEST,FOLLOW};
-uint8_t volatile c_mode;
+typedef enum {WAIT,TEST,FOLLOW} main_mode_t;
+main_mode_t volatile c_mode;
 bool volatile initial;
 
 #endif

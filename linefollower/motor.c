@@ -43,7 +43,7 @@ void motor_set_speed(uint16_t speed, uint8_t motor) {
 		error_invalid_motor(motor);
 }
 
-uint8_t motor_mode(uint8_t mode, uint8_t motor) {
+uint8_t motor_mode(motor_mode_t mode, uint8_t motor) {
 	static uint8_t c_modes[2]; //=0;
 	uint8_t M_IN1,M_IN2;
 	uint8_t * c_mode;

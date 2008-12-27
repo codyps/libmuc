@@ -2,956 +2,768 @@
    2               	__SREG__ = 0x3f
    3               	__SP_H__ = 0x3e
    4               	__SP_L__ = 0x3d
-   5               	__tmp_reg__ = 0
-   6               	__zero_reg__ = 1
-   7               		.global __do_copy_data
-   8               		.global __do_clear_bss
-  11               		.text
-  12               	.Ltext0:
- 113               	.global	inc_limit
- 115               	inc_limit:
- 116               		.stabd	46,0,0
-   1:motor.c       **** #include "defines.h"
-   2:motor.c       **** #include "motor.h"
-   3:motor.c       **** #include "timers.h"
-   4:motor.c       **** #include <stdio.h>
-   5:motor.c       **** #include <inttypes.h>
-   6:motor.c       **** #include <util/atomic.h>
-   7:motor.c       **** #include <avr/pgmspace.h>
-   8:motor.c       **** #include <stdlib.h>
-   9:motor.c       **** 
-  10:motor.c       **** #ifdef debug
-  11:motor.c       **** #define error_invalid_motor(_m) printf_P(PSTR("\n[error] Motor: Invalid Motor Number: %d [%s]"),_m,
-  12:motor.c       **** #else
-  13:motor.c       **** #define error_invalid_motor(_m) 
-  14:motor.c       **** #endif
-  15:motor.c       **** 
-  16:motor.c       **** uint16_t motor_get_speed(uint8_t motor) {
-  17:motor.c       **** 	uint16_t temp;
-  18:motor.c       **** 	if		(motor==LEFT)
-  19:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
-  20:motor.c       **** 		temp=MOTOR_LEFT;
-  21:motor.c       **** 	}
-  22:motor.c       **** 	else if	(motor==RIGHT)
-  23:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
-  24:motor.c       **** 		temp=MOTOR_RIGHT;
-  25:motor.c       **** 	}
-  26:motor.c       **** 	else {
-  27:motor.c       **** 		error_invalid_motor(motor);
-  28:motor.c       **** 		temp=0;
-  29:motor.c       **** 	}
-  30:motor.c       **** 	return temp;
-  31:motor.c       **** }
-  32:motor.c       **** 
-  33:motor.c       **** void motor_set_speed(uint16_t speed, uint8_t motor) {
-  34:motor.c       **** 	if		(motor==LEFT)
-  35:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
-  36:motor.c       **** 		MOTOR_LEFT=speed;
-  37:motor.c       **** 	}
-  38:motor.c       **** 	else if (motor==RIGHT)
-  39:motor.c       **** 	ATOMIC_BLOCK(ATOMIC_FORCEON){
-  40:motor.c       **** 		MOTOR_RIGHT=speed;
-  41:motor.c       **** 	}
-  42:motor.c       **** 	else 
-  43:motor.c       **** 		error_invalid_motor(motor);
-  44:motor.c       **** }
-  45:motor.c       **** 
-  46:motor.c       **** uint8_t motor_mode(uint8_t mode, uint8_t motor) {
-  47:motor.c       **** 	static uint8_t c_modes[2]; //=0;
-  48:motor.c       **** 	uint8_t M_IN1,M_IN2;
-  49:motor.c       **** 	uint8_t * c_mode;
-  50:motor.c       **** 	if (motor==LEFT) {
-  51:motor.c       **** 		M_IN1=M_LIN1;
-  52:motor.c       **** 		M_IN2=M_LIN2;
-  53:motor.c       **** 		c_mode=&c_modes[LEFT];
-  54:motor.c       **** 	}
-  55:motor.c       **** 	else if (motor==RIGHT){
-  56:motor.c       **** 		M_IN1=M_RIN1;
-  57:motor.c       **** 		M_IN2=M_RIN2;
-  58:motor.c       **** 		c_mode=&c_modes[RIGHT];
-  59:motor.c       **** 	}
-  60:motor.c       **** 	else {
-  61:motor.c       **** 		error_invalid_motor(motor);
-  62:motor.c       **** 		return MOTOR_MODE_ERROR;
-  63:motor.c       **** 	}
-  64:motor.c       **** 	
-  65:motor.c       **** 	if 	(mode == MOTOR_MODE_CCW ) {
-  66:motor.c       **** 		MOTOR_CTL_PORT&=~(1<<M_IN1); // IN1 = L, IN2 = H
-  67:motor.c       **** 		MOTOR_CTL_PORT|=(1<<M_IN2);
-  68:motor.c       **** 		*c_mode = mode;
-  69:motor.c       **** 	}
-  70:motor.c       **** 	else if (mode == MOTOR_MODE_CW  ) {
-  71:motor.c       **** 		MOTOR_CTL_PORT|=(1<<M_IN1);
-  72:motor.c       **** 		MOTOR_CTL_PORT&=~(1<<M_IN2); // IN1 = H, IN2 = L
-  73:motor.c       **** 		*c_mode = mode;
-  74:motor.c       **** 	}
-  75:motor.c       **** 	else if (mode == MOTOR_MODE_STOP) {
-  76:motor.c       **** 		MOTOR_CTL_PORT&=~((1<<M_IN1)|(1<<M_IN2)); // IN1 = L, IN2 = L
-  77:motor.c       **** 		*c_mode = mode;
-  78:motor.c       **** 	}
-  79:motor.c       **** 	else if (mode == MOTOR_MODE_SB	) {
-  80:motor.c       **** 		MOTOR_CTL_PORT|=(1<<M_IN1)|(1<<M_IN2); // IN1 = H, IN2 = H
-  81:motor.c       **** 		*c_mode = mode;
-  82:motor.c       **** 	}
-  83:motor.c       **** 	
-  84:motor.c       **** 	#ifdef debug
-  85:motor.c       **** 	char mname;
-  86:motor.c       **** 	if (motor==LEFT)
-  87:motor.c       **** 		mname='L';
-  88:motor.c       **** 	else
-  89:motor.c       **** 		mname='R';
-  90:motor.c       **** 	printf("\nMotor: %c mode: %d",mname,*c_mode);
-  91:motor.c       **** 	#endif
-  92:motor.c       **** 	
-  93:motor.c       **** 	return *c_mode;
-  94:motor.c       **** }
-  95:motor.c       **** 
-  96:motor.c       **** uint16_t inc_limit(uint16_t * org, uint16_t inc, uint16_t lim) {
- 118               	.LM0:
- 119               	.LFBB1:
- 120               	/* prologue: function */
- 121               	/* frame size = 0 */
- 122 0000 FC01      		movw r30,r24
-  97:motor.c       **** 	uint16_t space_left = lim-(*org);
- 124               	.LM1:
- 125 0002 2081      		ld r18,Z
- 126 0004 3181      		ldd r19,Z+1
- 127 0006 421B      		sub r20,r18
- 128 0008 530B      		sbc r21,r19
-  98:motor.c       **** 	if (inc>space_left) {
- 130               	.LM2:
- 131 000a 4617      		cp r20,r22
- 132 000c 5707      		cpc r21,r23
- 133 000e 00F4      		brsh .L2
-  99:motor.c       **** 		*org+=space_left;
- 135               	.LM3:
- 136 0010 240F      		add r18,r20
- 137 0012 351F      		adc r19,r21
- 138 0014 3183      		std Z+1,r19
- 139 0016 2083      		st Z,r18
- 100:motor.c       **** 		//*org=max;
- 101:motor.c       **** 		return (inc-space_left);
- 141               	.LM4:
- 142 0018 CB01      		movw r24,r22
- 143 001a 841B      		sub r24,r20
- 144 001c 950B      		sbc r25,r21
- 145 001e AC01      		movw r20,r24
- 146 0020 00C0      		rjmp .L3
- 147               	.L2:
- 102:motor.c       **** 	}
- 103:motor.c       **** 	else {
- 104:motor.c       **** 		*org+=inc;
- 149               	.LM5:
- 150 0022 260F      		add r18,r22
- 151 0024 371F      		adc r19,r23
- 152 0026 3183      		std Z+1,r19
- 153 0028 2083      		st Z,r18
- 154 002a 40E0      		ldi r20,lo8(0)
- 155 002c 50E0      		ldi r21,hi8(0)
- 156               	.L3:
- 105:motor.c       **** 		return 0;
- 106:motor.c       **** 	}
- 107:motor.c       **** }
- 158               	.LM6:
- 159 002e CA01      		movw r24,r20
- 160               	/* epilogue start */
- 161 0030 0895      		ret
- 166               	.Lscope1:
- 168               		.stabd	78,0,0
- 173               	.global	dec_limit
- 175               	dec_limit:
- 176               		.stabd	46,0,0
- 108:motor.c       **** 
- 109:motor.c       **** uint16_t dec_limit(uint16_t * org, uint16_t dec, uint16_t lim) {
- 178               	.LM7:
- 179               	.LFBB2:
- 180               	/* prologue: function */
- 181               	/* frame size = 0 */
- 182 0032 FC01      		movw r30,r24
- 183 0034 CB01      		movw r24,r22
- 110:motor.c       **** 	uint16_t space_left = (*org)-lim;
- 185               	.LM8:
- 186 0036 2081      		ld r18,Z
- 187 0038 3181      		ldd r19,Z+1
- 188 003a B901      		movw r22,r18
- 189 003c 641B      		sub r22,r20
- 190 003e 750B      		sbc r23,r21
- 111:motor.c       **** 	if (dec>space_left) {
- 192               	.LM9:
- 193 0040 6817      		cp r22,r24
- 194 0042 7907      		cpc r23,r25
- 195 0044 00F4      		brsh .L6
- 112:motor.c       **** 		*org-=space_left;
- 197               	.LM10:
- 198 0046 261B      		sub r18,r22
- 199 0048 370B      		sbc r19,r23
- 200 004a 3183      		std Z+1,r19
- 201 004c 2083      		st Z,r18
- 113:motor.c       **** 		return (dec-space_left);
- 203               	.LM11:
- 204 004e 9C01      		movw r18,r24
- 205 0050 261B      		sub r18,r22
- 206 0052 370B      		sbc r19,r23
- 207 0054 B901      		movw r22,r18
- 208 0056 00C0      		rjmp .L7
- 209               	.L6:
- 114:motor.c       **** 	}
- 115:motor.c       **** 	else {
- 116:motor.c       **** 		*org-=dec;
- 211               	.LM12:
- 212 0058 281B      		sub r18,r24
- 213 005a 390B      		sbc r19,r25
- 214 005c 3183      		std Z+1,r19
- 215 005e 2083      		st Z,r18
- 216 0060 60E0      		ldi r22,lo8(0)
- 217 0062 70E0      		ldi r23,hi8(0)
- 218               	.L7:
- 117:motor.c       **** 		return 0;
- 118:motor.c       **** 	}
- 119:motor.c       **** }
- 220               	.LM13:
- 221 0064 CB01      		movw r24,r22
- 222               	/* epilogue start */
- 223 0066 0895      		ret
- 228               	.Lscope2:
- 230               		.stabd	78,0,0
- 234               	.global	motor_set_speed
- 236               	motor_set_speed:
- 237               		.stabd	46,0,0
- 239               	.LM14:
- 240               	.LFBB3:
- 241               	/* prologue: function */
- 242               	/* frame size = 0 */
- 244               	.LM15:
- 245 0068 6623      		tst r22
- 246 006a 01F4      		brne .L10
- 247               	.LBB32:
- 248               	.LBB33:
- 249               	.LBB34:
- 251               	.Ltext1:
-   1:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* Copyright (c) 2007 Dean Camera
-   2:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    All rights reserved.
-   3:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-   4:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    Redistribution and use in source and binary forms, with or without
-   5:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    modification, are permitted provided that the following conditions are met:
-   6:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-   7:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Redistributions of source code must retain the above copyright
-   8:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer.
-   9:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  10:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Redistributions in binary form must reproduce the above copyright
-  11:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer in
-  12:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      the documentation and/or other materials provided with the
-  13:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      distribution.
-  14:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  15:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****    * Neither the name of the copyright holders nor the names of
-  16:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      contributors may be used to endorse or promote products derived
-  17:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****      from this software without specific prior written permission.
-  18:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  19:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  20:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  21:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-  22:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-  23:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-  24:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-  25:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-  26:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-  27:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  28:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  29:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****   POSSIBILITY OF SUCH DAMAGE.
-  30:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** */
-  31:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  32:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* $Id: atomic.h,v 1.3 2007/12/20 14:17:56 joerg_wunsch Exp $ */
-  33:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  34:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #ifndef _UTIL_ATOMIC_H_
-  35:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #define _UTIL_ATOMIC_H_ 1
-  36:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  37:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #include <avr/io.h>
-  38:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #include <avr/interrupt.h>
-  39:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  40:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** #if !defined(__DOXYGEN__)
-  41:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** /* Internal helper functions. */
-  42:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iSeiRetVal(void)
-  43:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  44:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     sei();
-  45:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     return 1;
-  46:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
-  47:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  48:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
-  49:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  50:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     cli();
- 253               	.LM16:
- 254               	/* #APP */
- 255               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
- 256 006c F894      		cli
- 257               	 ;  0 "" 2
- 258               	/* #NOAPP */
- 259               	.LBE34:
- 260               	.LBE33:
- 262               	.Ltext2:
- 264               	.LM17:
- 265 006e 9093 8900 		sts (136)+1,r25
- 266 0072 8093 8800 		sts 136,r24
- 267 0076 00C0      		rjmp .L14
- 268               	.L10:
- 269               	.LBE32:
- 271               	.LM18:
- 272 0078 6130      		cpi r22,lo8(1)
- 273 007a 01F4      		brne .L12
- 274               	.LBB35:
- 275               	.LBB36:
- 276               	.LBB37:
- 278               	.Ltext3:
- 280               	.LM19:
- 281               	/* #APP */
- 282               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
- 283 007c F894      		cli
- 284               	 ;  0 "" 2
- 285               	/* #NOAPP */
- 286               	.LBE37:
- 287               	.LBE36:
- 289               	.Ltext4:
- 291               	.LM20:
- 292 007e 9093 8B00 		sts (138)+1,r25
- 293 0082 8093 8A00 		sts 138,r24
- 294               	.L14:
- 295               	.LBB38:
- 296               	.LBB39:
- 298               	.Ltext5:
-  51:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     return 1;
-  52:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** }
-  53:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** 
-  54:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** static __inline__ void __iSeiParam(const uint8_t *__s)
-  55:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h **** {
-  56:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     sei();
- 300               	.LM21:
- 301               	/* #APP */
- 302               	 ;  56 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
- 303 0086 7894      		sei
- 304               	 ;  0 "" 2
-  57:/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
- 306               	.LM22:
- 307               	/* #NOAPP */
- 308 0088 0895      		ret
- 309               	.L12:
- 310               	.LBE39:
- 311               	.LBE38:
- 312               	.LBE35:
- 314               	.Ltext6:
- 316               	.LM23:
- 317 008a 8BE2      		ldi r24,lo8(43)
- 318 008c 90E0      		ldi r25,hi8(43)
- 319 008e 9F93      		push r25
- 320 0090 8F93      		push r24
- 321 0092 862F      		mov r24,r22
- 322 0094 90E0      		ldi r25,lo8(0)
- 323 0096 9F93      		push r25
- 324 0098 8F93      		push r24
- 325 009a 80E0      		ldi r24,lo8(__c.1670)
- 326 009c 90E0      		ldi r25,hi8(__c.1670)
- 327 009e 9F93      		push r25
- 328 00a0 8F93      		push r24
- 329 00a2 0E94 0000 		call printf_P
- 330 00a6 8DB7      		in r24,__SP_L__
- 331 00a8 9EB7      		in r25,__SP_H__
- 332 00aa 0696      		adiw r24,6
- 333 00ac 0FB6      		in __tmp_reg__,__SREG__
- 334 00ae F894      		cli
- 335 00b0 9EBF      		out __SP_H__,r25
- 336 00b2 0FBE      		out __SREG__,__tmp_reg__
- 337 00b4 8DBF      		out __SP_L__,r24
- 338 00b6 0895      		ret
- 340               	.Lscope3:
- 342               		.stabd	78,0,0
- 345               	.global	motor_get_speed
- 347               	motor_get_speed:
- 348               		.stabd	46,0,0
- 350               	.LM24:
- 351               	.LFBB4:
- 352               	/* prologue: function */
- 353               	/* frame size = 0 */
- 354 00b8 282F      		mov r18,r24
- 356               	.LM25:
- 357 00ba 8823      		tst r24
- 358 00bc 01F4      		brne .L16
- 359               	.LBB40:
- 360               	.LBB41:
- 361               	.LBB42:
- 363               	.Ltext7:
- 365               	.LM26:
- 366               	/* #APP */
- 367               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
- 368 00be F894      		cli
- 369               	 ;  0 "" 2
- 370               	/* #NOAPP */
- 371               	.LBE42:
- 372               	.LBE41:
- 374               	.Ltext8:
- 376               	.LM27:
- 377 00c0 2091 8800 		lds r18,136
- 378 00c4 3091 8900 		lds r19,(136)+1
- 379 00c8 00C0      		rjmp .L20
- 380               	.L16:
- 381               	.LBE40:
- 383               	.LM28:
- 384 00ca 8130      		cpi r24,lo8(1)
- 385 00cc 01F4      		brne .L18
- 386               	.LBB43:
- 387               	.LBB44:
- 388               	.LBB45:
- 390               	.Ltext9:
- 392               	.LM29:
- 393               	/* #APP */
- 394               	 ;  50 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
- 395 00ce F894      		cli
- 396               	 ;  0 "" 2
- 397               	/* #NOAPP */
- 398               	.LBE45:
- 399               	.LBE44:
- 401               	.Ltext10:
- 403               	.LM30:
- 404 00d0 2091 8A00 		lds r18,138
- 405 00d4 3091 8B00 		lds r19,(138)+1
- 406               	.L20:
- 407               	.LBB46:
- 408               	.LBB47:
- 410               	.Ltext11:
- 412               	.LM31:
- 413               	/* #APP */
- 414               	 ;  56 "/usr/lib/gcc/avr/4.3.0/../../../../avr/include/util/atomic.h" 1
- 415 00d8 7894      		sei
- 416               	 ;  0 "" 2
- 418               	.LM32:
- 419               	/* #NOAPP */
- 420 00da 00C0      		rjmp .L17
- 421               	.L18:
- 422               	.LBE47:
- 423               	.LBE46:
- 424               	.LBE43:
- 426               	.Ltext12:
- 428               	.LM33:
- 429 00dc 8BE1      		ldi r24,lo8(27)
- 430 00de 90E0      		ldi r25,hi8(27)
- 431 00e0 9F93      		push r25
- 432 00e2 8F93      		push r24
- 433 00e4 822F      		mov r24,r18
- 434 00e6 90E0      		ldi r25,lo8(0)
- 435 00e8 9F93      		push r25
- 436 00ea 8F93      		push r24
- 437 00ec 80E0      		ldi r24,lo8(__c.1648)
- 438 00ee 90E0      		ldi r25,hi8(__c.1648)
- 439 00f0 9F93      		push r25
- 440 00f2 8F93      		push r24
- 441 00f4 0E94 0000 		call printf_P
- 442 00f8 20E0      		ldi r18,lo8(0)
- 443 00fa 30E0      		ldi r19,hi8(0)
- 444 00fc 8DB7      		in r24,__SP_L__
- 445 00fe 9EB7      		in r25,__SP_H__
- 446 0100 0696      		adiw r24,6
- 447 0102 0FB6      		in __tmp_reg__,__SREG__
- 448 0104 F894      		cli
- 449 0106 9EBF      		out __SP_H__,r25
- 450 0108 0FBE      		out __SREG__,__tmp_reg__
- 451 010a 8DBF      		out __SP_L__,r24
- 452               	.L17:
- 454               	.LM34:
- 455 010c C901      		movw r24,r18
- 456               	/* epilogue start */
- 457 010e 0895      		ret
- 462               	.Lscope4:
- 464               		.stabd	78,0,0
- 468               	.global	lf_turn_inc
- 470               	lf_turn_inc:
- 471               		.stabd	46,0,0
- 120:motor.c       **** 
- 121:motor.c       **** void lf_turn_inc(uint16_t inc,int8_t dir) {
- 473               	.LM35:
- 474               	.LFBB5:
- 475 0110 DF92      		push r13
- 476 0112 EF92      		push r14
- 477 0114 FF92      		push r15
- 478 0116 0F93      		push r16
- 479 0118 1F93      		push r17
- 480 011a CF93      		push r28
- 481 011c DF93      		push r29
- 482               	/* prologue: function */
- 483               	/* frame size = 0 */
- 484 011e 7C01      		movw r14,r24
- 485 0120 D62E      		mov r13,r22
- 122:motor.c       **** 	uint16_t mr = motor_get_speed(RIGHT);
- 487               	.LM36:
- 488 0122 81E0      		ldi r24,lo8(1)
- 489 0124 0E94 0000 		call motor_get_speed
- 490 0128 8C01      		movw r16,r24
- 123:motor.c       **** 	uint16_t ml = motor_get_speed(LEFT);
- 492               	.LM37:
- 493 012a 80E0      		ldi r24,lo8(0)
- 494 012c 0E94 0000 		call motor_get_speed
- 495 0130 EC01      		movw r28,r24
- 124:motor.c       **** 	if		(dir==POS)
- 497               	.LM38:
- 498 0132 81E0      		ldi r24,lo8(1)
- 499 0134 D816      		cp r13,r24
- 500 0136 01F4      		brne .L22
- 501               	.LBB48:
- 502               	.LBB49:
- 504               	.LM39:
- 505 0138 80E0      		ldi r24,lo8(-16384)
- 506 013a 90EC      		ldi r25,hi8(-16384)
- 507 013c 8C1B      		sub r24,r28
- 508 013e 9D0B      		sbc r25,r29
- 510               	.LM40:
- 511 0140 8E15      		cp r24,r14
- 512 0142 9F05      		cpc r25,r15
- 513 0144 00F4      		brsh .L23
- 515               	.LM41:
- 516 0146 9701      		movw r18,r14
- 517 0148 281B      		sub r18,r24
- 518 014a 390B      		sbc r19,r25
- 519 014c C0E0      		ldi r28,lo8(-16384)
- 520 014e D0EC      		ldi r29,hi8(-16384)
- 521 0150 00C0      		rjmp .L24
- 522               	.L23:
- 524               	.LM42:
- 525 0152 CE0D      		add r28,r14
- 526 0154 DF1D      		adc r29,r15
- 527 0156 20E0      		ldi r18,lo8(0)
- 528 0158 30E0      		ldi r19,hi8(0)
- 529               	.L24:
- 530               	.LBE49:
- 531               	.LBE48:
- 532               	.LBB50:
- 533               	.LBB51:
- 535               	.LM43:
- 536 015a C801      		movw r24,r16
- 537 015c 8050      		subi r24,lo8(-(-1280))
- 538 015e 9540      		sbci r25,hi8(-(-1280))
- 539 0160 8217      		cp r24,r18
- 540 0162 9307      		cpc r25,r19
- 541 0164 00F4      		brsh .L25
- 542 0166 00E0      		ldi r16,lo8(1280)
- 543 0168 15E0      		ldi r17,hi8(1280)
- 544 016a 00C0      		rjmp .L26
- 545               	.L25:
- 547               	.LM44:
- 548 016c 021B      		sub r16,r18
- 549 016e 130B      		sbc r17,r19
- 550 0170 00C0      		rjmp .L26
- 551               	.L22:
- 552               	.LBE51:
- 553               	.LBE50:
- 125:motor.c       **** 		dec_limit(&mr,inc_limit(&ml,inc,LF_MAX_SPEED),LF_MIN_SPEED);
- 126:motor.c       **** 	else if (dir==NEG)
- 555               	.LM45:
- 556 0172 DD20      		tst r13
- 557 0174 01F4      		brne .L26
- 558               	.LBB52:
- 559               	.LBB53:
- 561               	.LM46:
- 562 0176 80E0      		ldi r24,lo8(-16384)
- 563 0178 90EC      		ldi r25,hi8(-16384)
- 564 017a 801B      		sub r24,r16
- 565 017c 910B      		sbc r25,r17
- 567               	.LM47:
- 568 017e 8E15      		cp r24,r14
- 569 0180 9F05      		cpc r25,r15
- 570 0182 00F4      		brsh .L27
- 572               	.LM48:
- 573 0184 9701      		movw r18,r14
- 574 0186 281B      		sub r18,r24
- 575 0188 390B      		sbc r19,r25
- 576 018a 00E0      		ldi r16,lo8(-16384)
- 577 018c 10EC      		ldi r17,hi8(-16384)
- 578 018e 00C0      		rjmp .L28
- 579               	.L27:
- 581               	.LM49:
- 582 0190 0E0D      		add r16,r14
- 583 0192 1F1D      		adc r17,r15
- 584 0194 20E0      		ldi r18,lo8(0)
- 585 0196 30E0      		ldi r19,hi8(0)
- 586               	.L28:
- 587               	.LBE53:
- 588               	.LBE52:
- 589               	.LBB54:
- 590               	.LBB55:
- 592               	.LM50:
- 593 0198 CE01      		movw r24,r28
- 594 019a 8050      		subi r24,lo8(-(-1280))
- 595 019c 9540      		sbci r25,hi8(-(-1280))
- 596 019e 8217      		cp r24,r18
- 597 01a0 9307      		cpc r25,r19
- 598 01a2 00F4      		brsh .L29
- 599 01a4 C0E0      		ldi r28,lo8(1280)
- 600 01a6 D5E0      		ldi r29,hi8(1280)
- 601 01a8 00C0      		rjmp .L26
- 602               	.L29:
- 604               	.LM51:
- 605 01aa C21B      		sub r28,r18
- 606 01ac D30B      		sbc r29,r19
- 607               	.L26:
- 608               	.LBE55:
- 609               	.LBE54:
- 127:motor.c       **** 		dec_limit(&ml,inc_limit(&mr,inc,LF_MAX_SPEED),LF_MIN_SPEED);
- 128:motor.c       **** 	motor_set_speed(mr,RIGHT);
- 611               	.LM52:
- 612 01ae 61E0      		ldi r22,lo8(1)
- 613 01b0 C801      		movw r24,r16
- 614 01b2 0E94 0000 		call motor_set_speed
- 129:motor.c       **** 	motor_set_speed(ml,LEFT);
- 616               	.LM53:
- 617 01b6 60E0      		ldi r22,lo8(0)
- 618 01b8 CE01      		movw r24,r28
- 619 01ba 0E94 0000 		call motor_set_speed
- 620               	/* epilogue start */
- 130:motor.c       **** }
- 622               	.LM54:
- 623 01be DF91      		pop r29
- 624 01c0 CF91      		pop r28
- 625 01c2 1F91      		pop r17
- 626 01c4 0F91      		pop r16
- 627 01c6 FF90      		pop r15
- 628 01c8 EF90      		pop r14
- 629 01ca DF90      		pop r13
- 630 01cc 0895      		ret
- 642               	.Lscope5:
- 644               		.stabd	78,0,0
- 645               		.data
- 646               	.LC0:
- 647 0000 0A4D 6F74 		.string	"\nMotor: %c mode: %d"
- 647      6F72 3A20 
- 647      2563 206D 
- 647      6F64 653A 
- 647      2025 6400 
- 648               		.text
- 652               	.global	motor_mode
- 654               	motor_mode:
- 655               		.stabd	46,0,0
- 657               	.LM55:
- 658               	.LFBB6:
- 659 01ce CF93      		push r28
- 660 01d0 DF93      		push r29
- 661               	/* prologue: function */
- 662               	/* frame size = 0 */
- 663 01d2 782F      		mov r23,r24
- 665               	.LM56:
- 666 01d4 6623      		tst r22
- 667 01d6 01F0      		breq .L32
- 669               	.LM57:
- 670 01d8 6130      		cpi r22,lo8(1)
- 671 01da 01F4      		brne .L33
- 672 01dc 55E0      		ldi r21,lo8(5)
- 673 01de E7E0      		ldi r30,lo8(7)
- 674 01e0 C0E0      		ldi r28,lo8(c_modes.1681+1)
- 675 01e2 D0E0      		ldi r29,hi8(c_modes.1681+1)
- 676 01e4 00C0      		rjmp .L34
- 677               	.L33:
- 679               	.LM58:
- 680 01e6 8DE3      		ldi r24,lo8(61)
- 681 01e8 90E0      		ldi r25,hi8(61)
- 682 01ea 9F93      		push r25
- 683 01ec 8F93      		push r24
- 684 01ee 862F      		mov r24,r22
- 685 01f0 90E0      		ldi r25,lo8(0)
- 686 01f2 9F93      		push r25
- 687 01f4 8F93      		push r24
- 688 01f6 80E0      		ldi r24,lo8(__c.1685)
- 689 01f8 90E0      		ldi r25,hi8(__c.1685)
- 690 01fa 9F93      		push r25
- 691 01fc 8F93      		push r24
- 692 01fe 0E94 0000 		call printf_P
- 693 0202 87E0      		ldi r24,lo8(7)
- 694 0204 00C0      		rjmp .L44
- 695               	.L32:
- 697               	.LM59:
- 698 0206 51E0      		ldi r21,lo8(1)
- 699 0208 E3E0      		ldi r30,lo8(3)
- 700 020a C0E0      		ldi r28,lo8(c_modes.1681)
- 701 020c D0E0      		ldi r29,hi8(c_modes.1681)
- 702               	.L34:
- 704               	.LM60:
- 705 020e 7230      		cpi r23,lo8(2)
- 706 0210 01F4      		brne .L36
- 708               	.LM61:
- 709 0212 4BB1      		in r20,43-0x20
- 710 0214 21E0      		ldi r18,lo8(1)
- 711 0216 30E0      		ldi r19,hi8(1)
- 712 0218 C901      		movw r24,r18
- 713 021a 00C0      		rjmp 2f
- 714 021c 880F      	1:	lsl r24
- 715 021e 991F      		rol r25
- 716 0220 5A95      	2:	dec r21
- 717 0222 02F4      		brpl 1b
- 718 0224 8095      		com r24
- 719 0226 8423      		and r24,r20
- 720 0228 8BB9      		out 43-0x20,r24
- 722               	.LM62:
- 723 022a 8BB1      		in r24,43-0x20
- 724 022c 00C0      		rjmp 2f
- 725 022e 220F      	1:	lsl r18
- 726 0230 331F      		rol r19
- 727 0232 EA95      	2:	dec r30
- 728 0234 02F4      		brpl 1b
- 729 0236 822B      		or r24,r18
- 730 0238 00C0      		rjmp .L45
- 731               	.L36:
- 733               	.LM63:
- 734 023a 7130      		cpi r23,lo8(1)
- 735 023c 01F4      		brne .L38
- 737               	.LM64:
- 738 023e 4BB1      		in r20,43-0x20
- 739 0240 81E0      		ldi r24,lo8(1)
- 740 0242 90E0      		ldi r25,hi8(1)
- 741 0244 9C01      		movw r18,r24
- 742 0246 00C0      		rjmp 2f
- 743 0248 220F      	1:	lsl r18
- 744 024a 331F      		rol r19
- 745 024c 5A95      	2:	dec r21
- 746 024e 02F4      		brpl 1b
- 747 0250 422B      		or r20,r18
- 748 0252 4BB9      		out 43-0x20,r20
- 750               	.LM65:
- 751 0254 2BB1      		in r18,43-0x20
- 752 0256 00C0      		rjmp 2f
- 753 0258 880F      	1:	lsl r24
- 754 025a 991F      		rol r25
- 755 025c EA95      	2:	dec r30
- 756 025e 02F4      		brpl 1b
- 757 0260 8095      		com r24
- 758 0262 8223      		and r24,r18
- 759 0264 00C0      		rjmp .L45
- 760               	.L38:
- 762               	.LM66:
- 763 0266 7330      		cpi r23,lo8(3)
- 764 0268 01F4      		brne .L39
- 766               	.LM67:
- 767 026a 4BB1      		in r20,43-0x20
- 768 026c 21E0      		ldi r18,lo8(1)
- 769 026e 30E0      		ldi r19,hi8(1)
- 770 0270 C901      		movw r24,r18
- 771 0272 00C0      		rjmp 2f
- 772 0274 880F      	1:	lsl r24
- 773 0276 991F      		rol r25
- 774 0278 EA95      	2:	dec r30
- 775 027a 02F4      		brpl 1b
- 776 027c 00C0      		rjmp 2f
- 777 027e 220F      	1:	lsl r18
- 778 0280 331F      		rol r19
- 779 0282 5A95      	2:	dec r21
- 780 0284 02F4      		brpl 1b
- 781 0286 822B      		or r24,r18
- 782 0288 8095      		com r24
- 783 028a 8423      		and r24,r20
- 784               	.L45:
- 785 028c 8BB9      		out 43-0x20,r24
- 786 028e 00C0      		rjmp .L43
- 787               	.L39:
- 789               	.LM68:
- 790 0290 7430      		cpi r23,lo8(4)
- 791 0292 01F4      		brne .L37
- 793               	.LM69:
- 794 0294 8BB1      		in r24,43-0x20
- 795 0296 21E0      		ldi r18,lo8(1)
- 796 0298 30E0      		ldi r19,hi8(1)
- 797 029a D901      		movw r26,r18
- 798 029c 00C0      		rjmp 2f
- 799 029e AA0F      	1:	lsl r26
- 800 02a0 BB1F      		rol r27
- 801 02a2 5A95      	2:	dec r21
- 802 02a4 02F4      		brpl 1b
- 803 02a6 AD01      		movw r20,r26
- 804 02a8 00C0      		rjmp 2f
- 805 02aa 220F      	1:	lsl r18
- 806 02ac 331F      		rol r19
- 807 02ae EA95      	2:	dec r30
- 808 02b0 02F4      		brpl 1b
- 809 02b2 422B      		or r20,r18
- 810 02b4 482B      		or r20,r24
- 811 02b6 4BB9      		out 43-0x20,r20
- 812               	.L43:
- 814               	.LM70:
- 815 02b8 7883      		st Y,r23
- 816               	.L37:
- 818               	.LM71:
- 819 02ba 6623      		tst r22
- 820 02bc 01F0      		breq .L40
- 821 02be 22E5      		ldi r18,lo8(82)
- 822 02c0 00C0      		rjmp .L41
- 823               	.L40:
- 824 02c2 2CE4      		ldi r18,lo8(76)
- 825               	.L41:
- 827               	.LM72:
- 828 02c4 8881      		ld r24,Y
- 829 02c6 90E0      		ldi r25,lo8(0)
- 830 02c8 9F93      		push r25
- 831 02ca 8F93      		push r24
- 832 02cc 822F      		mov r24,r18
- 833 02ce 90E0      		ldi r25,lo8(0)
- 834 02d0 9F93      		push r25
- 835 02d2 8F93      		push r24
- 836 02d4 80E0      		ldi r24,lo8(.LC0)
- 837 02d6 90E0      		ldi r25,hi8(.LC0)
- 838 02d8 9F93      		push r25
- 839 02da 8F93      		push r24
- 840 02dc 0E94 0000 		call printf
- 842               	.LM73:
- 843 02e0 8881      		ld r24,Y
- 844               	.L44:
- 845 02e2 2DB7      		in r18,__SP_L__
- 846 02e4 3EB7      		in r19,__SP_H__
- 847 02e6 2A5F      		subi r18,lo8(-(6))
- 848 02e8 3F4F      		sbci r19,hi8(-(6))
- 849 02ea 0FB6      		in __tmp_reg__,__SREG__
- 850 02ec F894      		cli
- 851 02ee 3EBF      		out __SP_H__,r19
- 852 02f0 0FBE      		out __SREG__,__tmp_reg__
- 853 02f2 2DBF      		out __SP_L__,r18
- 854               	/* epilogue start */
- 856               	.LM74:
- 857 02f4 DF91      		pop r29
- 858 02f6 CF91      		pop r28
- 859 02f8 0895      		ret
- 868               	.Lscope6:
- 870               		.stabd	78,0,0
- 872               	.global	lf_stop_speed
- 874               	lf_stop_speed:
- 875               		.stabd	46,0,0
- 131:motor.c       **** 
- 132:motor.c       **** void lf_full_speed(void) {
- 133:motor.c       **** 	motor_set_speed(LF_MAX_SPEED,LEFT);
- 134:motor.c       **** 	motor_set_speed(LF_MAX_SPEED,RIGHT);
- 135:motor.c       **** 	motor_mode(MOTOR_L_FWD,LEFT);
- 136:motor.c       **** 	motor_mode(MOTOR_L_FWD,RIGHT);
- 137:motor.c       **** }
- 138:motor.c       **** 
- 139:motor.c       **** void lf_stop_speed(void) {
- 877               	.LM75:
- 878               	.LFBB7:
- 879               	/* prologue: function */
- 880               	/* frame size = 0 */
- 140:motor.c       **** 	motor_mode(MOTOR_MODE_STOP,LEFT);
- 882               	.LM76:
- 883 02fa 60E0      		ldi r22,lo8(0)
- 884 02fc 83E0      		ldi r24,lo8(3)
- 885 02fe 0E94 0000 		call motor_mode
- 141:motor.c       **** 	motor_mode(MOTOR_MODE_STOP,RIGHT);
- 887               	.LM77:
- 888 0302 61E0      		ldi r22,lo8(1)
- 889 0304 83E0      		ldi r24,lo8(3)
- 890 0306 0E94 0000 		call motor_mode
- 142:motor.c       **** 	motor_set_speed(LF_MIN_SPEED,LEFT);
- 892               	.LM78:
- 893 030a 60E0      		ldi r22,lo8(0)
- 894 030c 80E0      		ldi r24,lo8(1280)
- 895 030e 95E0      		ldi r25,hi8(1280)
- 896 0310 0E94 0000 		call motor_set_speed
- 143:motor.c       **** 	motor_set_speed(LF_MIN_SPEED,RIGHT);
- 898               	.LM79:
- 899 0314 61E0      		ldi r22,lo8(1)
- 900 0316 80E0      		ldi r24,lo8(1280)
- 901 0318 95E0      		ldi r25,hi8(1280)
- 902 031a 0E94 0000 		call motor_set_speed
- 903               	/* epilogue start */
- 144:motor.c       **** }
- 905               	.LM80:
- 906 031e 0895      		ret
- 908               	.Lscope7:
- 910               		.stabd	78,0,0
- 912               	.global	motors_init
- 914               	motors_init:
- 915               		.stabd	46,0,0
- 145:motor.c       **** 
- 146:motor.c       **** void motors_init(void) {
- 917               	.LM81:
- 918               	.LFBB8:
- 919               	/* prologue: function */
- 920               	/* frame size = 0 */
- 147:motor.c       **** 	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
- 922               	.LM82:
- 923 0320 8AB1      		in r24,42-0x20
- 924 0322 8A6A      		ori r24,lo8(-86)
- 925 0324 8AB9      		out 42-0x20,r24
- 148:motor.c       **** 	lf_stop_speed();
- 927               	.LM83:
- 928 0326 0E94 0000 		call lf_stop_speed
- 929               	/* epilogue start */
- 149:motor.c       **** }
- 931               	.LM84:
- 932 032a 0895      		ret
- 934               	.Lscope8:
- 936               		.stabd	78,0,0
- 938               	.global	lf_full_speed
- 940               	lf_full_speed:
- 941               		.stabd	46,0,0
- 943               	.LM85:
- 944               	.LFBB9:
- 945               	/* prologue: function */
- 946               	/* frame size = 0 */
- 948               	.LM86:
- 949 032c 60E0      		ldi r22,lo8(0)
- 950 032e 80E0      		ldi r24,lo8(-16384)
- 951 0330 90EC      		ldi r25,hi8(-16384)
- 952 0332 0E94 0000 		call motor_set_speed
- 954               	.LM87:
- 955 0336 61E0      		ldi r22,lo8(1)
- 956 0338 80E0      		ldi r24,lo8(-16384)
- 957 033a 90EC      		ldi r25,hi8(-16384)
- 958 033c 0E94 0000 		call motor_set_speed
- 960               	.LM88:
- 961 0340 60E0      		ldi r22,lo8(0)
- 962 0342 81E0      		ldi r24,lo8(1)
- 963 0344 0E94 0000 		call motor_mode
- 965               	.LM89:
- 966 0348 61E0      		ldi r22,lo8(1)
- 967 034a 81E0      		ldi r24,lo8(1)
- 968 034c 0E94 0000 		call motor_mode
- 969               	/* epilogue start */
- 971               	.LM90:
- 972 0350 0895      		ret
- 974               	.Lscope9:
- 976               		.stabd	78,0,0
- 977               		.section	.progmem.data,"a",@progbits
- 980               	__c.1685:
- 981 0000 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
- 981      726F 725D 
- 981      204D 6F74 
- 981      6F72 3A20 
- 981      496E 7661 
- 982               		.lcomm c_modes.1681,2
- 985               	__c.1670:
- 986 002e 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
- 986      726F 725D 
- 986      204D 6F74 
- 986      6F72 3A20 
- 986      496E 7661 
- 989               	__c.1648:
- 990 005c 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
- 990      726F 725D 
- 990      204D 6F74 
- 990      6F72 3A20 
- 990      496E 7661 
- 991               		.comm c_mode,1,1
- 992               		.comm initial,1,1
- 999               		.text
- 1001               	.Letext0:
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	inc_limit
+  20               	inc_limit:
+  21               	.LFB11:
+  22               	.LM1:
+  23               	.LVL0:
+  24               	/* prologue: function */
+  25               	/* frame size = 0 */
+  26 0000 FC01      		movw r30,r24
+  27               	.LM2:
+  28 0002 2081      		ld r18,Z
+  29 0004 3181      		ldd r19,Z+1
+  30 0006 421B      		sub r20,r18
+  31 0008 530B      		sbc r21,r19
+  32               	.LVL1:
+  33               	.LM3:
+  34 000a 4617      		cp r20,r22
+  35 000c 5707      		cpc r21,r23
+  36 000e 00F4      		brsh .L2
+  37               	.LVL2:
+  38               	.LM4:
+  39 0010 240F      		add r18,r20
+  40 0012 351F      		adc r19,r21
+  41 0014 3183      		std Z+1,r19
+  42 0016 2083      		st Z,r18
+  43               	.LM5:
+  44 0018 CB01      		movw r24,r22
+  45 001a 841B      		sub r24,r20
+  46 001c 950B      		sbc r25,r21
+  47 001e AC01      		movw r20,r24
+  48               	.LVL3:
+  49 0020 00C0      		rjmp .L3
+  50               	.LVL4:
+  51               	.L2:
+  52               	.LM6:
+  53 0022 260F      		add r18,r22
+  54 0024 371F      		adc r19,r23
+  55 0026 3183      		std Z+1,r19
+  56 0028 2083      		st Z,r18
+  57 002a 40E0      		ldi r20,lo8(0)
+  58 002c 50E0      		ldi r21,hi8(0)
+  59               	.LVL5:
+  60               	.L3:
+  61               	.LM7:
+  62 002e CA01      		movw r24,r20
+  63               	/* epilogue start */
+  64 0030 0895      		ret
+  65               	.LFE11:
+  67               	.global	dec_limit
+  69               	dec_limit:
+  70               	.LFB12:
+  71               	.LM8:
+  72               	.LVL6:
+  73               	/* prologue: function */
+  74               	/* frame size = 0 */
+  75 0032 FC01      		movw r30,r24
+  76 0034 CB01      		movw r24,r22
+  77               	.LVL7:
+  78               	.LM9:
+  79 0036 2081      		ld r18,Z
+  80 0038 3181      		ldd r19,Z+1
+  81 003a B901      		movw r22,r18
+  82               	.LVL8:
+  83 003c 641B      		sub r22,r20
+  84 003e 750B      		sbc r23,r21
+  85               	.LM10:
+  86 0040 6817      		cp r22,r24
+  87 0042 7907      		cpc r23,r25
+  88 0044 00F4      		brsh .L6
+  89               	.LM11:
+  90 0046 261B      		sub r18,r22
+  91 0048 370B      		sbc r19,r23
+  92 004a 3183      		std Z+1,r19
+  93 004c 2083      		st Z,r18
+  94               	.LM12:
+  95 004e 9C01      		movw r18,r24
+  96 0050 261B      		sub r18,r22
+  97 0052 370B      		sbc r19,r23
+  98 0054 B901      		movw r22,r18
+  99               	.LVL9:
+ 100 0056 00C0      		rjmp .L7
+ 101               	.LVL10:
+ 102               	.L6:
+ 103               	.LM13:
+ 104 0058 281B      		sub r18,r24
+ 105 005a 390B      		sbc r19,r25
+ 106 005c 3183      		std Z+1,r19
+ 107 005e 2083      		st Z,r18
+ 108 0060 60E0      		ldi r22,lo8(0)
+ 109 0062 70E0      		ldi r23,hi8(0)
+ 110               	.LVL11:
+ 111               	.L7:
+ 112               	.LM14:
+ 113 0064 CB01      		movw r24,r22
+ 114               	.LVL12:
+ 115               	/* epilogue start */
+ 116 0066 0895      		ret
+ 117               	.LFE12:
+ 119               	.global	motor_set_speed
+ 121               	motor_set_speed:
+ 122               	.LFB9:
+ 123               	.LM15:
+ 124               	/* prologue: function */
+ 125               	/* frame size = 0 */
+ 126               	.LM16:
+ 127 0068 6623      		tst r22
+ 128 006a 01F4      		brne .L10
+ 129               	.LBB32:
+ 130               	.LBB33:
+ 131               	.LBB34:
+ 132               	.LM17:
+ 133               	/* #APP */
+ 134               	 ;  50 "c:/winavr-20080610/lib/gcc/../../avr/include/util/atomic.h" 1
+ 135 006c F894      		cli
+ 136               	 ;  0 "" 2
+ 137               	/* #NOAPP */
+ 138               	.LBE34:
+ 139               	.LBE33:
+ 140               	.LM18:
+ 141 006e 9093 8900 		sts (136)+1,r25
+ 142 0072 8093 8800 		sts 136,r24
+ 143 0076 00C0      		rjmp .L14
+ 144               	.L10:
+ 145               	.LBE32:
+ 146               	.LM19:
+ 147 0078 6130      		cpi r22,lo8(1)
+ 148 007a 01F4      		brne .L12
+ 149               	.LBB35:
+ 150               	.LBB36:
+ 151               	.LBB37:
+ 152               	.LM20:
+ 153               	/* #APP */
+ 154               	 ;  50 "c:/winavr-20080610/lib/gcc/../../avr/include/util/atomic.h" 1
+ 155 007c F894      		cli
+ 156               	 ;  0 "" 2
+ 157               	/* #NOAPP */
+ 158               	.LBE37:
+ 159               	.LBE36:
+ 160               	.LM21:
+ 161 007e 9093 8B00 		sts (138)+1,r25
+ 162 0082 8093 8A00 		sts 138,r24
+ 163               	.L14:
+ 164               	.LBB38:
+ 165               	.LBB39:
+ 166               	.LM22:
+ 167               	/* #APP */
+ 168               	 ;  56 "c:/winavr-20080610/lib/gcc/../../avr/include/util/atomic.h" 1
+ 169 0086 7894      		sei
+ 170               	 ;  0 "" 2
+ 171               	.LM23:
+ 172               	/* #NOAPP */
+ 173 0088 0895      		ret
+ 174               	.L12:
+ 175               	.LBE39:
+ 176               	.LBE38:
+ 177               	.LBE35:
+ 178               	.LM24:
+ 179 008a 8BE2      		ldi r24,lo8(43)
+ 180 008c 90E0      		ldi r25,hi8(43)
+ 181 008e 9F93      		push r25
+ 182 0090 8F93      		push r24
+ 183 0092 862F      		mov r24,r22
+ 184 0094 90E0      		ldi r25,lo8(0)
+ 185 0096 9F93      		push r25
+ 186 0098 8F93      		push r24
+ 187 009a 80E0      		ldi r24,lo8(__c.1672)
+ 188 009c 90E0      		ldi r25,hi8(__c.1672)
+ 189 009e 9F93      		push r25
+ 190 00a0 8F93      		push r24
+ 191 00a2 0E94 0000 		call printf_P
+ 192 00a6 8DB7      		in r24,__SP_L__
+ 193 00a8 9EB7      		in r25,__SP_H__
+ 194 00aa 0696      		adiw r24,6
+ 195 00ac 0FB6      		in __tmp_reg__,__SREG__
+ 196 00ae F894      		cli
+ 197 00b0 9EBF      		out __SP_H__,r25
+ 198 00b2 0FBE      		out __SREG__,__tmp_reg__
+ 199 00b4 8DBF      		out __SP_L__,r24
+ 200 00b6 0895      		ret
+ 201               	.LFE9:
+ 203               	.global	motor_get_speed
+ 205               	motor_get_speed:
+ 206               	.LFB8:
+ 207               	.LM25:
+ 208               	/* prologue: function */
+ 209               	/* frame size = 0 */
+ 210 00b8 282F      		mov r18,r24
+ 211               	.LM26:
+ 212 00ba 8823      		tst r24
+ 213 00bc 01F4      		brne .L16
+ 214               	.LBB40:
+ 215               	.LBB41:
+ 216               	.LBB42:
+ 217               	.LM27:
+ 218               	/* #APP */
+ 219               	 ;  50 "c:/winavr-20080610/lib/gcc/../../avr/include/util/atomic.h" 1
+ 220 00be F894      		cli
+ 221               	 ;  0 "" 2
+ 222               	/* #NOAPP */
+ 223               	.LBE42:
+ 224               	.LBE41:
+ 225               	.LM28:
+ 226 00c0 2091 8800 		lds r18,136
+ 227 00c4 3091 8900 		lds r19,(136)+1
+ 228 00c8 00C0      		rjmp .L20
+ 229               	.L16:
+ 230               	.LBE40:
+ 231               	.LM29:
+ 232 00ca 8130      		cpi r24,lo8(1)
+ 233 00cc 01F4      		brne .L18
+ 234               	.LBB43:
+ 235               	.LBB44:
+ 236               	.LBB45:
+ 237               	.LM30:
+ 238               	/* #APP */
+ 239               	 ;  50 "c:/winavr-20080610/lib/gcc/../../avr/include/util/atomic.h" 1
+ 240 00ce F894      		cli
+ 241               	 ;  0 "" 2
+ 242               	/* #NOAPP */
+ 243               	.LBE45:
+ 244               	.LBE44:
+ 245               	.LM31:
+ 246 00d0 2091 8A00 		lds r18,138
+ 247 00d4 3091 8B00 		lds r19,(138)+1
+ 248               	.L20:
+ 249               	.LBB46:
+ 250               	.LBB47:
+ 251               	.LM32:
+ 252               	/* #APP */
+ 253               	 ;  56 "c:/winavr-20080610/lib/gcc/../../avr/include/util/atomic.h" 1
+ 254 00d8 7894      		sei
+ 255               	 ;  0 "" 2
+ 256               	.LM33:
+ 257               	/* #NOAPP */
+ 258 00da 00C0      		rjmp .L17
+ 259               	.L18:
+ 260               	.LBE47:
+ 261               	.LBE46:
+ 262               	.LBE43:
+ 263               	.LM34:
+ 264 00dc 8BE1      		ldi r24,lo8(27)
+ 265 00de 90E0      		ldi r25,hi8(27)
+ 266 00e0 9F93      		push r25
+ 267 00e2 8F93      		push r24
+ 268 00e4 822F      		mov r24,r18
+ 269 00e6 90E0      		ldi r25,lo8(0)
+ 270 00e8 9F93      		push r25
+ 271 00ea 8F93      		push r24
+ 272 00ec 80E0      		ldi r24,lo8(__c.1650)
+ 273 00ee 90E0      		ldi r25,hi8(__c.1650)
+ 274 00f0 9F93      		push r25
+ 275 00f2 8F93      		push r24
+ 276 00f4 0E94 0000 		call printf_P
+ 277 00f8 20E0      		ldi r18,lo8(0)
+ 278 00fa 30E0      		ldi r19,hi8(0)
+ 279 00fc 8DB7      		in r24,__SP_L__
+ 280 00fe 9EB7      		in r25,__SP_H__
+ 281 0100 0696      		adiw r24,6
+ 282 0102 0FB6      		in __tmp_reg__,__SREG__
+ 283 0104 F894      		cli
+ 284 0106 9EBF      		out __SP_H__,r25
+ 285 0108 0FBE      		out __SREG__,__tmp_reg__
+ 286 010a 8DBF      		out __SP_L__,r24
+ 287               	.L17:
+ 288               	.LM35:
+ 289 010c C901      		movw r24,r18
+ 290               	/* epilogue start */
+ 291 010e 0895      		ret
+ 292               	.LFE8:
+ 294               	.global	lf_turn_inc
+ 296               	lf_turn_inc:
+ 297               	.LFB13:
+ 298               	.LM36:
+ 299               	.LVL13:
+ 300 0110 DF92      		push r13
+ 301 0112 EF92      		push r14
+ 302 0114 FF92      		push r15
+ 303 0116 0F93      		push r16
+ 304 0118 1F93      		push r17
+ 305 011a CF93      		push r28
+ 306 011c DF93      		push r29
+ 307               	/* prologue: function */
+ 308               	/* frame size = 0 */
+ 309 011e 7C01      		movw r14,r24
+ 310 0120 D62E      		mov r13,r22
+ 311               	.LM37:
+ 312 0122 81E0      		ldi r24,lo8(1)
+ 313               	.LVL14:
+ 314 0124 0E94 0000 		call motor_get_speed
+ 315               	.LVL15:
+ 316 0128 8C01      		movw r16,r24
+ 317               	.LVL16:
+ 318               	.LM38:
+ 319 012a 80E0      		ldi r24,lo8(0)
+ 320 012c 0E94 0000 		call motor_get_speed
+ 321 0130 EC01      		movw r28,r24
+ 322               	.LVL17:
+ 323               	.LM39:
+ 324 0132 81E0      		ldi r24,lo8(1)
+ 325 0134 D816      		cp r13,r24
+ 326 0136 01F4      		brne .L22
+ 327               	.LBB48:
+ 328               	.LBB49:
+ 329               	.LM40:
+ 330 0138 80E0      		ldi r24,lo8(-16384)
+ 331 013a 90EC      		ldi r25,hi8(-16384)
+ 332               	.LVL18:
+ 333 013c 8C1B      		sub r24,r28
+ 334 013e 9D0B      		sbc r25,r29
+ 335               	.LM41:
+ 336 0140 8E15      		cp r24,r14
+ 337 0142 9F05      		cpc r25,r15
+ 338 0144 00F4      		brsh .L23
+ 339               	.LM42:
+ 340 0146 9701      		movw r18,r14
+ 341 0148 281B      		sub r18,r24
+ 342 014a 390B      		sbc r19,r25
+ 343 014c C0E0      		ldi r28,lo8(-16384)
+ 344 014e D0EC      		ldi r29,hi8(-16384)
+ 345 0150 00C0      		rjmp .L24
+ 346               	.L23:
+ 347               	.LM43:
+ 348 0152 CE0D      		add r28,r14
+ 349 0154 DF1D      		adc r29,r15
+ 350 0156 20E0      		ldi r18,lo8(0)
+ 351 0158 30E0      		ldi r19,hi8(0)
+ 352               	.L24:
+ 353               	.LBE49:
+ 354               	.LBE48:
+ 355               	.LBB50:
+ 356               	.LBB51:
+ 357               	.LM44:
+ 358 015a C801      		movw r24,r16
+ 359               	.LVL19:
+ 360 015c 8050      		subi r24,lo8(-(-1280))
+ 361 015e 9540      		sbci r25,hi8(-(-1280))
+ 362 0160 8217      		cp r24,r18
+ 363 0162 9307      		cpc r25,r19
+ 364 0164 00F4      		brsh .L25
+ 365 0166 00E0      		ldi r16,lo8(1280)
+ 366 0168 15E0      		ldi r17,hi8(1280)
+ 367 016a 00C0      		rjmp .L26
+ 368               	.L25:
+ 369               	.LM45:
+ 370 016c 021B      		sub r16,r18
+ 371 016e 130B      		sbc r17,r19
+ 372 0170 00C0      		rjmp .L26
+ 373               	.L22:
+ 374               	.LBE51:
+ 375               	.LBE50:
+ 376               	.LM46:
+ 377 0172 DD20      		tst r13
+ 378 0174 01F4      		brne .L26
+ 379               	.LBB52:
+ 380               	.LBB53:
+ 381               	.LM47:
+ 382 0176 80E0      		ldi r24,lo8(-16384)
+ 383 0178 90EC      		ldi r25,hi8(-16384)
+ 384               	.LVL20:
+ 385 017a 801B      		sub r24,r16
+ 386 017c 910B      		sbc r25,r17
+ 387               	.LM48:
+ 388 017e 8E15      		cp r24,r14
+ 389 0180 9F05      		cpc r25,r15
+ 390 0182 00F4      		brsh .L27
+ 391               	.LM49:
+ 392 0184 9701      		movw r18,r14
+ 393 0186 281B      		sub r18,r24
+ 394 0188 390B      		sbc r19,r25
+ 395 018a 00E0      		ldi r16,lo8(-16384)
+ 396 018c 10EC      		ldi r17,hi8(-16384)
+ 397 018e 00C0      		rjmp .L28
+ 398               	.L27:
+ 399               	.LM50:
+ 400 0190 0E0D      		add r16,r14
+ 401 0192 1F1D      		adc r17,r15
+ 402 0194 20E0      		ldi r18,lo8(0)
+ 403 0196 30E0      		ldi r19,hi8(0)
+ 404               	.L28:
+ 405               	.LBE53:
+ 406               	.LBE52:
+ 407               	.LBB54:
+ 408               	.LBB55:
+ 409               	.LM51:
+ 410 0198 CE01      		movw r24,r28
+ 411               	.LVL21:
+ 412 019a 8050      		subi r24,lo8(-(-1280))
+ 413 019c 9540      		sbci r25,hi8(-(-1280))
+ 414 019e 8217      		cp r24,r18
+ 415 01a0 9307      		cpc r25,r19
+ 416 01a2 00F4      		brsh .L29
+ 417 01a4 C0E0      		ldi r28,lo8(1280)
+ 418 01a6 D5E0      		ldi r29,hi8(1280)
+ 419 01a8 00C0      		rjmp .L26
+ 420               	.L29:
+ 421               	.LM52:
+ 422 01aa C21B      		sub r28,r18
+ 423 01ac D30B      		sbc r29,r19
+ 424               	.L26:
+ 425               	.LBE55:
+ 426               	.LBE54:
+ 427               	.LM53:
+ 428 01ae 61E0      		ldi r22,lo8(1)
+ 429 01b0 C801      		movw r24,r16
+ 430 01b2 0E94 0000 		call motor_set_speed
+ 431               	.LM54:
+ 432 01b6 60E0      		ldi r22,lo8(0)
+ 433 01b8 CE01      		movw r24,r28
+ 434 01ba 0E94 0000 		call motor_set_speed
+ 435               	/* epilogue start */
+ 436               	.LM55:
+ 437 01be DF91      		pop r29
+ 438 01c0 CF91      		pop r28
+ 439               	.LVL22:
+ 440 01c2 1F91      		pop r17
+ 441 01c4 0F91      		pop r16
+ 442               	.LVL23:
+ 443 01c6 FF90      		pop r15
+ 444 01c8 EF90      		pop r14
+ 445               	.LVL24:
+ 446 01ca DF90      		pop r13
+ 447               	.LVL25:
+ 448 01cc 0895      		ret
+ 449               	.LFE13:
+ 451               		.data
+ 452               	.LC0:
+ 453 0000 0A4D 6F74 		.string	"\nMotor: %c mode: %d"
+ 453      6F72 3A20 
+ 453      2563 206D 
+ 453      6F64 653A 
+ 453      2025 6400 
+ 454               		.text
+ 455               	.global	motor_mode
+ 457               	motor_mode:
+ 458               	.LFB10:
+ 459               	.LM56:
+ 460               	.LVL26:
+ 461 01ce CF93      		push r28
+ 462 01d0 DF93      		push r29
+ 463               	/* prologue: function */
+ 464               	/* frame size = 0 */
+ 465 01d2 782F      		mov r23,r24
+ 466               	.LM57:
+ 467 01d4 6623      		tst r22
+ 468 01d6 01F0      		breq .L32
+ 469               	.LVL27:
+ 470               	.LM58:
+ 471 01d8 6130      		cpi r22,lo8(1)
+ 472 01da 01F4      		brne .L33
+ 473 01dc 55E0      		ldi r21,lo8(5)
+ 474               	.LVL28:
+ 475 01de E7E0      		ldi r30,lo8(7)
+ 476               	.LVL29:
+ 477 01e0 C0E0      		ldi r28,lo8(c_modes.1683+1)
+ 478 01e2 D0E0      		ldi r29,hi8(c_modes.1683+1)
+ 479               	.LVL30:
+ 480 01e4 00C0      		rjmp .L34
+ 481               	.LVL31:
+ 482               	.L33:
+ 483               	.LM59:
+ 484 01e6 8DE3      		ldi r24,lo8(61)
+ 485 01e8 90E0      		ldi r25,hi8(61)
+ 486 01ea 9F93      		push r25
+ 487 01ec 8F93      		push r24
+ 488 01ee 862F      		mov r24,r22
+ 489 01f0 90E0      		ldi r25,lo8(0)
+ 490               	.LVL32:
+ 491 01f2 9F93      		push r25
+ 492 01f4 8F93      		push r24
+ 493 01f6 80E0      		ldi r24,lo8(__c.1687)
+ 494 01f8 90E0      		ldi r25,hi8(__c.1687)
+ 495 01fa 9F93      		push r25
+ 496 01fc 8F93      		push r24
+ 497 01fe 0E94 0000 		call printf_P
+ 498               	.LVL33:
+ 499 0202 87E0      		ldi r24,lo8(7)
+ 500 0204 00C0      		rjmp .L44
+ 501               	.LVL34:
+ 502               	.L32:
+ 503               	.LM60:
+ 504 0206 51E0      		ldi r21,lo8(1)
+ 505               	.LVL35:
+ 506 0208 E3E0      		ldi r30,lo8(3)
+ 507               	.LVL36:
+ 508 020a C0E0      		ldi r28,lo8(c_modes.1683)
+ 509 020c D0E0      		ldi r29,hi8(c_modes.1683)
+ 510               	.LVL37:
+ 511               	.L34:
+ 512               	.LM61:
+ 513 020e 7230      		cpi r23,lo8(2)
+ 514 0210 01F4      		brne .L36
+ 515               	.LM62:
+ 516 0212 4BB1      		in r20,43-32
+ 517 0214 21E0      		ldi r18,lo8(1)
+ 518 0216 30E0      		ldi r19,hi8(1)
+ 519 0218 C901      		movw r24,r18
+ 520 021a 00C0      		rjmp 2f
+ 521 021c 880F      	1:	lsl r24
+ 522 021e 991F      		rol r25
+ 523 0220 5A95      	2:	dec r21
+ 524 0222 02F4      		brpl 1b
+ 525 0224 8095      		com r24
+ 526 0226 8423      		and r24,r20
+ 527 0228 8BB9      		out 43-32,r24
+ 528               	.LM63:
+ 529 022a 8BB1      		in r24,43-32
+ 530 022c 00C0      		rjmp 2f
+ 531 022e 220F      	1:	lsl r18
+ 532 0230 331F      		rol r19
+ 533 0232 EA95      	2:	dec r30
+ 534 0234 02F4      		brpl 1b
+ 535 0236 822B      		or r24,r18
+ 536 0238 00C0      		rjmp .L45
+ 537               	.LVL38:
+ 538               	.L36:
+ 539               	.LM64:
+ 540 023a 7130      		cpi r23,lo8(1)
+ 541 023c 01F4      		brne .L38
+ 542               	.LM65:
+ 543 023e 4BB1      		in r20,43-32
+ 544 0240 81E0      		ldi r24,lo8(1)
+ 545 0242 90E0      		ldi r25,hi8(1)
+ 546 0244 9C01      		movw r18,r24
+ 547 0246 00C0      		rjmp 2f
+ 548 0248 220F      	1:	lsl r18
+ 549 024a 331F      		rol r19
+ 550 024c 5A95      	2:	dec r21
+ 551 024e 02F4      		brpl 1b
+ 552 0250 422B      		or r20,r18
+ 553 0252 4BB9      		out 43-32,r20
+ 554               	.LM66:
+ 555 0254 2BB1      		in r18,43-32
+ 556 0256 00C0      		rjmp 2f
+ 557 0258 880F      	1:	lsl r24
+ 558 025a 991F      		rol r25
+ 559 025c EA95      	2:	dec r30
+ 560 025e 02F4      		brpl 1b
+ 561 0260 8095      		com r24
+ 562 0262 8223      		and r24,r18
+ 563 0264 00C0      		rjmp .L45
+ 564               	.LVL39:
+ 565               	.L38:
+ 566               	.LM67:
+ 567 0266 7330      		cpi r23,lo8(3)
+ 568 0268 01F4      		brne .L39
+ 569               	.LM68:
+ 570 026a 4BB1      		in r20,43-32
+ 571 026c 21E0      		ldi r18,lo8(1)
+ 572 026e 30E0      		ldi r19,hi8(1)
+ 573 0270 C901      		movw r24,r18
+ 574 0272 00C0      		rjmp 2f
+ 575 0274 880F      	1:	lsl r24
+ 576 0276 991F      		rol r25
+ 577 0278 EA95      	2:	dec r30
+ 578 027a 02F4      		brpl 1b
+ 579 027c 00C0      		rjmp 2f
+ 580 027e 220F      	1:	lsl r18
+ 581 0280 331F      		rol r19
+ 582 0282 5A95      	2:	dec r21
+ 583 0284 02F4      		brpl 1b
+ 584 0286 822B      		or r24,r18
+ 585 0288 8095      		com r24
+ 586 028a 8423      		and r24,r20
+ 587               	.L45:
+ 588 028c 8BB9      		out 43-32,r24
+ 589 028e 00C0      		rjmp .L43
+ 590               	.LVL40:
+ 591               	.L39:
+ 592               	.LM69:
+ 593 0290 7430      		cpi r23,lo8(4)
+ 594 0292 01F4      		brne .L37
+ 595               	.LM70:
+ 596 0294 8BB1      		in r24,43-32
+ 597 0296 21E0      		ldi r18,lo8(1)
+ 598 0298 30E0      		ldi r19,hi8(1)
+ 599 029a D901      		movw r26,r18
+ 600 029c 00C0      		rjmp 2f
+ 601 029e AA0F      	1:	lsl r26
+ 602 02a0 BB1F      		rol r27
+ 603 02a2 5A95      	2:	dec r21
+ 604 02a4 02F4      		brpl 1b
+ 605 02a6 AD01      		movw r20,r26
+ 606 02a8 00C0      		rjmp 2f
+ 607 02aa 220F      	1:	lsl r18
+ 608 02ac 331F      		rol r19
+ 609 02ae EA95      	2:	dec r30
+ 610 02b0 02F4      		brpl 1b
+ 611 02b2 422B      		or r20,r18
+ 612 02b4 482B      		or r20,r24
+ 613 02b6 4BB9      		out 43-32,r20
+ 614               	.L43:
+ 615               	.LM71:
+ 616 02b8 7883      		st Y,r23
+ 617               	.LVL41:
+ 618               	.L37:
+ 619               	.LM72:
+ 620 02ba 6623      		tst r22
+ 621 02bc 01F0      		breq .L40
+ 622 02be 22E5      		ldi r18,lo8(82)
+ 623               	.LVL42:
+ 624 02c0 00C0      		rjmp .L41
+ 625               	.LVL43:
+ 626               	.L40:
+ 627 02c2 2CE4      		ldi r18,lo8(76)
+ 628               	.LVL44:
+ 629               	.L41:
+ 630               	.LM73:
+ 631 02c4 8881      		ld r24,Y
+ 632 02c6 90E0      		ldi r25,lo8(0)
+ 633 02c8 9F93      		push r25
+ 634 02ca 8F93      		push r24
+ 635 02cc 822F      		mov r24,r18
+ 636 02ce 90E0      		ldi r25,lo8(0)
+ 637               	.LVL45:
+ 638 02d0 9F93      		push r25
+ 639 02d2 8F93      		push r24
+ 640 02d4 80E0      		ldi r24,lo8(.LC0)
+ 641 02d6 90E0      		ldi r25,hi8(.LC0)
+ 642 02d8 9F93      		push r25
+ 643 02da 8F93      		push r24
+ 644 02dc 0E94 0000 		call printf
+ 645               	.LVL46:
+ 646               	.LM74:
+ 647 02e0 8881      		ld r24,Y
+ 648               	.L44:
+ 649 02e2 2DB7      		in r18,__SP_L__
+ 650 02e4 3EB7      		in r19,__SP_H__
+ 651 02e6 2A5F      		subi r18,lo8(-(6))
+ 652 02e8 3F4F      		sbci r19,hi8(-(6))
+ 653 02ea 0FB6      		in __tmp_reg__,__SREG__
+ 654 02ec F894      		cli
+ 655 02ee 3EBF      		out __SP_H__,r19
+ 656 02f0 0FBE      		out __SREG__,__tmp_reg__
+ 657 02f2 2DBF      		out __SP_L__,r18
+ 658               	/* epilogue start */
+ 659               	.LM75:
+ 660 02f4 DF91      		pop r29
+ 661 02f6 CF91      		pop r28
+ 662               	.LVL47:
+ 663 02f8 0895      		ret
+ 664               	.LFE10:
+ 666               	.global	lf_stop_speed
+ 668               	lf_stop_speed:
+ 669               	.LFB15:
+ 670               	.LM76:
+ 671               	/* prologue: function */
+ 672               	/* frame size = 0 */
+ 673               	.LM77:
+ 674 02fa 60E0      		ldi r22,lo8(0)
+ 675 02fc 83E0      		ldi r24,lo8(3)
+ 676 02fe 0E94 0000 		call motor_mode
+ 677               	.LM78:
+ 678 0302 61E0      		ldi r22,lo8(1)
+ 679 0304 83E0      		ldi r24,lo8(3)
+ 680 0306 0E94 0000 		call motor_mode
+ 681               	.LM79:
+ 682 030a 60E0      		ldi r22,lo8(0)
+ 683 030c 80E0      		ldi r24,lo8(1280)
+ 684 030e 95E0      		ldi r25,hi8(1280)
+ 685 0310 0E94 0000 		call motor_set_speed
+ 686               	.LM80:
+ 687 0314 61E0      		ldi r22,lo8(1)
+ 688 0316 80E0      		ldi r24,lo8(1280)
+ 689 0318 95E0      		ldi r25,hi8(1280)
+ 690 031a 0E94 0000 		call motor_set_speed
+ 691               	/* epilogue start */
+ 692               	.LM81:
+ 693 031e 0895      		ret
+ 694               	.LFE15:
+ 696               	.global	motors_init
+ 698               	motors_init:
+ 699               	.LFB16:
+ 700               	.LM82:
+ 701               	/* prologue: function */
+ 702               	/* frame size = 0 */
+ 703               	.LM83:
+ 704 0320 8AB1      		in r24,42-32
+ 705 0322 8A6A      		ori r24,lo8(-86)
+ 706 0324 8AB9      		out 42-32,r24
+ 707               	.LM84:
+ 708 0326 0E94 0000 		call lf_stop_speed
+ 709               	/* epilogue start */
+ 710               	.LM85:
+ 711 032a 0895      		ret
+ 712               	.LFE16:
+ 714               	.global	lf_full_speed
+ 716               	lf_full_speed:
+ 717               	.LFB14:
+ 718               	.LM86:
+ 719               	/* prologue: function */
+ 720               	/* frame size = 0 */
+ 721               	.LM87:
+ 722 032c 60E0      		ldi r22,lo8(0)
+ 723 032e 80E0      		ldi r24,lo8(-16384)
+ 724 0330 90EC      		ldi r25,hi8(-16384)
+ 725 0332 0E94 0000 		call motor_set_speed
+ 726               	.LM88:
+ 727 0336 61E0      		ldi r22,lo8(1)
+ 728 0338 80E0      		ldi r24,lo8(-16384)
+ 729 033a 90EC      		ldi r25,hi8(-16384)
+ 730 033c 0E94 0000 		call motor_set_speed
+ 731               	.LM89:
+ 732 0340 60E0      		ldi r22,lo8(0)
+ 733 0342 81E0      		ldi r24,lo8(1)
+ 734 0344 0E94 0000 		call motor_mode
+ 735               	.LM90:
+ 736 0348 61E0      		ldi r22,lo8(1)
+ 737 034a 81E0      		ldi r24,lo8(1)
+ 738 034c 0E94 0000 		call motor_mode
+ 739               	/* epilogue start */
+ 740               	.LM91:
+ 741 0350 0895      		ret
+ 742               	.LFE14:
+ 744               		.section	.progmem.data,"a",@progbits
+ 747               	__c.1687:
+ 748 0000 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
+ 748      726F 725D 
+ 748      204D 6F74 
+ 748      6F72 3A20 
+ 748      496E 7661 
+ 749               		.lcomm c_modes.1683,2
+ 752               	__c.1672:
+ 753 002e 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
+ 753      726F 725D 
+ 753      204D 6F74 
+ 753      6F72 3A20 
+ 753      496E 7661 
+ 756               	__c.1650:
+ 757 005c 0A5B 6572 		.string	"\n[error] Motor: Invalid Motor Number: %d [%s]"
+ 757      726F 725D 
+ 757      204D 6F74 
+ 757      6F72 3A20 
+ 757      496E 7661 
+ 758               		.comm c_mode,1,1
+ 759               		.comm initial,1,1
+ 848               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-     /tmp/cc2VYeGb.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc2VYeGb.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc2VYeGb.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc2VYeGb.s:5      *ABS*:00000000 __tmp_reg__
-     /tmp/cc2VYeGb.s:6      *ABS*:00000001 __zero_reg__
-     /tmp/cc2VYeGb.s:115    .text:00000000 inc_limit
-     /tmp/cc2VYeGb.s:175    .text:00000032 dec_limit
-     /tmp/cc2VYeGb.s:236    .text:00000068 motor_set_speed
-     /tmp/cc2VYeGb.s:985    .progmem.data:0000002e __c.1670
-     /tmp/cc2VYeGb.s:347    .text:000000b8 motor_get_speed
-     /tmp/cc2VYeGb.s:989    .progmem.data:0000005c __c.1648
-     /tmp/cc2VYeGb.s:470    .text:00000110 lf_turn_inc
-     /tmp/cc2VYeGb.s:654    .text:000001ce motor_mode
-                             .bss:00000000 c_modes.1681
-     /tmp/cc2VYeGb.s:980    .progmem.data:00000000 __c.1685
-     /tmp/cc2VYeGb.s:874    .text:000002fa lf_stop_speed
-     /tmp/cc2VYeGb.s:914    .text:00000320 motors_init
-     /tmp/cc2VYeGb.s:940    .text:0000032c lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:20     .text:00000000 inc_limit
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:69     .text:00000032 dec_limit
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:121    .text:00000068 motor_set_speed
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:752    .progmem.data:0000002e __c.1672
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:205    .text:000000b8 motor_get_speed
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:756    .progmem.data:0000005c __c.1650
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:296    .text:00000110 lf_turn_inc
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:457    .text:000001ce motor_mode
+                             .bss:00000000 c_modes.1683
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:747    .progmem.data:00000000 __c.1687
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:668    .text:000002fa lf_stop_speed
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:698    .text:00000320 motors_init
+C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:716    .text:0000032c lf_full_speed
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 
