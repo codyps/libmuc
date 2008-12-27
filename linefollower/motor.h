@@ -19,11 +19,8 @@ void 		motor_set_speed	(uint16_t speed,uint8_t motor);
 uint16_t	motor_get_speed	(uint8_t motor); 
 uint8_t		motor_mode		(motor_mode_t mode, uint8_t motor);
 
-
-
-
 void lf_turn_inc(uint16_t incriment,int8_t dir);
-void lf_full_speed(void);
-void lf_stop_speed(void);
+void lf_speed_full(void);
+void lf_speed_stop(void);
 void motors_init(void);
 #endif

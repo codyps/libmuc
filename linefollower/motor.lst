@@ -648,8 +648,8 @@
  662               	.LVL47:
  663 02f8 0895      		ret
  664               	.LFE10:
- 666               	.global	lf_stop_speed
- 668               	lf_stop_speed:
+ 666               	.global	lf_speed_stop
+ 668               	lf_speed_stop:
  669               	.LFB15:
  670               	.LM76:
  671               	/* prologue: function */
@@ -687,13 +687,13 @@
  705 0322 8A6A      		ori r24,lo8(-86)
  706 0324 8AB9      		out 42-32,r24
  707               	.LM84:
- 708 0326 0E94 0000 		call lf_stop_speed
+ 708 0326 0E94 0000 		call lf_speed_stop
  709               	/* epilogue start */
  710               	.LM85:
  711 032a 0895      		ret
  712               	.LFE16:
- 714               	.global	lf_full_speed
- 716               	lf_full_speed:
+ 714               	.global	lf_speed_full
+ 716               	lf_speed_full:
  717               	.LFB14:
  718               	.LM86:
  719               	/* prologue: function */
@@ -745,25 +745,25 @@
  848               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 motor.c
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:20     .text:00000000 inc_limit
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:69     .text:00000032 dec_limit
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:121    .text:00000068 motor_set_speed
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:752    .progmem.data:0000002e __c.1672
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:205    .text:000000b8 motor_get_speed
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:756    .progmem.data:0000005c __c.1650
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:296    .text:00000110 lf_turn_inc
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:457    .text:000001ce motor_mode
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:20     .text:00000000 inc_limit
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:69     .text:00000032 dec_limit
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:121    .text:00000068 motor_set_speed
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:752    .progmem.data:0000002e __c.1672
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:205    .text:000000b8 motor_get_speed
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:756    .progmem.data:0000005c __c.1650
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:296    .text:00000110 lf_turn_inc
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:457    .text:000001ce motor_mode
                              .bss:00000000 c_modes.1683
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:747    .progmem.data:00000000 __c.1687
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:668    .text:000002fa lf_stop_speed
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:698    .text:00000320 motors_init
-C:\Users\Unknown\AppData\Local\Temp/ccRHpEYe.s:716    .text:0000032c lf_full_speed
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:747    .progmem.data:00000000 __c.1687
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:668    .text:000002fa lf_speed_stop
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:698    .text:00000320 motors_init
+C:\Users\Unknown\AppData\Local\Temp/ccPktsfI.s:716    .text:0000032c lf_speed_full
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
 

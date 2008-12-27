@@ -37,31 +37,31 @@ ISR(PCINT0_vect) {
 		if (iPINE&(1<<2)) {// Left
 			if (c_mode!=WAIT) {
 				c_mode=WAIT;
-				lf_stop_speed();
+				lf_speed_stop();
 			}
 			else {
 				initial=true;
 				c_mode=TEST;
 			}
-			#ifdef debug
+			#if DEBUG_L(2)
 			fprintf_P(stderr,PSTR("\nCurrent Mode (T/W) = %d"),c_mode);
 			#endif
 		}
 		if (iPINE&(1<<3)) {// Right
 			if (c_mode!=WAIT) {
 				c_mode=WAIT;
-				lf_stop_speed();
+				lf_speed_stop();
 			}
 			else {
 				initial=true;
 				c_mode=FOLLOW;
 			}
-			#ifdef debug	
+			#if DEBUG_L(2)	
 			fprintf_P(stderr,PSTR("\nCurrent Mode (F/W)= %d"),c_mode);
 			#endif
 		}
 	}
-	#ifdef debug
+	#if DEBUG_L(3)
 	else
 		fprintf_P(stderr,PSTR("\n[debug] PE? Released"));
 	#endif
@@ -73,26 +73,26 @@ ISR(PCINT1_vect) {
 	if (iPINB&((1<<7)|(1<<6)|(1<<4))) {
 		if (iPINB&(1<<7)) {// Down
 			adc_calibrate_update();
-			#ifdef debug
+			#if DEBUG_L(2)
 			print_adc_calibration();
 			print_adc_values();
 			#endif
 		}
 		if (iPINB&(1<<4)) {// In
-			#ifdef debug
+			#if DEBUG_L(2)
 			print_adc_calibration();
 			print_adc_values();
 			#endif
 		}
 		if (iPINB&(1<<6)) {// Up
 			adc_calibrate_clear();
-			#ifdef debug
+			#if DEBUG_L(2)
 			print_adc_calibration();
 			print_adc_values();
 			#endif
 		}
 	}
-	#ifdef debug
+	#if DEBUG_L(3)
 	else
 		fprintf_P(stderr,PSTR("\n[debug] PB? Released"));
 	#endif

@@ -14,6 +14,8 @@ Globaly Utilized Information
 #define debug
 #define DEBUG 1
 
+#define DEBUG_L(__L) (DEBUG>=__L)
+
 #ifdef debug 
 #define debugp_P(__A) printf_P(__A)
 #define debugp(__A) printf(__A)

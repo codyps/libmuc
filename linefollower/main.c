@@ -53,7 +53,7 @@ void init(void) {
 	timers_init();
 	motors_init();
 	sei();
-	#if (DEBUG)
+	#if DEBUG_L(1)
 	printf_P(PSTR("\nInit: Done\n\n"));
 	#endif
 }
@@ -71,7 +71,7 @@ int main(void) {
 				new_adc_data=false;
 				if (initial) {
 					initial=false;
-					lf_full_speed();
+					lf_speed_full();
 				}
 				
 				// gen copy of fixed adc inputs.
@@ -89,7 +89,7 @@ int main(void) {
 					}
 				}
 			
-				#ifdef debug
+				#if DEBUG_L(1)
 				print_adc_values();
 				printf_P(PSTR("\nMax Chan [L 0 1 2 3 R]: %d;v=%d"),max_i,max_v);
 				#endif

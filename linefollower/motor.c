@@ -7,7 +7,7 @@
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
-#ifdef debug
+#if DEBUG_L(1)
 #define error_invalid_motor(_m) printf_P(PSTR("\n[error] Motor: Invalid Motor Number: %d [%s]"),_m,__LINE__)
 #else
 #define error_invalid_motor(_m) 
@@ -81,7 +81,7 @@ uint8_t motor_mode(motor_mode_t mode, uint8_t motor) {
 		*c_mode = mode;
 	}
 	
-	#ifdef debug
+	#if DEBUG_L(2)
 	char mname;
 	if (motor==LEFT)
 		mname='L';
@@ -129,14 +129,14 @@ void lf_turn_inc(uint16_t inc,int8_t dir) {
 	motor_set_speed(ml,LEFT);
 }
 
-void lf_full_speed(void) {
+void lf_speed_full(void) {
 	motor_set_speed(LF_MAX_SPEED,LEFT);
 	motor_set_speed(LF_MAX_SPEED,RIGHT);
 	motor_mode(MOTOR_L_FWD,LEFT);
 	motor_mode(MOTOR_L_FWD,RIGHT);
 }
 
-void lf_stop_speed(void) {
+void lf_speed_stop(void) {
 	motor_mode(MOTOR_MODE_STOP,LEFT);
 	motor_mode(MOTOR_MODE_STOP,RIGHT);
 	motor_set_speed(LF_MIN_SPEED,LEFT);
@@ -145,5 +145,5 @@ void lf_stop_speed(void) {
 
 void motors_init(void) {
 	MOTOR_CTL_DDR|=((1<<M_AIN1)|(1<<M_AIN2)|(1<<M_BIN1)|(1<<M_BIN2));
-	lf_stop_speed();
+	lf_speed_stop();
 }
