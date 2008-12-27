@@ -9,8 +9,11 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <ctype.h>
+#include "queue.h"
 
-#define RX_BUFSIZE 127
+#define RX_BUFSIZE 128
+
+queue_t tx_q;
 
 static int usart0_putchar_direct(char c, FILE *stream);
 static int usart0_putchar(char c, FILE *stream);
@@ -18,6 +21,13 @@ int usart0_getchar(FILE *stream);
 
 static FILE usart0_stderr = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FDEV_SETUP_WRITE);
 static FILE usart0_stdio = FDEV_SETUP_STREAM(usart0_putchar, usart0_getchar ,_FDEV_SETUP_RW);
+
+static void enable_usart0_tx_inter(void) {
+	UCSR0B|=(1<<UDRIE0);
+}
+static void disable_usart0_tx_inter(void) {
+	UCSR0B&=(uint8_t)~(1<<UDRIE0);
+}
 
 static int usart0_putchar_direct(char c, FILE *stream) {
 	if (c == '\n')
@@ -113,15 +123,15 @@ static int usart0_putchar(char c, FILE *stream) {
 	usart0_putchar('\r', stream);
 
   // Polled
-  loop_until_bit_is_set(UCSR0A, UDRE0);
-  UDR0 = c;
+//  loop_until_bit_is_set(UCSR0A, UDRE0);
+//  UDR0 = c;
 
-/*//Queued
+  //Queued
   while (q_full(&tx_q));
   disable_usart0_tx_inter();
   q_push(&tx_q,c);	
   enable_usart0_tx_inter();
-*/
+
   return 0;
 }
 
@@ -142,19 +152,19 @@ ISR(USART0_RX_vect) {
 	printf_P(PSTR("\nMode now: %d\n"),c_mode);
 }
 */
-/*
+
 ISR(USART0_UDRE_vect) {	
 	if (tx_q.ct>0) // !q_empty(&tx_q)
 		UDR0 = q_pop(&tx_q);
 	if (tx_q.ct==0)// q_empty(&tx_q)
 		disable_usart0_tx_inter();			
 }
-*/
+
 
 void usart0_init(void) {
 	power_usart0_enable();
 	
-	//q_init(&tx_q);	
+	q_init(&tx_q);	
 	
 	/* Set baud rate (12bit) */
 	UBRR0 = UBRR_VALUE;

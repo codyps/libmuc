@@ -63,7 +63,8 @@ SRC += adc.c \
 usart.c \
 timers.c \
 motor.c \
-joystick.c
+joystick.c \
+queue.c
 
 # bcd.c \
 #lcd_functions.c \

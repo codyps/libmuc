@@ -609,26 +609,26 @@
  673               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:2      *ABS*:0000003f __SREG__
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:3      *ABS*:0000003e __SP_H__
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:4      *ABS*:0000003d __SP_L__
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:5      *ABS*:00000034 __CCP__
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:6      *ABS*:00000000 __tmp_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:7      *ABS*:00000001 __zero_reg__
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:20     .text:00000000 clock_init
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:47     .text:00000016 __vector_default
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:591    .progmem.data:00000000 __c.1772
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:106    .text:0000007a init
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:608    .progmem.data:0000006f __c.1706
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:181    .text:000000d2 main
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:2      *ABS*:0000003f __SREG__
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:5      *ABS*:00000034 __CCP__
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:20     .text:00000000 clock_init
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:47     .text:00000016 __vector_default
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:591    .progmem.data:00000000 __c.1772
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:106    .text:0000007a init
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:608    .progmem.data:0000006f __c.1706
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:181    .text:000000d2 main
                             *COM*:00000001 c_mode
                             *COM*:00000001 initial
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:604    .progmem.data:0000004e __c.1730
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:600    .progmem.data:00000034 __c.1735
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:596    .progmem.data:0000001c __c.1738
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:604    .progmem.data:0000004e __c.1730
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:600    .progmem.data:00000034 __c.1735
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:596    .progmem.data:0000001c __c.1738
                             *COM*:00000001 new_adc_data
                              .bss:00000000 sp.1740
-C:\Users\Unknown\AppData\Local\Temp/ccCKaaKk.s:525    .text:000002d0 print_bin
+C:\Users\Unknown\AppData\Local\Temp/cc2EHlxX.s:525    .text:000002d0 print_bin
                             *COM*:00000008 adc_val
                             *COM*:00000008 adc_offset
                             *COM*:00000008 adc_amt
