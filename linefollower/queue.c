@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "queue.h"
+#include "defines.h"
 #include <avr/pgmspace.h>
 
 void q_init(queue_t *q) {
@@ -15,7 +16,7 @@ void q_init(queue_t *q) {
 int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
         if (q->ct >= QUEUE_SZ){
-		#if DEBUG_L(2)        	
+		#if DEBUG_L(2)
 		fprintf_P(stderr,PSTR("Warning: queue overflow push x=%d\n"),x);
 		#endif
 		return -1;

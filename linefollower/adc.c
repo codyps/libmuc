@@ -86,7 +86,7 @@ void adc_calibrate_clear() {
 }
 
 void adc_init() {
-	#ifdef debug
+	#if DEBUG_L(1)
 	fprintf_P(stderr,PSTR("\nadc: init"));
 	#endif
 	power_adc_enable();
@@ -109,7 +109,7 @@ void adc_init() {
 	DIDR0 |= (uint8_t)((1<<ADC4D)|(1<<ADC5D)|(1<<ADC6D)|(1<<ADC7D));
 	
 	set_sleep_mode(SLEEP_MODE_ADC);
-	#ifdef debug	
+	#if DEBUG_L(3)
 	fprintf_P(stderr,PSTR("\nadc: init: setup convertions"));
 	#endif
 	adc_set_channel(curr_ch);
@@ -122,7 +122,7 @@ void adc_init() {
 	
 	// Wait for one set of convertions to complete.
 	//_delay_loop_2(ADC_CYCLE_DELAY*26);
-	#ifdef debug
+	#if DEBUG_L(1)
 	fprintf_P(stderr,PSTR("\t[done]"));
 	#endif
 }
@@ -164,6 +164,6 @@ ISR(ADC_vect) {
 	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
 	
 	if (!(ct%channel_amt)) {
-		new_adc_data=true;//all values have been recalculated, update motors.
+		adc_data_new=true;//all values have been recalculated, update motors.
 	}
 }

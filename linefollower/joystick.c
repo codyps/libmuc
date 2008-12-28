@@ -43,7 +43,7 @@ ISR(PCINT0_vect) {
 				initial=true;
 				c_mode=TEST;
 			}
-			#if DEBUG_L(2)
+			#if DEBUG_L(1)
 			fprintf_P(stderr,PSTR("\nCurrent Mode (T/W) = %d"),c_mode);
 			#endif
 		}
@@ -56,7 +56,7 @@ ISR(PCINT0_vect) {
 				initial=true;
 				c_mode=FOLLOW;
 			}
-			#if DEBUG_L(2)	
+			#if DEBUG_L(1)	
 			fprintf_P(stderr,PSTR("\nCurrent Mode (F/W)= %d"),c_mode);
 			#endif
 		}
@@ -73,20 +73,20 @@ ISR(PCINT1_vect) {
 	if (iPINB&((1<<7)|(1<<6)|(1<<4))) {
 		if (iPINB&(1<<7)) {// Down
 			adc_calibrate_update();
-			#if DEBUG_L(2)
+			#if DEBUG_L(1)
 			print_adc_calibration();
 			print_adc_values();
 			#endif
 		}
 		if (iPINB&(1<<4)) {// In
-			#if DEBUG_L(2)
+			#if DEBUG_L(1)
 			print_adc_calibration();
 			print_adc_values();
 			#endif
 		}
 		if (iPINB&(1<<6)) {// Up
 			adc_calibrate_clear();
-			#if DEBUG_L(2)
+			#if DEBUG_L(1)
 			print_adc_calibration();
 			print_adc_values();
 			#endif

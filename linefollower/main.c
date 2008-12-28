@@ -66,9 +66,9 @@ int main(void) {
 	initial=true;
 		
 	for(;;) {
-		if	(c_mode==FOLLOW && new_adc_data) {
-			if (new_adc_data) {
-				new_adc_data=false;
+		if	(c_mode==FOLLOW && adc_data_new) {
+			if (adc_data_new) {
+				adc_data_new=false;
 				if (initial) {
 					initial=false;
 					lf_speed_full();
@@ -166,11 +166,12 @@ int main(void) {
 				}
 				*/
 			}
-			/*
+			
 			else { // if !new_adc_data
 				// Sleep? (need adc, timers, pwm outputs (IO clock), 
+				printf_P(PSTR("\nWaiting for adc data?"));
 			}
-			*/
+			
 		}
 		else if	(c_mode==TEST) {
 			if (initial) {

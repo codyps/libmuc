@@ -12,9 +12,9 @@ Globaly Utilized Information
 
 // Debuging 
 #define debug
-#define DEBUG 1
+#define DEBUG 2
 
-#define DEBUG_L(__L) (DEBUG>=__L)
+#define DEBUG_L(LEVEL) (DEBUG>=LEVEL)
 
 #ifdef debug 
 #define debugp_P(__A) printf_P(__A)

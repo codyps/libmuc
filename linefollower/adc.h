@@ -21,7 +21,7 @@ int16_t adc_offset [channel_amt]; //Offsets to apply to each channel (+-)
 uint16_t adc_amt [channel_amt]; // Number of times a channel has been calculated.XXX: Not used
 uint8_t volatile curr_ch; //=0 //Current 'Virtual' Channel
 
-uint8_t volatile new_adc_data; // True when all the channels have been recalced.
+uint8_t volatile adc_data_new; // True when all the channels have been recalced.
 
 // Functions:
 uint16_t adc_get_val(uint8_t ch);

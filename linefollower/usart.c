@@ -127,6 +127,13 @@ static int usart0_putchar(char c, FILE *stream) {
 //  UDR0 = c;
 
   //Queued
+  if (q_full(&tx_q)) { // Hack around my stupidity.
+	#if DEBUG_L(2)
+	printf_P(PSTR("\n[warn] Had to force on USART ittr\n"));
+	#endif
+	enable_usart0_tx_inter();
+	sei();
+  }
   while (q_full(&tx_q));
   disable_usart0_tx_inter();
   q_push(&tx_q,c);	
