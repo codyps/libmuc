@@ -16,12 +16,12 @@ Globaly Utilized Information
 
 #define DEBUG_L(LEVEL) (DEBUG>=LEVEL)
 
-#ifdef debug 
-#define debugp_P(__A) printf_P(__A)
-#define debugp(__A) printf(__A)
+#if DEBUG_L(1) 
+	#define dpf_P(...) printf_P(__VA_ARGS__)
+	#define dpf(...) printf(__VA_ARGS__)
 #else
-#define debugp_P(__A)  
-#define debugp(__A)  
+	#define debugp_P(...)  
+	#define debugp(...)  
 #endif
 
 
