@@ -1,3 +1,7 @@
+// Timer subsystem control
+
+#ifndef _TIMER_H_
+#define _TIMER_H_
 
 typedef enum {DN, UP} dir_t;
 
@@ -32,3 +36,5 @@ void timers_init(void);
 void timer0_init(void);
 void timer1_init(void);
 void timer2_init(void);
+
+#endif

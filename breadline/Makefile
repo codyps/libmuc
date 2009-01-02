@@ -9,7 +9,7 @@ MCU = atmega324p
 ADMCU = atmega324p
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c usart.c timer.c queue.c
+SRC = $(TARGET).c usart.c timer.c queue.c adc.c motor.c
 ASRC = 
 OPT = s
 

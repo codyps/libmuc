@@ -118,19 +118,18 @@ void timer2_init(void) { // 8, RTC
 	
 	TCNT2=0;
 	OCR2B=0;
-	#if	(T2HZ==1000)	
-	OCR2A=125;
-	#elif	(T2HZ==100)
-	OCR2A=78;
-	#endif
 	
 	// Clock Select
 	//8000000/78/1024 == 100 HZ
 	//8000000/125/64  == 1000 Hz
 	#if	(T2HZ==100)	
+	OCR2A=78;
 	TCCR2B|=(1<<CS22)|(1<<CS21)|(1<<CS20); //1024
 	#elif	(T2HZ==1000)
+	OCR2A=125;
 	TCCR2B|=(1<<CS22);TCCR2B&=(uint8_t)~((1<<CS21)|(1<<CS20));//64
+	#else
+	#error Invalid Timer2 Frequency
 	#endif	
 
 	fprintf_P(stderr,PSTR("\t[done]"));

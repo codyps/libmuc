@@ -14,7 +14,7 @@
 
 
 void timer2_init(void) {
-	#ifdef debug
+	#if DEBUG_L(1)
 	fprintf_P(stderr,PSTR("\ntimers: init: timer2"));
 	#endif
 	//power_timer2_enable(); // can't be disabled in m169p
@@ -87,7 +87,7 @@ void timer2_init(void) {
 	// Enable overflow interrupt, disable match.
 	//TIMSK2|= (1<<TOIE2);
 	//TIMSK2&=~(1<<OCIE2A); // Disabled
-	#ifdef debug
+	#if DEBUG_L(1)
 	fprintf_P(stderr,PSTR("\t[done]"));
 	#endif
 }
@@ -99,7 +99,7 @@ ISR(TIMER2_OVF_vect) {
 	++sec;
 	if (c_mode==WAIT) {
 		//printf("\n\tT: %ds\n",sec);
-		#ifdef debug
+		#if DEBUG_L(1)
 		fprintf_P(stderr,PSTR("\nMode: %d"),c_mode);
 		#endif
 	}
@@ -107,7 +107,7 @@ ISR(TIMER2_OVF_vect) {
 }
 
 void timer1_init(void) { // Runs the PWMs
-	#ifdef debug
+	#if DEBUG_L(1)
 	fprintf_P(stderr,PSTR("\ntimers: init: timer1"));
 	#endif
 	power_timer1_enable();
@@ -155,7 +155,7 @@ void timer1_init(void) { // Runs the PWMs
 	TIMSK1|=((1<<OCIE1B)|(1<<OCIE1A)|(1<<TOIE1));
 	
 	MOTOR_PWM_DDR|= ((1<<M_PWMA_PIN)|(1<<M_PWMB_PIN));
-	#ifdef debug
+	#if DEBUG_L(1)
 	fprintf_P(stderr,PSTR("\t[done]"));
 	#endif
 }
