@@ -33,7 +33,8 @@ void init(void) {
 	clock_init();
 	timers_init();
 	sei();
-	DEBUG_LED_DDR|=(1<<DEBUG_LED_POS);
+	DEBUG_LED_DDR|=(1<<DEBUG_LED_POS)|(1<<ERROR_LED_POS);
+	DEBUG_LED_FLIP;
 	fprintf_P(stderr,PSTR("\nmain: init:\t[done]\n\n"));	
 }
 
@@ -44,14 +45,15 @@ void  print_bin(uint8_t inp) {
 }
 
 ISR(BADISR_vect){
-	fprintf_P(stderr,PSTR("\n\tError: Invalid Interupt\n"));
+	//fprintf_P(stderr,PSTR("\n\tError: Invalid Interupt\n"));
+	ERROR_LED_FLIP;
 }
 
 int main(void){ 	
 	init();
 	
 	for(;;) {
-		DEBUG_LED_FLIP;
+		//DEBUG_LED_FLIP;
 		_delay_ms(100);
 
 	}
