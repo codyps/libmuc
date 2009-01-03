@@ -55,7 +55,33 @@ ISR(TIMER0_COMPA_vect) {
 	ms++;
 	if (!(ms%1000)) { // Second
 		++sec;		
+		ms=0;
 		DEBUG_LED_FLIP;
+	}
+
+	if (!(ms%5)) {
+		typedef enum {DN, UP} dir_t;
+		#define LED_TOP_A 0x3ff
+		#define LED_STEP_A 1
+		static dir_t led_dir_A=UP;
+		uint16_t LED_A;
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+			LED_A = OCR1A;
+			LED_A += (TC1H<<8);
+		}
+		if (LED_A>(LED_TOP_A-LED_STEP_A))
+			led_dir_A=DN;
+		else if (LED_A<LED_STEP_A)
+			led_dir_A=UP;
+	
+		if (led_dir_A==UP)
+			LED_A+=LED_STEP_A;
+		else LED_A-=LED_STEP_A;
+	
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+			TC1H = LED_A>>8;
+			OCR1A = LED_A&0xff;
+		}
 	}
 }
 
@@ -79,17 +105,16 @@ static void timer1_init(void) { //PWM
 	loop_until_bit_is_set(PLLCSR,PLOCK);
 	PLLCSR|=(1<<PCKE);
 
-	// 	 OC1A,	  OC1B set to outputs
-	DDRB|= (1<<1)|(1<<3);  
+	//	OC1A,  OC1B,  OC1D set to outputs
+	DDRB|= (1<<1)|(1<<3)|(1<<5);  
 	
+	// Pin Control OC1{A,B,D} connected, !OC1{A,B,D} disconnected. PWM enabled
+	TCCR1A= (1<<COM1A1)|(0<<COM1A0)|(1<<COM1B1)|(0<<COM1B0)\
+		|(0<<FOC1A)|(0<<FOC1A)|(1<<PWM1A)|(1<<PWM1B);
+	TCCR1C = (1<<COM1A1S)|(0<<COM1A0S)|(1<<COM1B1S)|(0<<COM1B0S)\
+		|(1<<COM1D1)|(0<<COM1D0)|(0<<FOC1D)|(1<<PWM1D);
 	
-	// Pin Control OC1{A,B} connected, !OC1{A,B,D} + OC1D disconnected.
-	TCCR1A|= (1<<COM1A1)|(1<<COM1B1);
-	TCCR1A&=(uint8_t)~((1<<COM1A0)|(1<<COM1B0));
-	TCCR1B&=(uint8_t)~((1<<COM1D1)|(1<<COM1D1));
-
 	// Mode
-	TCCR1B&= (uint8_t)~((1<<PWM1X));
 	TCCR1D = (0<<FPIE1)|(0<<FPEN1)|(0<<FPNC1)|(0<<FPES1)|(0<<FPAC1)\
 		|(0<<WGM11)|(1<<WGM10);
 

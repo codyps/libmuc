@@ -9,7 +9,7 @@ MCU = attiny861
 ADMCU = attiny861
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c timer.c queue.c
+SRC = $(TARGET).c timer.c
 ASRC = 
 OPT = s
 
