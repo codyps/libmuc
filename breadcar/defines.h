@@ -43,6 +43,8 @@
 	#define dpfV_P(...)
 #endif
 
+bool volatile update_heartbeat_led;
+
 /* Linefollowing Mode/State */
 typedef enum {WAIT,TEST,FOLLOW} main_mode_t;
 main_mode_t volatile c_mode;

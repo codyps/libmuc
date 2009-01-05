@@ -10,6 +10,7 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include "timer.h"
+#include "usi-i2c.h"
 
 void clock_init(void) {
 	
@@ -48,38 +49,34 @@ ISR(BADISR_vect){
 	ERROR_LED_FLIP;
 }
 
-void init_usi_i2c(void) {
-/*
-		     USI Data Register Clock
-USICS1 USICS0 USICLK Source                  4-bit Counter Clock Source
-   0      0      0   No Clock                No Clock
-                     Software clock strobe   Software clock strobe
-   0      0      1
-                     (USICLK)                (USICLK)
-                     Timer/Counter0 Compare  Timer/Counter0 Compare
-   0      1     X
-                     Match                   Match
-   1      0      0   External, positive edge External, both edges
-   1      1      0   External, negative edge External, both edges
-   1      0      1   External, positive edge Software clock strobe (USITC)
-   1      1      1   External, negative edge Software clock strobe (USITC)
-*/
-	USICR = (1<<USISIE)|(1<<USIOIE)|\ // Interupts
-		(1<<USIWM1)|(0<<USIWM0)|\ // Mode: 00=disable,01=3w,10=2w,11=2w(SCL held low)
-		(0<<USICS1)|(1<<USICS0)|\ // Clock: 
-		(0<<USICLK)|(0<<USITC)    // Clock Strobe; Toggle Clock
-
-	// Use PA[2..0]
-	USIPP|=(1<<USIPOS);
-}
-
 int main(void){ 	
 	init();
 	
 	for(;;) {
-		
-		_delay_ms(100);
-
+		if (update_heartbeat_led) {
+			typedef enum {DN, UP} dir_t;
+			#define LED_TOP_A 0x3ff
+			#define LED_STEP_A 1
+			static dir_t led_dir_A=UP;
+			uint16_t LED_A;
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				LED_A = OCR1A;
+				LED_A += (TC1H<<8);
+			}
+			if (LED_A>(LED_TOP_A-LED_STEP_A))
+				led_dir_A=DN;
+			else if (LED_A<LED_STEP_A)
+				led_dir_A=UP;
+	
+			if (led_dir_A==UP)
+				LED_A+=LED_STEP_A;
+			else LED_A-=LED_STEP_A;
+	
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				TC1H = LED_A>>8;
+				OCR1A = LED_A&0xff;
+			}
+		}
 	}
 	return 0;
 }

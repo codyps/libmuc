@@ -7,7 +7,7 @@
 #include <avr/power.h>
 #include "timer.h"
 
-void timer0_init(void) { // 8, PWM
+static void timer0_init(void) { // 8, PWM
 	fprintf_P(stderr,PSTR("\ntimers: init: timer0"));
 	power_timer0_enable();
 
@@ -38,16 +38,14 @@ void timer0_init(void) { // 8, PWM
 	// Interupts
 	TIMSK0=(0<<OCIE0A)|(0<<OCIE0B);
 	
-	// Clock Select and timer enable
-	//TCCR0B|=(1<<CS02)|(1<<CS00); TCCR0B&=(uint8_t)~(1<<CS01);		//1024
-	TCCR0B|=(1<<CS02); TCCR0B&=(uint8_t)~((1<<CS01)|(1<<CS00));	//256
-	//TCCR2B|=(1<<CS02);TCCR2B&=~((1<<CS01)|(1<<CS00));				//64
+	// Clock Select and timer enable {disable,1,8,64,256,1024,ExFalling,ExRising}
+	TCCR0B|=1;
 	
 	
 	fprintf_P(stderr,PSTR("\t[done]"));
 }
 
-void timer1_init(void) { // 16, PWM
+static void timer1_init(void) { // 16, PWM
 	fprintf_P(stderr,PSTR("\ntimers: init: timer1"));
 	power_timer1_enable();
 
@@ -136,74 +134,19 @@ void timer2_init(void) { // 8, RTC
 }	
 	
 ISR(TIMER2_COMPA_vect) {
-	//timer.h: dir_t led_dir_A
-	//timer.h: dir_t led_dir_B
-	
-	// Led A
-	if (LED_A>(LED_TOP_A-LED_STEP_A))
-		led_dir_A=DN;
-	else if (LED_A<LED_STEP_A)
-		led_dir_A=UP;
-	
-	if (led_dir_A==UP)
-		LED_A+=LED_STEP_A;
-	else LED_A-=LED_STEP_A;
-	
-	// Led B
-	if (LED_B>(LED_TOP_B-LED_STEP_B))
-		led_dir_B=DN;
-	else if (LED_B<LED_STEP_B)
-		led_dir_B=UP;
-	
-	if (led_dir_B==UP)
-		LED_B+=LED_STEP_B;
-	else LED_B-=LED_STEP_B;
-	
-	/*
-	static uint8_t dwell_A=0;
-	static uint8_t dwell_B=0;	
-	
-	if (dwell_A) {
-		++dwell_A;
-		if ((dwell_A>DWELL_TOP_A)&&(led_dir_A==UP)) {
-			dwell_A=0;
-			--OCR1A;
-			led_dir_A=DN;
-		}
-		else if ((dwell_A>DWELL_BTM_A)&&(led_dir_A==DN)) {
-			dwell_A=0;
-			++OCR1A;
-			led_dir_A=UP;
+	static uint16_t sec;//=0
+	static uint8_t ct;
+	if (ct>=100) {
+		ct=0;
+		++sec;
+		fprintf(stderr,PSTR("\n[debug]TIMER2_COMPA_vect:1/100"));
+		if (c_mode==WAIT) {
+			//printf("\n\tT: %ds\n",sec);
+			#if DEBUG_L(1)
+			fprintf_P(stderr,PSTR("\nMode: %d"),c_mode);
+			#endif
 		}
 	}
-	else {
-		if ((OCR1A==UINT16_MAX)||(OCR1A==0)) dwell_A=1;
-		else
-			if (led_dir_A==UP) 	++OCR1A;
-			else				--OCR1A;
-	}
-
-	if (dwell_B) {
-		++dwell_B;
-		if ((dwell_B>DWELL_TOP_B)&&(led_dir_B==UP)) {
-			dwell_B=0;
-			--OCR1B;
-			led_dir_A=DN;
-		}
-		else if ((dwell_B>DWELL_BTM_B)&&(led_dir_B==DN)) {
-			dwell_B=0;
-			++OCR1B;
-			led_dir_A=UP;
-		}
-	}
-	else {
-		if ((OCR1B==UINT16_MAX)||(OCR1B==0)) dwell_B=1;
-		else
-			if (led_dir_B==UP) 	++OCR1B;
-			else				--OCR1B;
-	}
-	*/
-	
 }
 
 
@@ -213,11 +156,6 @@ void timers_init(void) {
 	//timer0_init(); //PWM 8
 	timer1_init(); //PWM 16
 	timer2_init(); //RTC 8
-	
-	LED_A=0xFFFF; //OCR1A
-	LED_B=0x0000; //OCR1B
-	led_dir_A=DN;
-	led_dir_B=UP;
 	
 	fprintf_P(stderr,PSTR("\ntimers: init:\t[done]"));
 }

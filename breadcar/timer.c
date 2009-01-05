@@ -25,16 +25,6 @@ static void timer0_init(void) { // 8,16 input capture
 	// Interupts
 	TIMSK|=(1<<OCIE0A);
 	TIMSK&= (uint8_t) ~((1<<OCIE0B)|(1<<TOIE0)|(1<<TICIE0));
-
-	/*
-	FREQ: 8000000 / 64 / 125 = 1000
-	FREQ: 8000000 / 64 / 200 = 625
-	FREQ: 8000000 / 64 / 250 = 500
-	FREQ: 8000000 / 256 / 25 = 1250
-	FREQ: 8000000 / 256 / 50 = 625
-	FREQ: 8000000 / 256 / 125 = 250
-	FREQ: 8000000 / 256 / 250 = 125
-	*/
 	
 	TCNT0H=0;
 	TCNT0L=0;
@@ -52,36 +42,19 @@ static void timer0_init(void) { // 8,16 input capture
 static uint16_t ms;
 static uint16_t sec;
 ISR(TIMER0_COMPA_vect) {
-	ms++;
-	if (!(ms%1000)) { // Second
+	static uint8_t ct;
+	ct++	
+	if (ct>=MS_DIV) {	
+		ms++;
+		ct=0;
+	}
+	if (ms>=1000)) { // Second
 		++sec;		
 		ms=0;
 		DEBUG_LED_FLIP;
 	}
-
 	if (!(ms%5)) {
-		typedef enum {DN, UP} dir_t;
-		#define LED_TOP_A 0x3ff
-		#define LED_STEP_A 1
-		static dir_t led_dir_A=UP;
-		uint16_t LED_A;
-		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-			LED_A = OCR1A;
-			LED_A += (TC1H<<8);
-		}
-		if (LED_A>(LED_TOP_A-LED_STEP_A))
-			led_dir_A=DN;
-		else if (LED_A<LED_STEP_A)
-			led_dir_A=UP;
-	
-		if (led_dir_A==UP)
-			LED_A+=LED_STEP_A;
-		else LED_A-=LED_STEP_A;
-	
-		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-			TC1H = LED_A>>8;
-			OCR1A = LED_A&0xff;
-		}
+		update_heartbeat_led=true;
 	}
 }
 

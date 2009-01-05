@@ -66,7 +66,7 @@ int main(void) {
 	initial=true;
 		
 	for(;;) {
-		if	(c_mode==FOLLOW && adc_data_new) {
+		if	(c_mode==FOLLOW) {
 			if (adc_data_new) {
 				adc_data_new=false;
 				if (initial) {
@@ -138,38 +138,12 @@ int main(void) {
 							motor_get_speed(RIGHT)};
 				printf_P(PSTR("\nCurr Motors: L:%d %d:R"),cspeed[0],cspeed[1]);
 				
-				//0=LEFT, 3=RIGHT
-				/*
-				if		((adc_vc[0]>adc_vc[1])&&(adc_vc[0]>adc_vc[2])&&(adc_vc[0]>adc_vc[3])) {
-					lf_turn_inc(LF_INC_LARGE,NEG);
-					dir=LEFT;
-				}
-				else if ((adc_vc[3]>adc_vc[0])&&(adc_vc[3]>adc_vc[1])&&(adc_vc[3]>adc_vc[2])) {
-					lf_turn_inc(LF_INC_LARGE,POS);
-					dir=RIGHT;
-				}
-				else if	((adc_vc[2]>adc_vc[0])&&(adc_vc[2]>adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
-					lf_turn_inc(LF_INC_SMALL,NEG);
-					dir=LEFT;
-				}
-				else if ((adc_vc[1]>adc_vc[0])&&(adc_vc[1]>adc_vc[2])&&(adc_vc[1]>adc_vc[3])) {
-					lf_turn_inc(LF_INC_LARGE,POS);
-					dir=RIGHT;
-				}
-				else if ((adc_vc[0]<adc_vc[1])&&(adc_vc[2]>adc_vc[3])) {
-					//lf_full_speed();
-					dir=FWD;
-				}
-				else if ((adc_vc[0]==adc_vc[1])&&(adc_vc[1]==adc_vc[2])&&(adc_vc[2]==adc_vc[3])){
-					//lf_full_speed();
-					dir=FWD;
-				}
-				*/
 			}
 			
 			else { // if !new_adc_data
 				// Sleep? (need adc, timers, pwm outputs (IO clock), 
 				printf_P(PSTR("\nWaiting for adc data?"));
+				_delay_ms(300);
 			}
 			
 		}

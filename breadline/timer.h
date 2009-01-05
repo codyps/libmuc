@@ -29,12 +29,12 @@ volatile dir_t led_dir_B;
 //#define LED_TOP_B 0xFF
 
 
-#define T2HZ 1000
+#define T2HZ 100
 
 
 void timers_init(void);
-void timer0_init(void);
-void timer1_init(void);
-void timer2_init(void);
+static void timer0_init(void);
+static void timer1_init(void);
+static void timer2_init(void);
 
 #endif
