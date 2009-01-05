@@ -1,19 +1,4 @@
-#define I2C_PORT PORTA 
-#define I2C_PIN  PINA
-#define I2C_DDR  DDRA
 
-#define I2C_SDA  0
-#define I2C_SCL  2
-
-#define I2C_PULLUPS 1
-
-#define I2C_CLK 100000
-#define I2C_T_LOW  4.7
-#define I2C_T_HIGH 4
-
-#define I2C_ACK	 	0
-#define I2C_NACK 	1
-#define I2C_BUS_LOSS 	2 // Loosing arbitration on MM.
 
 static void i2c_line_high_bb(uint8_t pin) {
 	#if I2C_PULLUPS	
