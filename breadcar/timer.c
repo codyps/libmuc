@@ -42,13 +42,15 @@ static void timer0_init(void) { // 8,16 input capture
 static uint16_t ms;
 static uint16_t sec;
 ISR(TIMER0_COMPA_vect) {
+	//soft_usart_timer();
+
 	static uint8_t ct;
-	ct++	
+	ct++;
 	if (ct>=MS_DIV) {	
 		ms++;
 		ct=0;
 	}
-	if (ms>=1000)) { // Second
+	if (ms>=1000) { // Second
 		++sec;		
 		ms=0;
 		DEBUG_LED_FLIP;

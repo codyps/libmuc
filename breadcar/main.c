@@ -3,14 +3,20 @@
  */
 
 #include "defines.h"
-#include <avr/io.h>
-#include <util/delay.h>
+
 #include <stdio.h>
+
+#include <avr/io.h>
 #include <avr/power.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+
+#include <util/delay.h>
+#include <util/atomic.h>
+
 #include "timer.h"
-#include "usi-i2c.h"
+//#include "usi-i2c.h"
+#include "i2c_master_bb.h"
 
 void clock_init(void) {
 	

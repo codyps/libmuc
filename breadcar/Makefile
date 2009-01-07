@@ -9,7 +9,7 @@ MCU = attiny861
 ADMCU = attiny861
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c timer.c usi-i2c.c
+SRC = $(TARGET).c timer.c i2c_master_bb.c
 ASRC = 
 OPT = s
 
