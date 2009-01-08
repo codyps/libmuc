@@ -41,6 +41,8 @@ enum {I2C_SM,I2C_FM,I2C_FMP};
 #define I2C_T_SU_STO 0.26
 #endif
 
+enum {I2C_MODE_WRITE=0, I2C_MODE_READ=1 };
+
 // i2c_write return values:
 #define I2C_ACK	 	0b00
 #define I2C_NACK 	0b01
@@ -50,7 +52,7 @@ enum {I2C_SM,I2C_FM,I2C_FMP};
 #define I2C_TRANS_COMP	0b0000 // Finished specified trans len.
 #define I2C_DEVICE_NACK	0b0100 // Device never acked, | with i2c_write ret.
 #define I2C_TRANS_END	0b1000 // NACK before specified trans len.
-//#define I2C_???		0b1100
+//#define I2C_???	0b1100
 
 
 static inline void i2c_line_high_bb(uint8_t line);
@@ -58,6 +60,9 @@ static inline void i2c_line_low_bb(uint8_t line);
 
 int8_t i2c_write_bb(uint8_t data);
 uint8_t i2c_read_bb(int8_t ack);
+int8_t i2c_trans_bb(uint8_t * data, uint8_t len);
+int8_t i2c_vtrans_bb(uint8_t * data, uint8_t len);
+int8_t i2c_command_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t ret_len, ...);
 
 void i2c_start_bb(void);
 void i2c_restart_bb(void);

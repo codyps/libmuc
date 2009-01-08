@@ -120,7 +120,7 @@ int8_t i2c_write_bb(uint8_t byte) {
 	i2c_line_high_bb(I2C_SDA); // Release bus.
 	i2c_wait_us(I2C_T_LOW);
 	
-	i2c_line_high_bb(I2C_SCL);
+	i2c_line_high_bb(I2C_SCL);if(mode==I2C_MODE_WRITE) {
 	//look for ack
 	uint8_t ack = (I2C_PIN&(1<<I2C_SDA)>>I2C_SDA);
 	i2c_wait_us(I2C_T_HIGH);
@@ -163,22 +163,74 @@ uint8_t i2c_read_bb(int8_t ack) {
 	return byte;
 }
 
-enum {I2C_MODE_WRITE=0, I2C_MODE_READ=1 };
-int8_t i2c_transfer_bb(uint8_t * data, uint8_t len) {
-	// expectations	: bus is initialized
-	// effects	:
 
-	int8_t ack;	
-	i2c_start();
+int8_t i2c_trans_bb(uint8_t * data, uint8_t len) {
+	// expectations	: bus is in claimed state, start/restart called.
+	// effects	: bus is in claimed state.
+	int8_t ack;
 	ack = i2c_write(*data); // address.
-	if (!ack) return I2C_DEVICE_NACK|ack;
-	uint8_t mode= (*data)&(1);
-	do {
-		if(mode==I2C_MODE_WRITE) {
+	if (ack != I2C_ACK) return I2C_DEVICE_NACK|ack;
+	uint8_t mode= (*data)&(uint8_t)(1);
+	if(mode==I2C_MODE_WRITE) {	
+		do {	
+			ack=i2c_write_bb(*(++data));
+			if (ack != I2C_ACK) return I2C_TRANS_END|ack;
+		
+		} while (--len);
+	}
+	else {//mode==I2C_MODE_READ
+		++len;
+		do {	
+			*(++data) = i2c_read_bb(I2C_ACK);
+		} while (--len);
+		*(++data) = i2c_read_bb(I2C_NACK);
+	}
+	return I2C_TRANS_COMP;
+}
+
+int8_t i2c_vtrans_bb(uint8_t len, ...) {
+	// expectations	: bus is in claimed state, start/restart called.
+	// effects	: bus is in claimed state.
+	va_list list;
+	va_start(list,len);
+
+	int8_t ack;
+	uint8_t addr = va_next(list,uint8_t);
+	ack = i2c_write(addr); // address.
+	if (ack != I2C_ACK) {
+		va_end(list);	
+		return I2C_DEVICE_NACK|ack;
+	}
+	uint8_t mode= (addr)&(uint8_t)(1);
+	if(mode==I2C_MODE_WRITE) {	
+		do {	
+			ack=i2c_write_bb(va_next(list,uint8_t));
+			if (ack != I2C_ACK) {
+				va_end(list);			
+				return I2C_TRANS_END|ack;
+			}
+		
+		} while (--len);
+	}
+	else {//mode==I2C_MODE_READ
+		++len;
+		do {	
+			*(va_next(list,uint8_t *)) = i2c_read_bb(I2C_ACK);
+		} while (--len);
+		*(va_next(list,uint8_t *)) = i2c_read_bb(I2C_NACK);
+	}
+	va_end(list);
+	return I2C_TRANS_COMP;
+}
+
+int8_t i2c_command_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t * args ,uint8_t ret_len, uint8_t * ret) {
+	va_list args;
+	va_start(args,arg_len+ret_len);
 	
-		}
-		else {//mode==I2C_MODE_READ
+}
+
+int8_t i2c_vcommand_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t ret_len, ...) {
+	va_list args;
+	va_start(args,arg_len+ret_len);
 	
-		}
-	} while (--len);
 }

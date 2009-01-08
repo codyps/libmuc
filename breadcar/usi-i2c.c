@@ -44,11 +44,9 @@ void init_usi_i2c(void) {
 USICS1 USICS0 USICLK Source                  4-bit Counter Clock Source
    0      0      0   No Clock                No Clock
                      Software clock strobe   Software clock strobe
-   0      0      1
-                     (USICLK)                (USICLK)
+   0      0      1   (USICLK)                (USICLK)
                      Timer/Counter0 Compare  Timer/Counter0 Compare
-   0      1     X
-                     Match                   Match
+   0      1      X   Match                   Match
    1      0      0   External, positive edge External, both edges
    1      1      0   External, negative edge External, both edges
    1      0      1   External, positive edge Software clock strobe (USITC)
