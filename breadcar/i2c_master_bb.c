@@ -211,7 +211,7 @@ int8_t i2c_vatrans_bb(uint8_t addr, uint8_t len, va_list  list) {
 	//			addr in 8 bit form, len non-zero
 	// effects	: bus is in claimed state.
 	int8_t ack;
-	ack = i2c_write(addr); // address.
+	ack = i2c_write_bb(addr); // address.
 	if (ack != I2C_ACK) return I2C_DEVICE_NACK+ack;
 	if (!(len))	return I2C_ZERO_LEN;
 	if(((addr)&(uint8_t)(1))==I2C_MODE_WRITE) {			
@@ -248,12 +248,26 @@ int8_t i2c_command_bb(uint8_t addr, uint8_t arg_len, uint8_t * args ,uint8_t ret
 	return stat<<4+ack;
 }
 
-int8_t i2c_vcommand_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t ret_len, ...) {
-	va_list args;
+int8_t i2c_vcommand_bb(uint8_t addr, uint8_t arg_len, uint8_t ret_len, ...) {
+	va_list args, arg_copy;
 	va_start(args,arg_len+ret_len);
-
-	//FIXME: Not implimented.
 	
+	#ifdef _va_copy
+	_va_copy(args,arg_copy);
+	#else
+	arg_copy=args;
+	#endif
+
+	int8_t ack;
+	int8_t stat;
+	i2c_restart_bb();
+	ack = i2c_vatrans_bb(addr<<1  ,arg_len,arg_copy);
+	//TODO: parse ack.
+	while(arg_len--) {
+		va_next(args,uint8_t);
+	}
+	ack = i2c_vatrans_bb(addr<<1+1,ret_len,args);
+	//TODO: parse ack.
 	va_end(args);
-	return 0;	
+	return stat<<4+ack;	
 }

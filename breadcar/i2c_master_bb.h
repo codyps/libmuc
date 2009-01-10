@@ -56,8 +56,8 @@ enum {I2C_MODE_WRITE=0, I2C_MODE_READ=1 };
 #define I2C_ZERO_LEN	0b1100
 
 
-static inline void i2c_line_high_bb(uint8_t line);
-static inline void i2c_line_low_bb(uint8_t line);
+//static inline void i2c_line_high_bb(uint8_t line);
+//static inline void i2c_line_low_bb(uint8_t line);
 
 int8_t i2c_write_bb(uint8_t data);
 uint8_t i2c_read_bb(int8_t ack);
@@ -69,7 +69,7 @@ int8_t i2c_vatrans_bb(uint8_t addr, uint8_t len, va_list  list);
 int8_t i2c_command_bb(uint8_t addr,				\
 			uint8_t arg_len, uint8_t * args , 	\
 			uint8_t ret_len, uint8_t * ret);
-int8_t i2c_vcommand_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t ret_len, ...);
+int8_t i2c_vcommand_bb(uint8_t addr, uint8_t arg_len, uint8_t ret_len, ...);
 
 void i2c_start_bb(void);
 void i2c_restart_bb(void);

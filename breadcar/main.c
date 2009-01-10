@@ -109,7 +109,7 @@ int main(void){
 					};
 				};
 			} heading_data;
-			i2c_vcommand(HMC6343_ADDR, HMC6343_POST_HEAD,0,6,			\
+			i2c_vcommand(HMC6343_ADDR,1,6,HMC6343_POST_HEAD,			\
 					&(heading_data.head_msb),&(heading_data.head_lsb), 	\
 					&(heading_data.pitch_msb),&(heading_data.pitch_lsb),	\
 					&(heading_data.roll_msb),&(heading_data.roll_lsb));
