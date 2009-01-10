@@ -18,10 +18,14 @@
 */
 
 #include "defines.h"
-#include "i2c_master_bb.h"
+
+#include <stdarg.h>
+#include <stdint.h>
+
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "i2c_master_bb.h"
 
 #define i2c_wait_us(time) _delay_us(time)
 #define i2c_wait_pin_high(pin) loop_until_bit_is_set(I2C_PIN,pin)
@@ -40,6 +44,16 @@ static inline void i2c_line_low_bb(uint8_t pin) {
 	I2C_PORT|=(1<<pin);
 	#endif
 	I2C_DDR|=(1<<pin);
+}
+
+void i2c_init_bb(void) {
+	I2C_PORT&=(uint8_t)~((1<<I2C_SDA)|(1<<I2C_SCL));	
+	I2C_DDR&=(uint8_t)~((1<<I2C_SDA)|(1<<I2C_SCL));  //Set as 'inputs' (bus high/default)
+	#if I2C_PULLUPS
+	I2C_PORT|=(1<<I2C_SDA)|(1<<I2C_SCL); //Enable Pullups
+	#else
+	I2C_PORT&=(uint8_t)~((1<<I2C_SDA)|(1<<I2C_SCL)); //Disable Pullups
+	#endif
 }
 
 void i2c_start_bb(void) {
@@ -77,15 +91,7 @@ void i2c_stop_bb(void) {
 	i2c_line_high_bb(I2C_SDA);
 }			
 
-void i2c_init_bb(void) {
-	I2C_PORT&=(uint8_t)~((1<<I2C_SDA)|(1<<I2C_SCL));	
-	I2C_DDR&=(uint8_t)~((1<<I2C_SDA)|(1<<I2C_SCL));  //Set as 'inputs' (bus high/default)
-	#if I2C_PULLUPS
-	I2C_PORT|=(1<<I2C_SDA)|(1<<I2C_SCL); //Enable Pullups
-	#else
-	I2C_PORT&=(uint8_t)~((1<<I2C_SDA)|(1<<I2C_SCL)); //Disable Pullups
-	#endif
-}
+
 
 int8_t i2c_write_bb(uint8_t byte) { 
 	// expectations	: SCL is low,d+ and START has been issued.
@@ -120,7 +126,7 @@ int8_t i2c_write_bb(uint8_t byte) {
 	i2c_line_high_bb(I2C_SDA); // Release bus.
 	i2c_wait_us(I2C_T_LOW);
 	
-	i2c_line_high_bb(I2C_SCL);if(mode==I2C_MODE_WRITE) {
+	i2c_line_high_bb(I2C_SCL);
 	//look for ack
 	uint8_t ack = (I2C_PIN&(1<<I2C_SDA)>>I2C_SDA);
 	i2c_wait_us(I2C_T_HIGH);
@@ -164,73 +170,90 @@ uint8_t i2c_read_bb(int8_t ack) {
 }
 
 
-int8_t i2c_trans_bb(uint8_t * data, uint8_t len) {
+int8_t i2c_trans_bb(uint8_t addr, uint8_t len, uint8_t * data) {
 	// expectations	: bus is in claimed state, start/restart called.
+	//			addr in 8 bit form, len non-zero
 	// effects	: bus is in claimed state.
 	int8_t ack;
-	ack = i2c_write(*data); // address.
-	if (ack != I2C_ACK) return I2C_DEVICE_NACK|ack;
-	uint8_t mode= (*data)&(uint8_t)(1);
-	if(mode==I2C_MODE_WRITE) {	
+	ack = i2c_write_bb(addr); // address.
+	if (ack != I2C_ACK) return I2C_DEVICE_NACK+ack;
+	if (!(len)) return I2C_ZERO_LEN;
+	if(((addr)&(uint8_t)(1))==I2C_MODE_WRITE) {	
 		do {	
-			ack=i2c_write_bb(*(++data));
-			if (ack != I2C_ACK) return I2C_TRANS_END|ack;
+			ack=i2c_write_bb(*(data++));
+			if (ack != I2C_ACK) return I2C_TRANS_END+ack;
 		
 		} while (--len);
 	}
 	else {//mode==I2C_MODE_READ
-		++len;
-		do {	
-			*(++data) = i2c_read_bb(I2C_ACK);
-		} while (--len);
-		*(++data) = i2c_read_bb(I2C_NACK);
+		while (--len) {	
+			*(data++) = i2c_read_bb(I2C_ACK);
+		} 
+		*(data) = i2c_read_bb(I2C_NACK);
 	}
 	return I2C_TRANS_COMP;
 }
 
-int8_t i2c_vtrans_bb(uint8_t len, ...) {
+int8_t i2c_vtrans_bb(uint8_t addr, uint8_t len, ...) {
 	// expectations	: bus is in claimed state, start/restart called.
+	//			addr in 8 bit form, len non-zero
 	// effects	: bus is in claimed state.
 	va_list list;
 	va_start(list,len);
 
+	int8_t ret = i2c_vatrans_bb(addr,len,list);
+	va_end(list);
+	return ret;
+}
+
+int8_t i2c_vatrans_bb(uint8_t addr, uint8_t len, va_list  list) {
+	// expectations	: bus is in claimed state, start/restart called.
+	//			addr in 8 bit form, len non-zero
+	// effects	: bus is in claimed state.
 	int8_t ack;
-	uint8_t addr = va_next(list,uint8_t);
 	ack = i2c_write(addr); // address.
-	if (ack != I2C_ACK) {
-		va_end(list);	
-		return I2C_DEVICE_NACK|ack;
-	}
-	uint8_t mode= (addr)&(uint8_t)(1);
-	if(mode==I2C_MODE_WRITE) {	
-		do {	
+	if (ack != I2C_ACK) return I2C_DEVICE_NACK+ack;
+	if (!(len))	return I2C_ZERO_LEN;
+	if(((addr)&(uint8_t)(1))==I2C_MODE_WRITE) {			
+		do {
 			ack=i2c_write_bb(va_next(list,uint8_t));
-			if (ack != I2C_ACK) {
-				va_end(list);			
-				return I2C_TRANS_END|ack;
-			}
-		
+			if (ack != I2C_ACK)	return I2C_TRANS_END+ack;
 		} while (--len);
 	}
 	else {//mode==I2C_MODE_READ
-		++len;
-		do {	
+		while (--len) {	
 			*(va_next(list,uint8_t *)) = i2c_read_bb(I2C_ACK);
-		} while (--len);
+		}
 		*(va_next(list,uint8_t *)) = i2c_read_bb(I2C_NACK);
 	}
-	va_end(list);
 	return I2C_TRANS_COMP;
 }
 
-int8_t i2c_command_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t * args ,uint8_t ret_len, uint8_t * ret) {
-	va_list args;
-	va_start(args,arg_len+ret_len);
-	
+int8_t i2c_command_bb(uint8_t addr, uint8_t arg_len, uint8_t * args ,uint8_t ret_len, uint8_t * ret) {
+	int8_t ack;
+	int8_t stat;	
+	i2c_restart_bb();
+	ack = i2c_trans_bb(addr<<1,arg_len,args);
+	if (ack != I2C_TRANS_COMP) {
+		if (ack & I2C_TRANS_END)
+			stat = I2C_TRANS_END;
+		else if (ack & I2C_DEVICE_NACK)
+			return I2C_COMM_ARG+ack;
+	}
+	ack = i2c_trans_bb(addr<<1+1,ret_len,ret);
+	if (ack != I2C_TRANS_COMP) {
+		if (ack & I2C_DEVICE_NACK)
+			return I2C_COMM_ARG+ack;
+	}
+	return stat<<4+ack;
 }
 
 int8_t i2c_vcommand_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t ret_len, ...) {
 	va_list args;
 	va_start(args,arg_len+ret_len);
+
+	//FIXME: Not implimented.
 	
+	va_end(args);
+	return 0;	
 }

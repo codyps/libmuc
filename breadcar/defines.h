@@ -44,6 +44,8 @@
 #endif
 
 bool volatile update_heartbeat_led;
+bool volatile update_head_i2c;
+
 
 /* Linefollowing Mode/State */
 typedef enum {WAIT,TEST,FOLLOW} main_mode_t;

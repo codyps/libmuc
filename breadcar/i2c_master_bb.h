@@ -3,7 +3,8 @@
 	Supported (Master Mode): Syncronization, Arbitration, Clock Streching
  	Todo: Slave mode.
 */
-
+#ifndef _I2C_MASTER_BB_H_
+#define _I2C_MASTER_BB_H_
 
 // Hardware Locations
 #define I2C_PORT PORTA 
@@ -52,7 +53,7 @@ enum {I2C_MODE_WRITE=0, I2C_MODE_READ=1 };
 #define I2C_TRANS_COMP	0b0000 // Finished specified trans len.
 #define I2C_DEVICE_NACK	0b0100 // Device never acked, | with i2c_write ret.
 #define I2C_TRANS_END	0b1000 // NACK before specified trans len.
-//#define I2C_???	0b1100
+#define I2C_ZERO_LEN	0b1100
 
 
 static inline void i2c_line_high_bb(uint8_t line);
@@ -60,12 +61,19 @@ static inline void i2c_line_low_bb(uint8_t line);
 
 int8_t i2c_write_bb(uint8_t data);
 uint8_t i2c_read_bb(int8_t ack);
-int8_t i2c_trans_bb(uint8_t * data, uint8_t len);
-int8_t i2c_vtrans_bb(uint8_t * data, uint8_t len);
-int8_t i2c_command_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t ret_len, ...);
+
+int8_t i2c_trans_bb(uint8_t addr, uint8_t len, uint8_t * data);
+int8_t i2c_vtrans_bb(uint8_t addr, uint8_t len, ...);
+int8_t i2c_vatrans_bb(uint8_t addr, uint8_t len, va_list  list); 
+
+int8_t i2c_command_bb(uint8_t addr,				\
+			uint8_t arg_len, uint8_t * args , 	\
+			uint8_t ret_len, uint8_t * ret);
+int8_t i2c_vcommand_bb(uint8_t addr, uint8_t cmd, uint8_t arg_len, uint8_t ret_len, ...);
 
 void i2c_start_bb(void);
 void i2c_restart_bb(void);
 void i2c_stop_bb(void);
 void i2c_reset_bb(void);
 
+#endif

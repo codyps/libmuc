@@ -17,6 +17,7 @@
 #include "timer.h"
 //#include "usi-i2c.h"
 #include "i2c_master_bb.h"
+#include "i2c_dev_HMC6343.h"
 
 void clock_init(void) {
 	
@@ -82,6 +83,36 @@ int main(void){
 				TC1H = LED_A>>8;
 				OCR1A = LED_A&0xff;
 			}
+		}
+		if (update_head_i2c) {
+			//Head[2], Pitch[2], Roll[2]
+			struct {
+				union {
+					uint16_t head;
+					struct {
+					uint8_t head_msb;
+					uint8_t head_lsb;
+					};
+				};
+				union {				
+					int16_t pitch;
+					struct {
+					uint8_t pitch_msb;
+					uint8_t pitch_lsb;
+					};
+				};
+				union {
+					int16_t roll;
+					struct {
+					uint8_t roll_msb;
+					uint8_t roll_lsb;
+					};
+				};
+			} heading_data;
+			i2c_vcommand(HMC6343_ADDR, HMC6343_POST_HEAD,0,6,			\
+					&(heading_data.head_msb),&(heading_data.head_lsb), 	\
+					&(heading_data.pitch_msb),&(heading_data.pitch_lsb),	\
+					&(heading_data.roll_msb),&(heading_data.roll_lsb));
 		}
 	}
 	return 0;
