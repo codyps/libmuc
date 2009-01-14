@@ -32,6 +32,7 @@ FREQ: 8000000 / 1  / 80  = 100000	//100kHz
 FREQ: 8000000 / 8  / 100 = 10000	//10kHz
 FREQ: 8000000 / 64 / 125 = 1000		//1kHz, ms
 */
+/*
 #define TIMER0_CLK 10000
 
 #define T0_PSK_1	1
@@ -58,6 +59,11 @@ FREQ: 8000000 / 64 / 125 = 1000		//1kHz, ms
 #else
 	#error TIMER0_CLK unrecognized
 #endif
+*/
 
+// Timer 0 softuart
+#define T0_PRESCALE_MSK 2
+#define OCR0A_CTC_VAL SOFTUART_TIMERTOP
+#define MS_DIV (F_CPU/8/OCR0A_CTC_VAL/1000)
 
 #endif

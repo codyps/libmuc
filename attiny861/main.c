@@ -14,9 +14,7 @@
 #include <util/delay.h>
 #include <util/atomic.h>
 
-#include "timer.h"
-//#include "usi-i2c.h"
-//#include "i2c_master_bb.h"
+#include "pwm.h"
 #include "i2cmaster.h" // asm
 #include "i2c_dev_HMC6343.h"
 #include "softuart.h"
@@ -28,39 +26,45 @@ void clock_init(void) {
 	#elif (F_CPU == 2000000)
 		clock_prescale_set(clock_div_4);	
 	#elif (F_CPU == 4000000)
-		clock_prescale_set(clock_div_2);	
+		clock_prescale_set(clock_div_2);
 	#elif (F_CPU == 8000000)
 		clock_prescale_set(clock_div_1);
-	#elif (F_CPU == 16000000)
+	#elif (F_CPU == 7833600) // For softuart (7.3728, 7.374848)
+		#warning F_CPU=7.8336Mhz needs custom osccal
+		clock_prescale_set(clock_div_1);
+	#elif (F_CPU ==12800000)
+		#warning F_CPU=12.8Mhz needs custom osccal
+		clock_prescale_set(clock_div_1);
+		//OSCCAL=0x7d or 7e + b9 to c8;
+		OSCCAL=0x7e; 
+	#elif (F_CPU ==14745600)
+		#warning F_CPU=14.7456Mhz needs custom osccal
+		clock_prescale_set(clock_div_1);
+		//OSCCAL=0xd7 to e4;
+		OSCCAL=0xe8;
+	#elif (F_CPU ==18432000)
+		#warning F_CPU=18.4320Mhz needs custom osccal (and is way out of spec)
+		clock_prescale_set(clock_div_1);
+		//OSCCAL=0xf7 to fe;
+		OSCCAL=0xfa;
+	#elif (F_CPU ==16000000)
 		#warning F_CPU=16Mhz untested	
 	#else
 		#error "F_CPU Unrecognized"
 	#endif
 }
 
-static int softuart_stream_putchar( char c, FILE *stream )
-{
-	if ( c == '\n' ) {
-		softuart_putchar( '\r' );
-	}
-	softuart_putchar( c );
-
-	return 0;
-}
-
-FILE suart_out = FDEV_SETUP_STREAM( softuart_stream_putchar, NULL, _FDEV_SETUP_WRITE );
-
 void init(void) {
 	//power_all_disable();
 	clock_init();
-	timers_init();
 	softuart_init();
+	pwm_init();
 	i2c_init(); //asm lib
 	sei();
 	DEBUG_LED_DDR|=(1<<DEBUG_LED_POS)|(1<<ERROR_LED_POS);
 	DEBUG_LED_FLIP;
+	softuart_stderr();
 	fprintf_P(stderr,PSTR("\nmain: init:\t[done]\n\n"));
-	softuart_puts_P("LED BLINKS :P\n");
 }
 
 static void  print_bin(uint8_t inp,FILE* stream) {
@@ -76,34 +80,22 @@ ISR(BADISR_vect){
 int main(void){ 	
 	init();
 	
+	#if defined(OSCCAL_CALIBRATE)
 	for(;;) {
-		if (update_heartbeat_led) {
-			
-			typedef enum {DN, UP} dir_t;
-			#define LED_TOP_A 0x3ff
-			#define LED_STEP_A 1
-			static dir_t led_dir_A=UP;
-			uint16_t LED_A;
-			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-				LED_A = OCR1A;
-				LED_A += (TC1H<<8);
-			}
-			if (LED_A>(LED_TOP_A-LED_STEP_A))
-				led_dir_A=DN;
-			else if (LED_A<LED_STEP_A)
-				led_dir_A=UP;
-	
-			if (led_dir_A==UP)
-				LED_A+=LED_STEP_A;
-			else LED_A-=LED_STEP_A;
-	
-			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-				TC1H = LED_A>>8;
-				OCR1A = LED_A&0xff;
-			}
-		}
+		fprintf(stderr,"OSCCAL: %x ; CALC_CPU: %lu\n", OSCCAL, (unsigned long)SOFTUART_CPU);
+		OSCCAL++;
+		ERROR_LED_FLIP;
+		_delay_ms(500);
+		ERROR_LED_FLIP;
+	}
+	#endif	
+
+	fprintf(stderr,"\nstarting i2c polling");
+	update_head_i2c=true;
+	for(;;) {
 		if (update_head_i2c) {	
-			ERROR_LED_FLIP;		
+			DEBUG_LED_FLIP;		
+			fprintf(stderr,"\nAttempt to read heading...");
 			//Head[2], Pitch[2], Roll[2]
 			struct {
 				union {
@@ -128,26 +120,25 @@ int main(void){
 					};
 				};
 			} heading_data;
-			/*i2c_vcommand(HMC6343_ADDR,1,6,HMC6343_POST_HEAD,			\
-					&(heading_data.head_msb),&(heading_data.head_lsb), 	\
-					&(heading_data.pitch_msb),&(heading_data.pitch_lsb),	\
-					&(heading_data.roll_msb),&(heading_data.roll_lsb));
-			*/
+
 			i2c_start_wait(HMC6343_ADDR_W);
-    			i2c_write(HMC6343_POST_HEAD);                          
+    			i2c_write(HMC6343_POST_HEAD); 
+                         
 			i2c_rep_start(HMC6343_ADDR_R);
-			heading_data.head_msb=i2c_read(1);
-			heading_data.head_lsb=i2c_read(1);
-			heading_data.pitch_msb=i2c_read(1);			
-			heading_data.pitch_lsb=i2c_read(1);
-			heading_data.roll_msb=i2c_read(1);
-			heading_data.roll_lsb=i2c_read(0);
+			heading_data.head_msb	=i2c_read(1);
+			heading_data.head_lsb	=i2c_read(1);
+			heading_data.pitch_msb	=i2c_read(1);			
+			heading_data.pitch_lsb	=i2c_read(1);
+			heading_data.roll_msb	=i2c_read(1);
+			heading_data.roll_lsb	=i2c_read(0);
+
 			i2c_stop();
 
-			fprintf_P(&suart_out, PSTR("bearing:  head:%d  pitch:%d  roll:%d \n"),\
+			fprintf_P(stderr, PSTR("bearing:  head:%d  pitch:%d  roll:%d \n"),\
 				 heading_data.head,heading_data.pitch,heading_data.roll);
-			ERROR_LED_FLIP;
+			DEBUG_LED_FLIP;
 		}
+		
 	}
 	return 0;
 }

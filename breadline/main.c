@@ -31,12 +31,6 @@ void clock_init(void) {
 	#else
 		#error "F_CPU Unrecognized"
 	#endif
-	
-	// Default
-	//OSCCAL=0x84;
-
-	// Posible
-	//OSCCAL=0x8C;
 }
 
 void init(void) {

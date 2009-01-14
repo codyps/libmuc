@@ -9,61 +9,8 @@
 #include <util/delay.h>
 #include <util/atomic.h>
 
-#include "softuart.h"
-#include "timer.h"
+#include "pwm.h"
 
-static void timer0_init(void);
-static void timer1_init(void);
-
-static void timer0_init(void) { // 8,16 input capture
-	fprintf_P(stderr,PSTR("\ntimers: init: timer0"));
-	power_timer0_enable();
-
-	// Diable Timer
-	TCCR0B=(1<<TMS)|(1<<PSR0)|(0<<CS02)|(0<<CS01)|(0<<CS00);
-	
-	// CTC, input capture diabled
-	TCCR0A=(0<<ICEN0)|(0<<TCW0)|(1<<WGM00)| \
-		(0<<ICNC0)|(0<<ICES0)|(0<<ACIC0);
-	
-	// Interupts
-	TIMSK|=(1<<OCIE0A);
-	TIMSK&= (uint8_t) ~((1<<OCIE0B)|(1<<TOIE0)|(1<<TICIE0));
-	
-	TCNT0H=0;
-	TCNT0L=0;
-	OCR0B=0;
-	
-	OCR0A=OCR0A_CTC_VAL;
-	TCCR0B|=T0_PRESCALE_MSK;
-
-	//Enable
-	TCCR0B&=(uint8_t) ~(1<<TMS);
-
-	fprintf_P(stderr,PSTR("\t[done]"));
-}
-
-static uint16_t ms;
-static uint16_t sec;
-ISR(TIMER0_COMPA_vect) {
-	softuart_int_handler();
-
-	static uint8_t ct;
-	ct++;
-	if (ct>=MS_DIV) {	
-		ms++;
-		ct=0;
-	}
-	if (ms>=1000) { // Second
-		++sec;		
-		ms=0;
-		DEBUG_LED_FLIP;
-		update_head_i2c=true;
-	}
-	if (!(ms%5)) {
-		update_heartbeat_led=true;
-	}
-}
 
 static void timer1_init(void) { //PWM
 /*	To change Timer/Counter1 to the asynchronous mode follow the procedure below:
@@ -111,6 +58,9 @@ static void timer1_init(void) { //PWM
 	
 	// Interupts
 	TIMSK&=(uint8_t)~((1<<OCIE1D)|(1<<OCIE1A)|(1<<OCIE1B)|(1<<TOIE1));
+	//TIMSK|=(1<<TOIE1);
+
+	
 
 	// Prescale and Enable.
 	// 64Mhz / 0x3FF / pow(2,Prescale-1) = 100kHz max
@@ -123,11 +73,22 @@ static void timer1_init(void) { //PWM
 	fprintf_P(stderr,PSTR("\t[done]"));
 }
 
-void timers_init(void) {
+void pwm_set(uint8_t * lowreg, uint16_t value) {
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		TC1H=value>>8;
+		*lowreg=(uint8_t)value;
+	}
+}
+
+void pwm_init(void) {
 	fprintf_P(stderr,PSTR("\ntimers: init:\tstart"));
 	
-	timer0_init(); // RTC 8 
+	//timer0_init(); // UART
 	timer1_init(); // PWM 10
 	
+	pwm_set(&OCR1A,512);
+	pwm_set(&OCR1B,512);
+	pwm_set(&OCR1D,512);
+
 	fprintf_P(stderr,PSTR("\ntimers: init:\t[done]"));
 }

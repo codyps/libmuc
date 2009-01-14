@@ -240,7 +240,7 @@ int8_t i2c_command_bb(uint8_t addr, uint8_t arg_len, uint8_t * args ,uint8_t ret
 		else if (ack & I2C_DEVICE_NACK)
 			return I2C_COMM_ARG+ack;
 	}
-	ack = i2c_trans_bb(addr<<1+1,ret_len,ret);
+	ack = i2c_trans_bb((addr<<1)+1,ret_len,ret);
 	if (ack != I2C_TRANS_COMP) {
 		if (ack & I2C_DEVICE_NACK)
 			return I2C_COMM_ARG+ack;
@@ -266,7 +266,7 @@ int8_t i2c_vcommand_bb(uint8_t addr, uint8_t arg_len, uint8_t ret_len, ...) {
 	while(arg_len--) {
 		va_next(args,uint8_t);
 	}
-	ack = i2c_vatrans_bb(addr<<1+1,ret_len,args);
+	ack = i2c_vatrans_bb((addr<<1)+1,ret_len,args);
 	//TODO: parse ack.
 	va_end(args);
 	return stat<<4+ack;	
