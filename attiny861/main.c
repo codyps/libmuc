@@ -32,6 +32,7 @@ void clock_init(void) {
 	#elif (F_CPU == 7833600) // For softuart (7.3728, 7.374848)
 		#warning F_CPU=7.8336Mhz needs custom osccal
 		clock_prescale_set(clock_div_1);
+		OSCCAL=0xfa;//??
 	#elif (F_CPU ==12800000)
 		#warning F_CPU=12.8Mhz needs custom osccal
 		clock_prescale_set(clock_div_1);
