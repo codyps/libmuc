@@ -2,16 +2,11 @@
 #define _DEFINES_H_ 
 
 #include <avr/io.h>
-#include <stdbool.h>
-#include <stdint.h>
 
-#define OSCCAL_CALIBRATE
-
-
-
-//#define F_CPU	7372800
+//#define OSCCAL_CALIBRATE
+#define F_CPU	7374848
 //#define F_CPU	7833600
-#define F_CPU	8000000
+//#define F_CPU	8000000
 //#define F_CPU	14745600
 //#define F_CPU	18432000
 
@@ -24,6 +19,7 @@
 #define DEBUG_LED_FLIP DEBUG_LED_PIN|=(1<<DEBUG_LED_POS)
 #define ERROR_LED_FLIP DEBUG_LED_PIN|=(1<<ERROR_LED_POS)
 #define DEBUG_LED_ON DEBUG_LED_PORT|=(1<<DEBUG_LED_POS)
+#define DEBUG_LED_OFF DEBUG_LED_PORT&=(uint8_t)~(1<<DEBUG_LED_POS)
 
 #define DEBUG 1
 #define DEBUG_L(LEVEL) (DEBUG>=LEVEL)
@@ -50,7 +46,10 @@
 	#define dpfV_P(...)
 #endif
 
-#if !defined(_ASSEMBLER_)
+#if !defined(__ASSEMBLER__)
+#include <stdbool.h>
+#include <stdint.h>
+
 bool volatile update_heartbeat_led;
 bool volatile update_head_i2c;
 

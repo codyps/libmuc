@@ -33,7 +33,7 @@
 #error "This library requires AVR-GCC 3.3 or later, update to newer AVR-GCC compiler !"
 #endif
 
-#define F_CPU 18432000
+#include "defines.h"
 #include <avr/io.h>
 
 

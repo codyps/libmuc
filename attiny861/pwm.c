@@ -73,7 +73,7 @@ static void timer1_init(void) { //PWM
 	fprintf_P(stderr,PSTR("\t[done]"));
 }
 
-void pwm_set(uint8_t * lowreg, uint16_t value) {
+void pwm_set(volatile uint8_t * lowreg, uint16_t value) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		TC1H=value>>8;
 		*lowreg=(uint8_t)value;

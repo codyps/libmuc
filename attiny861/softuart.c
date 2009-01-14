@@ -132,7 +132,7 @@ volatile static unsigned short internal_tx_buffer; /* ! mt: was type uchar - thi
 // #define get_rx_pin_status() ( ( SOFTUART_RXPIN & ( 1<<SOFTUART_RXBIT ) ) ? 1 : 0 )
 
 //void softuart_int_handler(void)
-ISR(SOFTUART_T_CO#include <avr/power.h>MP_LABEL)
+ISR(SOFTUART_T_COMP_LABEL)
 {
 	static unsigned char flag_rx_waiting_for_stop_bit = SU_FALSE;
 	static unsigned char rx_mask;

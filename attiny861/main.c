@@ -29,10 +29,11 @@ void clock_init(void) {
 		clock_prescale_set(clock_div_2);
 	#elif (F_CPU == 8000000)
 		clock_prescale_set(clock_div_1);
-	#elif (F_CPU == 7833600) // For softuart (7.3728, 7.374848)
+	#elif (F_CPU == 7374848) // For softuart (7.3728, 7.374848)
 		#warning F_CPU=7.8336Mhz needs custom osccal
 		clock_prescale_set(clock_div_1);
-		OSCCAL=0xfa;//??
+		//OSCCAL=3c to 42, 44?
+		OSCCAL=0x3f;
 	#elif (F_CPU ==12800000)
 		#warning F_CPU=12.8Mhz needs custom osccal
 		clock_prescale_set(clock_div_1);
@@ -93,10 +94,11 @@ int main(void){
 
 	fprintf(stderr,"\nstarting i2c polling");
 	update_head_i2c=true;
+	DEBUG_LED_FLIP;
 	for(;;) {
 		if (update_head_i2c) {	
-			DEBUG_LED_FLIP;		
-			fprintf(stderr,"\nAttempt to read heading...");
+			DEBUG_LED_ON;		
+			fprintf(stderr,"\nAttempt to read heading...:");
 			//Head[2], Pitch[2], Roll[2]
 			struct {
 				union {
@@ -124,7 +126,7 @@ int main(void){
 
 			i2c_start_wait(HMC6343_ADDR_W);
     			i2c_write(HMC6343_POST_HEAD); 
-                         
+                        _delay_ms(500);
 			i2c_rep_start(HMC6343_ADDR_R);
 			heading_data.head_msb	=i2c_read(1);
 			heading_data.head_lsb	=i2c_read(1);
@@ -135,9 +137,10 @@ int main(void){
 
 			i2c_stop();
 
-			fprintf_P(stderr, PSTR("bearing:  head:%d  pitch:%d  roll:%d \n"),\
+			fprintf_P(stderr, PSTR("  head:%d  pitch:%d  roll:%d \n"),\
 				 heading_data.head,heading_data.pitch,heading_data.roll);
-			DEBUG_LED_FLIP;
+			DEBUG_LED_OFF;
+			_delay_ms(500);
 		}
 		
 	}
