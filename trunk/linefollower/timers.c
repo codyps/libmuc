@@ -5,8 +5,6 @@
 
 #include "adc.h"
 #include "defines.h"
-#include "timers.h"
-#include "motor.h"
 #include <util/atomic.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
