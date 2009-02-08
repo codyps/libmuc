@@ -12,9 +12,12 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <util/twi.h>
 
 #include "usart.h"
 #include "timer.h"
+#include "twi_i2c.h"
+#include "i2c_HMC6343.h"
 
 void clock_init(void) {
 	
@@ -36,15 +39,16 @@ void init(void) {
 	clock_init();
 	MCUCR|=(1<<JTD); // Disable JTAG
 	usarts_init();
-	timers_init();
+	//timers_init();
 	twi_init();
+	hmc6343_init_static();
 	sei();	
 	printf_P(PSTR("\nmain: init:\t[done]\n\n"));	
 }
 
 void  print_bin(uint8_t inp) {
 	for(int8_t j=7; j>=0; --j) {
-	   	printf("%c",((inp&(1<<j))>>j)+'0');
+	   	putc(((inp&(1<<j))>>j)+'0',stdout);
 	}
 }
 
@@ -52,11 +56,22 @@ ISR(BADISR_vect){
 	fprintf_P(stderr,PSTR("\n\tError: Invalid Interupt\n"));
 }
 
-int main(void){ 	
+int main(void) { 	
 	init();
-		
 	for(;;) {
-
+		printf_P(PSTR("\nTWCR :     "));
+		print_bin(TWCR);
+		printf_P(PSTR("\nTW STATUS :"));
+		print_bin(TW_STATUS);
+		printf("   0x%x",TW_STATUS);
+		if (head_data_updated == true) {
+			head_data_updated = false;
+			fprintf_P(stderr, PSTR("\nNew Data."));
+			fprintf_P(stderr, PSTR("  head:%d  pitch:%d  roll:%d \n"),\
+				head.head,head.pitch,head.roll);
+		}
+		_delay_ms(2000);
+		i2c_start_xfer();
 	}
 	return 0;
 }

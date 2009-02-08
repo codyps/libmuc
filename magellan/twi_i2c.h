@@ -2,9 +2,11 @@
 #ifndef _TWI_I2C_H_
 #define _TWI_I2C_H_
 
-#define F_SCL 400000 //400kHz
+#include "debug.h"
+#include <avr/pgmspace.h>
 
-// I2C Clock Generation
+/** I2C Clock Generation **/
+#define F_SCL 100000 //400kHz
 #define TWI_PS_MSK 0
 #if   (F_SCL == 400000) //400kHz
 #define TWI_BR_VAL 2
@@ -13,28 +15,13 @@
 #endif
 
 /** Slave Mode **/
-// Slave Address(s) for device
+// Slave Address(s) for device  0b7654321
 #define I2C_SLAVE_ADDR		0b0011100
 #define I2C_SLAVE_ADDR_MSK	0b0000000
 // Respond to General Call in Slave mode?
 #define I2C_GENERAL_CALL_EN 0
 
-/** Debug **/
-#if DEBUG_L(1)
-	PGM_P i2c_mode_error_str = "[error] i2c: invalid mode 0x%x on line %d";
-	#define i2c_error_invalid_mode() fprintf(stderr,i2c_mode_error_str,tw_stat,__LINE__); 
-#else 
-	#define i2c_error_invalid_mode()
-#endif
 
-
-#define i2c_bad_mode_handler()				\
-		{					\
-			i2c_error_invalid_mode();	\
-			i2c_mode	= I2C_STARTED;	\
-			tw_if_mode	= TW_MT;	\
-			TWCR 		= TWCR_RESET;	\
-		}
 
 
 /** State Control **/
@@ -89,7 +76,22 @@ int i2c_add_msg(uint8_t addr,
 int i2c_rem_msg(int msg_num);
 */
 
+/** Static Bus Operation **/
+uint8_t dev_w_addr;
+uint8_t dev_r_addr;
+
+uint8_t r_data_buf_len;
+uint8_t * r_data_buf;
+volatile uint8_t r_data_buf_pos;
+
+uint8_t w_data_buf_len;
+uint8_t * w_data_buf;
+volatile uint8_t w_data_buf_pos;
+
+void (*xfer_complete_cb)(void);
+
 void twi_init(void);
+int i2c_start_xfer(void);
 
 
 

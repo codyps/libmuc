@@ -138,10 +138,11 @@ void timer2_init(void) { // 8, RTC
 ISR(TIMER2_COMPA_vect) {
 	static uint16_t sec;//=0
 	static uint8_t ct;
+	ct++;
 	if (ct>=100) {
 		ct=0;
 		++sec;
-		fprintf(stderr,PSTR("\n[debug]TIMER2_COMPA_vect:1/100"));
+		fprintf(stderr,PSTR("\n[debug] tick"));
 	}
 }
 

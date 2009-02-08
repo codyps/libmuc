@@ -6,8 +6,6 @@
 
 #define HMC6343_T_START		500 // ms, time from reset to run.
 #define HMC6343_T_SLEEP		20 // ms, time from sleep to standby
-#define HMC6343_T_SLEEP		20 // ms, time from sleep to standby
-
 
 // Head, Pitch, Roll: 10ths of deg, Pitch and roll: (+-900), Head: (0 to 3600) 
 #define HMC6343_POST_ACCEL	0x40 //6: Ax[2],Ay[2],Az[2]

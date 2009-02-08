@@ -15,6 +15,5 @@ queue_t tx_q;
 queue_t rx_q;
 
 void usarts_init(void);
-static void usart0_init(void);
 
 #endif
