@@ -25,6 +25,10 @@ static void disable_usart0_tx_inter(void) {
 static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
 		usart0_putchar('\r', stream);
 
+	if (q_full(&tx_q)) {
+		sei();
+		enable_usart0_tx_inter();
+	}
 	while (q_full(&tx_q));
 	disable_usart0_tx_inter();
 	q_push(&tx_q,c);	
@@ -57,9 +61,9 @@ static void usart0_init(void) {
 	power_usart0_enable();
 
 	q_init(&tx_q, _tx_buffer, QUEUE_SZ);
-	q_init(&rx_q, _rx_buffer, QUEUE_SZ);
+	//q_init(&rx_q, _rx_buffer, QUEUE_SZ);
 	/* Set baud rate (12bit) */
-	#define BAUD 9600
+	#define BAUD 38400
 	#include <util/setbaud.h>
 	UBRR0   = UBRR_VALUE;
 	UCSR0A &= (uint8_t)~(1<<UDRE0);
