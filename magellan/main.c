@@ -59,15 +59,9 @@ ISR(BADISR_vect){
 int main(void) { 	
 	init();
 	for(;;) {
-		printf_P(PSTR("\nTWCR :     "));
-		print_bin(TWCR);
-		printf_P(PSTR("\nTW STATUS :"));
-		print_bin(TW_STATUS);
-		printf("   0x%x",TW_STATUS);
 		if (head_data_updated == true) {
 			head_data_updated = false;
-			fprintf_P(stderr, PSTR("\nNew Data."));
-			fprintf_P(stderr, PSTR("  head:%d  pitch:%d  roll:%d \n"),\
+			printf_P(PSTR("\n  head:%d  pitch:%d  roll:%d \n"),\
 				head.head,head.pitch,head.roll);
 		}
 		_delay_ms(2000);

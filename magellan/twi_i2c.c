@@ -25,17 +25,14 @@ static tw_if_mode_t tw_if_mode = TW_MT;
 static i2c_mode_t i2c_mode = I2C_IDLE;
 
 int i2c_start_xfer(void) {
-	uint8_t tw_stat = TW_STATUS;
 	if (i2c_mode == I2C_IDLE) {
-		printf_P(PSTR("\n  Valid mode"));
+		printf_P(PSTR("\nValid mode"));
 		i2c_mode = I2C_STARTED;
 		TWCR  = TWCR_START;
 		return 0;
 	}
-	else {
-		i2c_error_invalid_mode();
-		return -1;
-	}
+	printf_P(PSTR("\nBad Mode."));
+	return -1;
 }
 
 void twi_init(void) {
@@ -61,7 +58,6 @@ void twi_init(void) {
 ISR(TWI_vect) {
 	uint8_t tw_stat = TW_STATUS;
 	// TWI BUS
-	fprintf_P(stderr,PSTR("\n[debug] TWI ISR"));
 	if	(tw_stat == TW_NO_INFO) {
 		fprintf_P(stderr,PSTR("\n[error] TWI: no state information."));
 	}
@@ -74,7 +70,6 @@ ISR(TWI_vect) {
 	else if	((tw_stat == TW_START)|(tw_stat == TW_REP_START)) {
 		// Send Slave Addr.
 		if	(w_data_buf_pos == 0 && w_data_buf_len != 0) {
-			i2c_mode 	= I2C_WAIT_SLA_W_ACK;
 			tw_if_mode 	= TW_MT;
 			
 			TWDR 		= dev_w_addr;
@@ -82,7 +77,6 @@ ISR(TWI_vect) {
 
 		}
 		else if (r_data_buf_pos == 0 && r_data_buf_len != 0) {
-			i2c_mode	= I2C_WAIT_SLA_R_ACK;
 			tw_if_mode	= TW_MR;
 	
 			TWDR		= dev_r_addr;
@@ -97,8 +91,6 @@ ISR(TWI_vect) {
 	else if (tw_stat == TW_MT_SLA_ACK) {
 		// sla+w ack, 
 		// start writing data
-
-		i2c_mode	= I2C_WAIT_DATA_W_ACK;
 		w_data_buf_pos	= 1;
 
 		TWDR		= w_data_buf[0];
@@ -149,7 +141,6 @@ ISR(TWI_vect) {
 	else if (tw_stat == TW_MR_SLA_ACK) {
 		// sla+r ack
 		// wait for first data packet.
-		fprintf_P(stderr,PSTR("\nSLA+R ACK!"));
 		i2c_mode = I2C_READ_DATA;
 		TWCR 	 = TWCR_BASE;
 	}
@@ -169,7 +160,6 @@ ISR(TWI_vect) {
 		r_data_buf_pos ++;
 		if (r_data_buf_pos == r_data_buf_len-1) {
 			// One more read to go, send nak
-			i2c_mode = I2C_READ_DATA_DONE;
 			TWCR = TWCR_NACK;
 		}
 		else if (r_data_buf_pos >= r_data_buf_len) {
