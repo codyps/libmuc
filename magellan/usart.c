@@ -61,7 +61,6 @@ static void usart0_init(void) {
 	power_usart0_enable();
 
 	q_init(&tx_q, _tx_buffer, QUEUE_SZ);
-	//q_init(&rx_q, _rx_buffer, QUEUE_SZ);
 	/* Set baud rate (12bit) */
 	#define BAUD 38400
 	#include <util/setbaud.h>
@@ -77,12 +76,10 @@ static void usart0_init(void) {
 	
 	// Enable receiver and transmitter
 	UCSR0B = (1<<TXEN0);
-	//UCSR0B |=|(1<<RXEN0);
-	// Enable rx inter
-	// UCSR0B |= (1<<RXCIE0);
+	UCSR0B |=(1<<RXEN0);
 
-	stdout=&usart0_stdout;
-	stderr=&usart0_stderr;
+	stderr=stdout=&usart0_stdout;
+	//stderr=&usart0_stderr;
 }
 
 void usarts_init(void) {
@@ -94,7 +91,7 @@ ISR(USART0_UDRE_vect) {
 	if (tx_q.ct>0) // !q_empty(&tx_q)
 		UDR0 = q_pop(&tx_q);
 	if (tx_q.ct==0)// q_empty(&tx_q)
-		disable_usart0_tx_inter();			
+		disable_usart0_tx_inter();
 }
 
 /*

@@ -19,6 +19,7 @@
 #include "twi_i2c.h"
 #include "i2c_HMC6343.h"
 
+
 void clock_init(void) {
 	
 	#if   (F_CPU == 1000000)
@@ -33,6 +34,7 @@ void clock_init(void) {
 		#error "F_CPU Unrecognized"
 	#endif
 }
+
 
 void init(void) {
 	//power_all_disable();
@@ -68,10 +70,15 @@ int main(void) {
 		_delay_ms(2000);
 		i2c_start_xfer();
 		*/
-		static uint16_t ct;
-		ct ++;
-		printf("\nJUNK....................%d",ct);
-		_delay_ms(20);
+		static uint16_t czz;
+		if (czz == 0) czz++;
+		czz = czz*czz*2;
+		printf("\nJUNK........%d",czz);
+		printf("\n1234567890");
+		printf("\n12345678901234567890");
+		printf("\n123456789012345678901234567890");
+		printf("\n1234567890123456789012345678901234567890");
+		_delay_ms(1000);
 	}
 	return 0;
 }

@@ -5,11 +5,12 @@
 # (GNU make, BSD make, SysV make)
 
 
-MCU = atmega164p
-ADMCU = atmega164p
+MCU = atmega644p
+ADMCU = atmega644p
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c usart.c timer.c queue.c twi_i2c.c i2c_HMC6343.c
+#SRC = $(TARGET).c usart.c timer.c queue.c twi_i2c.c i2c_HMC6343.c
+SRC = $(TARGET).c usart.c queue.c
 ASRC = 
 OPT = s
 
