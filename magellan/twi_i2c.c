@@ -61,12 +61,12 @@ void twi_init(void) {
 ISR(TWI_vect) {
 	uint8_t tw_stat = TW_STATUS;
 	// TWI BUS
-	fprintf(stderr,PSTR("\n[debug] TWI ISR"));
+	fprintf_P(stderr,PSTR("\n[debug] TWI ISR"));
 	if	(tw_stat == TW_NO_INFO) {
-		fprintf(stderr,PSTR("\n[error] TWI: no state information."));
+		fprintf_P(stderr,PSTR("\n[error] TWI: no state information."));
 	}
 	else if (tw_stat == TW_BUS_ERROR) {
-		fprintf(stderr,PSTR("\n[error] TWI: bus error."));
+		fprintf_P(stderr,PSTR("\n[error] TWI: bus error."));
 		i2c_mode = I2C_IDLE;
 		tw_if_mode = TW_MT;
 		TWCR = TWCR_STOP;
@@ -119,7 +119,7 @@ ISR(TWI_vect) {
 			// Done writing data
 			// issue repstart for read
 			// FIXME: when read len = zero?
-			TWCR		= TWCR_START;
+			TWCR = TWCR_START;
 		}
 		else {
 			// More data to be writen.
