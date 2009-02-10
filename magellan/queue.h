@@ -8,17 +8,16 @@
 #include <stdbool.h>
 
 #define QUEUE_BASE_T	uint8_t
-#define QUEUE_BASE_T_MAX 0xFF
 #define QUEUE_INDEX_T	uint8_t
 #define QUEUE_SZ	64
 
-typedef struct {
+typedef volatile struct {
         QUEUE_BASE_T * buffer;	// buffer
         QUEUE_INDEX_T first;	// position of first element
         QUEUE_INDEX_T last;	// position of last element (should be eliminated)
 	QUEUE_INDEX_T ct;	//
 	QUEUE_INDEX_T sz;	// size of the buffer
-} volatile queue_t;
+}  queue_t;
 
 
 //void q_init(queue_t *q);

@@ -26,12 +26,11 @@ static bool tw_state = 0;
 
 int i2c_start_xfer(void) {
 	if (tw_state == 0) {
-		printf_P(PSTR("\nValid mode"));
 		tw_state = 1;
 		TWCR  = TWCR_START;
 		return 0;
 	}
-	printf_P(PSTR("\nBad Mode."));
+	fprintf_P(stderr,PSTR("\nBad Mode."));
 	return -1;
 }
 
@@ -59,10 +58,10 @@ ISR(TWI_vect) {
 	uint8_t tw_status = TW_STATUS;
 	// TWI BUS
 	if	(tw_status == TW_NO_INFO) {
-		fprintf_P(stderr,PSTR("\n[error] TWI: no state information."));
+		fprintf_P(stddirect,PSTR("\n[err]TWI_NO_INFO\n"));
 	}
 	else if (tw_status == TW_BUS_ERROR) {
-		fprintf_P(stderr,PSTR("\n[error] TWI: bus error."));
+		fprintf_P(stddirect,PSTR("\n[err]TWI_BUS_ERROR\n"));
 		tw_state = 0;
 		TWCR = TWCR_STOP;
 	}
@@ -83,7 +82,7 @@ ISR(TWI_vect) {
 
 		}
 		else {
-			fprintf_P(stderr,PSTR("\n[error] {r,w}_data_buf_pos both not zero.\n"));
+			fprintf_P(stddirect,PSTR("\n[error] {r,w}_data_buf_pos both not zero.\n"));
 		}
 	}
 	// MASTER TRANSMIT
@@ -145,7 +144,7 @@ ISR(TWI_vect) {
 		TWDR	= dev_r_addr;
 		TWCR 	= TWCR_BASE;
 		#if DEBUG_L(1)
-		fprintf_P(stderr, PSTR("\n[error] i2c: SLA+R NACK"));
+		fprintf_P(stddirect, PSTR("\n[error] i2c: SLA+R NACK"));
 		#endif
 	}
 	else if (tw_status== TW_MR_DATA_ACK) {
@@ -161,12 +160,13 @@ ISR(TWI_vect) {
 			tw_state = 0;
 			// call the callback
 			if (xfer_complete_cb != NULL)
-				xfer_complete_cb();
-			TWCR		= TWCR_STOP;
+				TWCR = xfer_complete_cb();
+			else
+				TWCR = TWCR_STOP;
 		}
 		else {
 			// Continue to read data.
-			TWCR	 = TWCR_BASE;
+			TWCR = TWCR_BASE;
 		}
 	}
 	else if (tw_status== TW_MR_DATA_NACK) {
@@ -177,7 +177,7 @@ ISR(TWI_vect) {
 		if (r_data_buf_pos != r_data_buf_len) {
 			//FIXME: not enough data read, handle?
 			#if DEBUG_L(1)
-			fprintf_P(stderr, PSTR("\n[error] i2c: data read	\
+			fprintf_P(stddirect, PSTR("\n[error] i2c: data read	\
 				shorter than expected at line %d\n"),__LINE__);
 			#endif
 			r_data_buf_pos = 0;
@@ -189,9 +189,9 @@ ISR(TWI_vect) {
 	
 			//call the callback
 			if (xfer_complete_cb != NULL)
-				xfer_complete_cb();
-		
-			TWCR		= TWCR_STOP;
+				TWCR = xfer_complete_cb();
+			else
+				TWCR = TWCR_STOP;
 		}
 	}
 }

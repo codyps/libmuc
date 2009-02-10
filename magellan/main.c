@@ -15,7 +15,7 @@
 #include <util/twi.h>
 
 #include "usart.h"
-#include "timer.h"
+//#include "timer.h"
 #include "twi_i2c.h"
 #include "i2c_HMC6343.h"
 
@@ -37,15 +37,15 @@ void clock_init(void) {
 
 
 void init(void) {
-	//power_all_disable();
+	power_all_disable();
 	clock_init();
 	MCUCR|=(1<<JTD); // Disable JTAG
 	usarts_init();
 	//timers_init();
-	//twi_init();
-	//hmc6343_init_static();
-	sei();	
-	printf_P(PSTR("\n[main]: init done\n\n"));	
+	twi_init();
+	hmc6343_init_static();
+	sei();
+	printf_P(PSTR("\n\n[main]: init done\n\n"));	
 }
 
 void  print_bin(uint8_t inp) {
@@ -55,30 +55,21 @@ void  print_bin(uint8_t inp) {
 }
 
 ISR(BADISR_vect){
+	
 	fprintf_P(stderr,PSTR("\n[error] bad isr\n"));
 }
 
 int main(void) { 	
 	init();
-	for(;;) {
-		/*		
+	i2c_start_xfer();
+	for(;;) {		
 		if (head_data_updated == true) {
 			head_data_updated = false;
 			printf_P(PSTR("\n  head:%d  pitch:%d  roll:%d \n"),\
 				head.head,head.pitch,head.roll);
+			i2c_start_xfer();
 		}
-		_delay_ms(2000);
-		i2c_start_xfer();
-		*/
-		static uint16_t czz;
-		if (czz == 0) czz++;
-		czz = czz*czz*2;
-		printf("\nJUNK........%d",czz);
-		printf("\n1234567890");
-		printf("\n12345678901234567890");
-		printf("\n123456789012345678901234567890");
-		printf("\n1234567890123456789012345678901234567890");
-		_delay_ms(1000);
+		_delay_ms(2000);		
 	}
 	return 0;
 }

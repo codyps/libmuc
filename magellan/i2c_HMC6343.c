@@ -16,13 +16,14 @@ uint8_t cmd;
 
 
 
-void hmc6343_cb(void) {
+uint8_t hmc6343_cb(void) {
 	//FIXME: 
 	memcpy(&head , data_buf, sizeof(head));
 	
 	w_data_buf_pos = 0;
 	r_data_buf_pos = 0;
 	head_data_updated = true;
+	return TWCR_STOP;
 }
 
 void hmc6343_init_static(void) {

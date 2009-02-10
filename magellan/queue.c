@@ -36,11 +36,11 @@ int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 int8_t q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz)
 {
 	QUEUE_INDEX_T i;
-    for(i=0;i<sz;++i) {
-        int8_t ret = q_push(q,x[i]);
-        if (ret<0) return (sz-i);
-    }
-    return 0;
+	for(i=0;i<sz;++i) {
+		int8_t ret = q_push(q,x[i]);
+		if (ret<0) return (sz-i);
+	}
+	return 0;
 }
 
 QUEUE_BASE_T q_pop(queue_t *q)
@@ -51,7 +51,7 @@ QUEUE_BASE_T q_pop(queue_t *q)
 		#if DEBUG_L(3)
 		fprintf(stderr,"warn: empty q pop.\n");
 		#endif
-		x=QUEUE_BASE_T_MAX;
+		x='|';
 	}
         else {
                 x = q->buffer[ q->first ];

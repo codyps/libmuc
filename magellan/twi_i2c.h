@@ -88,7 +88,7 @@ uint8_t w_data_buf_len;
 uint8_t * w_data_buf;
 volatile uint8_t w_data_buf_pos;
 
-void (*xfer_complete_cb)(void);
+uint8_t (*xfer_complete_cb)(void);
 
 void twi_init(void);
 int i2c_start_xfer(void);

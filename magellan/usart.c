@@ -5,45 +5,44 @@
 #include <avr/io.h>
 #include <avr/power.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 
 #include "queue.h"
 #include "usart.h"
 
 static int usart0_putchar(char c, FILE *stream);
 static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL ,_FDEV_SETUP_WRITE);
+static int usart0_putchar_direct(char c, FILE *stream);
+static FILE usart0_stderr = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FDEV_SETUP_WRITE);
 
-static void enable_usart0_tx_inter(void) {
-	UCSR0B|=(1<<UDRIE0);
-}
-static void disable_usart0_tx_inter(void) {
-	UCSR0B&=(uint8_t)~(1<<UDRIE0);
+
+static void enable_usart0_tx_inter(void)  { UCSR0B|=(1<<UDRIE0); }
+static void disable_usart0_tx_inter(void) { UCSR0B&=(uint8_t)~(1<<UDRIE0); }
+
+
+static int usart0_putchar_direct(char c, FILE *stream) {
+        if (c == '\n')
+                usart0_putchar_direct('\r', stream);
+        loop_until_bit_is_set(UCSR0A, UDRE0);
+        UDR0 = c;
+        return 0;
 }
 
 static int usart0_putchar(char c, FILE *stream) {		if (c == '\n')
 		usart0_putchar('\r', stream);
 
-	if (q_full(&tx_q)) {
-		sei();
+	while (q_full(&tx_q)) {
 		enable_usart0_tx_inter();
+		sei();
 	}
-	while (q_full(&tx_q));
-	disable_usart0_tx_inter();
+	//disable_usart0_tx_inter();
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
 	q_push(&tx_q,c);	
+	}
 	enable_usart0_tx_inter();
 
 	return 0;
 }
-
-/*
-static char usart0_getchar(FILE *stream) {	
-	while (q_empty(&rx_q));
-	disable_usart0_rx_inter();
-	char c = q_pop(&rx_q);	
-	enable_usart0_rx_inter();
-
-	return c;
-}
-*/
 
 static void usart0_init(void) {
 	power_usart0_enable();
@@ -63,10 +62,12 @@ static void usart0_init(void) {
 	UCSR0C = (1<<UCSZ00)|(1<<UCSZ01);
 	
 	// Enable receiver and transmitter
-	//UCSR0B = (1<<TXEN0);
-	UCSR0B= (1<<RXEN0);
+	UCSR0B = 0;	
+	UCSR0B|= (1<<TXEN0); // Recieve??
+	UCSR0B|= (1<<RXEN0); // Transmit??
 
 	stderr=stdout=&usart0_stdout;
+	stddirect = &usart0_stderr;
 }
 
 void usarts_init(void) {
@@ -81,9 +82,3 @@ ISR(USART0_UDRE_vect) {
 		disable_usart0_tx_inter();
 }
 
-/*
-ISR(USART0_RX_vect) {
-	char c = UDR0;
-	q_push(&rx_q,c);
-}
-*/
