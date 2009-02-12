@@ -36,20 +36,23 @@ struct buffer_type
 
 static struct buffer_type tx, rx;
  
-ISR(SIG_SPI)
-{  // If byte in USIDR is non zero and space is available in the 
+ISR(SIG_USI_OVERFLOW)
+{
+  // Clear counter overflow interupt flag and reset 4-byte counter.
+  USISR = _BV(USIOIF);
+
+  // If byte in USIDR is non zero and space is available in the 
   // rx queue, read byte from USIDR and place in rx queue.
-  uint8_t spdr = SPDR;
-  if (spdr && rx.len < NUM_BUFFER_BYTES)
+  if (USIDR && rx.len < NUM_BUFFER_BYTES)
   {
-    rx.buf[(rx.cur + rx.len) % NUM_BUFFER_BYTES] = spdr;
+    rx.buf[(rx.cur + rx.len) % NUM_BUFFER_BYTES] = USIDR;
     ++rx.len;
   }
 
   // If bytes are pending in the tx queue place in USIDR.
   if (tx.len)
   {
-    SPDR = tx.buf[tx.cur];
+    USIDR = tx.buf[tx.cur];
 
     tx.cur = (tx.cur + 1) % NUM_BUFFER_BYTES;
     --tx.len;
@@ -57,7 +60,7 @@ ISR(SIG_SPI)
 
   // Otherwise clear USIDR.
   else
-    SPDR = 0;
+    USIDR = 0;
     
 }
 
@@ -66,8 +69,7 @@ spislave_init(void)
 {
   // Enable three wire mode, external positive edge clock,
   // Interrupt on counter overflow
-  // Interupt, enable, msb first, slave, leading edge on rise, sample on leading edge.
-  SPCR = (1<<SPIE) | (1<<SPE) | (0 << DORD) | (0 << MSTR) | (0 << CPOL) | (1 << CPHA);
+  USICR = _BV(USIWM0) | _BV(USICS1) | _BV(USIOIE);
 }
 
 uint8_t 
