@@ -38,6 +38,9 @@ void twi_init(void) {
 	power_twi_enable();
 	fprintf_P(stderr,PSTR("\n[twi] init:     "));	
 
+	DDRD&=(uint8_t)~(1<<0)|(1<<1);
+	PORTD|=(1<<0)|(1<<1);
+
 	// Disable TWI
 	TWCR=0;
 	//TWCR&=(uint8_t)~(1<<TWEN);

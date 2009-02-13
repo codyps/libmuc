@@ -15,42 +15,19 @@
 #include <util/twi.h>
 
 #include "usart.h"
-//#include "timer.h"
-#include "spislave.h"
 #include "twi_i2c.h"
 #include "i2c_HMC6343.h"
 
-
-void clock_init(void) {
-	
-	#if   (F_CPU == 1000000)
-		clock_prescale_set(clock_div_8);	
-	#elif (F_CPU == 2000000)
-		clock_prescale_set(clock_div_4);	
-	#elif (F_CPU == 4000000)
-		clock_prescale_set(clock_div_2);	
-	#elif (F_CPU == 8000000)
-		clock_prescale_set(clock_div_1);
-	#else
-		#error "F_CPU Unrecognized"
-	#endif
-}
-
-
 void init(void) {
 	power_all_disable();
-	clock_init();
-	MCUCR|=(1<<JTD); // Disable JTAG
-	DDRA |=(1<<PA1);
-	PORTA|=(1<<PA1);
-	//spislave_init();
+
 	usarts_init();
-	//timers_init();
+
 	twi_init();
 	hmc6343_init_static();
+
 	sei();
 	printf_P(PSTR("\n\n[main]: init done\n\n"));	
-	PINA|=(1<<PA1);
 }
 
 void  print_bin(uint8_t inp) {
@@ -80,7 +57,6 @@ int main(void) {
 		i2c_start_xfer();
 		printf_P(PSTR("\nTWI State : %x") , TW_STATUS);
 		//spislave_put(msg,sizeof(msg) );
-		PINA|=(1<<PA1);
 		_delay_ms(2000);		
 	}
 	return 0;

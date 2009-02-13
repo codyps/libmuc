@@ -69,6 +69,12 @@ spislave_init(void)
 {
   // Enable three wire mode, external positive edge clock,
   // Interrupt on counter overflow
+  DDRB&=~(1<<0)|(1<<2); // inputs
+  DDRB|= (1<<1);        // outputs
+  PORTB&=~(1<<0)|(1<<2); // disable pullups
+  PORTB&=~(1<<1);       // start low
+
+  USIDR = 0;    
   USICR = _BV(USIWM0) | _BV(USICS1) | _BV(USIOIE);
 }
 

@@ -22,6 +22,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/power.h>
 
 #include "spislave.h"
 
@@ -34,7 +35,7 @@ struct buffer_type
   uint8_t len;
 };
 
-static struct buffer_type tx, rx;
+static volatile struct buffer_type tx, rx;
  
 ISR(SIG_SPI)
 {  // If byte in USIDR is non zero and space is available in the 
@@ -64,10 +65,17 @@ ISR(SIG_SPI)
 void
 spislave_init(void)
 {
+  power_spi_enable();
   // Enable three wire mode, external positive edge clock,
   // Interrupt on counter overflow
   // Interupt, enable, msb first, slave, leading edge on rise, sample on leading edge.
-  SPCR = (1<<SPIE) | (1<<SPE) | (0 << DORD) | (0 << MSTR) | (0 << CPOL) | (1 << CPHA);
+ 
+	  
+  DDRB&=~(1<<5)|(1<<7)|(1<<4); // inputs
+  DDRB|= (1<<6);	// outputs
+  PORTB&=~(1<<5)|(1<<7)|(1<<4)|(1<<6); // disable pullups & start low
+  SPCR = (1<<SPIE) | (1<<SPE) | (1 << DORD) | (0 << MSTR) | (0 << CPOL) | (0 << CPHA);
+  SPDR = 0;
 }
 
 uint8_t 
@@ -79,8 +87,10 @@ spislave_put(uint8_t *b, uint8_t n)
 
   cli();
 
-  while ((i < n) && (tx.len + i < NUM_BUFFER_BYTES))
-    tx.buf[(tx.cur + tx.len + i) % NUM_BUFFER_BYTES] = b[i++];
+  while ((i < n) && (tx.len + i < NUM_BUFFER_BYTES)) {
+    tx.buf[(tx.cur + tx.len + i) % NUM_BUFFER_BYTES] = b[i];
+    i++;
+  }
 
   tx.len += i;
 

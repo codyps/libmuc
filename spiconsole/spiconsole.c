@@ -27,6 +27,7 @@
 
 #include <usb.h>
 
+#include <string.h>
 #include <ncurses.h>
 #include <ctype.h>
 
@@ -300,7 +301,7 @@ main(int argc, char **argv)
 {
   // XXX: bitclock always default for now.
   // any faster than this with 1Mhz avr clock and bit errors are too likely.
-  double bitclock = 0.000200;  
+  double bitclock = 0.0002200;  
 
   progname = argv[0];
 
