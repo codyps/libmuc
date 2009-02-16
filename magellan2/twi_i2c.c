@@ -160,7 +160,6 @@ ISR(TWI_vect) {
 		
 		r_data_buf[r_data_buf_pos] = TWDR;
 		r_data_buf_pos ++;
-		fprintf(io_isr, "\n<> %d : %d <>", r_data_buf_pos, r_data_buf_len);
 		/*
 		if (r_data_buf_pos == r_data_buf_len-1) {
 			// One more read to go, send nak
@@ -176,7 +175,6 @@ ISR(TWI_vect) {
 				TWCR = xfer_complete_cb();
 			else
 				TWCR = TWCR_STOP;
-			fprintf(io_isr,"\ndone with read");
 		}
 		else {
 			// Continue to read data.
@@ -207,6 +205,10 @@ ISR(TWI_vect) {
 			else
 				TWCR = TWCR_STOP;
 		}
+	}
+	else {
+		fprintf_P(io_isr,PSTR("\n[i2c] unknown tw_status %x"),tw_status);
+		TWCR |= (1<<TWINT);
 	}
 }
 

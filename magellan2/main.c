@@ -42,18 +42,16 @@ int main(void) {
 //	char * msg = "\nPwn the Spi bus.\n";
 	
 	i2c_start_xfer();
-	for(;;) {		
-			
+	for(;;) {			
 		if (head_data_updated == true) {
 			head_data_updated = false;
-			printf_P(PSTR("\nhead:%d pitch:%d roll:%d\n"),\
+			fprintf_P(stdout,PSTR("\nhead:%d pitch:%d roll:%d\n"),\
 				head.head,head.pitch,head.roll);
 			_delay_ms(500);		
-			i2c_start_xfer();
+			i2c_reset_xfer();
 		}
-		printf_P(PSTR("\nTWI State : %x") , TW_STATUS);
+		fprintf_P(stdout,PSTR("\nTWI State : %x") , TW_STATUS);
 		_delay_ms(2000);
-		i2c_reset_xfer();
 	}
 	return 0;
 }

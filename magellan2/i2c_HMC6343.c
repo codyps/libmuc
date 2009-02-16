@@ -25,8 +25,7 @@ uint8_t hmc6343_cb(void) {
 	r_data_buf_pos = 0;
 	head_data_updated = true;
 
-	fprintf_P(io_isr,PSTR("\n  head:%d  pitch:%d  roll:%d \n"),\
-				head.head,head.pitch,head.roll);
+//	fprintf_P(io_isr,PSTR("\nhead:%d pitch:%d roll:%d \n"),	head.head,head.pitch,head.roll);
 	return TWCR_STOP;
 }
 
