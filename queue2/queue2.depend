@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1234137116 source:/home/not/workspace/avr_work.svn/queue2/queue.c
+	"debug.h"
+	<stdio.h>
+	<stdbool.h>
+	"queue.h"
+
+1234118923 /home/not/workspace/avr_work.svn/queue2/debug.h
+
+1234138128 /home/not/workspace/avr_work.svn/queue2/queue.h
+	<stdint.h>
+	<stdbool.h>
+
+1234137261 source:/home/not/workspace/avr_work.svn/queue2/main.c
+	<stdio.h>
+	<string.h>
+	"queue.h"
+
