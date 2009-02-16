@@ -1,0 +1,51 @@
+http://www.societyofrobots.com/axon
+
+
+
+v1.05
+timer 3 and 4 fixed, hopefully
+
+
+v1.04
+fixed a small error and sped up start-up time, Axon.c
+startup process rearranged better in Axon.c
+temporarily commented out timer4Init() and timer3Init() - seems to cause reset issue with WinAVR20081205
+
+
+v1.03 January 9th, 2009
+added avrcam.c support
+compiled and verified for AVR Studio b623, and latest WinAVR update
+
+
+v1.02 November 28th, 2008
+added Ping sensor, Sabertooth and Siren motor drivers
+added axon_DAQ.c as new DAQ conversion software
+added I2C basic support (i2c.c, i2c.h, i2cconf.h added)
+added spi basic support (spi.c, spi.h)
+included i2c.h, spi.h in SoR_Utils.h
+set default USB baudrate to 115.2kbps in Axon.c
+added misc.c for new hardware support
+replaced timerx8.c/.h with timer640.c/.h to add additional PWM and timers
+replaced timerx8.c in makefile
+added delay_us();, srandom(42);, rand();
+in SoR_Utils, reset_timer_X has been added for timers 1,3,4 (5 doesn't work for some reason)
+in Axon.c, timerXInit(); and reset_timer_X; has been added for all timers
+added support for the Sharp GP2Y0A21YK IR Range Sensor in sensors.c
+modified makefile to properly report flash and ram memory usage, including %
+
+
+
+v1.01 July 4th, 2008
+Axon.c, modified to initialize two timers, 0 and 2
+SoR_Utils.h, deleted function reset_timer
+SoR_Utils.h, two new functions added: reset_timer_0 and reset_timer_2
+SoR_Utils.h, some irrelevent comments deleted
+sensors.c, created: many new functions added for sensor integration
+control.c, the photovore code was changed to a function
+Blackfin_Axon, source added, but still in rough draft form
+axon_sco.hex and axon_ser.hex corrected for 115.2kbps
+
+
+
+v1.00 June 20th, 2008
+Code released to the public.
