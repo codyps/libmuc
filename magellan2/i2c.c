@@ -10,8 +10,7 @@
 
 #include <util/twi.h>
 
-#include "twi_i2c.h"
-#include "i2c_HMC6343.h"
+#include "i2c.h"
 
 /** Debug **/
 #if DEBUG_L(1)

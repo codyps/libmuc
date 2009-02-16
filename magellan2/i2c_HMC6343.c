@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 
-#include "twi_i2c.h"
+#include "i2c.h"
 #include "i2c_HMC6343.h"
 
 #define data_buf_len 6

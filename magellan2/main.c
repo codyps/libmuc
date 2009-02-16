@@ -15,7 +15,7 @@
 #include <util/twi.h>
 
 #include "usart1.h"
-#include "twi_i2c.h"
+#include "i2c.h"
 #include "i2c_HMC6343.h"
 
 void init(void) {
@@ -39,8 +39,7 @@ ISR(BADISR_vect){
 
 int main(void) { 	
 	init();
-//	char * msg = "\nPwn the Spi bus.\n";
-	
+
 	i2c_start_xfer();
 	for(;;) {			
 		if (head_data_updated == true) {

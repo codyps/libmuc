@@ -8,8 +8,8 @@
 MCU = atmega640
 ADMCU = atmega640
 FORMAT = ihex
-TARGET = main
-SRC = $(TARGET).c usart1.c queue.c twi_i2c.c i2c_HMC6343.c
+TARGET = magellan2
+SRC = main.c usart1.c queue.c i2c.c i2c_HMC6343.c
 #SRC = $(TARGET).c usart1.c queue.c
 ASRC = 
 OPT = s
