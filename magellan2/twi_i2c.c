@@ -22,7 +22,7 @@ PGM_P i2c_mode_error_str = "\n[error] i2c: invalid mode 0x%x and %d on line %d";
 #endif // DEBUG_L(1)
 
 static tw_if_mode_t tw_if_mode = TW_MT;
-static bool tw_state = 0;
+static uint8_t tw_state = 0;
 
 int i2c_start_xfer(void) {
 	if (tw_state == 0) {
@@ -34,9 +34,15 @@ int i2c_start_xfer(void) {
 	return -1;
 }
 
+int i2c_reset_xfer(void) {
+	tw_state = 1;
+	TWCR  = TWCR_RESET;
+	return 0;
+}
+
 void twi_init(void) {
+	fprintf_P(io_init,PSTR("\n[twi] init:     "));	
 	power_twi_enable();
-	fprintf_P(stderr,PSTR("\n[twi] init:     "));	
 
 	DDRD&=(uint8_t)~(1<<0)|(1<<1);
 	PORTD|=(1<<0)|(1<<1);
@@ -54,18 +60,18 @@ void twi_init(void) {
 	//TWAMR=I2C_SLAVE_ADDR_MSK<<1;
 
 	// Enable TWI base settings
-	TWCR = TWCR_BASE;
-	fprintf_P(stderr,PSTR("done"));
+	TWCR = TWCR_STOP;
+	fprintf_P(io_init,PSTR("done"));
 }
 
 ISR(TWI_vect) {
 	uint8_t tw_status = TW_STATUS;
 	// TWI BUS
 	if	(tw_status == TW_NO_INFO) {
-		fprintf_P(stddirect,PSTR("\n[err]TWI_NO_INFO\n"));
+		fprintf_P(io_isr,PSTR("\n[err]TWI_NO_INFO\n"));
 	}
 	else if (tw_status == TW_BUS_ERROR) {
-		fprintf_P(stddirect,PSTR("\n[err]TWI_BUS_ERROR\n"));
+		fprintf_P(io_isr,PSTR("\n[err]TWI_BUS_ERROR\n"));
 		tw_state = 0;
 		TWCR = TWCR_STOP;
 	}
@@ -73,20 +79,17 @@ ISR(TWI_vect) {
 		// Send Slave Addr.
 		if	(w_data_buf_pos == 0 && w_data_buf_len != 0) {
 			tw_if_mode 	= TW_MT;
-			
 			TWDR 		= dev_w_addr;
 			TWCR 		= TWCR_BASE;
 
 		}
 		else if (r_data_buf_pos == 0 && r_data_buf_len != 0) {
 			tw_if_mode	= TW_MR;
-	
 			TWDR		= dev_r_addr;
 			TWCR		= TWCR_BASE;
-
 		}
 		else {
-			fprintf_P(stddirect,PSTR("\n[error] {r,w}_data_buf_pos both not zero.\n"));
+			fprintf_P(io_isr,PSTR("\n[error] {r,w}_data_buf_pos both not zero.\n"));
 		}
 	}
 	// MASTER TRANSMIT
@@ -102,7 +105,7 @@ ISR(TWI_vect) {
 		// restart bus and begin the same transmition again.
 		w_data_buf_pos = 0;
 		r_data_buf_pos = 0;
-		TWCR		= TWCR_START;
+		TWCR = TWCR_START;
 	}
 	else if (tw_status== TW_MT_DATA_ACK) {
 		// data acked
@@ -125,36 +128,39 @@ ISR(TWI_vect) {
 		// FIXME: should reset or repstart?
 		w_data_buf_pos = 0;
 		r_data_buf_pos = 0;
-		TWCR		= TWCR_START;
+		TWCR = TWCR_RESET;
 	}
-	else if (tw_status== TW_MT_ARB_LOST) {
+	else if (tw_status == TW_MT_ARB_LOST) {
 		// Wait for stop condition.
 		// Only needed for multi master bus.
 		// Send Start when bus becomes free.
 		w_data_buf_pos = 0;
-
 		TWCR = TWCR_START;		
 	}
 	// MASTER READ
-	else if (tw_status== TW_MR_SLA_ACK) {
+	else if (tw_status == TW_MR_SLA_ACK) {
 		// sla+r ack
 		// wait for first data packet.
 		TWCR 	 = TWCR_BASE;
 	}
-	else if (tw_status== TW_MR_SLA_NACK) {
+	else if (tw_status == TW_MR_SLA_NACK) {
 		// sla+r nack, 
 		//???? (rep_start/try again a few times)
-		//FIXME: continualy retrys sending read addr.			
-		TWDR	= dev_r_addr;
-		TWCR 	= TWCR_BASE;
+		// reset entire transaction			
+		w_data_buf_pos = 0;
+		r_data_buf_pos = 0;
+		TWDR	= dev_w_addr;
+		TWCR 	= TWCR_RESET;
 		#if DEBUG_L(1)
-		fprintf_P(stddirect, PSTR("\n[error] i2c: SLA+R NACK"));
+		fprintf_P(io_isr, PSTR("\n[error] i2c: SLA+R NACK"));
 		#endif
 	}
 	else if (tw_status== TW_MR_DATA_ACK) {
 		// Data read, wait for next read with ack or nack
+		
 		r_data_buf[r_data_buf_pos] = TWDR;
 		r_data_buf_pos ++;
+		fprintf(io_isr, "\n<> %d : %d <>", r_data_buf_pos, r_data_buf_len);
 		/*
 		if (r_data_buf_pos == r_data_buf_len-1) {
 			// One more read to go, send nak
@@ -170,13 +176,14 @@ ISR(TWI_vect) {
 				TWCR = xfer_complete_cb();
 			else
 				TWCR = TWCR_STOP;
+			fprintf(io_isr,"\ndone with read");
 		}
 		else {
 			// Continue to read data.
 			TWCR = TWCR_BASE;
 		}
 	}
-	else if (tw_status== TW_MR_DATA_NACK) {
+	else if (tw_status == TW_MR_DATA_NACK) {
 		// Done transmitting, 
 		// check packet length, call the cb
 		r_data_buf[r_data_buf_pos] = TWDR;
@@ -184,12 +191,12 @@ ISR(TWI_vect) {
 		if (r_data_buf_pos != r_data_buf_len) {
 			//FIXME: not enough data read, handle?
 			#if DEBUG_L(1)
-			fprintf_P(stddirect, PSTR("\n[error] i2c: data read	\
+			fprintf_P(io_isr, PSTR("\n[error] i2c: data read	\
 				shorter than expected at line %d\n"),__LINE__);
 			#endif
 			r_data_buf_pos = 0;
 			w_data_buf_pos = 0;
-			TWCR = TWCR_START;
+			TWCR = TWCR_RESET;
 		}
 		else {
 			tw_state = 0;

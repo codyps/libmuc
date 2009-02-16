@@ -4,8 +4,10 @@
 #include "debug.h"
 #include <stdio.h>
 
-#define F_CPU 8000000
+#define F_CPU 16000000
 
-FILE * stddirect;
+FILE * io_direct;
+FILE * io_isr;
+FILE * io_init;
 
 #endif

@@ -13,16 +13,20 @@
 uint8_t data_buf[data_buf_len];
 uint8_t cmd;
 
-
-
-
 uint8_t hmc6343_cb(void) {
-	//FIXME: 
-	memcpy(&head , data_buf, sizeof(head));
+	head.head_msb  = data_buf[0];
+	head.head_lsb  = data_buf[1];
+	head.pitch_msb = data_buf[2];
+	head.pitch_lsb = data_buf[3];
+	head.roll_msb  = data_buf[4];
+	head.roll_lsb  = data_buf[5];
 	
 	w_data_buf_pos = 0;
 	r_data_buf_pos = 0;
 	head_data_updated = true;
+
+	fprintf_P(io_isr,PSTR("\n  head:%d  pitch:%d  roll:%d \n"),\
+				head.head,head.pitch,head.roll);
 	return TWCR_STOP;
 }
 

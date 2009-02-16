@@ -48,22 +48,22 @@ struct heading_data_t {
 	union {
 		uint16_t head;
 		struct {
-		uint8_t head_msb;
 		uint8_t head_lsb;
+		uint8_t head_msb;
 		};
 	};
 	union {
 		int16_t pitch;
 		struct {
-		uint8_t pitch_msb;
 		uint8_t pitch_lsb;
+		uint8_t pitch_msb;
 		};
 	};
 	union {
 		int16_t roll;
 		struct {
-		uint8_t roll_msb;
 		uint8_t roll_lsb;
+		uint8_t roll_msb;
 		};
 	};
 };
