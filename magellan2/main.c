@@ -23,6 +23,7 @@ void init(void) {
 	usart1_init();
 	twi_init();
 	hmc6343_init_static();
+	DDRB |= (1<<6); // PB6 is status LED
 	fprintf_P(io_init,PSTR("\n\n[main]: init done\n\n"));	
 	sei();
 }

@@ -21,7 +21,7 @@ int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
         if (q_full(q)){
 		#if DEBUG_L(3)
-		fprintf(io_isr,"warn: q overflow push (%d)\n",x);
+		fprintf(io_isr,"\n{warn: push (%d)}",x);
 		#endif
 		return -1;
         }
@@ -48,8 +48,8 @@ QUEUE_BASE_T q_pop(queue_t *q)
         QUEUE_BASE_T x;
 
         if (q_empty(q)) {
-		q_full#if DEBUG_L(3)
-		fprintf(io_isr,"warn: empty q pop.\n");
+		#if DEBUG_L(3)
+		fprintf(io_isr,"\n{warn: pop}");
 		#endif
 		x='#';
 	}
