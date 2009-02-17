@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdio.h>
 
-
 #include "i2c.h"
 #include "i2c_HMC6343.h"
 
@@ -21,8 +20,7 @@ uint8_t hmc6343_cb(void) {
 	head.roll_msb  = data_buf[4];
 	head.roll_lsb  = data_buf[5];
 	
-	w_data_buf_pos = 0;
-	r_data_buf_pos = 0;
+	hmc6343_init_static();
 	head_data_updated = true;
 
 //	fprintf_P(io_isr,PSTR("\nhead:%d pitch:%d roll:%d \n"),	head.head,head.pitch,head.roll);

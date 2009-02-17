@@ -19,9 +19,9 @@ void q_init(queue_t *q, QUEUE_BASE_T * b, QUEUE_INDEX_T sz) {
 
 int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
-        if ((q->ct) >= (q->sz)){
+        if (q_full(q)){
 		#if DEBUG_L(3)
-		fprintf(stderr,"warn: q overflow push (%d)\n",x);
+		fprintf(io_isr,"warn: q overflow push (%d)\n",x);
 		#endif
 		return -1;
         }
@@ -47,11 +47,11 @@ QUEUE_BASE_T q_pop(queue_t *q)
 {
         QUEUE_BASE_T x;
 
-        if (q->ct <= 0) {
-		#if DEBUG_L(3)
-		fprintf(stderr,"warn: empty q pop.\n");
+        if (q_empty(q)) {
+		q_full#if DEBUG_L(3)
+		fprintf(io_isr,"warn: empty q pop.\n");
 		#endif
-		x='|';
+		x='#';
 	}
         else {
                 x = q->buffer[ q->first ];

@@ -2,8 +2,7 @@
 #ifndef _TWI_I2C_H_
 #define _TWI_I2C_H_
 
-#include "debug.h"
-#include <avr/pgmspace.h>
+#include <util/twi.h>
 
 /** I2C Clock Generation **/
 #define F_SCL 100000
@@ -19,24 +18,23 @@
 
 /** State Control **/
 typedef enum {TW_MT, TW_MR} tw_if_mode_t;
-typedef enum {	I2C_IDLE, 
-		I2C_STARTED,
-		I2C_SEND_SLA_R,
-		I2C_WAIT_SLA_W_ACK,
-		I2C_WAIT_SLA_R_ACK,		
-		I2C_WAIT_DATA_W_ACK, 
-		I2C_WAIT_DATA_R_ACK,
-		I2C_READ_DATA,
-		I2C_READ_DATA_DONE
-	} i2c_mode_t;
+typedef enum {	I2C_IDLE = 0, 
+		I2C_BUSY = 1,
+		I2C_MT = 2,
+		I2C_MR = 3,
+		I2C_ST = 4,
+		I2C_SR = 5
+} i2c_mode_t;
+i2c_mode_t i2c_mode;
+
 
 /** TWCR Control Values **/
 // Enabe TWI, Clear INT flag, Enable Ack, Enable Interupt
-#define TWCR_NACK	(1<<TWEN)|(1<<TWINT)|(1<<TWIE)
-#define TWCR_BASE	TWCR_NACK|(1<<TWEA)
-#define TWCR_START	TWCR_BASE|(1<<TWSTA)
-#define TWCR_STOP	TWCR_BASE|(1<<TWSTO)
-#define TWCR_RESET	TWCR_BASE|(1<<TWSTO)|(1<<TWSTA)
+#define TWCR_NACK	( (1<<TWEN)|(1<<TWINT)|(1<<TWIE) )
+#define TWCR_BASE	( TWCR_NACK|(1<<TWEA) )
+#define TWCR_START	( TWCR_BASE|(1<<TWSTA) )
+#define TWCR_STOP	( TWCR_BASE|(1<<TWSTO) )
+#define TWCR_RESET	( TWCR_BASE|(1<<TWSTO)|(1<<TWSTA) )
 
 
 /** Transfer Control & Queue **/
@@ -57,7 +55,7 @@ uint8_t i2c_buf_loc;
 
 #define I2C_MSG_BUF_LEN 5
 i2c_msg_t i2c_msg_buffer[I2C_MSG_BUF_LEN];
-TWBR=-(16*scl-f_cpu)/(2*scl)
+
 void i2c_next_msg();
 
 int i2c_add_msg(uint8_t addr,
@@ -65,7 +63,7 @@ int i2c_add_msg(uint8_t addr,
 	uint8_t r_len,
 	uint8_t * w_buf,
 	uint8_t * r_buf, 
-	void * callback);
+	uint8_t (*callback)(void);
 int i2c_rem_msg(int msg_num);
 */
 

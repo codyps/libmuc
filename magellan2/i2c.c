@@ -12,20 +12,9 @@
 
 #include "i2c.h"
 
-/** Debug **/
-#if DEBUG_L(1)
-PGM_P i2c_mode_error_str = "\n[error] i2c: invalid mode 0x%x and %d on line %d";
-#define i2c_error_invalid_mode() fprintf(stderr, i2c_mode_error_str ,tw_status, i2c_mode, __LINE__); 
-#else 
-#define i2c_error_invalid_mode()
-#endif // DEBUG_L(1)
-
-static tw_if_mode_t tw_if_mode = TW_MT;
-static uint8_t tw_state = 0;
-
 int i2c_start_xfer(void) {
-	if (tw_state == 0) {
-		tw_state = 1;
+	if (i2c_mode == I2C_IDLE) {
+		i2c_mode = I2C_BUSY;
 		TWCR  = TWCR_START;
 		return 0;
 	}
@@ -34,7 +23,7 @@ int i2c_start_xfer(void) {
 }
 
 int i2c_reset_xfer(void) {
-	tw_state = 1;
+	i2c_mode = I2C_BUSY;
 	TWCR  = TWCR_RESET;
 	return 0;
 }
@@ -43,7 +32,7 @@ void twi_init(void) {
 	fprintf_P(io_init,PSTR("\n[twi] init:     "));	
 	power_twi_enable();
 
-	DDRD&=(uint8_t)~(1<<0)|(1<<1);
+	DDRD&=(uint8_t)~((1<<0)|(1<<1));
 	PORTD|=(1<<0)|(1<<1);
 
 	// Disable TWI
@@ -59,7 +48,8 @@ void twi_init(void) {
 	//TWAMR=I2C_SLAVE_ADDR_MSK<<1;
 
 	// Enable TWI base settings
-	TWCR = TWCR_STOP;
+	i2c_mode = I2C_IDLE;
+	TWCR = TWCR_BASE;
 	fprintf_P(io_init,PSTR("done"));
 }
 
@@ -71,19 +61,19 @@ ISR(TWI_vect) {
 	}
 	else if (tw_status == TW_BUS_ERROR) {
 		fprintf_P(io_isr,PSTR("\n[err]TWI_BUS_ERROR\n"));
-		tw_state = 0;
+		i2c_mode = I2C_IDLE; //XXX:??
 		TWCR = TWCR_STOP;
 	}
 	else if	((tw_status == TW_START)|(tw_status == TW_REP_START)) {
 		// Send Slave Addr.
 		if	(w_data_buf_pos == 0 && w_data_buf_len != 0) {
-			tw_if_mode 	= TW_MT;
+			i2c_mode 	= I2C_MT;
 			TWDR 		= dev_w_addr;
 			TWCR 		= TWCR_BASE;
 
 		}
 		else if (r_data_buf_pos == 0 && r_data_buf_len != 0) {
-			tw_if_mode	= TW_MR;
+			i2c_mode	= I2C_MR;
 			TWDR		= dev_r_addr;
 			TWCR		= TWCR_BASE;
 		}
@@ -149,7 +139,7 @@ ISR(TWI_vect) {
 		w_data_buf_pos = 0;
 		r_data_buf_pos = 0;
 		TWDR	= dev_w_addr;
-		TWCR 	= TWCR_RESET;
+		TWCR 	= TWCR_START;
 		#if DEBUG_L(1)
 		fprintf_P(io_isr, PSTR("\n[error] i2c: SLA+R NACK"));
 		#endif
@@ -168,7 +158,7 @@ ISR(TWI_vect) {
 		*/
 		if (r_data_buf_pos >= r_data_buf_len) {
 			// No more data to read.
-			tw_state = 0;
+			i2c_mode = I2C_IDLE;
 			// call the callback
 			if (xfer_complete_cb != NULL)
 				TWCR = xfer_complete_cb();
@@ -196,7 +186,7 @@ ISR(TWI_vect) {
 			TWCR = TWCR_RESET;
 		}
 		else {
-			tw_state = 0;
+			i2c_mode = I2C_IDLE;
 	
 			//call the callback
 			if (xfer_complete_cb != NULL)

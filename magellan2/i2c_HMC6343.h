@@ -6,7 +6,6 @@
 #include "i2c_HMC6343_cmd.h"
 
 volatile struct heading_data_t head;
-
 volatile bool head_data_updated;
 
 uint8_t hmc6343_cb(void);
