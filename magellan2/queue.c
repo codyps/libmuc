@@ -68,7 +68,6 @@ void q_apop(queue_t *q, QUEUE_BASE_T * buffer, QUEUE_INDEX_T sz) {
 		buffer[i]=q_pop(q);
 }
 
-
 bool q_empty(queue_t *q) {
 	if (q->ct <= 0)	return true;
 	else	 	return false;

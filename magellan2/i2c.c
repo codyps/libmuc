@@ -18,7 +18,7 @@ int i2c_start_xfer(void) {
 		TWCR  = TWCR_START;
 		return 0;
 	}
-	fprintf_P(stderr,PSTR("\n[i2c] {i2c_start_xfer} err mode %d"),i2c_mode);
+	fprintf_P(stderr,PSTR("\n[i2c] start %d"),i2c_mode);
 	return -1;
 }
 
@@ -29,7 +29,7 @@ int i2c_reset_xfer(void) {
 }
 
 void twi_init(void) {
-	fprintf_P(io_init,PSTR("\n[twi] init:     "));	
+	fprintf_P(io_init,PSTR("\n[twi init "));	
 	power_twi_enable();
 
 	// Enable Pullups
@@ -51,7 +51,7 @@ void twi_init(void) {
 	// Enable TWI base settings
 	i2c_mode = I2C_IDLE;
 	TWCR = TWCR_BASE;
-	fprintf_P(io_init,PSTR("done"));
+	fprintf_P(io_init,PSTR("done]"));
 }
 
 ISR(TWI_vect) {
@@ -75,7 +75,7 @@ ISR(TWI_vect) {
 			TWCR		= TWCR_BASE;
 		}
 		else {
-			fprintf_P(io_isr,PSTR("\n[error] {r,w}_data_buf_pos both not zero.\n"));
+			fprintf_P(io_isr,PSTR("\n[err] {r,w}_data_buf_pos != 0\n"));
 		}
 	}
 	// MASTER TRANSMIT
@@ -134,7 +134,7 @@ ISR(TWI_vect) {
 		i2c_mode = I2C_BUSY;
 		TWCR 	= TWCR_START;
 		#if DEBUG_L(1)
-		fprintf_P(io_isr, PSTR("\n[error] i2c: SLA+R NACK"));
+		fprintf_P(io_isr, PSTR("\n[err] i2c: SLA+R NACK"));
 		#endif
 	}
 	else if (tw_status== TW_MR_DATA_ACK) {
@@ -142,14 +142,12 @@ ISR(TWI_vect) {
 		
 		r_data_buf[r_data_buf_pos] = TWDR;
 		r_data_buf_pos ++;
-		/*
-		if (r_data_buf_pos == r_data_buf_len-1) {
+		
+		if (r_data_buf_pos == (r_data_buf_len-1) ) {
 			// One more read to go, send nak
 			TWCR = TWCR_NACK;
 		}
-		else 
-		*/
-		if (r_data_buf_pos >= r_data_buf_len) {
+		else if (r_data_buf_pos >= r_data_buf_len) {
 			// No more data to read.
 			i2c_mode = I2C_IDLE;
 			// call the callback
@@ -169,14 +167,15 @@ ISR(TWI_vect) {
 		r_data_buf[r_data_buf_pos] = TWDR;
 		r_data_buf_pos ++;
 		if (r_data_buf_pos != r_data_buf_len) {
+		
 			//FIXME: not enough data read, handle?
 			#if DEBUG_L(1)
-			fprintf_P(io_isr, PSTR("\n[error] i2c: data read	\
-				shorter than expected at line %d\n"),__LINE__);
+			fprintf_P(io_isr, PSTR("\n[err] i2c: short"));
 			#endif
 			r_data_buf_pos = 0;
 			w_data_buf_pos = 0;
 			TWCR = TWCR_RESET;
+		
 		}
 		else {
 			i2c_mode = I2C_IDLE;
