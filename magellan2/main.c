@@ -53,9 +53,6 @@ int main(void) {
 			_delay_ms(1000);		
 			i2c_start_xfer();
 		}
-		
-		fprintf_P(stdout,PSTR("\ni2c_mode : %d") , i2c_mode);
-		fprintf_P(stdout,PSTR("\nTWI State : %x") , TW_STATUS);
 		fprintf_P(stdout,PSTR("\nTWCR = ")); 
 		print_bin(TWCR,stdout);		
 

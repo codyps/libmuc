@@ -10,8 +10,10 @@
 #include "queue.h"
 #include "usart1.h"
 
+static int usart1_putchar_queue_ts1(char c, FILE *stream);
+static int usart1_putchar_queue_ts2(char c, FILE *stream);
 static int usart1_putchar_queue(char c, FILE *stream);
-static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue, NULL ,_FDEV_SETUP_WRITE);
+static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts2, NULL ,_FDEV_SETUP_WRITE);
 static int usart1_putchar_direct(char c, FILE *stream);
 static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, NULL,_FDEV_SETUP_WRITE);
 
@@ -29,17 +31,58 @@ static int usart1_putchar_direct(char c, FILE *stream) {
 }
 
 static int usart1_putchar_queue(char c, FILE *stream) {		if (c == '\n')
-		usart1_putchar_queue('\r', stream);
+		putc('\r', stream);
 
 	if (q_full(&tx_q)) {
 		PORTB&=(uint8_t)~(1<<6);		
 	}	
 	while (q_full(&tx_q));
 	PORTB|=(1<<6);
+
+	//XXX: do not call from isr!
 	disable_usart1_tx_inter();
 	q_push(&tx_q,c);
 	enable_usart1_tx_inter();
 
+	return 0;
+}
+
+static int usart1_putchar_queue_ts1(char c, FILE *stream) {		if (c == '\n')
+		putc('\r', stream);
+
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		if (q_full(&tx_q)) {
+			PORTB&=(uint8_t)~(1<<6);		
+			return -1;
+		}	
+		PORTB|=(1<<6);
+		q_push(&tx_q,c);
+		enable_usart1_tx_inter();
+	}
+
+	return 0;
+}
+
+
+static int usart1_putchar_queue_ts2(char c, FILE *stream) {		if (c == '\n')
+		putc('\r', stream);
+
+	uint8_t sreg = SREG;
+	cli();
+	if (q_full(&tx_q)) {
+		PORTB&=(uint8_t)~(1<<6);
+	}	
+	while (q_full(&tx_q)) { 
+		sei();
+		enable_usart1_tx_inter();
+		asm("nop");
+		cli();
+	}
+
+	PORTB|=(1<<6);
+	q_push(&tx_q,c);
+	enable_usart1_tx_inter();
+	SREG=sreg;
 	return 0;
 }
 
