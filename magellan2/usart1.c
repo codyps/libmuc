@@ -12,6 +12,8 @@
 
 static int usart1_putchar_queue_ts1(char c, FILE *stream);
 static int usart1_putchar_queue_ts2(char c, FILE *stream);
+static int usart1_putchar_queue_ts3(char c, FILE *stream);
+
 static int usart1_putchar_queue(char c, FILE *stream);
 static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts2, NULL ,_FDEV_SETUP_WRITE);
 static int usart1_putchar_direct(char c, FILE *stream);
@@ -34,9 +36,9 @@ static int usart1_putchar_queue(char c, FILE *stream) {		if (c == '\n')
 		putc('\r', stream);
 
 	if (q_full(&tx_q)) {
-		PORTB&=(uint8_t)~(1<<6);		
+		PORTB&=(uint8_t)~(1<<6);
+		while (q_full(&tx_q));		
 	}	
-	while (q_full(&tx_q));
 	PORTB|=(1<<6);
 
 	//XXX: do not call from isr!
@@ -71,18 +73,44 @@ static int usart1_putchar_queue_ts2(char c, FILE *stream) {		if (c == '\n')
 	cli();
 	if (q_full(&tx_q)) {
 		PORTB&=(uint8_t)~(1<<6);
-	}	
-	while (q_full(&tx_q)) { 
-		sei();
 		enable_usart1_tx_inter();
-		asm("nop");
-		cli();
+		while (q_full(&tx_q)) { 
+			sei();
+			asm(	"nop" "\n\t"
+				"nop" "\n\t"	);
+			cli();
+		}
 	}
 
 	PORTB|=(1<<6);
 	q_push(&tx_q,c);
-	enable_usart1_tx_inter();
 	SREG=sreg;
+	return 0;
+}
+
+static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
+		putc('\r', stream);
+
+	uint8_t sreg = SREG;
+	cli();
+	if (q_full(&tx_q)) {
+		PORTB&=(uint8_t)~(1<<6);
+		enable_usart1_tx_inter();
+		while ( q_full(&tx_q) ) { 
+			sei();
+			asm(
+				"nop" "\n\t"
+				"nop" "\n\t"
+			);
+			cli();
+		}
+	}	
+	
+
+	PORTB|=(1<<6);
+	q_push(&tx_q,c);
+	SREG=sreg;
+	enable_usart1_tx_inter();
 	return 0;
 }
 
