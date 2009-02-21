@@ -12,13 +12,17 @@
 
 #include "i2c.h"
 
+
+
 int i2c_start_xfer(void) {
 	if (i2c_mode == I2C_IDLE) {
 		i2c_mode = I2C_BUSY;
 		TWCR  = TWCR_START;
 		return 0;
 	}
+	#if DEBUG_L(2)
 	fprintf_P(stderr,PSTR("\n[i2c] start %d"),i2c_mode);
+	#endif
 	return -1;
 }
 
@@ -54,6 +58,19 @@ void twi_init(void) {
 	fprintf_P(io_init,PSTR("done]"));
 }
 
+// Debug output for the TWI ISR 
+#define twi_printf(...)		twi_inter_off();\
+							fprintf(io_isr,__VA_ARGS__);\
+							twi_inter_on() 
+						
+
+#define twi_printf_P(...)	twi_inter_off();\
+							fprintf_P(io_isr,__VA_ARGS__);\
+							twi_inter_on()						
+
+static void twi_inter_on(void) { TWCR|=(1<<TWIE); }
+static void twi_inter_off(void) { TWCR&=(uint8_t)~(1<<TWIE); }
+
 ISR(TWI_vect) {
 	uint8_t tw_status = TW_STATUS;
 	// TWI BUS
@@ -75,7 +92,7 @@ ISR(TWI_vect) {
 			TWCR		= TWCR_BASE;
 		}
 		else {
-			fprintf_P(io_isr,PSTR("\n[err] {r,w}_data_buf_pos != 0\n"));
+			twi_printf_P(PSTR("\n[err] {r,w}_data_buf_pos != 0\n"));
 		}
 	}
 	// MASTER TRANSMIT
@@ -133,8 +150,8 @@ ISR(TWI_vect) {
 		r_data_buf_pos = 0;
 		i2c_mode = I2C_BUSY;
 		TWCR 	= TWCR_START;
-		#if DEBUG_L(1)
-		fprintf_P(io_isr, PSTR("\n[err] i2c: SLA+R NACK"));
+		#if DEBUG_L(2)
+		twi_printfP(PSTR("\n[err] i2c: SLA+R NACK"));
 		#endif
 	}
 	else if (tw_status== TW_MR_DATA_ACK) {
@@ -170,11 +187,11 @@ ISR(TWI_vect) {
 		
 			//FIXME: not enough data read, handle?
 			#if DEBUG_L(1)
-			fprintf_P(io_isr, PSTR("\n[err] i2c: short"));
+			twi_printf_P(PSTR("\n[err] i2c: short"));
 			#endif
 			r_data_buf_pos = 0;
 			w_data_buf_pos = 0;
-			TWCR = TWCR_RESET;
+			TWCR = TWCR_START;
 		
 		}
 		else {
@@ -189,7 +206,9 @@ ISR(TWI_vect) {
 	}
 	// other
 	else if (tw_status == TW_BUS_ERROR) {
-		fprintf_P(io_isr,PSTR("\n[err]TWI_BUS_ERROR\n"));
+		#if DEBUG_L(1)
+		twi_printf_P(PSTR("\n[err]TWI_BUS_ERROR\n"));
+		#endif
 		i2c_mode = I2C_IDLE; //XXX:??
 		TWCR = TWCR_STOP;
 	}
@@ -203,7 +222,7 @@ ISR(TWI_vect) {
 		TWCR = TWCR_START;		
 	}
 	else {
-		fprintf_P(io_isr,PSTR("\n[i2c] unknown tw_status %x"),tw_status);
+		twi_printf_P(PSTR("\n[i2c] unknown tw_status %x"),tw_status);
 		TWCR |= (1<<TWINT);
 	}
 }

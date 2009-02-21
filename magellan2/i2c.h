@@ -17,7 +17,6 @@
 #define I2C_GENERAL_CALL_EN 0
 
 /** State Control **/
-typedef enum {TW_MT, TW_MR} tw_if_mode_t;
 typedef enum {	I2C_IDLE = 0, 
 		I2C_BUSY = 1,
 		I2C_MT = 2,

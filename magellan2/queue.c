@@ -19,17 +19,17 @@ void q_init(queue_t *q, QUEUE_BASE_T * b, QUEUE_INDEX_T sz) {
 
 int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
-        if (q_full(q)){
-		#if DEBUG_L(3)
-		fprintf(io_isr,"\n{warn: push (%d)}",x);
-		#endif
-		return -1;
-        }
-        else {
-                q->buffer[ q->last ] = x;
-                q->last = (q->last+1) % (q->sz);
-                ++(q->ct);
-        }
+	if (q_full(q)){
+	#if DEBUG_L(4)
+	fprintf(io_isr,"\n{warn: push (%d)}",x);
+	#endif
+	return -1;
+	}
+	else {
+			q->buffer[ q->last ] = x;
+			q->last = (q->last+1) % (q->sz);
+			++(q->ct);
+	}
 	return 0;
 }
 
