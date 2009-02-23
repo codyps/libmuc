@@ -24,6 +24,7 @@ void init(void) {
 	twi_init();
 	hmc6343_init_static();
 	DDRB |= (1<<6); // PB6 = status LED
+	PORTB |= (1<<6);
 	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
 	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
 	fprintf_P(io_init,PSTR("\n\n[main init done]\n\n"));	
@@ -53,9 +54,17 @@ int main(void) {
 			_delay_ms(1000);		
 			i2c_start_xfer();
 		}
-		fprintf_P(stdout,PSTR("\nTWCR = ")); 
-		print_bin(TWCR,stdout);		
-
+		PORTB |= (1<<6);
+		fprintf_P(stderr,PSTR("\nTWCR = ")); 
+		print_bin(TWCR,stderr);		
+		PORTB&=(uint8_t)~(1<<6);
+		_delay_ms(500);
+		
+		PORTB |= (1<<6);
+		fprintf_P(io_direct,PSTR("\nTWCR = ")); 
+		print_bin(TWCR,io_direct);		
+		PORTB&=(uint8_t)~(1<<6);
+		
 		_delay_ms(2000);
 	}
 	return 0;

@@ -10,16 +10,13 @@
 #include "queue.h"
 #include "usart1.h"
 
-
-const char COL_RESET[] = "\x1b[0m";  
-const char RED[]       = "\x1b[31m";
-	
+QUEUE_BASE_T _tx_buffer[QUEUE_SZ];
+queue_t tx_q;
 
 static int usart1_putchar_queue_ts2(char c, FILE *stream);
 static int usart1_putchar_queue_ts3(char c, FILE *stream);
 
-static FILE usart1_io_queue_out = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
-static FILE usart1_io_queue_err = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
+static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
 
 static int usart1_putchar_direct(char c, FILE *stream);
 static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, NULL,_FDEV_SETUP_WRITE);
@@ -31,7 +28,9 @@ static void usart1_udre_inter_off(void) { UCSR1B&=(uint8_t)~(1<<UDRIE1); }
 static int usart1_putchar_direct(char c, FILE *stream) {
 	if (c == '\n')
 		putc('\r', stream);
+	PORTB&=(uint8_t)~(1<<6);
 	loop_until_bit_is_set(UCSR1A, UDRE1);
+	PORTB|=(1<<6);
 	UDR1 = c;
 	return 0;
 }
@@ -53,9 +52,8 @@ static int usart1_putchar_queue_ts2(char c, FILE *stream) {
 				"nop" "\n\t"	);
 			cli();
 		}
+		PORTB|=(1<<6);
 	}
-
-	PORTB|=(1<<6);
 	q_push(&tx_q,c);
 	SREG=sreg;
 	return 0;
@@ -111,10 +109,10 @@ void usart1_init(void) {
 	//UCSR1B|= (1<<RXEN1); // input to uc
 
 	
-	io_queue = &usart1_io_queue_out;
+	io_queue = &usart1_io_queue;
 	io_direct = &usart1_io_direct;
 	stdout = io_queue;
-	stderr = &usart1_io_queue_err;
+	stderr = io_queue;
 	io_isr = io_direct;
 	io_init = io_direct;
 }

@@ -1,5 +1,5 @@
 /*
-USART
+USART1 with out/err line buffering.
 */
 
 #ifndef _USART_H_

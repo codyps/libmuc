@@ -10,7 +10,7 @@ ADMCU = atmega640
 FORMAT = ihex
 TARGET = magellan2
 SRC = main.c usart1.c queue.c i2c.c i2c_HMC6343.c
-#SRC = main.c usart1.c queue.c
+#SRC = main.c usart1_err.c queue.c i2c.c i2c_HMC6343.c
 ASRC = 
 OPT = s
 
