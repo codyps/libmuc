@@ -15,7 +15,7 @@ static int usart1_putchar_queue_ts2(char c, FILE *stream);
 static int usart1_putchar_queue_ts3(char c, FILE *stream);
 
 static int usart1_putchar_queue(char c, FILE *stream);
-static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts2, NULL ,_FDEV_SETUP_WRITE);
+static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
 
 static int usart1_putchar_direct(char c, FILE *stream);
 static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, NULL,_FDEV_SETUP_WRITE);
@@ -43,10 +43,12 @@ static int usart1_putchar_queue(char c, FILE *stream) {
 	PORTB|=(1<<6);
 
 	//XXX: do not call from isr!
-	usart1_udre_inter_off();
-	q_push(&tx_q,c);
-	usart1_udre_inter_on();
-
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		usart1_udre_inter_off();
+		q_push(&tx_q,c);
+		usart1_udre_inter_on();
+	}
+	
 	return 0;
 }
 
@@ -117,55 +119,12 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 		SREG=sreg;
 		return 0;
 	}	
-	
+	usart1_udre_inter_off();
 	q_push(&tx_q,c);
 	usart1_udre_inter_on();
 	SREG=sreg;
 	return 0;
 }
-
-static int usart1_putchar_queue_ts4a(char c, FILE *stream) {
-
-	if (c == '\n')
-		putc('\r', stream);
-
-	uint8_t sreg = SREG;
-	cli();
-	while (q_push(&tx_q,c)) {
-		PORTB&=(uint8_t)~(1<<6);
-		return -1;
-	}
-
-	PORTB|=(1<<6);
-
-	usart1_udre_inter_on();
-	SREG=sreg;
-	return 0;
-}
-
-static int usart1_putchar_queue_ts4b(char c, FILE *stream) {	
-	if (c == '\n')
-		putc('\r', stream);
-
-	uint8_t sreg = SREG;
-	cli();
-	if (q_push(&tx_q,c)) {
-		usart1_udre_inter_on();
-		while (q_push(&tx_q,c)) {
-			sei();
-			PORTB&=(uint8_t)~(1<<6);
-			asm("nop");
-			cli();
-		}
-		PORTB|=(1<<6);
-		SREG=sreg;
-		return 0;
-	}
-	usart1_udre_inter_on();
-	SREG=sreg;
-	return 0;
-}
-
 
 void usart1_init(void) {
 	power_usart1_enable();
@@ -186,8 +145,11 @@ void usart1_init(void) {
 	UCSR1B|= (1<<TXEN1); // output from uc
 	//UCSR1B|= (1<<RXEN1); // input to uc
 
-	stderr=stdout=&usart1_io_queue;
+	
+	io_queue = &usart1_io_queue;
 	io_direct = &usart1_io_direct;
+	stdout = io_queue;
+	stderr = io_queue;
 	io_isr = io_direct;
 	io_init = io_direct;
 }

@@ -6,7 +6,9 @@
 
 #define F_CPU 16000000
 
+FILE * io_queue;
 FILE * io_direct;
+
 FILE * io_isr;
 FILE * io_init;
 
