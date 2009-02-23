@@ -10,12 +10,16 @@
 #include "queue.h"
 #include "usart1.h"
 
-static int usart1_putchar_queue_ts1(char c, FILE *stream);
+
+const char COL_RESET[] = "\x1b[0m";  
+const char RED[]       = "\x1b[31m";
+	
+
 static int usart1_putchar_queue_ts2(char c, FILE *stream);
 static int usart1_putchar_queue_ts3(char c, FILE *stream);
 
-static int usart1_putchar_queue(char c, FILE *stream);
-static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
+static FILE usart1_io_queue_out = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
+static FILE usart1_io_queue_err = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
 
 static int usart1_putchar_direct(char c, FILE *stream);
 static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, NULL,_FDEV_SETUP_WRITE);
@@ -31,47 +35,6 @@ static int usart1_putchar_direct(char c, FILE *stream) {
 	UDR1 = c;
 	return 0;
 }
-
-static int usart1_putchar_queue(char c, FILE *stream) {	
-// Unsafe in isr or with other isr's modding the queue.	if (c == '\n')
-		putc('\r', stream);
-
-	if (q_full(&tx_q)) {
-		PORTB&=(uint8_t)~(1<<6);
-		while (q_full(&tx_q));		
-	}	
-	PORTB|=(1<<6);
-
-	//XXX: do not call from isr!
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		usart1_udre_inter_off();
-		q_push(&tx_q,c);
-		usart1_udre_inter_on();
-	}
-	
-	return 0;
-}
-
-static int usart1_putchar_queue_ts1(char c, FILE *stream) {	
-// Dies on full queue. Safe in all cases, but not reliable.	if (c == '\n')
-		putc('\r', stream);
-
-	uint8_t sreg = SREG;
-	cli();
-	{
-		if (q_full(&tx_q)) {
-			PORTB&=(uint8_t)~(1<<6);		
-			SREG=sreg;
-			return -1;
-		}	
-		PORTB|=(1<<6);
-		q_push(&tx_q,c);
-		usart1_udre_inter_on();
-	}
-	SREG=sreg;
-	return 0;
-}
-
 
 static int usart1_putchar_queue_ts2(char c, FILE *stream) {
 // If the queue is full, enable interupt and waits for non-full queue.
@@ -126,6 +89,8 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 	return 0;
 }
 
+
+
 void usart1_init(void) {
 	power_usart1_enable();
 
@@ -146,10 +111,10 @@ void usart1_init(void) {
 	//UCSR1B|= (1<<RXEN1); // input to uc
 
 	
-	io_queue = &usart1_io_queue;
+	io_queue = &usart1_io_queue_out;
 	io_direct = &usart1_io_direct;
 	stdout = io_queue;
-	stderr = io_queue;
+	stderr = &usart1_io_queue_err;
 	io_isr = io_direct;
 	io_init = io_direct;
 }
