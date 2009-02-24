@@ -23,10 +23,13 @@ void init(void) {
 	usart1_init();
 	twi_init();
 	hmc6343_init_static();
+	
 	DDRB |= (1<<6); // PB6 = status LED
-	PORTB |= (1<<6);
+	debug_led_on;
+	
 	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
 	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
+	
 	fprintf_P(io_init,PSTR("\n\n[main init done]\n\n"));	
 	sei();
 }
@@ -37,14 +40,13 @@ void print_bin(uint8_t inp, FILE * stream) {
 	}
 }
 
-
 ISR(BADISR_vect){
 	fprintf_P(io_isr,PSTR("\n[error] bad isr\n"));
 }
 
 int main(void) { 	
 	init();
-
+	
 	i2c_start_xfer();
 	for(;;) {			
 		if (head_data_updated == true) {
@@ -54,17 +56,11 @@ int main(void) {
 			_delay_ms(1000);		
 			i2c_start_xfer();
 		}
-		PORTB |= (1<<6);
+		debug_led_on;
 		fprintf_P(stderr,PSTR("\nTWCR = ")); 
 		print_bin(TWCR,stderr);		
-		PORTB&=(uint8_t)~(1<<6);
-		_delay_ms(500);
-		
-		PORTB |= (1<<6);
-		fprintf_P(io_direct,PSTR("\nTWCR = ")); 
-		print_bin(TWCR,io_direct);		
-		PORTB&=(uint8_t)~(1<<6);
-		
+		debug_led_off;
+
 		_delay_ms(2000);
 	}
 	return 0;

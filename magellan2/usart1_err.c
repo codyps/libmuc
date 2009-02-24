@@ -34,7 +34,7 @@ const char C_RESET[] = "\x1b[0m";
 const char C_RED[] = "\x1b[31m";
 	
 
-//static int usart1_putchar_queue_ts3(char c, FILE *stream);
+//static int usart1_putchar_queue_ts3a(char c, FILE *stream);
 static int usart1_putchar_queue_ts3b(char c, FILE *stream);
 
 static FILE usart1_io_queue_out = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3b, NULL ,_FDEV_SETUP_WRITE);
@@ -56,7 +56,7 @@ static int usart1_putchar_direct(char c, FILE *stream) {
 }
 
 /*
-static int usart1_putchar_queue_ts3(char c, FILE *stream) {	
+static int usart1_putchar_queue_ts3a(char c, FILE *stream) {	
 	if (c == '\n')
 		putc('\r', stream);
 

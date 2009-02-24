@@ -1,6 +1,9 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#define debug_led_off	PORTB |= (1<<6)
+#define debug_led_on	PORTB &= (uint8_t)~(1<<6)
+
 /* Debuging */
 #define DEBUG 1
 #define DEBUG_L(LEVEL) (DEBUG>=LEVEL)

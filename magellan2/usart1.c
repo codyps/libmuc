@@ -13,9 +13,7 @@
 QUEUE_BASE_T _tx_buffer[QUEUE_SZ];
 queue_t tx_q;
 
-static int usart1_putchar_queue_ts2(char c, FILE *stream);
 static int usart1_putchar_queue_ts3(char c, FILE *stream);
-
 static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
 
 static int usart1_putchar_direct(char c, FILE *stream);
@@ -35,37 +33,12 @@ static int usart1_putchar_direct(char c, FILE *stream) {
 	return 0;
 }
 
-static int usart1_putchar_queue_ts2(char c, FILE *stream) {
-// If the queue is full, enable interupt and waits for non-full queue.
-// Safe only in non or protected isr calls.	if (c == '\n')
-		putc('\r', stream);
-
-	uint8_t sreg = SREG;
-	cli();
-	if (q_full(&tx_q)) {
-		PORTB&=(uint8_t)~(1<<6);
-		usart1_udre_inter_on();
-		while (q_full(&tx_q)) { 
-			sei();
-			asm(	
-				"nop" "\n\t"
-				"nop" "\n\t"	);
-			cli();
-		}
-		PORTB|=(1<<6);
-	}
-	q_push(&tx_q,c);
-	SREG=sreg;
-	return 0;
-}
-
 static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 		putc('\r', stream);
 
 	uint8_t sreg = SREG;
 	cli();
 	if (q_full(&tx_q)) {
-		PORTB&=(uint8_t)~(1<<6);
 		usart1_udre_inter_on();
 		while ( q_full(&tx_q) ) { 
 			sei();
@@ -75,12 +48,10 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 			);
 			cli();
 		}
-		PORTB|=(1<<6);
 		q_push(&tx_q,c);
 		SREG=sreg;
 		return 0;
 	}	
-	usart1_udre_inter_off();
 	q_push(&tx_q,c);
 	usart1_udre_inter_on();
 	SREG=sreg;
