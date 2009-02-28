@@ -53,7 +53,7 @@ int main(void) {
 			head_data_updated = false;
 			fprintf_P(stdout,PSTR("\nhead:%u pitch:%d roll:%d\n"),\
 				head.head,head.pitch,head.roll);
-			_delay_ms(1000);		
+			_delay_ms(500);		
 			i2c_start_xfer();
 		}
 		debug_led_on;
@@ -61,7 +61,7 @@ int main(void) {
 		print_bin(TWCR,stderr);		
 		debug_led_off;
 
-		_delay_ms(2000);
+		_delay_ms(1000);
 	}
 	return 0;
 }
