@@ -8,7 +8,25 @@
 
 // Prescaler = 8 => 010 
 //(0<<CS2)|(1<<CS1)|(0<<CS0);
-#define TIMER5_PRESCALE ((0<<CS2)|(1<<CS1)|(0<<CS0))
+#define TIMER5_FPWM_PRESCALE ((0<<CS2)|(1<<CS1)|(0<<CS0))
+#define TIMER5_CTC_PRESCALE ((0<<CS2)|(0<<CS1)|(1<<CS0))
+
+// clicks = F_CPU / hz
+// 		      hz	   clicks@16e6Hz
+// 20  ms = 2e-2   => 50	=> 320000
+// 18  ms = 1.8e-2 => 
+// 1   ms = 1e-3   => 1000 	=> 16000
+// 1.5 ms = 1.5e-3 => 666 + 2/3	=> 24000
+// 2   ms = 2e-3   => 500	=> 32000
+
+// max = F_CPU/(1/.0002)-F_CPU/(1/.0001)
+#define SERVO_BASE ( (uint16_t) ( F_CPU*.0001 ) )
+#define SERVO_MAX SERVO_BASE
+#define SERVO_2MS (SERVO_BASE + SERVO_MAX)
+#define SERVO_18MS_8 ( (uint16_t) ( F_CPU * .0018 / 8) ) 
+#define SERVO_AMOUNT 4
+
+#define TIMER5_COMP_REGS 3
 
 
 // Servo Definitions

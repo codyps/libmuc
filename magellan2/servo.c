@@ -11,19 +11,7 @@
 
 #include "servo.h"
 
-// clicks = F_CPU / hz
-// 		      hz	   clicks@16e6Hz
-// 20  ms = 2e-2   => 50	=> 320000
-// 1   ms = 1e-3   => 1000 	=> 16000
-// 1.5 ms = 1.5e-3 => 666 + 2/3	=> 24000
-// 2   ms = 2e-3   => 500	=> 32000
 
-// max = F_CPU/(1/.0002)-F_CPU/(1/.0001)
-#define SERVO_BASE ( (uint16_t) ( F_CPU*.0001 ) )
-#define SERVO_MAX SERVO_BASE
-#define SERVO_AMOUNT 4
-
-#define TIMER5_COMP_REGS
 
 uint16_t servo_position [SERVO_AMOUNT];
 volatile uint8_t * servo_port [SERVO_AMOUNT];
@@ -70,7 +58,7 @@ void servo_pin_init(void) {
 	servo_index[SERVO_IRR] = &SERVO_IRR_INDEX;
 }
 
-void timer5_fpwm_start(void) {
+void timer5_init(void) {
 	power_timer5_enable();	
 
 	// Fast PWM, ICR5 = TOP
@@ -78,10 +66,10 @@ void timer5_fpwm_start(void) {
 	TCCR5B = (1<<WGM3)|(1<<WGM2); //(disables timer, CS[2,1,0] = 0		)
 	TCCR5A = (1<<WGM1)|(0<<WGM0); //(disables outputs, COM[A,B,C][1,0] = 0	)
 	
-	TIMSK5 = (1<<OCIE5A)|(1<<OCIE5B)|(1<<OCIE5A)|(1<<TOIE5);
+	TIMSK5 = (1<<OCIE5A)|(1<<OCIE5B)|(1<<OCIE5A)|(1<<ICIE5);
 	// write the 16 bit registers.
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		ICR5 = TIMER5_TOP;	
+		ICR5 = SERVO_2MS;	
 		TCNT5 = 0;
 	
 		//OCR5A = ?;
@@ -90,13 +78,46 @@ void timer5_fpwm_start(void) {
 	};
 
 	// Prescale & Start.
-	TCCR5B|= TIMER5_PRESCALE;
+	TCCR5B|= TIMER5_FPWM_PRESCALE;
 }
 
+void timer5_fpwm_start(void) {
+
+	// Fast PWM, ICR5 = TOP
+	// WGM5[3,2,1,0] = 1 1 1 0
+	TCCR5B = (1<<WGM3)|(1<<WGM2)|(TIMER5_FPWM_PRESCALE);
+	TCCR5A = (1<<WGM1)|(0<<WGM0);
+	TCNT5 = 0;
+	ICR5 = SERVO_2MS;
+	TIMSK5 = (1<<OCIE5A)|(1<<OCIE5B)|(1<<OCIE5A)|(1<<ICIE5);
+}
+
+
+void timer5_ctc_start(void) {
+
+	// CTC, ICR5 = TOP
+	// WGM5[3,2,1,0] = 1 1 0 0
+	TCCR5B = (1<<WGM3)|(1<<WGM2)|(TIMER5_CTC_PRESCALE);
+	TCCR5A = (0<<WGM1)|(0<<WGM0);
+	TCNT5 = 0;
+	ICR5 = SERVO_18MS_4;
+	TIMSK5 = (1<<TOIE5);
+}
+
+
+// Only executed in CTC (End of 18ms, 20ms total)
 ISR(TIMER5_OVF_vect) {
-	// Process new servo values.
+	// change mode to fpwm: prescale 1, top = SERVO_2MS, isr = ICP,COMPA,COMPB,COMPC
+	timer5_fpwm_start();
+	// process new servo assignments
 }
 
+// Only executed in fast pwm (End of 2ms)
+ISR(TIMER5_CAPT_vect) {
+	// change mode to ctc : prescale 8, top = SERVO_18MS_8, isr = OVF
+	timer5_ctc_start();
+	
+}
 
 inline void comp5_isr_handler(uint8_t comp_index, volatile uint16_t * comp_reg, uint8_t isr_ctrl_index);
 
