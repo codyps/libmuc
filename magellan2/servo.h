@@ -1,6 +1,15 @@
 /* 
 	Servo Control Definitions 
 */
+#ifndef _SERVO_H_
+#define _SERVO_H_
+
+#include <stdint.h>
+
+void init_servos(void);
+uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
+
+#endif // _SERVO_H_
 
 // F_CPU/(Prescaler*(1+(TOP)) = 50
 // 16e6/(8*(1+(40000-1)) = 50
@@ -8,8 +17,11 @@
 
 // Prescaler = 8 => 010 
 //(0<<CS2)|(1<<CS1)|(0<<CS0);
-#define TIMER5_FPWM_PRESCALE ((0<<CS2)|(1<<CS1)|(0<<CS0))
-#define TIMER5_CTC_PRESCALE ((0<<CS2)|(0<<CS1)|(1<<CS0))
+#define TIMER_PRESCALE_1 ( (0<<CS2) | (0<<CS1) | (1<<CS0) )
+#define TIMER_PRESCALE_8 ( (0<<CS2) | (1<<CS1) | (0<<CS0) )
+
+#define TIMER5_FPWM_PRESCALE TIMER_PRESCALE_8
+#define TIMER5_CTC_PRESCALE  TIMER_PRESCALE_1
 
 // clicks = F_CPU / hz
 // 		      hz	   clicks@16e6Hz
@@ -18,12 +30,21 @@
 // 1   ms = 1e-3   => 1000 	=> 16000
 // 1.5 ms = 1.5e-3 => 666 + 2/3	=> 24000
 // 2   ms = 2e-3   => 500	=> 32000
+// 3	    3e-3   => 333+1/3   => 48048.048...
+// 4        4e-3   => 250	=> 64000 = 0xfa00
 
 // max = F_CPU/(1/.0002)-F_CPU/(1/.0001)
-#define SERVO_BASE ( (uint16_t) ( F_CPU*.0001 ) )
-#define SERVO_MAX SERVO_BASE
-#define SERVO_2MS (SERVO_BASE + SERVO_MAX)
+
+
+#define SERVO_1MS ( (uint16_t) ( F_CPU*.0001 ) )
+#define SERVO_2MS ( (uint16_t) ( F_CPU*.0002 ) )
+#define SERVO_3MS ( (uint16_t) ( F_CPU*.0003 ) )
+#define SERVO_4MS ( (uint16_t) ( F_CPU*.0004 ) )
+
+
 #define SERVO_18MS_8 ( (uint16_t) ( F_CPU * .0018 / 8) ) 
+#define SERVO_20MS_8 ( (uint16_t) ( F_CPU * .0020 / 8) )
+
 #define SERVO_AMOUNT 4
 
 #define TIMER5_COMP_REGS 3
