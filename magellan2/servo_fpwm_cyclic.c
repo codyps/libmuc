@@ -1,10 +1,29 @@
+/*
+	servo implimentation.
+		configurable pins/indexes
+		currently limited to 4 servos (modification possible to support 5 or 15)
+		uses the timer in fpwm mode, repeating 5 times in the 20ms period
+		servos driven on consecutive intervals
+
+	TCNT	|   /|   /|   /|   /|   /|
+      (counter)	|  / |  / |  / |  / |  / |
+		| /  | /  | /  | /  | /  |
+		|/   |/   |/   |/   |/   |/...
+	cycle	0    1    2    3    4    0
+		|4ms |4ms |4ms |4ms |4ms |
+		| 	   20ms		 |
+
+		on each cycle one of the servos is activated
+			pulled high on the overflow isr, and low on the compare 'a' isr
+
+*/
+
 #include "defines.h"
 
 #include <stdio.h>
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/pgmspace.h>
 #include <avr/power.h>
 
 #include <util/atomic.h>
