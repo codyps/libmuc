@@ -5,13 +5,24 @@
 		uses the timer in fpwm mode, repeating 5 times in the 20ms period
 		servos driven on consecutive intervals
 
-	TCNT	|   /|   /|   /|   /|   /|
-      (counter)	|  / |  / |  / |  / |  / |
-		| /  | /  | /  | /  | /  |
-		|/   |/   |/   |/   |/   |/...
-	cycle	0    1    2    3    4    0
-		|4ms |4ms |4ms |4ms |4ms |
-		| 	   20ms		 |
+		|    /|    /|    /|    /|    /|    /|
+	TCNT	|   / |   / |   / |   / |   / |   / |
+      (counter)	|  /  |  /  |  /  |  /  |  /  |  /  |
+		| /   | /   | /   | /   | /   | /   |
+		|/    |/    |/    |/    |/    |/    |
+	cycle	0     1     2     3     4     0     1     2     3     4     0
+		| 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms |
+		| 	      20ms	      |             20ms            |
+	output  |_                             _     
+	P	| |___________________________| |___________________________
+		|      _                      |      _
+	T	|_____| |___________________________| |_____________________
+		|            _                |            _
+	IRL	|___________| |___________________________| |_______________
+		|                  _          |                  _
+	IRR	|_________________| |___________________________| |_________
+
+
 
 		on each cycle one of the servos is activated
 			pulled high on the overflow isr, and low on the compare 'a' isr
@@ -74,6 +85,13 @@ void servo_pin_init(void) {
 
 	servo_port [SERVO_IRR] = &SERVO_IRR_PORT;
 	servo_index[SERVO_IRR] = SERVO_IRR_INDEX;
+
+	// set the pins as outputs, low
+	// (port-1)=ddr, (port-2)=pin
+	for (uint8_t i = 0 ; i < SERVO_AMOUNT; i++) {
+		*(servo_port[i]-1) |= (uint8_t)    (1<<servo_index[i])  ; // output
+		SERVO_PIN_LOW(i);
+	}
 }
 
 
@@ -89,11 +107,11 @@ void timer_servo_init(void) {
 	power_timer5_enable();	
 
 	// Fast PWM, ICR5 = TOP
-	//WGM5[3,2,1,0] = 1,1,1,0
+	//WGM[3,2,1,0] = 1,1,1,0
 	SERVO_TCCRB = (1<<WGM3)|(1<<WGM2); //(disables timer, CS[2,1,0] = 0		)
 	SERVO_TCCRA = (1<<WGM1)|(0<<WGM0); //(disables outputs, COM[A,B,C][1,0] = 0	)
 	
-	//TIMSK5 = (1<<OCIEA)|(1<<OCIEB)|(1<<OCIEC)|(1<<TOIE);
+	//SERVO_TIMSK = (1<<OCIEA)|(1<<OCIEB)|(1<<OCIEC)|(1<<TOIE);
 	SERVO_TIMSK = (1<<OCIEA)|(1<<TOIE);
 	// write the 16 bit registers.
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -103,7 +121,7 @@ void timer_servo_init(void) {
 		SERVO_OCRA = servo_position[cycle];
 	};
 
-	// We don't get the first OVF isr, so pull it high now.
+	// We don't get the first OVF isr (when cycle == 0), so pull it high now.
 	SERVO_PIN_HIGH(cycle);
 	
 	// Prescale & Start.
