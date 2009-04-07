@@ -59,14 +59,8 @@ void twi_init(void) {
 }
 
 // Debug output for the TWI ISR 
-#define twi_printf(...)		twi_inter_off();\
-							fprintf(io_isr,__VA_ARGS__);\
-							twi_inter_on() 
-						
-
-#define twi_printf_P(...)	twi_inter_off();\
-							fprintf_P(io_isr,__VA_ARGS__);\
-							twi_inter_on()						
+#define twi_printf(...)	fprintf(io_isr,__VA_ARGS__);
+#define twi_printf_P(...) fprintf_P(io_isr,__VA_ARGS__);
 
 inline static void twi_inter_on(void) { TWCR|=(1<<TWIE); }
 inline static void twi_inter_off(void) { TWCR&=(uint8_t)~(1<<TWIE); }
