@@ -9,6 +9,7 @@
 
 #include "queue.h"
 #include "usart1.h"
+#include "usart1_conf.h"
 
 QUEUE_BASE_T _tx_buffer[QUEUE_SZ];
 queue_t tx_q;
@@ -19,17 +20,17 @@ static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,
 static int usart1_putchar_direct(char c, FILE *stream);
 static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, NULL,_FDEV_SETUP_WRITE);
 
-static void usart1_udre_inter_on(void)  { UCSR1B|=(1<<UDRIE1); }
-static void usart1_udre_inter_off(void) { UCSR1B&=(uint8_t)~(1<<UDRIE1); }
+inline static void usart_udre_inter_on(void)  { UCSRB|=(uint8_t) (1<<UDRIE); }
+inline static void usart_udre_inter_off(void) { UCSRB&=(uint8_t)~(1<<UDRIE); }
 
 
 static int usart1_putchar_direct(char c, FILE *stream) {
 	if (c == '\n')
 		putc('\r', stream);
-	PORTB&=(uint8_t)~(1<<6);
-	loop_until_bit_is_set(UCSR1A, UDRE1);
-	PORTB|=(1<<6);
-	UDR1 = c;
+	debug_led_on;
+	loop_until_bit_is_set(UCSRA, UDRE);
+	debug_led_off;
+	UDR = c;
 	return 0;
 }
 
@@ -39,7 +40,7 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 	uint8_t sreg = SREG;
 	cli();
 	if (q_full(&tx_q)) {
-		usart1_udre_inter_on();
+		usart_udre_inter_on();
 		while ( q_full(&tx_q) ) { 
 			sei();
 			asm(
@@ -53,7 +54,7 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 		return 0;
 	}	
 	q_push(&tx_q,c);
-	usart1_udre_inter_on();
+	usart_udre_inter_on();
 	SREG=sreg;
 	return 0;
 }
@@ -61,23 +62,23 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 
 
 void usart1_init(void) {
-	power_usart1_enable();
+	power_usart_enable();
 
 	q_init(&tx_q, _tx_buffer, QUEUE_SZ);
 	/* Set baud rate (12bit) */
-	UBRR1   = UBRR_VALUE;
+	UBRR   = UBRR_VALUE;
 	#if USE_2X
-	UCSR1A |=  (1 << U2X1);
+	UCSRA |=  (1 << U2X);
 	#else
-	UCSR1A &= (uint8_t) ~(1 << U2X1);
+	UCSRA &= (uint8_t) ~(1 << U2X);
 	#endif
 	// Set frame format: 8data, 1stop bit
-	UCSR1C = (1<<UCSZ10)|(1<<UCSZ11);
+	UCSRC = (1<<UCSZ0)|(1<<UCSZ1);
 	
 	// Enable receiver and transmitter
-	UCSR1B = 0;	
-	UCSR1B|= (1<<TXEN1); // output from uc
-	//UCSR1B|= (1<<RXEN1); // input to uc
+	UCSRB = 0;	
+	UCSRB|= (1<<TXEN); // output from uc
+	//UCSRB|= (1<<RXEN); // input to uc
 
 	
 	io_queue = &usart1_io_queue;
@@ -88,10 +89,10 @@ void usart1_init(void) {
 	io_init = io_direct;
 }
 
-ISR(USART1_UDRE_vect) {	
+ISR(USART_UDRE_vect) {	
 	if (tx_q.ct>0) // !q_empty(&tx_q)
-		UDR1 = q_pop(&tx_q);
+		UDR = q_pop(&tx_q);
 	if (tx_q.ct<=0)// q_empty(&tx_q)
-		usart1_udre_inter_off();
+		usart_udre_inter_off();
 }
 
