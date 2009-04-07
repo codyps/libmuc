@@ -73,6 +73,7 @@ void init_servos(void) {
 	timer_servo_init();
 }
 
+// These are very costly operations (around 46 ops on each call)
 #define SERVO_PIN_LOW(_servo_) ( *servo_port[_servo_] &= (uint8_t) ~( 1<<servo_index[_servo_] ) )
 #define SERVO_PIN_HIGH(_servo_) ( *servo_port[_servo_] |= (uint8_t) (1<<servo_index[_servo_]) )
 
@@ -125,18 +126,22 @@ void timer_servo_init(void) {
 	
 		SERVO_OCRA = servo_position[cycle];
 	};
-
-	// We don't get the first OVF isr (when cycle == 0), so pull it high now.
-	SERVO_PIN_HIGH(cycle);
 	
 	// Prescale & Start.
 	SERVO_TCCRB|= TIMER_PRESCALE_1;
+
+	// We don't get the first OVF isr (when cycle == 0), so pull it high now.
+	SERVO_PIN_HIGH(cycle);
 }
 
 // Needs to spend less than 1ms, F_CPU/1000 ops. (16e3@16e6Hz)
 ISR(TIMER_S_OVF_vect) {
 
-	cycle = (cycle+1)%(20/TIMER_PERIOD);
+	//cycle = (cycle+1)%(20/TIMER_PERIOD); // to many ops.
+
+	cycle++;
+	if ( cycle >= (20/TIMER_PERIOD) )
+		cycle = 0;
 
 	if (cycle != 4) {
 		// set servo 'cycle' pin(s) high
@@ -145,11 +150,11 @@ ISR(TIMER_S_OVF_vect) {
 		SERVO_OCRA = servo_position[cycle];
 	}
 	else {// if (cycle == 4) {
-		//???
+		SERVO_OCRA = 0xFFFF;
 	}
 }
 
-ISR(TIMER_S_COMPA_vect) {
+ISR(TIMER_S_COMPA_vect) { // 96 ops just for this... oi.
 	SERVO_PIN_LOW(cycle);
 }
 /*
