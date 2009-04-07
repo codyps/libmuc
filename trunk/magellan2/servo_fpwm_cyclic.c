@@ -7,9 +7,9 @@
 
 		|    /|    /|    /|    /|    /|    /|
 	TCNT	|   / |   / |   / |   / |   / |   / |
-      (counter)	|  /  |  /  |  /  |  /  |  /  |  /  |
-		| /   | /   | /   | /   | /   | /   |
-		|/    |/    |/    |/    |/    |/    |
+      (counter)	|  /  |  /  |  /  |  /  |  /  |  /  |  .
+		| /   | /   | /   | /   | /   | /   | .
+		|/    |/    |/    |/    |/    |/    |/    |/    |/    |/
 	cycle	0     1     2     3     4     0     1     2     3     4     0
 		| 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms | 4ms |
 		| 	      20ms	      |             20ms            |
@@ -72,8 +72,6 @@ void init_servos(void) {
 
 	timer_servo_init();
 }
-
-
 
 #define SERVO_PIN_LOW(_servo_) ( *servo_port[_servo_] &= (uint8_t) ~( 1<<servo_index[_servo_] ) )
 #define SERVO_PIN_HIGH(_servo_) ( *servo_port[_servo_] |= (uint8_t) (1<<servo_index[_servo_]) )

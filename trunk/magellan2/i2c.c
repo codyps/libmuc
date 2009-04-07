@@ -12,8 +12,6 @@
 
 #include "i2c.h"
 
-
-
 int i2c_start_xfer(void) {
 	if (i2c_mode == I2C_IDLE) {
 		i2c_mode = I2C_BUSY;
