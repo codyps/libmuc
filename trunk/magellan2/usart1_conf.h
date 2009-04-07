@@ -1,4 +1,4 @@
-//FIXME: Currently the following line does nothing, had to place the '5' directly in the S_# macros
+//FIXME: Currently the following line does nothing, had to place the '1' directly in the U_# macros
 #define USART_NUMBER	1
 
 #define U_A(_A)	COMB2(_A, 1 )
@@ -7,8 +7,8 @@
 #define COMB3(_A,_num,_C) _A ## _num ## _C
 #define COMB2(_A,_num) _A ## _num
 
-//
-
+// Registers
+//  Bits
 #define UCSRA	U_I(UCSR,A)
  #define UDRE	U_A(UDRE)
  #define U2X	U_A(U2X)
@@ -23,4 +23,8 @@
 #define UDR	U_A(UDR) 
 #define UBRR	U_A(UBRR)
 
+// Interrupt vectors
 #define USART_UDRE_vect U_I(USART,_UDRE_vect)
+
+// Functions
+#define power_usart_enable U_I(power_usart,_enable)
