@@ -1,5 +1,6 @@
 /*
-  For the ATMEGA164PV i have on the breadboard
+ * Axon (atmega640)
+ 	general initialization and main loop 
  */
 
 #include "defines.h"
@@ -36,7 +37,7 @@ void init(void) {
 
 void print_bin(uint8_t inp, FILE * stream) {
 	for(int8_t j=7; j>=0; --j) {
-	   	putc(((inp&(1<<j))>>j)+'0',stream);
+	   	fputc(((inp&(1<<j))>>j)+'0',stream);
 	}
 }
 
