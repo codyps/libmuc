@@ -27,7 +27,12 @@ int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 	}
 	else {
 			q->buffer[ q->last ] = x;
-			q->last = (q->last+1) % (q->sz);
+
+			//q->last = (q->last+1) % (q->sz);
+			q->last++;
+			if ( q->last >= q->sz )
+				q->last = 0;
+
 			++(q->ct);
 	}
 	return 0;
@@ -55,7 +60,12 @@ QUEUE_BASE_T q_pop(queue_t *q)
 	}
         else {
                 x = q->buffer[ q->first ];
-                q->first = (q->first+1) % (q->sz);
+
+                //q->first = (q->first+1) % (q->sz);
+		q->first++;
+		if ( q->first >= q->sz )
+			q->first = 0;
+
 		--(q->ct);
         }
 
