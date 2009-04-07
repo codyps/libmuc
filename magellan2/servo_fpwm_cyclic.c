@@ -21,8 +21,8 @@
 	IRL	|___________| |___________________________| |_______________
 		|                  _          |                  _
 	IRR	|_________________| |___________________________| |_________
-
-
+					      |
+		| P   | T   | IRL | IRR	|None |
 
 		on each cycle one of the servos is activated
 			pulled high on the overflow isr, and low on the compare 'a' isr
@@ -48,9 +48,9 @@
 
 
 /* Servo Informaiton and State (make into a struct?) */
-uint16_t servo_position [SERVO_AMOUNT];
-volatile uint8_t * servo_port [SERVO_AMOUNT];
-uint8_t servo_index [SERVO_AMOUNT];
+uint16_t servo_position 	[SERVO_AMOUNT];
+volatile uint8_t * servo_port 	[SERVO_AMOUNT];
+uint8_t  servo_index 		[SERVO_AMOUNT];
 /* (end) */
 
 
@@ -66,14 +66,24 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number) {
 
 void init_servos(void) {
 	servo_pin_init();	
-	memset_16( servo_position, CLICKS_MS(1)/2+CLICKS_MS(1), SERVO_AMOUNT);
+	
+	// Do analysis on the servo_positions to place them when more than 5 are being used.
 	//update_servos();
+
 	timer_servo_init();
 }
 
-//TODO: This should be assigned at compile time, not run time.
-void servo_pin_init(void) {	
 
+
+#define SERVO_PIN_LOW(_servo_) ( *servo_port[_servo_] &= (uint8_t) ~( 1<<servo_index[_servo_] ) )
+#define SERVO_PIN_HIGH(_servo_) ( *servo_port[_servo_] |= (uint8_t) (1<<servo_index[_servo_]) )
+
+#define max(a,b) (b<a)?a:b
+#define min(a,b) (b>a)?a:b
+
+void servo_pin_init(void) {
+		
+	//TODO: This should be assigned at compile time, not run time.
 	servo_port [SERVO_P]   = &SERVO_P_PORT;
 	servo_index[SERVO_P]   = SERVO_P_INDEX;
 
@@ -86,6 +96,9 @@ void servo_pin_init(void) {
 	servo_port [SERVO_IRR] = &SERVO_IRR_PORT;
 	servo_index[SERVO_IRR] = SERVO_IRR_INDEX;
 
+	// Set the servo positions to neutral (1.5 ms)	
+	memset_16( servo_position, CLICKS_MS(1)/2+CLICKS_MS(1), SERVO_AMOUNT);
+
 	// set the pins as outputs, low
 	// (port-1)=ddr, (port-2)=pin
 	for (uint8_t i = 0 ; i < SERVO_AMOUNT; i++) {
@@ -94,12 +107,6 @@ void servo_pin_init(void) {
 	}
 }
 
-
-#define SERVO_PIN_LOW(_servo_) ( *servo_port[_servo_] &= (uint8_t) ~( 1<<servo_index[_servo_] ) )
-#define SERVO_PIN_HIGH(_servo_) ( *servo_port[_servo_] |= (uint8_t) (1<<servo_index[_servo_]) )
-
-#define max(a,b) (b<a)?a:b
-#define min(a,b) (b>a)?a:b
 
 static uint8_t cycle; //= 0;
 

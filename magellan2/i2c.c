@@ -68,16 +68,16 @@ void twi_init(void) {
 							fprintf_P(io_isr,__VA_ARGS__);\
 							twi_inter_on()						
 
-static void twi_inter_on(void) { TWCR|=(1<<TWIE); }
-static void twi_inter_off(void) { TWCR&=(uint8_t)~(1<<TWIE); }
+inline static void twi_inter_on(void) { TWCR|=(1<<TWIE); }
+inline static void twi_inter_off(void) { TWCR&=(uint8_t)~(1<<TWIE); }
 
 ISR(TWI_vect) {
 	uint8_t tw_status = TW_STATUS;
-	// TWI BUS
-/*	if	(tw_status == TW_NO_INFO) {
-		fprintf_P(io_isr,PSTR("\n[err]TWI_NO_INFO\n"));
-	}
-	else */
+	
+	// Don't block more critical ISRs
+	twi_inter_off();
+	sei();
+
 	if	((tw_status == TW_START)|(tw_status == TW_REP_START)) {
 		// Send Slave Addr.
 		if	(w_data_buf_pos == 0 && w_data_buf_len != 0) {
@@ -103,14 +103,7 @@ ISR(TWI_vect) {
 		w_data_buf_pos	= 1;
 		TWCR		= TWCR_BASE;
 	}
-	else if (tw_status== TW_MT_SLA_NACK) {
-		// sla+w nack
-		// restart bus and begin the same transmition again.
-		w_data_buf_pos = 0;
-		r_data_buf_pos = 0;
-		i2c_mode = I2C_BUSY;
-		TWCR = TWCR_START;
-	}
+	
 	else if (tw_status== TW_MT_DATA_ACK) {
 		// data acked
 		// send more data or rep_start to read.
@@ -128,31 +121,12 @@ ISR(TWI_vect) {
 			TWCR = TWCR_BASE;
 		}
 	}
-	else if (tw_status== TW_MT_DATA_NACK) {
-		// data nacked, rep_start and retransmit.
-		// FIXME: should reset or repstart?
-		w_data_buf_pos = 0;
-		r_data_buf_pos = 0;
-		i2c_mode = I2C_BUSY;
-		TWCR = TWCR_START;
-	}
+	
 	// MASTER READ
 	else if (tw_status == TW_MR_SLA_ACK) {
 		// sla+r ack
 		// wait for first data packet.
 		TWCR = TWCR_BASE;
-	}
-	else if (tw_status == TW_MR_SLA_NACK) {
-		// sla+r nack, 
-		//???? (rep_start/try again a few times)
-		// reset entire transaction			
-		w_data_buf_pos = 0;
-		r_data_buf_pos = 0;
-		i2c_mode = I2C_BUSY;
-		TWCR 	= TWCR_START;
-		#if DEBUG_L(2)
-		twi_printfP(PSTR("\n[err] i2c: SLA+R NACK"));
-		#endif
 	}
 	else if (tw_status== TW_MR_DATA_ACK) {
 		// Data read, wait for next read with ack or nack
@@ -204,6 +178,36 @@ ISR(TWI_vect) {
 				TWCR = TWCR_STOP;
 		}
 	}
+	// Errors
+	else if (tw_status == TW_MT_SLA_NACK) {
+		// sla+w nack
+		// restart bus and begin the same transmition again.
+		w_data_buf_pos = 0;
+		r_data_buf_pos = 0;
+		i2c_mode = I2C_BUSY;
+		TWCR = TWCR_START;
+	}
+	else if (tw_status == TW_MT_DATA_NACK) {
+		// data nacked, rep_start and retransmit.
+		// FIXME: should reset or repstart?
+		w_data_buf_pos = 0;
+		r_data_buf_pos = 0;
+		i2c_mode = I2C_BUSY;
+		TWCR = TWCR_START;
+	}
+	else if (tw_status == TW_MR_SLA_NACK) {
+		// sla+r nack, 
+		//???? (rep_start/try again a few times)
+		// reset entire transaction			
+		w_data_buf_pos = 0;
+		r_data_buf_pos = 0;
+		i2c_mode = I2C_BUSY;
+		TWCR 	= TWCR_START;
+		#if DEBUG_L(2)
+		twi_printfP(PSTR("\n[err] i2c: SLA+R NACK"));
+		#endif
+	}
+
 	// other
 	else if (tw_status == TW_BUS_ERROR) {
 		#if DEBUG_L(1)
@@ -225,5 +229,9 @@ ISR(TWI_vect) {
 		twi_printf_P(PSTR("\n[i2c] unknown tw_status %x"),tw_status);
 		TWCR |= (1<<TWINT);
 	}
+
+	// Reenable twi interrupt.
+	cli();
+	twi_inter_on();
 }
 
