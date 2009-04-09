@@ -43,3 +43,5 @@
 #define TIMER_S_COMPB_vect S_I(TIMER,_COMPB_vect)
 #define TIMER_S_COMPC_vect S_I(TIMER,_COMPC_vect)
 
+// Power macro
+#define power_timer_S_enable S_I(power_timer,_enable)

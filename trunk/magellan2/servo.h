@@ -6,49 +6,21 @@
 
 #include <stdint.h>
 
+/* Servo Interface. */
+
 void init_servos(void);
 uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 
-#endif // _SERVO_H_
 
-// F_CPU/(Prescaler*(1+(TOP)) = 50
-// 16e6/(8*(1+(40000-1)) = 50
-#define TIMER5_TOP (40000-1)
+/* Defines */
 
-// Prescaler = 8 => 010 
-//(0<<CS2)|(1<<CS1)|(0<<CS0);
 #define TIMER_PRESCALE_1 ( (0<<CS2) | (0<<CS1) | (1<<CS0) )
 #define TIMER_PRESCALE_8 ( (0<<CS2) | (1<<CS1) | (0<<CS0) )
 
-#define TIMER5_FPWM_PRESCALE TIMER_PRESCALE_8
-#define TIMER5_CTC_PRESCALE  TIMER_PRESCALE_1
-
-// clicks = F_CPU / hz
-// 		      hz	   clicks@16e6Hz
-// 20  ms = 2e-2   => 50	=> 320000
-// 18  ms = 1.8e-2 => 
-// 1   ms = 1e-3   => 1000 	=> 16000
-// 1.5 ms = 1.5e-3 => 666 + 2/3	=> 24000
-// 2   ms = 2e-3   => 500	=> 32000
-// 3	    3e-3   => 333+1/3   => 48048.048...
-// 4        4e-3   => 250	=> 64000 = 0xfa00
-
-// max = F_CPU/(1/.0002)-F_CPU/(1/.0001)
-
-
-#define SERVO_1MS ( (uint16_t) ( F_CPU*.0001 ) )
-#define SERVO_2MS ( (uint16_t) ( F_CPU*.0002 ) )
-#define SERVO_3MS ( (uint16_t) ( F_CPU*.0003 ) )
-#define SERVO_4MS ( (uint16_t) ( F_CPU*.0004 ) )
-
-
-#define SERVO_18MS_8 ( (uint16_t) ( F_CPU * .0018 / 8) ) 
-#define SERVO_20MS_8 ( (uint16_t) ( F_CPU * .0020 / 8) )
 
 #define SERVO_AMOUNT 4
 
 #define TIMER5_COMP_REGS 3
-
 
 // Servo Definitions
 #define SERVO_P   0
@@ -67,6 +39,27 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 #define SERVO_IRR_PORT PORTA
 
 
+#endif // _SERVO_H_
+
+/* Math */
+
+// clicks = F_CPU / hz
+// millis|seconds|	hz			|  clicks@16e6Hz
+// 20	= 2e-2  => 50			=> 320000
+// 18	= 18e-3	=> 
+// 0.5	= 5e-4	=> 2000			=> 8000
+// 1	= 1e-3  => 1000			=> 16000
+// 1.5	= 15e-4	=> 666 + 2/3	=> 24000
+// 2	= 2e-3  => 500			=> 32000
+// 2.5	= 25e-4	=> 400			=> 40000
+// 3	= 3e-3  => 333+1/3		=> 48048.048...
+// 4    = 4e-3  => 250			=> 64000 = 0xfa00
+
+// max = F_CPU/(1/.0002)-F_CPU/(1/.0001)
+
+
+/* Timer Documentation */
+
 // PWM A L = H3 = OC4A
 // PWM A R = H4 = OC4B
 // PWM B L = C3 = NONE
@@ -76,6 +69,7 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 // SERVO T = A5 = NONE
 // SERVO IRL = A6/A7 = NA
 // SERVO IRR = A7/J6 = NA
+
 
 /* All Timers
  0,2 = 8bit
@@ -103,7 +97,3 @@ X	L3 = OC5A
  B4 = OC2A	
  H6 = OC2B
 */
-
-
-
-
