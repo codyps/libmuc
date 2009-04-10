@@ -52,20 +52,30 @@
 #define TIMER_PERIOD_MS (TIMER_PERIOD_US/1000)
 
 
-/* Servo Informaiton and State (make into a struct?) */
-uint16_t servo_position 	[SERVO_AMOUNT];
-volatile uint8_t * servo_port 	[SERVO_AMOUNT];
-uint8_t  servo_index 		[SERVO_AMOUNT];
-/* (end) */
+/* Servo Informaiton and State  */
+struct _servo {
+	uint16_t pos; // position
+	volatile uint8_t * port;
+	uint8_t  mask; 
+} ;
 
+#define SERVO_INIT(_port,_index) {  .port = &_port, .mask = (uint8_t) 1<<_index, .pos = CLICKS_MS(1) + CLICKS_MS(1)/2 }
+struct _servo servo[] = {
+	SERVO_INIT(SERVO_P_PORT, SERVO_P_INDEX),
+	SERVO_INIT(SERVO_T_PORT, SERVO_T_INDEX),
+	SERVO_INIT(SERVO_IRL_PORT, SERVO_IRL_INDEX),
+	SERVO_INIT(SERVO_IRR_PORT, SERVO_IRR_INDEX),
+};
+
+#define SERVO_AMOUNT (sizeof(servo)/sizeof(struct _servo))
 
 void timer_servo_init(void);
 void servo_pin_init(void);
 
 uint8_t servo_set(uint16_t servo_val, uint8_t servo_number) {
-	if (servo_val>CLICKS_US(2200) || servo_val<CLICKS_US(700) || servo_number>SERVO_AMOUNT) 
+	if ( servo_val>CLICKS_US(2200) || servo_val<CLICKS_US(700) || servo_number>SERVO_AMOUNT) 
 		return -1;
-	servo_position[servo_number] = servo_val;
+	servo[servo_number].pos = servo_val;
 	return 0;
 }
 
@@ -81,36 +91,21 @@ void init_servos(void) {
 // These are very costly operations (around 46 ops on each call)
 // Need to replace with logic statments, and those need to be automagicaly generated
 #define SERVO_PIN_LOW(_servo_)	\
-		( *servo_port[_servo_] &= (uint8_t) ~(servo_index[_servo_]) )
+		( *servo[_servo_].port &= (uint8_t) ~(servo[_servo_].mask) )
 		
 #define SERVO_PIN_HIGH(_servo_) \
-		( *servo_port[_servo_] |= (uint8_t)  (servo_index[_servo_]) )
+		( *servo[_servo_].port |= (uint8_t)  (servo[_servo_].mask) )
+
 
 #define max(a,b) (b<a)?a:b
 #define min(a,b) (b>a)?a:b
 
 void servo_pin_init(void) {
 		
-	//TODO: This should be assigned at compile time, not run time.
-	servo_port [SERVO_P]   = &SERVO_P_PORT;
-	servo_index[SERVO_P]   = (uint8_t) 1<<SERVO_P_INDEX;
-
-	servo_port [SERVO_T]   = &SERVO_T_PORT;
-	servo_index[SERVO_T]   = (uint8_t) 1<<SERVO_T_INDEX;	
-
-	servo_port [SERVO_IRL] = &SERVO_IRL_PORT;
-	servo_index[SERVO_IRL] = (uint8_t) 1<<SERVO_IRL_INDEX;
-
-	servo_port [SERVO_IRR] = &SERVO_IRR_PORT;
-	servo_index[SERVO_IRR] = (uint8_t) 1<<SERVO_IRR_INDEX;
-
-	// Set the servo positions to neutral (1.5 ms)	
-	memset_16( servo_position, CLICKS_MS(1)/2+CLICKS_MS(1), SERVO_AMOUNT);
-
 	// set the pins as outputs, low
 	// (port-1)=ddr, (port-2)=pin
 	for (uint8_t i = 0 ; i < SERVO_AMOUNT; i++) {
-		*(servo_port[i]-1) |= (uint8_t)    (servo_index[i])  ; // output
+		*(servo[i].port-1) |= (uint8_t)    (servo[i].mask)  ; // output
 		SERVO_PIN_LOW(i);
 	}
 }
@@ -133,7 +128,7 @@ void timer_servo_init(void) {
 		SERVO_ICR = CLICKS_US(TIMER_PERIOD_US);	
 		SERVO_TCNT = 0;
 	
-		SERVO_OCRA = servo_position[cycle];
+		SERVO_OCRA = servo[cycle].pos;
 	};
 	
 	// Prescale & Start.
@@ -156,7 +151,7 @@ ISR(TIMER_S_OVF_vect) {
 		// set servo 'cycle' pin(s) high
 		SERVO_PIN_HIGH(cycle);
 		// set the OCR5A appropratly
-		SERVO_OCRA = servo_position[cycle];
+		SERVO_OCRA = servo[cycle].pos;
 	}
 	else {// if (cycle == 4) {
 		SERVO_OCRA = 0xFFFF;

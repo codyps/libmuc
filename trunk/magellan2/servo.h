@@ -17,9 +17,6 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 #define TIMER_PRESCALE_1 ( (0<<CS2) | (0<<CS1) | (1<<CS0) )
 #define TIMER_PRESCALE_8 ( (0<<CS2) | (1<<CS1) | (0<<CS0) )
 
-
-#define SERVO_AMOUNT 4
-
 #define TIMER5_COMP_REGS 3
 
 // Servo Definitions
