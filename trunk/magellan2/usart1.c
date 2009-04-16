@@ -20,8 +20,8 @@ static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,
 static int usart1_putchar_direct(char c, FILE *stream);
 static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, NULL,_FDEV_SETUP_WRITE);
 
-inline static void usart_udre_inter_on(void)  { UCSRB|=(uint8_t) (1<<UDRIE); }
-inline static void usart_udre_inter_off(void) { UCSRB&=(uint8_t)~(1<<UDRIE); }
+inline static void usart_udre_inter_on(void)  { UCSRB |= (uint8_t) (1<<UDRIE); }
+inline static void usart_udre_inter_off(void) { UCSRB &= (uint8_t)~(1<<UDRIE); }
 
 
 static int usart1_putchar_direct(char c, FILE *stream) {
@@ -39,7 +39,7 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 
 	uint8_t sreg = SREG;
 	cli();
-	if (q_full(&tx_q)) {
+	if ( q_full(&tx_q) ) {
 		usart_udre_inter_on();
 		while ( q_full(&tx_q) ) { 
 			sei();
@@ -50,12 +50,12 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 			cli();
 		}
 		q_push(&tx_q,c);
-		SREG=sreg;
+		SREG = sreg;
 		return 0;
 	}	
 	q_push(&tx_q,c);
 	usart_udre_inter_on();
-	SREG=sreg;
+	SREG = sreg;
 	return 0;
 }
 

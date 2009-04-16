@@ -26,8 +26,9 @@ void init(void) {
 	hmc6343_init_static();
 	
 	DDRB |= (1<<6); // PB6 = status LED
-	debug_led_on;
-	
+//	debug_led_on;
+//	debug_led_off;
+
 	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
 	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
 	
