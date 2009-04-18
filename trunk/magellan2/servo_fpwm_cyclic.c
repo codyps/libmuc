@@ -5,24 +5,24 @@
 		uses the timer in fpwm mode, repeating 8 times in the 20ms period
 		servos driven on consecutive intervals
 
-				|    /|    /|    /|    /|    /|    /|
+			|    /|    /|    /|    /|    /|    /|
 	TCNT		|   / |   / |   / |   / |   / |   / |
 	(counter)	|  /  |  /  |  /  |  /  |  /  |  /  |  .
-				| /   | /   | /   | /   | /   | /   | .
-				|/    |/    |/    |/    |/    |/    |/    |/    |/    |/
+			| /   | /   | /   | /   | /   | /   | .
+			|/    |/    |/    |/    |/    |/    |/    |/    |/    |/
 	cycle		0     1     2     3     4     5     6     7     0     1     2
-				|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|
-				| 	      20ms	      							| 20ms  ...
-	output  	|_                             					 _     
-			P	| |_____________________________________________| |__________
-				|      _                      					|      _
-			T	|_____| |_____________________________________________| |____
-				|            _                					|            
-			IRL	|___________| |______________________________________________ 
-				|                  _          					|
-			IRR	|_________________| |________________________________________
-				|
-				| P   | T   | IRL | IRR	|None |	n	|	n |  n  |
+			|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|
+			| 	      20ms				| 20ms  ...
+	output  	|_                         			 _     
+		P	| |_____________________________________________| |__________
+			|      _                      			|      _
+		T	|_____| |_____________________________________________| |____
+			|            _                			|            
+		IRL	|___________| |______________________________________________ 
+			|                  _          			|
+		IRR	|_________________| |________________________________________
+			|
+			| P   | T   | IRL | IRR	|None |	n   |  n  |  n  |
 
 		on each cycle one of the servos is activated
 			pulled high on the overflow isr, and low on the compare 'a' isr
@@ -43,8 +43,8 @@
 #include "servo_conf.h"
 #include "util.h"
 
-// Time Defines
-#define TIMER_CYCLES 8
+/*  Time Defines */
+#define TIMER_CYCLES 5
 
 #define SERVO_PERIOD_US	20000
 
@@ -54,12 +54,14 @@
 
 /* Servo Informaiton and State  */
 struct _servo {
-	uint16_t pos; // position
+	volatile uint16_t pos; // position
 	volatile uint8_t * port;
 	uint8_t  mask; 
 } ;
 
-#define SERVO_INIT(_port,_index) {  .port = &_port, .mask = (uint8_t) 1<<_index, .pos = CLICKS_MS(1) + CLICKS_MS(1)/2 }
+#define SERVO_AMOUNT (sizeof(servo)/sizeof(struct _servo))
+
+#define SERVO_INIT(_port,_index) {  .port = &(_port), .mask = (uint8_t) 1<<(_index), .pos = CLICKS_MS(1) + CLICKS_MS(1)/2 }
 struct _servo servo[] = {
 	SERVO_INIT(SERVO_P_PORT, SERVO_P_INDEX),
 	SERVO_INIT(SERVO_T_PORT, SERVO_T_INDEX),
@@ -67,26 +69,25 @@ struct _servo servo[] = {
 	SERVO_INIT(SERVO_IRR_PORT, SERVO_IRR_INDEX),
 };
 
-#define SERVO_AMOUNT (sizeof(servo)/sizeof(struct _servo))
 
-void timer_servo_init(void);
-void servo_pin_init(void);
-
+/* externaly called functions */
 uint8_t servo_set(uint16_t servo_val, uint8_t servo_number) {
-	if ( servo_val>CLICKS_US(2200) || servo_val<CLICKS_US(700) || servo_number>SERVO_AMOUNT) 
-		return -1;
+	//if ( servo_val>CLICKS_US(2200) || servo_val<CLICKS_US(700) || servo_number>SERVO_AMOUNT) 
+	//	return -1;
 	servo[servo_number].pos = servo_val;
 	return 0;
 }
 
+
+void servo_timer_init(void);
+void servo_pin_init(void);
+
 void servo_init(void) {
 	servo_pin_init();	
-	
-	// Do analysis on the servo_positions to place them when more than 5 are being used.
-	//update_servos();
-
-	timer_servo_init();
+	servo_timer_init();
 }
+
+/* internaly called functions */
 
 // These are very costly operations (around 46 ops on each call)
 // Need to replace with logic statments, and those need to be automagicaly generated
@@ -96,9 +97,6 @@ void servo_init(void) {
 #define SERVO_PIN_HIGH(_servo_) \
 		( *servo[_servo_].port |= (uint8_t)  (servo[_servo_].mask) )
 
-
-#define max(a,b) (b<a)?a:b
-#define min(a,b) (b>a)?a:b
 
 void servo_pin_init(void) {
 		
@@ -110,10 +108,9 @@ void servo_pin_init(void) {
 	}
 }
 
-
 static uint8_t cycle; //= 0;
 
-void timer_servo_init(void) {
+void servo_timer_init(void) {
 	power_timer_S_enable();	
 
 	// Fast PWM, ICR5 = TOP
@@ -128,41 +125,52 @@ void timer_servo_init(void) {
 		SERVO_ICR = CLICKS_US(TIMER_PERIOD_US);	
 		SERVO_TCNT = 0;
 	
+		// set the first cycle's position (we don't get the isr)
 		SERVO_OCRA = servo[cycle].pos;
 	};
 	
-	// Prescale & Start.
+	// Presccale & Start.
 	SERVO_TCCRB|= TIMER_PRESCALE_1;
 
 	// We don't get the first OVF isr (when cycle == 0), so pull it high now.
 	SERVO_PIN_HIGH(cycle);
 }
 
+
+inline void servo_cmpA_isr_off(void) { SERVO_TIMSK &= (uint8_t) ~(1<<OCIEA); }
+inline void servo_cmpA_isr_on(void) { SERVO_TIMSK |= (uint8_t) (1<<OCIEA); }
+
 // Needs to spend less than 1ms, F_CPU/1000 clicks. (16e3@16e6Hz)
 ISR(TIMER_S_OVF_vect) {
-
-	//cycle = (cycle+1)%(TIMER_CYCLES); // to many ops.
-
+	
 	cycle++;
-	if ( cycle >= (TIMER_CYCLES) )
+
+	if ( cycle >= (TIMER_CYCLES) ) {
 		cycle = 0;
+	}
 
 	if (cycle < SERVO_AMOUNT) {
 		// set servo 'cycle' pin(s) high
 		SERVO_PIN_HIGH(cycle);
 		// set the OCR5A appropratly
 		SERVO_OCRA = servo[cycle].pos;
+		servo_cmpA_isr_on();
+		printf("\ns%d ^",cycle);
 	}
-	else {// if (cycle == 4) {
+	else {	// if (cycle == 4) {
 		SERVO_OCRA = 0xFFFF;
+		servo_cmpA_isr_off();
+		printf("\ns%d -",cycle);
 	}
 }
 
 ISR(TIMER_S_COMPA_vect) { 
 	// Limit is .5 ms, 8000 clicks
-	// 96 ops just for this... oi.
+	// 80 ops.
 	SERVO_PIN_LOW(cycle);
+	printf("\ns%d v",cycle);
 }
+
 /*
 ISR(TIMER_S_COMPB_vect) {
 	

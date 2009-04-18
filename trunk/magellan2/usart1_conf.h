@@ -11,6 +11,7 @@
 //  Bits
 #define UCSRA	U_I(UCSR,A)
  #define UDRE	U_A(UDRE)
+ #define RXC	U_A(RXC)
  #define U2X	U_A(U2X)
 #define UCSRB	U_I(UCSR,B)
  #define TXEN	U_A(TXEN)

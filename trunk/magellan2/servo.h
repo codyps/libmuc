@@ -38,6 +38,12 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 
 #endif // _SERVO_H_
 
+/* 
+	aproximatly 2400 us and 1600 us give 90 degree angles (actualy slightly less)
+*/
+
+
+
 /* Math */
 
 // clicks = F_CPU / hz

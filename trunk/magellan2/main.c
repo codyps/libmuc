@@ -30,6 +30,7 @@ void init(void) {
 	hmc6343_init_static();
 	
 	servo_init();
+	sei();
 
 	DDRB |= (1<<6); // PB6 = status LED
 //	debug_led_on;
@@ -38,8 +39,7 @@ void init(void) {
 	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
 	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
 	
-	fprintf_P(io_init,PSTR("\n\n[main init done]\n\n"));	
-	sei();
+	printf_P(PSTR("\n\n[main init done]\n\n"));	
 }
 
 void print_bin(uint8_t inp, FILE * stream) {
@@ -50,18 +50,29 @@ void print_bin(uint8_t inp, FILE * stream) {
 
 ISR(BADISR_vect){
 	fprintf_P(io_isr,PSTR("\n[error] bad isr\n"));
+	/*
+	led_d(0);
+
+	for(int8_t i = 5; i>0; i--) {
+		_delay_ms(100);
+		led_d(1);
+		_delay_ms(100);
+		led_d(0);
+	}
+	*/
 }
 
 int main(void) { 	
 	init();
 	
-	i2c_start_xfer();
-	
+	//i2c_start_xfer();
+/*	
 	uint16_t i = CLICKS_MS(1);
 	uint8_t dir = 0;
-	#define step (CLICKS_MS(1)/10)
-
+	#define step (CLICKS_MS(1)/2)
+*/
 	for(;;) {			
+		/*
 		if (head_data_updated == true) {
 			head_data_updated = false;
 			fprintf_P(stdout,PSTR("\nhead:%u pitch:%d roll:%d\n"),\
@@ -70,15 +81,24 @@ int main(void) {
 			i2c_start_xfer();
 		}
 
-		if (dir==0)
+		if (dir==0) {
 			i+=step;
-		else
+			printf("i+=%d ; i = %d\n",step,i);
+		}
+		else {
 			i-=step;
+			printf("i-=%d ; i = %d\n",step,i);
+		}
 
-		if (i> CLICKS_MS(2) || i< CLICKS_MS(1))
+		if ( i >= CLICKS_MS(2) || i <= CLICKS_MS(1))
 			dir=!dir;
-
-		servo_set(i,0);	
+		*/
+		
+		servo_set(CLICKS_US(1000),0);
+		_delay_ms(1000);
+		servo_set(CLICKS_US(1500),0);
+		_delay_ms(1000);
+		servo_set(CLICKS_US(2000),0);
 		_delay_ms(1000);
 	}
 	return 0;

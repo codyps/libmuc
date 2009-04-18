@@ -17,8 +17,12 @@ queue_t tx_q;
 static int usart1_putchar_queue_ts3(char c, FILE *stream);
 static FILE usart1_io_queue = FDEV_SETUP_STREAM(usart1_putchar_queue_ts3, NULL ,_FDEV_SETUP_WRITE);
 
+static int usart1_getchar_direct_2(FILE * stream);
+static int usart1_getchar_direct(FILE * stream);
 static int usart1_putchar_direct(char c, FILE *stream);
-static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, NULL,_FDEV_SETUP_WRITE);
+static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, usart1_getchar_direct_2,_FDEV_SETUP_RW);
+
+
 
 inline static void usart_udre_inter_on(void)  { UCSRB |= (uint8_t) (1<<UDRIE); }
 inline static void usart_udre_inter_off(void) { UCSRB &= (uint8_t)~(1<<UDRIE); }
@@ -32,6 +36,90 @@ static int usart1_putchar_direct(char c, FILE *stream) {
 	debug_led_off;
 	UDR = c;
 	return 0;
+}
+
+static int usart1_getchar_direct(FILE * stream) {
+	 loop_until_bit_is_set(UCSRA, RXC);
+	char c = UDR;
+	return c;
+}
+
+#define RX_BUFSIZE 64
+static int usart1_getchar_direct_2(FILE *stream) {
+	uint8_t c;
+	char *cp, *cp2;
+	static char b[RX_BUFSIZE];
+	static char *rxp;
+	
+	if (rxp == 0) {
+		for (cp = b;;) {
+			loop_until_bit_is_set(UCSR0A, RXC0);
+			if (UCSR0A & _BV(FE0))	return _FDEV_EOF;
+			if (UCSR0A & _BV(DOR0))	return _FDEV_ERR;
+			c = UDR0;
+			// behaviour similar to Unix stty ICRNL
+			if (c == '\r') c = '\n';
+			if (c == '\n') {
+				*cp = c;
+				fputc(c, stream);
+				rxp = b;
+				break;
+			}
+			else if (c == '\t') 	c = ' ';
+			
+			if ((c >= (uint8_t)' ' && c <= (uint8_t)'\x7e') || c >= (uint8_t)'\xa0') {
+				if (cp == b + RX_BUFSIZE - 1)
+					fputc('\a', stream);
+				else {
+					*cp++ = c;
+					fputc(c, stream);
+				}
+				continue;
+			}
+				
+			switch (c) {
+			  case 'c' & 0x1f:
+				return -1;
+				
+			  case '\b':
+			  case '\x7f':
+				if (cp > b) {
+					fputc('\b', stream);
+					fputc(' ', stream);
+					fputc('\b', stream);
+					cp--;
+				}
+				break;
+				
+			  case 'r' & 0x1f:
+				fputc('\r', stream);
+				for (cp2 = b; cp2 < cp; cp2++)
+					fputc(*cp2, stream);
+				break;
+				
+			  case 'u' & 0x1f:
+				while (cp > b) {
+					fputc('\b', stream);
+					fputc(' ', stream);
+					fputc('\b', stream);
+					cp--;
+				}
+				break;
+				
+			  case 'w' & 0x1f:
+				while (cp > b && cp[-1] != ' ') {
+					fputc('\b', stream);
+					fputc(' ', stream);
+					fputc('\b', stream);
+					cp--;
+				}
+				break;
+			}
+		}
+	}
+	c = *rxp++;
+	if (c == '\n')	rxp = 0;
+	return c;
 }
 
 static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
@@ -58,8 +146,6 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 	SREG = sreg;
 	return 0;
 }
-
-
 
 void usart1_init(void) {
 	power_usart_enable();
