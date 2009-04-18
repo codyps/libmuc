@@ -8,7 +8,7 @@
 
 /* Servo Interface. */
 
-void init_servos(void);
+void servo_init(void);
 uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 
 

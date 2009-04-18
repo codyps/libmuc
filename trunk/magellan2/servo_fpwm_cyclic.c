@@ -79,7 +79,7 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number) {
 	return 0;
 }
 
-void init_servos(void) {
+void servo_init(void) {
 	servo_pin_init();	
 	
 	// Do analysis on the servo_positions to place them when more than 5 are being used.
