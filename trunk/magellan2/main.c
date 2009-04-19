@@ -33,8 +33,8 @@ void init(void) {
 	sei();
 
 	DDRB |= (1<<6); // PB6 = status LED
-//	debug_led_on;
-//	debug_led_off;
+	debug_led_on;
+	debug_led_off;
 
 	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
 	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
@@ -93,13 +93,21 @@ int main(void) {
 		if ( i >= CLICKS_MS(2) || i <= CLICKS_MS(1))
 			dir=!dir;
 		*/
-		
-		servo_set(CLICKS_US(1000),0);
-		_delay_ms(1000);
-		servo_set(CLICKS_US(1500),0);
-		_delay_ms(1000);
-		servo_set(CLICKS_US(2000),0);
-		_delay_ms(1000);
+		puts("\nchecking for msgs");
+		if (usart_msg) {
+			uint16_t a1, a2;
+			--usart_msg;
+			printf("\nchecking input...");
+			int ret = scanf("%d %d",&a1, &a2);
+			if (ret>0) {
+				servo_set(a1,a2);
+				printf("\ns%d = %d",a2,a1); 
+			}
+			else {
+				puts("\n invalid input, ( servo value, servo number )");
+			}	
+		}
+		_delay_ms(5000);
 	}
 	return 0;
 }

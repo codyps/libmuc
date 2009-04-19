@@ -155,12 +155,12 @@ ISR(TIMER_S_OVF_vect) {
 		// set the OCR5A appropratly
 		SERVO_OCRA = servo[cycle].pos;
 		servo_cmpA_isr_on();
-		printf("\ns%d ^",cycle);
+	//	printf("\ns%d ^",cycle);
 	}
 	else {	// if (cycle == 4) {
 		SERVO_OCRA = 0xFFFF;
 		servo_cmpA_isr_off();
-		printf("\ns%d -",cycle);
+	//	printf("\ns%d -",cycle);
 	}
 }
 
@@ -168,7 +168,7 @@ ISR(TIMER_S_COMPA_vect) {
 	// Limit is .5 ms, 8000 clicks
 	// 80 ops.
 	SERVO_PIN_LOW(cycle);
-	printf("\ns%d v",cycle);
+	//printf("\ns%d v",cycle);
 }
 
 /*

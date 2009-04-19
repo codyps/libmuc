@@ -16,6 +16,7 @@
 #define UCSRB	U_I(UCSR,B)
  #define TXEN	U_A(TXEN)
  #define RXEN	U_A(RXEN)
+ #define RXCIE	U_A(RXCIE)
  #define UDRIE	U_A(UDRIE)
 #define UCSRC	U_I(UCSR,C)
  #define UCSZ0	U_I(UCSZ,0)
@@ -26,6 +27,6 @@
 
 // Interrupt vectors
 #define USART_UDRE_vect U_I(USART,_UDRE_vect)
-
+#define USART_RX_vect	U_I(USART,_RX_vect)
 // Functions
 #define power_usart_enable U_I(power_usart,_enable)

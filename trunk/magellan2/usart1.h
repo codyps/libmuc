@@ -12,4 +12,6 @@ USART
 
 void usart1_init(void);
 
+uint8_t usart_msg;
+
 #endif
