@@ -1,9 +1,0 @@
-avr-gcc -c -mmcu=atmega640 -I. -gstabs   -Os -Wall -Wstrict-prototypes -std=gnu99  -L/usr/x86_64-pc-linux-gnu/avr/lib  main.c -o main.o 
-avr-gcc -c -mmcu=atmega640 -I. -gstabs   -Os -Wall -Wstrict-prototypes -std=gnu99  -L/usr/x86_64-pc-linux-gnu/avr/lib  uart4.c -o uart4.o 
-avr-gcc -c -mmcu=atmega640 -I. -gstabs   -Os -Wall -Wstrict-prototypes -std=gnu99  -L/usr/x86_64-pc-linux-gnu/avr/lib  i2c.c -o i2c.o 
-avr-gcc -c -mmcu=atmega640 -I. -gstabs   -Os -Wall -Wstrict-prototypes -std=gnu99  -L/usr/x86_64-pc-linux-gnu/avr/lib  buffer.c -o buffer.o 
-avr-gcc -c -mmcu=atmega640 -I. -gstabs   -Os -Wall -Wstrict-prototypes -std=gnu99  -L/usr/x86_64-pc-linux-gnu/avr/lib  rprintf.c -o rprintf.o 
-avr-gcc -mmcu=atmega640 -I. -gstabs   -Os -Wall -Wstrict-prototypes -std=gnu99  -L/usr/x86_64-pc-linux-gnu/avr/lib  main.o uart4.o i2c.o buffer.o rprintf.o   --output magellan.elf     -lm
-avr-objcopy -O ihex -R .eeprom magellan.elf magellan.hex
-avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" \
-	--change-section-lma .eeprom=0 -O ihex magellan.elf magellan.eep
