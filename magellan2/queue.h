@@ -9,7 +9,7 @@
 
 #define QUEUE_BASE_T	uint8_t
 #define QUEUE_INDEX_T	uint8_t
-#define QUEUE_SZ	32
+#define QUEUE_SZ	64
 
 typedef volatile struct {
         QUEUE_BASE_T * buffer;	// buffer

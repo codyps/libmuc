@@ -4,6 +4,11 @@
 #define debug_led_off	PORTB |= (1<<6)
 #define debug_led_on	PORTB &= (uint8_t)~(1<<6)
 
+#define led_d(state)	if (state==0)		\
+				debug_led_off;	\
+			else			\
+				debug_led_on;	
+
 /* Debuging */
 #define DEBUG 1
 #define DEBUG_L(LEVEL) (DEBUG>=LEVEL)

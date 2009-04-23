@@ -15,25 +15,31 @@
 #include <util/delay.h>
 #include <util/twi.h>
 
+#include "util.h"
+
 #include "usart1.h"
+#include "servo.h"
 #include "i2c.h"
 #include "i2c_HMC6343.h"
 
 void init(void) {
 	power_all_disable();
+	
 	usart1_init();
 	twi_init();
 	hmc6343_init_static();
 	
+	servo_init();
+	sei();
+
 	DDRB |= (1<<6); // PB6 = status LED
-//	debug_led_on;
-//	debug_led_off;
+	debug_led_on;
+	debug_led_off;
 
 	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
 	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
 	
-	fprintf_P(io_init,PSTR("\n\n[main init done]\n\n"));	
-	sei();
+	printf_P(PSTR("\n\n[main init done]\n\n"));	
 }
 
 void print_bin(uint8_t inp, FILE * stream) {
@@ -44,26 +50,64 @@ void print_bin(uint8_t inp, FILE * stream) {
 
 ISR(BADISR_vect){
 	fprintf_P(io_isr,PSTR("\n[error] bad isr\n"));
+	/*
+	led_d(0);
+
+	for(int8_t i = 5; i>0; i--) {
+		_delay_ms(100);
+		led_d(1);
+		_delay_ms(100);
+		led_d(0);
+	}
+	*/
 }
 
 int main(void) { 	
 	init();
 	
-	i2c_start_xfer();
+	//i2c_start_xfer();
+/*	
+	uint16_t i = CLICKS_MS(1);
+	uint8_t dir = 0;
+	#define step (CLICKS_MS(1)/2)
+*/
 	for(;;) {			
+		/*
 		if (head_data_updated == true) {
 			head_data_updated = false;
 			fprintf_P(stdout,PSTR("\nhead:%u pitch:%d roll:%d\n"),\
 				head.head,head.pitch,head.roll);
-			_delay_ms(500);		
+			_delay_ms(50);
 			i2c_start_xfer();
 		}
-		debug_led_on;
-		fprintf_P(stderr,PSTR("\nTWCR = ")); 
-		print_bin(TWCR,stderr);		
-		debug_led_off;
 
-		_delay_ms(1000);
+		if (dir==0) {
+			i+=step;
+			printf("i+=%d ; i = %d\n",step,i);
+		}
+		else {
+			i-=step;
+			printf("i-=%d ; i = %d\n",step,i);
+		}
+
+		if ( i >= CLICKS_MS(2) || i <= CLICKS_MS(1))
+			dir=!dir;
+		*/
+		puts("\nchecking for msgs");
+		if (usart_msg) {
+			uint16_t a1, a2;
+			--usart_msg;
+			printf("\nchecking input...");
+			int ret = scanf("%d %d",&a1, &a2);
+			if (ret>0) {
+				servo_set(a1,a2);
+				printf("\ns%d = %d",a2,a1); 
+			}
+			else {
+				puts("\n invalid input, ( servo value, servo number )");
+			}	
+		}
+		_delay_ms(5000);
 	}
 	return 0;
 }

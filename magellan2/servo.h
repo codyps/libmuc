@@ -8,7 +8,7 @@
 
 /* Servo Interface. */
 
-void init_servos(void);
+void servo_init(void);
 uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 
 
@@ -16,9 +16,6 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 
 #define TIMER_PRESCALE_1 ( (0<<CS2) | (0<<CS1) | (1<<CS0) )
 #define TIMER_PRESCALE_8 ( (0<<CS2) | (1<<CS1) | (0<<CS0) )
-
-
-#define SERVO_AMOUNT 4
 
 #define TIMER5_COMP_REGS 3
 
@@ -40,6 +37,12 @@ uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
 
 
 #endif // _SERVO_H_
+
+/* 
+	aproximatly 2400 us and 1600 us give 90 degree angles (actualy slightly less)
+*/
+
+
 
 /* Math */
 
