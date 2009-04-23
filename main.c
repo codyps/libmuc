@@ -80,22 +80,22 @@ int main(void) {
 			i2c_start_xfer();
 		}
 		*/
-		//printf_P(PSTR("\n queue: len:%d sz:%d char:'%c'"),rx_q->ct,rx_q->sz,rx_q->buffer[rx_q->last]);
+		
 		if (usart_msg) {
-			uint16_t a1, a2;
+			uint16_t index, position;
 			--usart_msg;
 			puts_P(PSTR("\nchecking input..."));
-			int ret = scanf("%d %d\n",&a1, &a2);
+			int ret = scanf("s %u %u\n",&index, &position);
 			if (ret>0) {
-				if ( 0 < servo_set(a1,a2)) {
-					printf_P(PSTR("\ns%d = %d\n"),a2,a1); 
+				if ( 0 <= servo_set(index,position)) {
+					printf_P(PSTR("\ns%d = %d\n"),index,position); 
 				}
 				else {
-					printf_P(PSTR("\nerror, servo %d not set to %d\n"),a2,a1);
+					printf_P(PSTR("\nerror, servo %d not set to %d\n"),index,position);
 				}
 			}
 			else {
-				puts_P(PSTR("\n invalid input, ( servo value, servo number )"));
+				puts_P(PSTR("\n invalid input, ( index, position )"));
 			}	
 		}
 		
