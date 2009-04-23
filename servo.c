@@ -71,11 +71,12 @@ struct _servo servo[] = {
 
 
 /* externaly called functions */
-uint8_t servo_set(uint8_t servo_number, uint16_t servo_val) {
-	//if ( servo_val>CLICKS_US(2200) || servo_val<CLICKS_US(700) || servo_number>SERVO_AMOUNT) 
-	//	return -1;
-	servo[servo_number].pos = servo_val;
-	return 0;
+int8_t servo_set(uint8_t servo_number, uint16_t servo_val) {
+	if ( servo_val>CLICKS_US(1050) || servo_val<CLICKS_US(1950) || servo_number<SERVO_AMOUNT) {
+		servo[servo_number].pos = servo_val;
+		return 0;
+	}
+	return -1;
 }
 
 
@@ -158,8 +159,8 @@ ISR(TIMER_S_OVF_vect) {
 	//	printf("\ns%d ^",cycle);
 	}
 	else {	// if (cycle == 4) {
-		SERVO_OCRA = 0xFFFF;
-		servo_cmpA_isr_off();
+		servo_cmpA_isr_off();		
+		SERVO_OCRA = 0xFFFF;		
 	//	printf("\ns%d -",cycle);
 	}
 }
