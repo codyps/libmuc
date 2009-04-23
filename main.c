@@ -1,6 +1,6 @@
 /*
  * Axon (atmega640)
- 	general initialization and main loop 
+ 	general initialization and main loop
  */
 
 #include "defines.h"
@@ -26,11 +26,11 @@
 
 void init(void) {
 	power_all_disable();
-	
+
 	usart1_init();
 	twi_init();
 	hmc6343_init_static();
-	
+
 	servo_init();
 	sei();
 
@@ -40,8 +40,8 @@ void init(void) {
 
 	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
 	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
-	
-	printf_P(PSTR("\n\n[main init done]\n\n"));	
+
+	printf_P(PSTR("\n\n[main init done]\n\n"));
 }
 
 void print_bin(uint8_t inp, FILE * stream) {
@@ -64,13 +64,13 @@ ISR(BADISR_vect){
 	*/
 }
 
-int main(void) { 	
+int main(void) {
 	init();
-	
+
 	//i2c_start_xfer();
 //	queue_t * rx_q = _get_queue(1);
 
-	for(;;) {			
+	for(;;) {
 		/*
 		if (head_data_updated == true) {
 			head_data_updated = false;
@@ -80,15 +80,15 @@ int main(void) {
 			i2c_start_xfer();
 		}
 		*/
-		
+
 		if (usart_msg) {
 			uint16_t index, position;
 			--usart_msg;
 			puts_P(PSTR("\nchecking input..."));
 			int ret = scanf("s %u %u\n",&index, &position);
 			if (ret>0) {
-				if ( 0 <= servo_set(index,position)) {
-					printf_P(PSTR("\ns%d = %d\n"),index,position); 
+				if ( 0 == servo_set(index,CLICKS_US(position))) {
+					printf_P(PSTR("\ns%d = %d\n"),index,position);
 				}
 				else {
 					printf_P(PSTR("\nerror, servo %d not set to %d\n"),index,position);
@@ -96,9 +96,10 @@ int main(void) {
 			}
 			else {
 				puts_P(PSTR("\n invalid input, ( index, position )"));
-			}	
+				usart1_flush_rx();
+			}
 		}
-		
+
 		_delay_ms(5000);
 	}
 	return 0;
