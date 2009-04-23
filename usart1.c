@@ -120,8 +120,15 @@ ISR(USART_RX_vect) {
 	c = UDR;
 	debug_led_on;
 	if ( !q_full(&rx_q) ) {
+
+		// Characters that require response.
+		if ( c == '\?' )	{	// Deleate a char.
+			q_remove(&rx_q);
+		}
+
 		q_push(&rx_q,c);
 		fputc(c,&usart1_io_queue);
+
 		if ( c == '\r' || c == '\n' )
 			usart_msg++;
 	}

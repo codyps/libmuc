@@ -17,6 +17,28 @@ void q_init(queue_t *q, QUEUE_BASE_T * b, QUEUE_INDEX_T sz) {
 	q->sz		= sz;
 }
 
+void q_flush(queue_t *q) {
+	q->first = q->last;
+	q->ct = 0;
+
+}
+
+QUEUE_BASE_T q_remove(queue_t *q) {
+	
+
+	if (q_empty(q)) {
+		return '#';
+	}
+	else {
+		QUEUE_BASE_T old = q->buffer[q->last];
+		q->ct--;
+		q->last--;
+		if ( q->last > 0)
+			q->last = q->sz;
+		return old;
+	}
+}
+
 int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
 	if (q_full(q)){
@@ -57,7 +79,7 @@ QUEUE_BASE_T q_pop(queue_t *q)
 		fprintf(io_isr,"\n{warn: pop}");
 		#endif
 		x='#';
-	}
+		}
         else {
                 x = q->buffer[ q->first ];
 
