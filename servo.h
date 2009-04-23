@@ -9,7 +9,7 @@
 /* Servo Interface. */
 
 void servo_init(void);
-uint8_t servo_set(uint16_t servo_val, uint8_t servo_number);
+uint8_t servo_set(uint8_t servo_number, uint16_t servo_val,);
 
 
 /* Defines */

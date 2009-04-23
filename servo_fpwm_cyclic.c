@@ -71,7 +71,7 @@ struct _servo servo[] = {
 
 
 /* externaly called functions */
-uint8_t servo_set(uint16_t servo_val, uint8_t servo_number) {
+uint8_t servo_set(uint8_t servo_number, uint16_t servo_val) {
 	//if ( servo_val>CLICKS_US(2200) || servo_val<CLICKS_US(700) || servo_number>SERVO_AMOUNT) 
 	//	return -1;
 	servo[servo_number].pos = servo_val;
