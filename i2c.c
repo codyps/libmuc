@@ -31,7 +31,7 @@ int i2c_reset_xfer(void) {
 }
 
 void twi_init(void) {
-	fprintf_P(io_init,PSTR("\n[twi  init "));	
+	fprintf_P(io_init,PSTR("\n[twi  init "));
 	power_twi_enable();
 
 	// Enable Pullups
@@ -56,16 +56,16 @@ void twi_init(void) {
 	fprintf_P(io_init,PSTR("done]"));
 }
 
-// Debug output for the TWI ISR 
-#define twi_printf(...)	fprintf(io_isr,__VA_ARGS__);
-#define twi_printf_P(...) fprintf_P(io_isr,__VA_ARGS__);
+// Debug output for the TWI ISR
+#define twi_printf(...)	fprintf(stdout,__VA_ARGS__);
+#define twi_printf_P(...) fprintf_P(stdout,__VA_ARGS__);
 
 inline static void twi_inter_on(void) { TWCR|=(1<<TWIE); }
 inline static void twi_inter_off(void) { TWCR&=(uint8_t)~(1<<TWIE); }
 
 ISR(TWI_vect) {
 	uint8_t tw_status = TW_STATUS;
-	
+
 	// Don't block more critical ISRs
 	twi_inter_off();
 	sei();
@@ -89,13 +89,13 @@ ISR(TWI_vect) {
 	}
 	// MASTER TRANSMIT
 	else if (tw_status== TW_MT_SLA_ACK) {
-		// sla+w ack, 
+		// sla+w ack,
 		// start writing data
 		TWDR		= w_data_buf[0]; //[w_data_buf_pos]
 		w_data_buf_pos	= 1;
 		TWCR		= TWCR_BASE;
 	}
-	
+
 	else if (tw_status== TW_MT_DATA_ACK) {
 		// data acked
 		// send more data or rep_start to read.
@@ -113,7 +113,7 @@ ISR(TWI_vect) {
 			TWCR = TWCR_BASE;
 		}
 	}
-	
+
 	// MASTER READ
 	else if (tw_status == TW_MR_SLA_ACK) {
 		// sla+r ack
@@ -122,10 +122,10 @@ ISR(TWI_vect) {
 	}
 	else if (tw_status== TW_MR_DATA_ACK) {
 		// Data read, wait for next read with ack or nack
-		
+
 		r_data_buf[r_data_buf_pos] = TWDR;
 		r_data_buf_pos ++;
-		
+
 		if (r_data_buf_pos == (r_data_buf_len-1) ) {
 			// One more read to go, send nak
 			TWCR = TWCR_NACK;
@@ -145,12 +145,12 @@ ISR(TWI_vect) {
 		}
 	}
 	else if (tw_status == TW_MR_DATA_NACK) {
-		// Done transmitting, 
+		// Done transmitting,
 		// check packet length, call the cb
 		r_data_buf[r_data_buf_pos] = TWDR;
 		r_data_buf_pos ++;
 		if (r_data_buf_pos != r_data_buf_len) {
-		
+
 			//FIXME: not enough data read, handle?
 			#if DEBUG_L(1)
 			twi_printf_P(PSTR("\n[err] i2c: short"));
@@ -158,11 +158,11 @@ ISR(TWI_vect) {
 			r_data_buf_pos = 0;
 			w_data_buf_pos = 0;
 			TWCR = TWCR_START;
-		
+
 		}
 		else {
 			i2c_mode = I2C_IDLE;
-	
+
 			//call the callback
 			if (xfer_complete_cb != NULL)
 				TWCR = xfer_complete_cb();
@@ -188,9 +188,9 @@ ISR(TWI_vect) {
 		TWCR = TWCR_START;
 	}
 	else if (tw_status == TW_MR_SLA_NACK) {
-		// sla+r nack, 
+		// sla+r nack,
 		//???? (rep_start/try again a few times)
-		// reset entire transaction			
+		// reset entire transaction
 		w_data_buf_pos = 0;
 		r_data_buf_pos = 0;
 		i2c_mode = I2C_BUSY;
@@ -215,7 +215,7 @@ ISR(TWI_vect) {
 		w_data_buf_pos = 0;
 		r_data_buf_pos = 0;
 		i2c_mode = I2C_BUSY;
-		TWCR = TWCR_START;		
+		TWCR = TWCR_START;
 	}
 	else {
 		twi_printf_P(PSTR("\n[i2c] unknown tw_status %x"),tw_status);
