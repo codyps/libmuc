@@ -13,6 +13,9 @@ USART
 
 void usart1_init(void);
 
+void usart1_flush_rx( void );
+void usart1_flush_tx( void );
+
 #include "queue.h"
 queue_t * _get_queue(uint8_t);
 

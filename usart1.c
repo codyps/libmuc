@@ -37,6 +37,14 @@ queue_t * _get_queue(uint8_t i) {
 	else return NULL;
 }
 
+void usart1_flush_rx( void ) {
+    q_flush(&rx_q);
+}
+
+void usart1_flush_tx( void ) {
+    q_flush(&tx_q);
+}
+
 static int usart1_putchar_direct(char c, FILE *stream) {
 	if (c == '\n')
 		putc('\r', stream);
@@ -52,14 +60,14 @@ static int usart1_getchar_queue(FILE *stream) {
 		return _FDEV_EOF;
 }
 
-static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
+static int usart1_putchar_queue_ts3(char c, FILE *stream) {	if (c == '\n')
 		putc('\r', stream);
 
 	uint8_t sreg = SREG;
 	cli();
 	if ( q_full(&tx_q) ) {
 		usart_udre_inter_on();
-		while ( q_full(&tx_q) ) { 
+		while ( q_full(&tx_q) ) {
 			sei();
 			asm(
 				"nop" "\n\t"
@@ -70,7 +78,7 @@ static int usart1_putchar_queue_ts3(char c, FILE *stream) {		if (c == '\n')
 		q_push(&tx_q,c);
 		SREG = sreg;
 		return 0;
-	}	
+	}
 	q_push(&tx_q,c);
 	usart_udre_inter_on();
 	SREG = sreg;
@@ -91,14 +99,14 @@ void usart1_init(void) {
 	#endif
 	// Set frame format: 8data, 1stop bit
 	UCSRC = (1<<UCSZ0)|(1<<UCSZ1);
-	
+
 	// Enable receiver and transmitter
-	UCSRB = 0;	
+	UCSRB = 0;
 	UCSRB|= (1<<TXEN); // output from uc
 	UCSRB|= (1<<RXEN); // input to uc
 
 	UCSRB|= (1<<RXCIE); //enable rx isr
-	
+
 	io_queue = &usart1_io_queue;
 	io_direct = &usart1_io_direct;
 	stdout = io_queue;
@@ -108,7 +116,7 @@ void usart1_init(void) {
 	io_init = io_direct;
 }
 
-ISR(USART_UDRE_vect) {	
+ISR(USART_UDRE_vect) {
 	if (tx_q.ct>0) // !q_empty(&tx_q)
 		UDR = q_pop(&tx_q);
 	if (tx_q.ct<=0)// q_empty(&tx_q)
@@ -117,22 +125,33 @@ ISR(USART_UDRE_vect) {
 
 ISR(USART_RX_vect) {
 	char c;
+    char ucsra;
+    ucsra = UCSRA;
+
 	c = UDR;
-	debug_led_on;
-	if ( !q_full(&rx_q) ) {
+
+	if ( !q_full(&rx_q) && !( ucsra &(1<<FE1) || ucsra & (1<<DOR1) ) ) {
 
 		// Characters that require response.
-		if ( c == '\?' )	{	// Deleate a char.
+		if ( c == '\b' || c == 0x7f )	{	// Deleate a char.
 			q_remove(&rx_q);
+			fputc('\b',&usart1_io_queue);
+			fputc(' ',&usart1_io_queue);
 		}
 
-		q_push(&rx_q,c);
+        if ( c == '\r') c = '\n';
+
+		if ( c == '\n' ) {
+			usart_msg++;
+            // copy to some type of message buffer?
+		}
+
+        q_push(&rx_q,c);
 		fputc(c,&usart1_io_queue);
 
-		if ( c == '\r' || c == '\n' )
-			usart_msg++;
 	}
 	else {
+	    // Return 'alarm' characters when the queue is full.
 		fputc('\a', &usart1_io_queue);
 	}
 }
@@ -145,7 +164,7 @@ static int usart1_getchar_direct(FILE *stream) {
 	char *cp, *cp2;
 	static char b[RX_BUFSIZE];
 	static char *rxp;
-	
+
 	if (rxp == 0) {
 		for (cp = b;;) {
 			loop_until_bit_is_set(UCSRA, RXC);
@@ -161,7 +180,7 @@ static int usart1_getchar_direct(FILE *stream) {
 				break;
 			}
 			else if (c == '\t') 	c = ' ';
-			
+
 			if ((c >= (uint8_t)' ' && c <= (uint8_t)'\x7e') || c >= (uint8_t)'\xa0') {
 				if (cp == b + RX_BUFSIZE - 1)
 					fputc('\a', stream);
@@ -171,11 +190,11 @@ static int usart1_getchar_direct(FILE *stream) {
 				}
 				continue;
 			}
-				
+
 			switch (c) {
 			  case 'c' & 0x1f:
 				return -1;
-				
+
 			  case '\b':
 			  case '\x7f':
 				if (cp > b) {
@@ -185,13 +204,13 @@ static int usart1_getchar_direct(FILE *stream) {
 					cp--;
 				}
 				break;
-				
+
 			  case 'r' & 0x1f:
 				fputc('\r', stream);
 				for (cp2 = b; cp2 < cp; cp2++)
 					fputc(*cp2, stream);
 				break;
-				
+
 			  case 'u' & 0x1f:
 				while (cp > b) {
 					fputc('\b', stream);
@@ -200,7 +219,7 @@ static int usart1_getchar_direct(FILE *stream) {
 					cp--;
 				}
 				break;
-				
+
 			  case 'w' & 0x1f:
 				while (cp > b && cp[-1] != ' ') {
 					fputc('\b', stream);
