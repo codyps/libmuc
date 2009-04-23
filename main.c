@@ -22,6 +22,8 @@
 #include "i2c.h"
 #include "i2c_HMC6343.h"
 
+#include "queue.h"
+
 void init(void) {
 	power_all_disable();
 	
@@ -66,11 +68,8 @@ int main(void) {
 	init();
 	
 	//i2c_start_xfer();
-/*	
-	uint16_t i = CLICKS_MS(1);
-	uint8_t dir = 0;
-	#define step (CLICKS_MS(1)/2)
-*/
+//	queue_t * rx_q = _get_queue(1);
+
 	for(;;) {			
 		/*
 		if (head_data_updated == true) {
@@ -80,33 +79,26 @@ int main(void) {
 			_delay_ms(50);
 			i2c_start_xfer();
 		}
-
-		if (dir==0) {
-			i+=step;
-			printf("i+=%d ; i = %d\n",step,i);
-		}
-		else {
-			i-=step;
-			printf("i-=%d ; i = %d\n",step,i);
-		}
-
-		if ( i >= CLICKS_MS(2) || i <= CLICKS_MS(1))
-			dir=!dir;
 		*/
-		puts("\nchecking for msgs");
+		//printf_P(PSTR("\n queue: len:%d sz:%d char:'%c'"),rx_q->ct,rx_q->sz,rx_q->buffer[rx_q->last]);
 		if (usart_msg) {
 			uint16_t a1, a2;
 			--usart_msg;
-			printf("\nchecking input...");
-			int ret = scanf("%d %d",&a1, &a2);
+			puts_P(PSTR("\nchecking input..."));
+			int ret = scanf("%d %d\n",&a1, &a2);
 			if (ret>0) {
-				servo_set(a1,a2);
-				printf("\ns%d = %d",a2,a1); 
+				if ( 0 < servo_set(a1,a2)) {
+					printf_P(PSTR("\ns%d = %d\n"),a2,a1); 
+				}
+				else {
+					printf_P(PSTR("\nerror, servo %d not set to %d\n"),a2,a1);
+				}
 			}
 			else {
-				puts("\n invalid input, ( servo value, servo number )");
+				puts_P(PSTR("\n invalid input, ( servo value, servo number )"));
 			}	
 		}
+		
 		_delay_ms(5000);
 	}
 	return 0;

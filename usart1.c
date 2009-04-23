@@ -29,6 +29,14 @@ static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, usart1_g
 inline static void usart_udre_inter_on(void)  { UCSRB |= (uint8_t) (1<<UDRIE); }
 inline static void usart_udre_inter_off(void) { UCSRB &= (uint8_t)~(1<<UDRIE); }
 
+queue_t * _get_queue(uint8_t i) {
+	if (i == 0)
+		return &tx_q;
+	else if (i == 1)
+		return &rx_q;
+	else return NULL;
+}
+
 static int usart1_putchar_direct(char c, FILE *stream) {
 	if (c == '\n')
 		putc('\r', stream);
@@ -109,12 +117,12 @@ ISR(USART_UDRE_vect) {
 
 ISR(USART_RX_vect) {
 	char c;
-
 	c = UDR;
+	debug_led_on;
 	if ( !q_full(&rx_q) ) {
 		q_push(&rx_q,c);
 		fputc(c,&usart1_io_queue);
-		if (c == '\n')
+		if ( c == '\r' || c == '\n' )
 			usart_msg++;
 	}
 	else {
