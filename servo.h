@@ -1,5 +1,5 @@
-/* 
-	Servo Control Definitions 
+/*
+	Servo Control Definitions
 */
 #ifndef _SERVO_H_
 #define _SERVO_H_
@@ -10,7 +10,7 @@
 
 void servo_init(void);
 int8_t servo_set(uint8_t servo_number, uint16_t servo_val);
-
+#define servo_set_us(index,us) servo_set(index,CLICKS_US(us))
 
 /* Defines */
 
@@ -24,21 +24,24 @@ int8_t servo_set(uint8_t servo_number, uint16_t servo_val);
 #define SERVO_T	  1
 #define SERVO_IRL 2
 #define SERVO_IRR 3
+#define SERV_DUMMY 4
 
-#define SERVO_P_INDEX   4
-#define SERVO_T_INDEX	5
-#define SERVO_IRL_INDEX 6
-#define SERVO_IRR_INDEX 7
+#define SERVO_P_INDEX   3
+#define SERVO_T_INDEX	4
+#define SERVO_IRL_INDEX 5
+#define SERVO_IRR_INDEX 6
+#define SERVO_DUMMY_INDEX 7
 
 #define SERVO_P_PORT   PORTA
 #define SERVO_T_PORT   PORTA
 #define SERVO_IRL_PORT PORTA
 #define SERVO_IRR_PORT PORTA
+#define SERVO_DUMMY_PORT PORTA
 
 
 #endif // _SERVO_H_
 
-/* 
+/*
 	aproximatly 2400 us and 1600 us give 90 degree angles (actualy slightly less)
 */
 
@@ -49,7 +52,7 @@ int8_t servo_set(uint8_t servo_number, uint16_t servo_val);
 // clicks = F_CPU / hz
 // millis|seconds|	hz			|  clicks@16e6Hz
 // 20	= 2e-2  => 50			=> 320000
-// 18	= 18e-3	=> 
+// 18	= 18e-3	=>
 // 0.5	= 5e-4	=> 2000			=> 8000
 // 1	= 1e-3  => 1000			=> 16000
 // 1.5	= 15e-4	=> 666 + 2/3	=> 24000
@@ -97,6 +100,6 @@ X	L3 = OC5A
 
  B7 = OC0A/OC1C
  G5 = OC0B
- B4 = OC2A	
+ B4 = OC2A
  H6 = OC2B
 */

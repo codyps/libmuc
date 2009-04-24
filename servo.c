@@ -13,12 +13,12 @@
 	cycle		0     1     2     3     4     5     6     7     0     1     2
 			|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|
 			| 	      20ms				| 20ms  ...
-	output  	|_                         			 _     
+	output  	|_                         			 _
 		P	| |_____________________________________________| |__________
 			|      _                      			|      _
 		T	|_____| |_____________________________________________| |____
-			|            _                			|            
-		IRL	|___________| |______________________________________________ 
+			|            _                			|
+		IRL	|___________| |______________________________________________
 			|                  _          			|
 		IRR	|_________________| |________________________________________
 			|
@@ -56,7 +56,7 @@
 struct _servo {
 	volatile uint16_t pos; // position
 	volatile uint8_t * port;
-	uint8_t  mask; 
+	uint8_t  mask;
 } ;
 
 #define SERVO_AMOUNT (sizeof(servo)/sizeof(struct _servo))
@@ -67,6 +67,7 @@ struct _servo servo[] = {
 	SERVO_INIT(SERVO_T_PORT, SERVO_T_INDEX),
 	SERVO_INIT(SERVO_IRL_PORT, SERVO_IRL_INDEX),
 	SERVO_INIT(SERVO_IRR_PORT, SERVO_IRR_INDEX),
+	SERVO_INIT(SERVO_DUMMY_PORT, SERVO_DUMMY_INDEX)
 };
 
 
@@ -84,7 +85,7 @@ void servo_timer_init(void);
 void servo_pin_init(void);
 
 void servo_init(void) {
-	servo_pin_init();	
+	servo_pin_init();
 	servo_timer_init();
 }
 
@@ -94,13 +95,13 @@ void servo_init(void) {
 // Need to replace with logic statments, and those need to be automagicaly generated
 #define SERVO_PIN_LOW(_servo_)	\
 		( *servo[_servo_].port &= (uint8_t) ~(servo[_servo_].mask) )
-		
+
 #define SERVO_PIN_HIGH(_servo_) \
 		( *servo[_servo_].port |= (uint8_t)  (servo[_servo_].mask) )
 
 
 void servo_pin_init(void) {
-		
+
 	// set the pins as outputs, low
 	// (port-1)=ddr, (port-2)=pin
 	for (uint8_t i = 0 ; i < SERVO_AMOUNT; i++) {
@@ -112,38 +113,41 @@ void servo_pin_init(void) {
 static uint8_t cycle; //= 0;
 
 void servo_timer_init(void) {
-	power_timer_S_enable();	
+	power_timer_S_enable();
 
 	// Fast PWM, ICR5 = TOP
 	//WGM[3,2,1,0] = 1,1,1,0
 	SERVO_TCCRB = (1<<WGM3)|(1<<WGM2); //(disables timer, CS[2,1,0] = 0		)
 	SERVO_TCCRA = (1<<WGM1)|(0<<WGM0); //(disables outputs, COM[A,B,C][1,0] = 0	)
-	
+
 	//SERVO_TIMSK = (1<<OCIEA)|(1<<OCIEB)|(1<<OCIEC)|(1<<TOIE);
 	SERVO_TIMSK = (1<<OCIEA)|(1<<TOIE);
+
+	cycle = 0;
+
 	// write the 16 bit registers.
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		SERVO_ICR = CLICKS_US(TIMER_PERIOD_US);	
+		SERVO_ICR = CLICKS_US(TIMER_PERIOD_US);
 		SERVO_TCNT = 0;
-	
+
 		// set the first cycle's position (we don't get the isr)
-		SERVO_OCRA = servo[cycle].pos;
+		SERVO_OCRA = servo[0].pos;
 	};
-	
+
 	// Presccale & Start.
 	SERVO_TCCRB|= TIMER_PRESCALE_1;
 
 	// We don't get the first OVF isr (when cycle == 0), so pull it high now.
-	SERVO_PIN_HIGH(cycle);
+	SERVO_PIN_HIGH(0);
 }
 
 
 inline void servo_cmpA_isr_off(void) { SERVO_TIMSK &= (uint8_t) ~(1<<OCIEA); }
 inline void servo_cmpA_isr_on(void) { SERVO_TIMSK |= (uint8_t) (1<<OCIEA); }
 
-// Needs to spend less than 1ms, F_CPU/1000 clicks. (16e3@16e6Hz)
+// Needs to spend less than 600us, F_CPU/1000/10*6 clicks. (16e3@16e6Hz)
 ISR(TIMER_S_OVF_vect) {
-	
+
 	cycle++;
 
 	if ( cycle >= (TIMER_CYCLES) ) {
@@ -158,15 +162,15 @@ ISR(TIMER_S_OVF_vect) {
 		servo_cmpA_isr_on();
 	//	printf("\ns%d ^",cycle);
 	}
-	else {	// if (cycle == 4) {
-		servo_cmpA_isr_off();		
-		SERVO_OCRA = 0xFFFF;		
+	else {
+		servo_cmpA_isr_off();
+		SERVO_OCRA = 0xFFFF;
 	//	printf("\ns%d -",cycle);
 	}
 }
 
-ISR(TIMER_S_COMPA_vect) { 
-	// Limit is .5 ms, 8000 clicks
+ISR(TIMER_S_COMPA_vect) {
+	// Limit is 100 us, 1600 clicks
 	// 80 ops.
 	SERVO_PIN_LOW(cycle);
 	//printf("\ns%d v",cycle);
@@ -174,10 +178,10 @@ ISR(TIMER_S_COMPA_vect) {
 
 /*
 ISR(TIMER_S_COMPB_vect) {
-	
+
 }
 
 ISR(TIMER_S_COMPC_vect) {
-	
+
 }
 */
