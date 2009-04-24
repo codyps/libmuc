@@ -84,23 +84,31 @@ int main(void) {
 		if (usart_msg) {
 			uint16_t index, position;
 			--usart_msg;
-			puts_P(PSTR("\nchecking input..."));
+
+            /*
+			int c;
+			do{
+                // get characters untill we approach an 'attention' code
+                c = fgetc(stdin);
+			} while (c != '#');
+            */
+
 			int ret = scanf("s %u %u\n",&index, &position);
 			if (ret>0) {
 				if ( 0 == servo_set(index,CLICKS_US(position))) {
-					printf_P(PSTR("\ns%d = %d\n"),index,position);
+					printf_P(PSTR("ACK s %d %d\n"),index,position);
 				}
 				else {
-					printf_P(PSTR("\nerror, servo %d not set to %d\n"),index,position);
+					printf_P(PSTR("[input] servo error: servo %d != %d\n"),index,position);
 				}
 			}
 			else {
-				puts_P(PSTR("\n invalid input, ( index, position )"));
+				puts_P(PSTR("[input] invalid: \"s index position\"\n"));
 				usart1_flush_rx();
 			}
 		}
 
-		_delay_ms(5000);
+		_delay_ms(1000);
 	}
 	return 0;
 }
