@@ -19,8 +19,11 @@
 
 #include "usart1.h"
 #include "servo.h"
+
+#ifdef USE_I2C
 #include "i2c.h"
 #include "ex/i2c_HMC6343.h"
+#endif
 
 #include "queue.h"
 

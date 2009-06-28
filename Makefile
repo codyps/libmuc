@@ -5,12 +5,15 @@
 # (GNU make, BSD make, SysV make)
 
 
-MCU = atmega640
-ADMCU = atmega640
+MCU = attiny861
+ADMCU = attiny861
 FORMAT = ihex
-TARGET = magellan2
-SRC = main.c usart1.c queue.c i2c.c ex/i2c_HMC6343.c servo.c util.c
-#SRC = main.c usart1_err.c queue.c i2c.c i2c_HMC6343.c
+TARGET = main
+SRC = main.c queue.c util.c
+#SRC += i2c.c ex/i2c_HMC6343.c
+#SRC += servo.c
+#SRC += usart1.c
+
 ASRC = 
 OPT = s
 
