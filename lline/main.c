@@ -1,5 +1,5 @@
 /*
- * Axon (atmega640)
+ * ATtiny861
  	general initialization and main loop
  */
 
@@ -13,36 +13,13 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <util/twi.h>
-
-#include "util.h"
-
-#include "usart1.h"
-#include "servo.h"
-
-#ifdef USE_I2C
-#include "i2c.h"
-#include "ex/i2c_HMC6343.h"
-#endif
 
 #include "queue.h"
 
 void init(void) {
 	power_all_disable();
 
-	usart1_init();
-	twi_init();
-	hmc6343_init_static();
-
-	servo_init();
 	sei();
-
-	DDRB |= (1<<6); // PB6 = status LED
-	debug_led_on;
-	debug_led_off;
-
-	DDRG &= ~(uint8_t)(1<<5); //PG5 = button
-	PORTG|= (1<<5);	// Needs pullups. Low when pressed.
 
 	printf_P(PSTR("\n\n[main init done]\n\n"));
 }

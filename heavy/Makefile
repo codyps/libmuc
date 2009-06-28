@@ -5,14 +5,15 @@
 # (GNU make, BSD make, SysV make)
 
 
-MCU = attiny861
-ADMCU = attiny861
+MCU = atmega640
+ADMCU = atmega640
 FORMAT = ihex
 TARGET = main
-SRC = main.c queue.c util.c
-#SRC += i2c.c ex/i2c_HMC6343.c
-#SRC += servo.c
-#SRC += usart1.c
+SRC = main.c  util.c
+SRC += usart1.c
+SRC += ../common/i2c.c ../common/ex/i2c_HMC6343.c
+SRC += ../common/servo.c
+SRC += ../common/queue.c
 
 ASRC = 
 OPT = s
@@ -36,8 +37,8 @@ CSTANDARD = -std=gnu99
 CDEFS =
 
 # Place -I options here
-CINCS =
-CLINK = -L/usr/x86_64-pc-linux-gnu/avr/lib 
+CINCS = -I../common -I../
+CLINK =
 
 CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes

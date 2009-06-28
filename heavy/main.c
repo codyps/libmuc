@@ -4,6 +4,7 @@
  */
 
 #include "defines.h"
+#include "common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,11 +48,6 @@ void init(void) {
 	printf_P(PSTR("\n\n[main init done]\n\n"));
 }
 
-void print_bin(uint8_t inp, FILE * stream) {
-	for(int8_t j=7; j>=0; --j) {
-	   	fputc(((inp&(1<<j))>>j)+'0',stream);
-	}
-}
 
 ISR(BADISR_vect){
 	fprintf_P(io_isr,PSTR("\n[error] bad isr\n"));
