@@ -20,7 +20,7 @@
 #include "usart1.h"
 #include "servo.h"
 #include "i2c.h"
-#include "i2c_HMC6343.h"
+#include "ex/i2c_HMC6343.h"
 
 #include "queue.h"
 
