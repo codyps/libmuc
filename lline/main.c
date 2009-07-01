@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <avr/io.h>
 #include <avr/power.h>
@@ -15,26 +16,28 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "spi_slave.h"
+#include "spi_io.h"
 
 void init(void) {
 	power_all_disable();
 
-	spi_slave_init();
+     clock_prescale_set(clock_div_1);
+
+	spi_io_init();
 
 	sei();
 
-	printf_P(PSTR("\n\n[main init done]\n\n"));
 }
 
 ISR(BADISR_vect){
-	fprintf_P(io_isr,PSTR("\n[error] bad isr\n"));
+     
 }
 
 int main(void) {
 	init();
-
-	for(;;) {
+     
+    	for(;;) {
+          spi_puts("HELLO WORLD\n");
 		_delay_ms(1000);
 	}
 	return 0;

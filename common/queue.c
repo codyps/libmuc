@@ -1,5 +1,5 @@
 /* queue.c
-	functions for FIFO implimentation.
+	functions for static FIFO implimentation.
 */
 #include "debug.h"
 
@@ -24,8 +24,7 @@ void q_flush(queue_t *q) {
 }
 
 QUEUE_BASE_T q_remove(queue_t *q) {
-	
-
+// take the last thing that was put on
 	if (q_empty(q)) {
 		return '#';
 	}
@@ -42,26 +41,30 @@ QUEUE_BASE_T q_remove(queue_t *q) {
 int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
 	if (q_full(q)){
-	#if DEBUG_L(4)
-	fprintf(io_isr,"\n{warn: push (%d)}",x);
-	#endif
-	return -1;
+	     #if (DEBUG_L(4) && defined(io_isr))
+	     fprintf(io_isr,"\n{warn: push (%d)}",x);
+	     #endif
+		#ifdef Q_OVERWRITE
+          q->buffer[ q->last ] = x;
+          q->last++;
+          if ( q->last >= q->sz )
+               q->last = 0;
+         	#endif
+	     return -1;
 	}
 	else {
-			q->buffer[ q->last ] = x;
+		q->buffer[ q->last ] = x;
+		q->last++;
+		if ( q->last >= q->sz )
+			q->last = 0;
 
-			//q->last = (q->last+1) % (q->sz);
-			q->last++;
-			if ( q->last >= q->sz )
-				q->last = 0;
+		++(q->ct);
 
-			++(q->ct);
+          return 0;
 	}
-	return 0;
 }
 
-int8_t q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz)
-{
+int8_t q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz) {
 	QUEUE_INDEX_T i;
 	for(i=0;i<sz;++i) {
 		int8_t ret = q_push(q,x[i]);
@@ -70,29 +73,43 @@ int8_t q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz)
 	return 0;
 }
 
-QUEUE_BASE_T q_pop(queue_t *q)
-{
-        QUEUE_BASE_T x;
+QUEUE_BASE_T q_pop(queue_t *q) {
+	QUEUE_BASE_T x;
 
-        if (q_empty(q)) {
-		#if DEBUG_L(3)
+	if (q_empty(q)) {
+		#if (DEBUG_L(4) && defined(io_isr))
 		fprintf(io_isr,"\n{warn: pop}");
 		#endif
 		x='#';
-		}
-        else {
-                x = q->buffer[ q->first ];
-
-                //q->first = (q->first+1) % (q->sz);
+          }
+	else {
+		x = q->buffer[ q->first ];
 		q->first++;
 		if ( q->first >= q->sz )
 			q->first = 0;
 
 		--(q->ct);
-        }
-
-        return x;
+	}
+	return x;
 }
+
+int q_pop_e(queue_t *q) {
+	int x;
+
+	if (q_empty(q)) {
+		return EOF;
+     }
+	else {
+		x = q->buffer[ q->first ];
+		q->first++;
+		if ( q->first >= q->sz )
+			q->first = 0;
+
+		--(q->ct);
+	}
+	return x;
+}
+
 
 void q_apop(queue_t *q, QUEUE_BASE_T * buffer, QUEUE_INDEX_T sz) {
 	QUEUE_INDEX_T i;
