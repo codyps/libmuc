@@ -3,8 +3,15 @@
 
 #include "clock.h"
 
+inline uint8_t mod( uint8_t i1, uint8_t i2) {// i1%i2
+     while( i1 >= i2 ) {
+          i1 -= i2;
+     }
+     return i1;
+}
+
 inline void memset_16(uint16_t * dest, uint16_t val, uint8_t len) {
-        do { 
+     do { 
 		len--;
 		dest[len] = val;
 	} while (len!=0);
@@ -16,4 +23,37 @@ inline void print_bin(uint8_t inp, FILE * stream) {
 	}
 }
 
+
+/* wip data structures
+
+typedef union uint24 {
+	struct {
+		uint16_t msb16;
+		uint8_t  lsb8;
+	}
+	struct {
+		uint8_t msb8;
+		uint16_t lsb16;
+	}
+	struct {
+		uint8_t a,b,c;
+	}
+	uint8_t n[3];
+} uint24_t;
+
+
+typedef struct motor_st {
+	volatile uint8_t * pwm_reg;
+	volatile uint8_t * pwm_port;
+	//volatile uint8_t * pwm_ddr; //pwm_port+1
+	//volatile uint8_t * pwm_pin; //pwm_port+2
+	uint8_t pwm_index;
+
+	uint8_t in1_index;
+	volatile uint8_t * in1_port;
+
+	uint8_t in2_index;
+	volatile uint8_t * in2_port;
+} motor_t;
+*/
 #endif
