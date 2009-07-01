@@ -9,7 +9,8 @@ MCU = attiny861
 ADMCU = attiny861
 FORMAT = ihex
 TARGET = main
-SRC = main.c ../common/queue.c
+SRC  = main.c
+SRC += ../common/spi_slave_usi.c
 
 ASRC = 
 OPT = s

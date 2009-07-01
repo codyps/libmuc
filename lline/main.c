@@ -15,8 +15,12 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include "spi_slave.h"
+
 void init(void) {
 	power_all_disable();
+
+	spi_slave_init();
 
 	sei();
 
