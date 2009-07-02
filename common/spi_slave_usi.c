@@ -22,6 +22,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/power.h>
 
 #include "spi_slave.h"
 
@@ -75,6 +76,7 @@ ISR(SIG_USI_OVERFLOW)
 void
 spi_slave_init(void)
 {
+  power_usi_enable();
   // Enable three wire mode, external positive edge clock,
   // Interrupt on counter overflow
   DDRB&=~(1<<0)|(1<<2); // inputs

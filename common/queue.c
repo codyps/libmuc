@@ -11,10 +11,10 @@
 
 void q_init(queue_t *q, QUEUE_BASE_T * b, QUEUE_INDEX_T sz) {
 	q->first	= 0;
-	q->last		= 0;
-	q->ct		= 0;
+	q->last	= 0;
+	q->ct	= 0;
 	q->buffer	= b;
-	q->sz		= sz;
+	q->sz	= sz;
 }
 
 void q_flush(queue_t *q) {
@@ -81,7 +81,7 @@ QUEUE_BASE_T q_pop(queue_t *q) {
 		fprintf(io_isr,"\n{warn: pop}");
 		#endif
 		x='#';
-          }
+	}
 	else {
 		x = q->buffer[ q->first ];
 		q->first++;
@@ -109,7 +109,6 @@ int q_pop_e(queue_t *q) {
 	}
 	return x;
 }
-
 
 void q_apop(queue_t *q, QUEUE_BASE_T * buffer, QUEUE_INDEX_T sz) {
 	QUEUE_INDEX_T i;

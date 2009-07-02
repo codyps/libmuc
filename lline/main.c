@@ -4,17 +4,18 @@
  */
 
 #include "defines.h"
-#include "common.h"
+//#include "common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+//#include <string.h>
 
 #include <avr/io.h>
 #include <avr/power.h>
-#include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+
+//#include <avr/pgmspace.h>
 
 #include "spi_io.h"
 
@@ -37,7 +38,7 @@ int main(void) {
 	init();
      
     	for(;;) {
-          spi_puts("HELLO WORLD\n");
+          spi_puts("HELLO\n");
 		_delay_ms(1000);
 	}
 	return 0;

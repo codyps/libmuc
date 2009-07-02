@@ -29,11 +29,9 @@ CLK-> 2
 #define PORT(x) _PORT(x)
 #define _PORT(x) PORT##x
 
-uint8_t tx_b[32];
-uint8_t rx_b[16];
+uint8_t tx_b[24],	rx_b[8];
+queue_t tx,		rx;
 
-queue_t tx;
-queue_t rx;
 
 void spi_io_init(void) {
      power_usi_enable();
@@ -67,22 +65,24 @@ void spi_io_init(void) {
 ISR( SIG_USI_OVERFLOW ) {
      USISR = (1<<USIOIF); // Clear interupt flag and counter.
 
-     //tx
-     if (!q_empty(&tx)) {
-		USIDR = q_pop(&tx);
-	}
-	else USIDR = 0;
-
      //rx
      if (USIBR != 0 && !q_full(&rx)) {
           q_push(&rx,USIBR);
      }
+
+	//tx
+     if (!q_empty(&tx)) {
+		USIDR = q_pop(&tx);
+	}
+	else USIDR = 0;
 }
 
 int spi_putc(int c, FILE * stream) {
 	//while(q_full(&tx_q));	// delay if queue full
-
-	if (q_push(&tx,(uint8_t)c)==0)
+	cli();
+	uint8_t r = q_push(&tx,(uint8_t)c);
+	sei();
+	if (r==0)	
 		return c;
 	else
 		return EOF;
@@ -90,16 +90,25 @@ int spi_putc(int c, FILE * stream) {
 
 int spi_getc(FILE * stream) {
 	//while(q_empty(&rx_q));
-
-	return q_pop_e(&rx);
+	sei();
+	uint8_t r = q_pop_e(&rx);
+	cli();
+	return r; 
 
 }
 
 void spi_puts(char * string) {
+	cli();
 	while(*string) {
-		while(q_full(&tx));
-		q_push(&tx,*string);		
+		while(q_full(&tx)) {
+			sei();
+			asm("nop");	
+			asm("nop");
+			cli();
+		}
+		q_push(&tx,*string);
 		string++;
 	}
+	sei();
 }
 
