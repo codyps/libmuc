@@ -80,7 +80,7 @@ QUEUE_BASE_T q_pop(queue_t *q) {
 		#if (DEBUG_L(4) && defined(io_isr))
 		fprintf(io_isr,"\n{warn: pop}");
 		#endif
-		x='#';
+		x=0x00;
 	}
 	else {
 		x = q->buffer[ q->first ];
@@ -93,22 +93,6 @@ QUEUE_BASE_T q_pop(queue_t *q) {
 	return x;
 }
 
-int q_pop_e(queue_t *q) {
-	int x;
-
-	if (q_empty(q)) {
-		return EOF;
-     }
-	else {
-		x = q->buffer[ q->first ];
-		q->first++;
-		if ( q->first >= q->sz )
-			q->first = 0;
-
-		--(q->ct);
-	}
-	return x;
-}
 
 void q_apop(queue_t *q, QUEUE_BASE_T * buffer, QUEUE_INDEX_T sz) {
 	QUEUE_INDEX_T i;
