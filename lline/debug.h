@@ -1,13 +1,28 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
-#define debug_led_off	PORTB |= (1<<6)
-#define debug_led_on	PORTB &= (uint8_t)~(1<<6)
+#include "common.h"
+#include <stdint.h>
+#include <util/delay.h>
+#include <avr/io.h>
 
-#define led_d(state)	if (state==0)		\
-				debug_led_off;	\
-			else			\
-				debug_led_on;	
+#define DEBUG_LED_P	A
+#define DEBUG_LED_I 4
+
+#define DEBUG_LED_PIN  PIN(DEBUG_LED_P)
+#define DEBUG_LED_DDR  DDR(DEBUG_LED_P)
+#define DEBUG_LED_PORT PORT(DEBUG_LED_P)
+
+#define debug_led_off()	DEBUG_LED_PORT |= (1<<DEBUG_LED_I)
+#define debug_led_on()	DEBUG_LED_PORT &= (uint8_t)~(1<<DEBUG_LED_I)
+#define debug_led_flip() DEBUG_LED_PIN  |= (1<<DEBUG_LED_I)
+#define debug_led_init() DEBUG_LED_DDR  |= (1<<DEBUG_LED_I)
+
+#define led_d(state)				\
+			if (state==0)			\
+				debug_led_off();	\
+			else					\
+				debug_led_on()
 
 /* Debuging */
 #define DEBUG 1

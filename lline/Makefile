@@ -7,7 +7,7 @@
 
 MCU = attiny861
 ADMCU = attiny861
-FCPU = 1000000
+FCPU = 8000000
 FORMAT = ihex
 TARGET = main
 SRC  = main.c

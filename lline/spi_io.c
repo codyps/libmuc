@@ -38,12 +38,16 @@ queue_t tx,		rx;
 void spi_io_init(void) {
      power_usi_enable();
 
-     //USISR = 0b11100000; // Clear all flags and counter (not needed if only called once)
+	// Clr the flags we interupt on + counter bits in same reg
+     USISR = (1<<USIOIF);
+
+	// Clr datareg to avoid junk data being sent out.
+	USIDR = 0;
 
 	#if (USI_PORT==A)
      USIPP |= (1<<USIPOS); // Use port A instead of B
 	#else
-     //USIPP &= (uint8_t)~(1<<USIPOS); // Use port A instead of B     	
+     USIPP &= (uint8_t)~(1<<USIPOS); // Use port A instead of B     	
      #endif
 
 	DDR(USI_PORT) |= (1<<I_DO);
@@ -51,11 +55,11 @@ void spi_io_init(void) {
 	PORT(USI_PORT) &= (uint8_t)~((1<<I_DI)|(1<<I_CLK));
 
 
-     USICR = (0<<USISIE) |			// Start interupt (2w only)
+     USICR = (0<<USISIE) |			// Start IE(2w), CLK edge IE(3w)
           (1<<USIOIE) |				// Ovf interupt (to refil register)
-          (1<<USIWM1) | (0<<USIWM0) |	// 10 = 3w, 00 = disable, 01&11 = 2w
+          (0<<USIWM1) | (1<<USIWM0) |	// 01 = 3w, 00 = disable, 10&11 = 2w
           (1<<USICS1) | (SPI_EDGE<<USICS0) | // 10 = positive edge, 11 = neg.
-          (1<<USICLK) |				// 4bit timer : 1 = external, 0 = sw
+          (0<<USICLK) |				// 4bit timer : 0 = external, 1 = sw
           (0<<USITC );				// Clock toggle
 
      
@@ -65,10 +69,10 @@ void spi_io_init(void) {
 
 ISR( SIG_USI_OVERFLOW ) {
      USISR = (1<<USIOIF); // Clear interupt flag and counter.
-
+	
      //rx
-     if (USIBR != 0 && !q_full(&rx)) {
-          q_push(&rx,USIBR);
+     if (USIDR != 0 && !q_full(&rx)) {
+          q_push(&rx,USIDR);
      }
 
 	//tx
@@ -76,6 +80,8 @@ ISR( SIG_USI_OVERFLOW ) {
 		USIDR = q_pop(&tx);
 	}
 	else USIDR = 0;
+
+
 }
 
 int spi_putc(int c, FILE * stream) {

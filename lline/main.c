@@ -4,11 +4,11 @@
  */
 
 #include "defines.h"
-//#include "common.h"
+#include "common.h"
+#include "debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <string.h>
 
 #include <avr/io.h>
 #include <avr/power.h>
@@ -22,16 +22,21 @@
 void init(void) {
 	power_all_disable();
 
+	debug_led_init();
+
      clock_prescale_set(clock_div_1);
 
 	spi_io_init();
 
 	sei();
 
+	debug_led_flash(1000,500);
 }
 
 ISR(BADISR_vect){
-     
+     for(;;) {
+		debug_led_flash(2000,300);
+	}
 }
 
 int main(void) {
@@ -40,6 +45,7 @@ int main(void) {
     	for(;;) {
           spi_puts("HELLO\n");
 		_delay_ms(1000);
+		debug_led_flash(1000,500);
 	}
 	return 0;
 }
