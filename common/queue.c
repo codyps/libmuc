@@ -26,7 +26,7 @@ void q_flush(queue_t *q) {
 QUEUE_BASE_T q_remove(queue_t *q) {
 // take the last thing that was put on
 	if (q_empty(q)) {
-		return '#';
+		return 0;
 	}
 	else {
 		QUEUE_BASE_T old = q->buffer[q->last];
