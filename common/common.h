@@ -1,7 +1,17 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+#include <stdint.h>
+#include <stdio.h>
+
 #include "clock.h"
+
+#define DDR(x)	_DDR(x)
+#define _DDR(x) DDR##x
+#define PORT(x) _PORT(x)
+#define _PORT(x) PORT##x
+#define PIN(x)	_PIN(x)
+#define _PIN(x) PIN##x
 
 inline uint8_t mod( uint8_t i1, uint8_t i2) {// i1%i2
      while( i1 >= i2 ) {
