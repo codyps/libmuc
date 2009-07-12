@@ -77,18 +77,16 @@ void spi_io_init(void) {
 ISR( SIG_USI_OVERFLOW ) {
      USISR = (1<<USIOIF); // Clear interupt flag and counter.
 	
-     //rx
-     if (USIDR != 0 && !q_full(&rx)) {
-          q_push(&rx,USIDR);
-     }
-
 	//tx
      if (!q_empty(&tx)) {
 		USIDR = q_pop(&tx);
 	}
 	else USIDR = 0;
 
-
+     //rx
+     if (USIBR != 0 && !q_full(&rx)) {
+          q_push(&rx,USIBR);
+     }
 }
 
 int spi_putc(int c, FILE * stream) {
