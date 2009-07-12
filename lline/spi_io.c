@@ -18,16 +18,16 @@ CLK-> 2
 #define I_DO  1
 #define I_CLK 2
 
+#define USI_PORT A
+
 #define NEGATIVE 1
 #define POSITIVE 0
 #define SPI_EDGE POSITIVE
 
-#define USI_PORT B
-
 #define DDR(x)	_DDR(x)
-#define _DDR(x) DDR##x
+#define _DDR(x) (DDR ## x)
 #define PORT(x) _PORT(x)
-#define _PORT(x) PORT##x
+#define _PORT(x) (PORT ## x)
 
 uint8_t tx_b[24],	rx_b[8];
 queue_t tx,		rx;
@@ -38,22 +38,32 @@ queue_t tx,		rx;
 void spi_io_init(void) {
      power_usi_enable();
 
-	// Clr the flags we interupt on + counter bits in same reg
-     USISR = (1<<USIOIF);
+	q_init(&rx, rx_b, sizeof(rx_b));
+     q_init(&tx, tx_b, sizeof(tx_b));
 
-	// Clr datareg to avoid junk data being sent out.
-	USIDR = 0;
+	// Clr the flags we interupt on + counter bits in same reg. 
+	//  (default is not raised)
+     //USISR = (1<<USIOIF);
+ 
+	// Clr datareg to avoid junk data being sent out. (defaults to 0)
+	//USIDR = 0;
 
-	#if (USI_PORT==A)
-     USIPP |= (1<<USIPOS); // Use port A instead of B
+	
+	#define B 0
+	#define A 1
+	#if ( USI_PORT == B )
+	//#warning Using Port  B (default)
+     //USIPP &= (uint8_t)~(1<<USIPOS);
 	#else
-     USIPP &= (uint8_t)~(1<<USIPOS); // Use port A instead of B     	
+	#error Using Port  A   
+	USIPP |= (1<<USIPOS);
      #endif
+	#undef A
+	#undef B
 
 	DDR(USI_PORT) |= (1<<I_DO);
 	DDR(USI_PORT) &= (uint8_t)~((1<<I_DI)|(1<<I_CLK));
-	PORT(USI_PORT) &= (uint8_t)~((1<<I_DI)|(1<<I_CLK));
-
+	PORT(USI_PORT)&= (uint8_t)~( (1<<I_DI) | (1<<I_CLK) | (1<<I_DO) );
 
      USICR = (0<<USISIE) |			// Start IE(2w), CLK edge IE(3w)
           (1<<USIOIE) |				// Ovf interupt (to refil register)
@@ -62,9 +72,6 @@ void spi_io_init(void) {
           (0<<USICLK) |				// 4bit timer : 0 = external, 1 = sw
           (0<<USITC );				// Clock toggle
 
-     
-     q_init(&rx, rx_b, sizeof(rx_b));
-     q_init(&tx, tx_b, sizeof(tx_b));
 }
 
 ISR( SIG_USI_OVERFLOW ) {
