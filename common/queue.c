@@ -44,12 +44,6 @@ int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 	     #if (DEBUG_L(4) && defined(io_isr))
 	     fprintf(io_isr,"\n{warn: push (%d)}",x);
 	     #endif
-		#ifdef Q_OVERWRITE
-          q->buffer[ q->last ] = x;
-          q->last++;
-          if ( q->last >= q->sz )
-               q->last = 0;
-         	#endif
 	     return -1;
 	}
 	else {
@@ -62,6 +56,18 @@ int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 
           return 0;
 	}
+}
+
+int8_t q_push_o(queue_t *q, QUEUE_BASE_T x)
+{
+	q->buffer[ q->last ] = x;
+	q->last++;
+	if ( q->last >= q->sz )
+		q->last = 0;
+
+	if (!q_full(q))
+		++(q->ct);
+     return 0;
 }
 
 int8_t q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz) {
