@@ -4,11 +4,11 @@
 #LIBUSB_LIB     = $(LIBUSB_PATH)/lib/gcc
 
 #CFLAGS  = -I$(LIBUSB_INCLUDE) -g -O1
-CFLAGS  = -g -O1
+CFLAGS  = -g -O1 --std=gnu99
 #LDFLAGS = -L$(LIBUSB_LIB) -lusb -lncurses
 LDFLAGS = -lusb -lncurses
 
-SRC = spiconsole.c
+SRC = spiconsole.c usbtiny.c
 OBJ = $(SRC:.c=.o)
 
 %.o: %.c
