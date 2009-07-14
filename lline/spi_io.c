@@ -5,6 +5,7 @@
 #include <avr/power.h>
 #include <avr/interrupt.h>
 
+#include "common.h"
 #include "queue.h"
 
 /* 
@@ -18,18 +19,13 @@ CLK-> 2
 #define I_DO  1
 #define I_CLK 2
 
-#define USI_PORT A
+#define USI_PORT B
 
 #define NEGATIVE 1
 #define POSITIVE 0
 #define SPI_EDGE POSITIVE
 
-#define DDR(x)	_DDR(x)
-#define _DDR(x) (DDR ## x)
-#define PORT(x) _PORT(x)
-#define _PORT(x) (PORT ## x)
-
-uint8_t tx_b[24],	rx_b[8];
+uint8_t tx_b[32],	rx_b[32];
 queue_t tx,		rx;
 
 #define spi_isr_on()	(USICR |= (1<<USIOIE))
@@ -77,27 +73,36 @@ void spi_io_init(void) {
 ISR( SIG_USI_OVERFLOW ) {
      USISR = (1<<USIOIF); // Clear interupt flag and counter.
 	
-	//tx
+	//transmit (tx)
      if (!q_empty(&tx)) {
 		USIDR = q_pop(&tx);
 	}
 	else USIDR = 0;
 
-     //rx
+     //recieve (rx)
      if (USIBR != 0 && !q_full(&rx)) {
           q_push(&rx,USIBR);
      }
+
+	/*// Alternate if we don't care about losing old data.
+	if (USIBR != 0) {
+          q_push_o(&rx,USIBR);
+     }
+	*/
+
 }
 
 int spi_putc(int c, FILE * stream) {
-	//while(q_full(&tx));	// delay if queue full
+
+	int r;	
 	spi_isr_off();
-	uint8_t r = q_push(&tx,(uint8_t)c);
+	if (q_full(&tx))
+		r = EOF;
+	else 
+		r = q_push(&tx,(uint8_t)c);
 	spi_isr_on();
-	if (r==0)	
-		return c;
-	else
-		return EOF;
+	return r;
+
 }
 
 int spi_getc(FILE * stream) {
@@ -110,7 +115,6 @@ int spi_getc(FILE * stream) {
 		r = q_pop(&rx);
 	spi_isr_on();
 	return r; 
-
 }
 
 void spi_puts(char * string) {
@@ -127,5 +131,4 @@ void spi_puts(char * string) {
 	}
 	spi_isr_on();
 }
-
 
