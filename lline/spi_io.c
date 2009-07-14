@@ -124,11 +124,30 @@ void spi_puts(char * string) {
 			spi_isr_on();
 			asm("nop");	
 			asm("nop");
-			spi_isr_on();
+			spi_isr_off();
 		}
 		q_push(&tx,*string);
 		string++;
 	}
 	spi_isr_on();
 }
+
+void spi_o_puts(char * string) {
+	spi_isr_off();
+	while(*string) {
+		if(q_full(&tx)) {
+			spi_isr_on();
+			asm(
+				"nop\n\t"
+				"nop\n\t"
+				"nop"
+			);			
+			spi_isr_off();
+		}
+		q_push_o(&tx,*string);
+		string++;
+	}
+	spi_isr_on();
+}
+
 
