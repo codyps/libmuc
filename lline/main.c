@@ -18,6 +18,7 @@
 //#include <avr/pgmspace.h>
 
 #include "spi_io.h"
+#include "adc.h"
 
 void init(void) {
 	power_all_disable();
@@ -28,9 +29,9 @@ void init(void) {
 
 	spi_io_init();
 
-	sei();
+	adc_init();
 
-	debug_led_flash(1000,500);
+	sei();
 }
 
 ISR(BADISR_vect){
