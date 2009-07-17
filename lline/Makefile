@@ -7,12 +7,13 @@
 
 MCU = attiny861
 ADMCU = attiny861
-FCPU = 8000000
+F_CPU = 8000000
 FORMAT = ihex
 TARGET = main
 SRC  = main.c
 #SRC += ../common/spi_slave_usi.c
 SRC += spi_io.c ../common/queue.c
+SRC += adc.c
 
 ASRC = 
 OPT = s
@@ -129,8 +130,8 @@ LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
-ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) -DF_CPU=$(FCPU)
-ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
+ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) -DF_CPU=$(F_CPU)
+ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS) -DF_CPU=$(F_CPU)
 
 
 # Default target.
