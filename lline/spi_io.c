@@ -122,8 +122,10 @@ void spi_puts(char * string) {
 	while(*string) {
 		while(q_full(&tx)) {
 			spi_isr_on();
-			asm("nop");	
-			asm("nop");
+			asm(
+				"nop\n\t"
+				"nop"
+			);
 			spi_isr_off();
 		}
 		q_push(&tx,*string);
