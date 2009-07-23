@@ -125,33 +125,35 @@ ISR(USART_UDRE_vect) {
 
 ISR(USART_RX_vect) {
 	char c;
-    char ucsra;
-    ucsra = UCSRA;
+	char ucsra;
+
+	ucsra = UCSRA;
 
 	c = UDR;
 
 	if ( !q_full(&rx_q) && !( ucsra &(1<<FE1) || ucsra & (1<<DOR1) ) ) {
 
 		// Characters that require response.
-		if ( c == '\b' || c == 0x7f )	{	// Deleate a char.
+		if ( c == '\b' || c == 0x7f )	{	// backspace
 			q_remove(&rx_q);
 			fputc('\b',&usart1_io_queue);
-			fputc(' ',&usart1_io_queue);
+			fputc(' ' ,&usart1_io_queue);
+			fputc('\b',&usart1_io_queue);
 		}
 
-        if ( c == '\r') c = '\n';
+        	if ( c == '\r') c = '\n';
 
 		if ( c == '\n' ) {
 			usart_msg++;
             // copy to some type of message buffer?
 		}
 
-        q_push(&rx_q,c);
+        	q_push(&rx_q,c);
 		fputc(c,&usart1_io_queue);
 
 	}
 	else {
-	    // Return 'alarm' characters when the queue is full.
+	    // Return 'alarm' characters when the queue is full / error occoured.
 		fputc('\a', &usart1_io_queue);
 	}
 }
@@ -168,8 +170,8 @@ static int usart1_getchar_direct(FILE *stream) {
 	if (rxp == 0) {
 		for (cp = b;;) {
 			loop_until_bit_is_set(UCSRA, RXC);
-			if (UCSRA & _BV(FE1))	return _FDEV_EOF;
-			if (UCSRA & _BV(DOR1))	return _FDEV_ERR;
+			if (UCSRA & (1<<FE1) )	return _FDEV_EOF;
+			if (UCSRA & (1<<DOR1))	return _FDEV_ERR;
 			c = UDR;
 			// behaviour similar to Unix stty ICRNL
 			if (c == '\r') c = '\n';
@@ -185,7 +187,8 @@ static int usart1_getchar_direct(FILE *stream) {
 				if (cp == b + RX_BUFSIZE - 1)
 					fputc('\a', stream);
 				else {
-					*cp++ = c;
+					*cp = c;
+					cp ++;
 					fputc(c, stream);
 				}
 				continue;
@@ -196,7 +199,7 @@ static int usart1_getchar_direct(FILE *stream) {
 				return -1;
 
 			  case '\b':
-			  case '\x7f':
+			  case '\x7f':	// backspace
 				if (cp > b) {
 					fputc('\b', stream);
 					fputc(' ', stream);
@@ -205,13 +208,13 @@ static int usart1_getchar_direct(FILE *stream) {
 				}
 				break;
 
-			  case 'r' & 0x1f:
+			  case 'r' & 0x1f:	//??
 				fputc('\r', stream);
 				for (cp2 = b; cp2 < cp; cp2++)
 					fputc(*cp2, stream);
 				break;
 
-			  case 'u' & 0x1f:
+			  case 'u' & 0x1f:	//??
 				while (cp > b) {
 					fputc('\b', stream);
 					fputc(' ', stream);
@@ -220,7 +223,7 @@ static int usart1_getchar_direct(FILE *stream) {
 				}
 				break;
 
-			  case 'w' & 0x1f:
+			  case 'w' & 0x1f:	//??
 				while (cp > b && cp[-1] != ' ') {
 					fputc('\b', stream);
 					fputc(' ', stream);
