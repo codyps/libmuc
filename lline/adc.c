@@ -21,7 +21,8 @@
 static uint8_t adc_curr_chan_index; //=0;
 
 void adc_init(void);
-void adc_set_channel_from_index(uint8_t channel);
+inline static void adc_channel_set_from_index(uint8_t channel);
+inline static void adc_channel_set_next(void);
 
 void adc_init(void) {
 	power_adc_enable();	
@@ -90,23 +91,28 @@ void adc_init(void) {
 	*/
 	
 	//adc_curr_chan_index = 0;
-	adc_set_channel_from_index(adc_curr_chan_index);
+	adc_channel_set_from_index(adc_curr_chan_index);
 	ADCSRA |= (1<<ADSC);
 
 	// wait one adc clock cycle before setting a new channel.
 	_delay_loop_2(ADC_PRESCALE);
 
+	//adc_channel_set_next();
 	adc_curr_chan_index++;	
-	//if (adc_curr_chan_index >= ADC_CHANNEL_CT)	adc_curr_chan_index = 0;
 
-	adc_set_channel_from_index(adc_curr_chan_index);	
+	adc_channel_set_from_index(adc_curr_chan_index);	
 }
 
-void adc_set_channel_from_index(uint8_t chan) {
+static inline void adc_channel_set_next(void) {
+	adc_curr_chan_index++;	
+	if (adc_curr_chan_index >= ADC_CHANNEL_CT)	adc_curr_chan_index = 0;
+	adc_channel_set_from_index(adc_curr_chan_index);
+}
+
+static inline void adc_channel_set_from_index(uint8_t chan) {
 	// sets a channel from it's adc_channels index
-
+	//ADMUX = (uint8_t) ( (uint8_t)(5 <<(ADMUX >> 5) ) | adc_channels[chan] );
 	ADMUX = (uint8_t) ( (uint8_t)(ADMUX & 0b11100000) | adc_channels[chan] );
-
 }
 
 ISR(ADC_vect) {
@@ -124,13 +130,10 @@ ISR(ADC_vect) {
 	adc_values[past_channel_index] += (ADCH<<8);
 
 	/* Channel Setting */
-	// advance curr_chan for the conversion after the one currently processing.
-
-	adc_curr_chan_index++;
-	if (adc_curr_chan_index >= ADC_CHANNEL_CT)	adc_curr_chan_index = 0;
 	
-	// Needs ADC_PRESCALE clocks (40 on 8Mhz) from the interupt to now.
-	adc_set_channel_from_index(adc_curr_chan_index);
+	// Needs ADC_PRESCALE clocks (40 on 8Mhz) from the interupt to the ADMUX
+	//   write within this function.
+	adc_channel_set_next();
 
 	/* Track refresh */
 	static uint8_t ct;
@@ -140,6 +143,5 @@ ISR(ADC_vect) {
 		adc_new_data=true;
 		ct = 0;
 	}
-
 }
 
