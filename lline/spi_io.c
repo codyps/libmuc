@@ -8,6 +8,8 @@
 #include "common.h"
 #include "queue.h"
 
+#include "spi_io.h"
+
 /* 
 ATtinyX61:
 DI -> 0
@@ -30,6 +32,11 @@ queue_t tx,		rx;
 
 #define spi_isr_on()	(USICR |= (1<<USIOIE))
 #define spi_isr_off()	(USICR &= (uint8_t)~(1<<USIOIE))
+
+int spi_putc(char c, FILE * stream);
+int spi_getc(FILE * stream);
+
+static FILE _spi_io = FDEV_SETUP_STREAM(spi_putc, spi_getc ,_FDEV_SETUP_RW);
 
 void spi_io_init(void) {
      power_usi_enable();
@@ -68,6 +75,8 @@ void spi_io_init(void) {
           (0<<USICLK) |				// 4bit timer : 0 = external, 1 = sw
           (0<<USITC );				// Clock toggle
 
+	spi_io = & _spi_io;
+
 }
 
 ISR( SIG_USI_OVERFLOW ) {
@@ -92,10 +101,10 @@ ISR( SIG_USI_OVERFLOW ) {
 
 }
 
-int spi_putc(int c, FILE * stream) {
-
+int spi_putc(char c, FILE * stream) {
 	int r;	
 	spi_isr_off();
+	//while(q_full(&tx));
 	if (q_full(&tx))
 		r = EOF;
 	else 
@@ -106,9 +115,9 @@ int spi_putc(int c, FILE * stream) {
 }
 
 int spi_getc(FILE * stream) {
-	//while(q_empty(&rx));
 	int r;
 	spi_isr_off();
+	//while(q_empty(&rx));
 	if (q_empty(&rx))
 		r = EOF;
 	else
@@ -152,4 +161,29 @@ void spi_o_puts(char * string) {
 	spi_isr_on();
 }
 
+static inline uint8_t hex2ascii(uint8_t hex) {
+	hex = hex + '0';
+	if (hex > '9')
+		return hex + 7;
+	else
+		return hex;
+}
+
+static inline void _spi_putc(uint8_t ch) {
+	while(q_full(&tx)) {
+			spi_isr_on();
+			asm(
+				"nop\n\t"
+				"nop"
+			);			
+			spi_isr_off();
+		}
+	q_push(&tx,ch);
+}
+
+void spi_puth(uint8_t hex) {
+	spi_isr_off();
+	_spi_putc( hex2ascii(hex>>4) );
+	_spi_putc( hex2ascii( (4<<hex)>>4 ) );
+}
 
