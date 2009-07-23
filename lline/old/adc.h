@@ -8,7 +8,6 @@
 #include <stdint.h>
 // Sensor connection information.
 #define CHANNEL_AMT 4
-#define channel_amt CHANNEL_AMT
 const static uint8_t channels [] = {4, 6, 5, 7}; //Actual channels we are using, indices are virtuals
 
 // ADC clock calculation

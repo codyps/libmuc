@@ -26,17 +26,17 @@ uint8_t max(uint16_t val[],uint8_t sz) {
 
 void print_adc_values() {
 	fprintf_P(stderr,PSTR("\n[debug]   RAW ADC: "));
-	for (uint8_t chan=0;chan<channel_amt;chan++) 
+	for (uint8_t chan=0;chan<CHANNEL_AMT;chan++) 
 		fprintf(stderr," [ %d : %d ] ", chan, adc_val[chan]);
 	
 	fprintf_P(stderr,PSTR("\n[debug] FIXED ADC: "));
-	for (uint8_t chan=0;chan<channel_amt;chan++) 
+	for (uint8_t chan=0;chan<CHANNEL_AMT;chan++) 
 		fprintf(stderr," [ %d : %d ] ", chan, adc_get_val(chan));
 }
 
 void print_adc_calibration() {
 	fprintf_P(stderr,PSTR("\n[debug] ADC OFFSETS: "));
-	for (uint8_t chan=0;chan<channel_amt;chan++) 
+	for (uint8_t chan=0;chan<CHANNEL_AMT;chan++) 
 		fprintf(stderr," [ %d : %d ] ", chan, adc_offset[chan]);
 }
 
@@ -47,27 +47,27 @@ uint16_t adc_get_val(uint8_t ch) {
 
 static uint8_t num_calibrations;
 void adc_calibrate_update() {
-	int16_t offsets[channel_amt];
-	uint16_t adc_val_cpy[channel_amt];
+	int16_t offsets[CHANNEL_AMT];
+	uint16_t adc_val_cpy[CHANNEL_AMT];
 	memcpy(adc_val_cpy,adc_val,sizeof(adc_val));
 	
 	
 	uint8_t i=0,val=0;
-	for(uint8_t c=0;c<channel_amt;++c) {
+	for(uint8_t c=0;c<CHANNEL_AMT;++c) {
 		if(val>adc_val_cpy[c]) {
 			i=c;
 			val=adc_val_cpy[c];
 		}
 	}
 	
-	for(uint8_t c=0;c<channel_amt;++c) {
+	for(uint8_t c=0;c<CHANNEL_AMT;++c) {
 		offsets[c]=adc_val_cpy[i]-adc_val_cpy[c];
 	}
 		
 	if (num_calibrations==0)
 		memcpy(adc_offset,offsets,sizeof(adc_offset));
 	else
-		for(uint8_t c=0;c<channel_amt;++c) {
+		for(uint8_t c=0;c<CHANNEL_AMT;++c) {
 			adc_offset[c]=(adc_offset[c] * num_calibrations + offsets[c])/(num_calibrations+1);
 		}
 			
@@ -79,7 +79,7 @@ void adc_calibrate_store() {
 }
 
 void adc_calibrate_clear() {
-	//for(uint8_t j= 0;j<channel_amt;++j)
+	//for(uint8_t j= 0;j<CHANNEL_AMT;++j)
 	//	adc_offset[j]=0;
 	memset(adc_offset,0,sizeof(adc_offset));
 	num_calibrations = 0;
@@ -136,25 +136,25 @@ void adc_set_channel(uint8_t channel) {
 	//printf("V - chan %X\n",channel);
 }
 
-//ADC Interupt handler
 ISR(ADC_vect) {
-	// New conversion has already started.
+	// Note: New conversion has already started.
+	uint8_t real_channel;
+	static uint8_t ct;
 	uint16_t adc_value;
 	adc_value  =  ADCL;  
 	adc_value += (ADCH<<8);
-	uint8_t real_channel;
-	static uint8_t ct;
+
 	++ct;
 
 	// the curr_ch now has the chan of the on going conversion, we need the last one
-	if (curr_ch==0)	real_channel = channel_amt-1; //curr_ch==0 
+	if (curr_ch==0)	real_channel = CHANNEL_AMT - 1;
 	else		real_channel = curr_ch-1;
 
 	adc_val[real_channel] = adc_value;
 	++adc_amt[real_channel];
 
 	// Change the channel for the conversion after the one currently processing.
-	if (++curr_ch >= channel_amt)	curr_ch = 0;
+	if (++curr_ch >= CHANNEL_AMT)	curr_ch = 0;
 	
 	adc_set_channel(curr_ch);
 	
@@ -163,7 +163,8 @@ ISR(ADC_vect) {
 	//TODO: modify for running average (Ave= (Ave*(ct-1)+New)/ct)
 	//INFO: Vin[V]=(ADCH·256+ADCL)·Vref[V]/1024
 	
-	if (!(ct%channel_amt)) {
-		adc_data_new=true;//all values have been recalculated, update motors.
+	if (!(ct%CHANNEL_AMT)) {
+		//all values have been recalculated, update motors.
+		adc_data_new=true;
 	}
 }
