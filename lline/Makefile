@@ -142,7 +142,9 @@ ALL_ASFLAGS += -DF_CPU=$(F_CPU)
 
 # Default target.
 all: build
-	avr-size -C --mcu=$(MCU) $(TARGET).elf 
+	
+size: elf
+	$(SIZE) -C --mcu=$(MCU) $(TARGET).elf 
 
 
 build: elf hex eep
