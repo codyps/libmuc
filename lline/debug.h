@@ -1,6 +1,7 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#include "defines.h"
 #include "common.h"
 #include <stdint.h>
 #include <util/delay.h>
