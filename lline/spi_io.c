@@ -33,10 +33,11 @@ queue_t tx,		rx;
 #define spi_isr_on()	(USICR |= (1<<USIOIE))
 #define spi_isr_off()	(USICR &= (uint8_t)~(1<<USIOIE))
 
+#ifdef SPI_IO_STANDARD
 int spi_putc(char c, FILE * stream);
 int spi_getc(FILE * stream);
-
 static FILE _spi_io = FDEV_SETUP_STREAM(spi_putc, spi_getc ,_FDEV_SETUP_RW);
+#endif
 
 void spi_io_init(void) {
      power_usi_enable();
@@ -75,7 +76,9 @@ void spi_io_init(void) {
           (0<<USICLK) |				// 4bit timer : 0 = external, 1 = sw
           (0<<USITC );				// Clock toggle
 
+	#ifdef SPI_IO_STANDARD
 	spi_io = & _spi_io;
+	#endif
 
 }
 
@@ -101,6 +104,7 @@ ISR( SIG_USI_OVERFLOW ) {
 
 }
 
+#ifdef SPI_IO_STANDARD
 int spi_putc(char c, FILE * stream) {
 	int r;	
 	spi_isr_off();
@@ -125,6 +129,7 @@ int spi_getc(FILE * stream) {
 	spi_isr_on();
 	return r; 
 }
+#endif
 
 void spi_puts(char * string) {
 	spi_isr_off();
@@ -161,7 +166,7 @@ void spi_o_puts(char * string) {
 	spi_isr_on();
 }
 
-static inline uint8_t hex2ascii(uint8_t hex) {
+static uint8_t hex2ascii(uint8_t hex) {
 	hex = hex + '0';
 	if (hex > '9')
 		return hex + 7;
@@ -169,7 +174,8 @@ static inline uint8_t hex2ascii(uint8_t hex) {
 		return hex;
 }
 
-static inline void _spi_putc(uint8_t ch) {
+static void _spi_putc(uint8_t ch) {
+	// expects spi interupt disabled on entry, leaves it disabled on exit.
 	while(q_full(&tx)) {
 			spi_isr_on();
 			asm(
@@ -183,7 +189,21 @@ static inline void _spi_putc(uint8_t ch) {
 
 void spi_puth(uint8_t hex) {
 	spi_isr_off();
-	_spi_putc( hex2ascii(hex>>4) );
-	_spi_putc( hex2ascii( (4<<hex)>>4 ) );
+
+	_spi_putc( hex2ascii( (uint8_t)(hex>>4 ) ) );
+	_spi_putc( hex2ascii( (uint8_t)(hex>>0 ) ) );
+
+	spi_isr_on();
+}
+
+void spi_puth2(uint16_t hex) {
+	spi_isr_off();
+
+	_spi_putc( hex2ascii( (uint8_t)(hex>>12) ) );
+	_spi_putc( hex2ascii( (uint8_t)(hex>>8 ) ) );
+	_spi_putc( hex2ascii( (uint8_t)(hex>>4 ) ) );
+	_spi_putc( hex2ascii( (uint8_t)(hex>>0 ) ) );
+
+	spi_isr_on();
 }
 

@@ -35,9 +35,6 @@ void init(void) {
 }
 
 ISR(BADISR_vect){
-     for(;;) {
-		debug_led_flash(2000,300);
-	}
 }
 
 int main(void) {
@@ -46,7 +43,6 @@ int main(void) {
     	for(;;) {
           spi_puts("HELLO\n");
 		_delay_ms(1000);
-		debug_led_flash(1000,500);
 	}
 	return 0;
 }
