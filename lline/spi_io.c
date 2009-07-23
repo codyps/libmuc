@@ -166,7 +166,7 @@ void spi_o_puts(char * string) {
 	spi_isr_on();
 }
 
-static uint8_t hex2ascii(uint8_t hex) {
+static inline uint8_t hex2ascii(uint8_t hex) {
 	hex = hex + '0';
 	if (hex > '9')
 		return hex + 7;
@@ -174,7 +174,7 @@ static uint8_t hex2ascii(uint8_t hex) {
 		return hex;
 }
 
-static void _spi_putc(uint8_t ch) {
+static inline void _spi_putchar(uint8_t ch) {
 	// expects spi interupt disabled on entry, leaves it disabled on exit.
 	while(q_full(&tx)) {
 			spi_isr_on();
@@ -187,11 +187,18 @@ static void _spi_putc(uint8_t ch) {
 	q_push(&tx,ch);
 }
 
+void spi_putchar(uint8_t ch) {
+	// expects spi interupt disabled on entry, leaves it disabled on exit.
+	spi_isr_off();
+	_spi_putchar(ch);
+	spi_isr_on();
+}
+
 void spi_puth(uint8_t hex) {
 	spi_isr_off();
 
-	_spi_putc( hex2ascii( (uint8_t)(hex>>4 ) ) );
-	_spi_putc( hex2ascii( (uint8_t)(hex>>0 ) ) );
+	_spi_putchar( hex2ascii( (uint8_t)(hex>>4 ) ) );
+	_spi_putchar( hex2ascii( (uint8_t)(hex>>0 ) ) );
 
 	spi_isr_on();
 }
@@ -199,10 +206,10 @@ void spi_puth(uint8_t hex) {
 void spi_puth2(uint16_t hex) {
 	spi_isr_off();
 
-	_spi_putc( hex2ascii( (uint8_t)(hex>>12) ) );
-	_spi_putc( hex2ascii( (uint8_t)(hex>>8 ) ) );
-	_spi_putc( hex2ascii( (uint8_t)(hex>>4 ) ) );
-	_spi_putc( hex2ascii( (uint8_t)(hex>>0 ) ) );
+	_spi_putchar( hex2ascii( (uint8_t)(hex>>12) ) );
+	_spi_putchar( hex2ascii( (uint8_t)(hex>>8 ) ) );
+	_spi_putchar( hex2ascii( (uint8_t)(hex>>4 ) ) );
+	_spi_putchar( hex2ascii( (uint8_t)(hex>>0 ) ) );
 
 	spi_isr_on();
 }

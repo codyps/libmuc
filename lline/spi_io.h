@@ -6,6 +6,7 @@
 void spi_io_init(void);
 
 // non-standard (fast) io
+void spi_putchar(uint8_t ch);
 void spi_puts(char * string);
 void spi_o_puts(char * string); // overwriting puts
 void spi_puth(uint8_t hex); 	  // put hex (uppercase, no prefix added)
