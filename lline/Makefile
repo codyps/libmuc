@@ -58,7 +58,7 @@ PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
 # Floating point printf version (requires MATH_LIB = -lm below)
 PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
 
-PRINTF_LIB = 
+PRINTF_LIB = $(PRINTF_LIB_MIN)
 
 # Minimalistic scanf version
 SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min
@@ -66,9 +66,10 @@ SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min
 # Floating point + %[ scanf version (requires MATH_LIB = -lm below)
 SCANF_LIB_FLOAT = -Wl,-u,vfscanf -lscanf_flt
 
-SCANF_LIB = 
+SCANF_LIB = $(SCANF_LIB_MIN)
 
-MATH_LIB = -lm
+#MATH_LIB = -lm
+MATH_LIB =
 
 # External memory options
 
@@ -130,8 +131,10 @@ LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
-ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) -DF_CPU=$(F_CPU)
-ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS) -DF_CPU=$(F_CPU)
+ALL_CFLAGS  = -mmcu=$(MCU) -I. $(CFLAGS)
+ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
+ALL_CFLAGS  += -DF_CPU=$(F_CPU)
+ALL_ASFLAGS += -DF_CPU=$(F_CPU)
 
 
 # Default target.
