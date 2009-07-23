@@ -3,6 +3,10 @@
 	single ended continuous processing.
  */
 
+
+#include "defines.h"
+
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -84,14 +88,17 @@ void adc_init(void) {
 		(0<<MUX5)		|
 		(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
 	*/
-
+	
+	//adc_curr_chan_index = 0;
 	adc_set_channel_from_index(adc_curr_chan_index);
 	ADCSRA |= (1<<ADSC);
 
 	// wait one adc clock cycle before setting a new channel.
 	_delay_loop_2(ADC_PRESCALE);
 
-	adc_curr_chan_index++;
+	adc_curr_chan_index++;	
+	//if (adc_curr_chan_index >= ADC_CHANNEL_CT)	adc_curr_chan_index = 0;
+
 	adc_set_channel_from_index(adc_curr_chan_index);	
 }
 
@@ -113,7 +120,8 @@ ISR(ADC_vect) {
 	if (adc_curr_chan_index == 0)	past_channel_index = ADC_CHANNEL_CT - 1;
 	else	past_channel_index = adc_curr_chan_index - 1;
 
-	adc_values[past_channel_index] = ADCL + (ADCH<<8);
+	adc_values[past_channel_index] = ADCL;
+	adc_values[past_channel_index] += (ADCH<<8);
 
 	/* Channel Setting */
 	// advance curr_chan for the conversion after the one currently processing.
