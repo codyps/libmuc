@@ -16,7 +16,7 @@ typedef volatile struct {
 	QUEUE_INDEX_T last;	// position of last element (should be eliminated)
 	QUEUE_INDEX_T ct;	//
 	QUEUE_INDEX_T sz;	// size of the buffer
-     uint8_t flags;      // for when i need to tack something on.
+     //uint8_t flags;      // for when i need to tack something on.
 }  queue_t;
 
 
