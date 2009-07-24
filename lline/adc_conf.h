@@ -9,7 +9,7 @@
 // ADC Prescale calculation (2^n | uint n < 8 )
 #define ADC_MAX_CLK KHz(200L)	// From datasheet.
 
-#define ADC_PRESCALE_BITS ( (uint8_t) ceil( log((float)F_CPU/ADC_MAX_CLK)/log(2) ) )
+#define ADC_PRESCALE_BITS ( (uint8_t) ceil( log((double)F_CPU/ADC_MAX_CLK)/log(2) ) )
 
 #define ADC_PRESCALE  ( (uint8_t) pow(2,ADC_PRESCALE_BITS) )
 #define ADC_F (F_CPU/ADC_PRESCALE)
