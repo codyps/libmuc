@@ -92,8 +92,11 @@ ISR( SIG_USI_OVERFLOW ) {
 	else USIDR = 0;
 
      //recieve (rx)
-     if (USIBR != 0 && !q_full(&rx)) {
-          q_push(&rx,USIBR);
+	uint8_t in = USIBR;
+     if (in != 0 && !q_full(&rx)) {
+          q_push(&rx,in);
+		if (in == '\n')
+			spi_io_rx_nl++;
      }
 
 	/*// Alternate if we don't care about losing old data.
@@ -167,9 +170,10 @@ void spi_o_puts(char * string) {
 }
 
 static inline uint8_t hex2ascii(uint8_t hex) {
+	hex = 0x0F & hex;
 	hex = hex + '0';
 	if (hex > '9')
-		return hex + 7;
+		return hex + 7; // 7 characters between nums and caps.
 	else
 		return hex;
 }
@@ -188,7 +192,6 @@ static inline void _spi_putchar(uint8_t ch) {
 }
 
 void spi_putchar(uint8_t ch) {
-	// expects spi interupt disabled on entry, leaves it disabled on exit.
 	spi_isr_off();
 	_spi_putchar(ch);
 	spi_isr_on();
@@ -197,8 +200,8 @@ void spi_putchar(uint8_t ch) {
 void spi_puth(uint8_t hex) {
 	spi_isr_off();
 
-	_spi_putchar( hex2ascii( (uint8_t)(hex>>4 ) ) );
-	_spi_putchar( hex2ascii( (uint8_t)(hex>>0 ) ) );
+	_spi_putchar( hex2ascii( (hex>>4 ) ) );
+	_spi_putchar( hex2ascii( (hex>>0 ) ) );
 
 	spi_isr_on();
 }
