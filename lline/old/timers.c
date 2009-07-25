@@ -1,4 +1,4 @@
-/* 
+/* AVR BUTTERFLY
  * File: timers.c
  * Function: control of timers and pwm outputs
  */
