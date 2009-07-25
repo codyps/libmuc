@@ -21,6 +21,7 @@
 
 #include "spi_io.h"
 #include "adc.h"
+//#include "motor.c"
 
 void init(void) {
 	power_all_disable();
@@ -32,6 +33,8 @@ void init(void) {
 	spi_io_init();
 
 	adc_init();
+	
+	//motor_init();
 
 	sei();
 }
@@ -51,12 +54,16 @@ int main(void) {
 			memcpy(adc_val, (uint16_t *) adc_values,sizeof(adc_val));
 			for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {			
 				spi_putchar(i+'0');
-				spi_putchar(' ');
 				spi_putchar(':');
+				spi_putchar(' ');
 				spi_puth2(adc_val[i]);
 				spi_putchar('\t');
 			}
 			spi_putchar('\n');
+		}
+		if (spi_io_rx_nl>0) {
+			spi_io_rx_nl--;
+			// parse new input
 		}
 		_delay_ms(200);
 	}
