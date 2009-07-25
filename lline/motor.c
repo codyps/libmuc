@@ -8,14 +8,6 @@
 
 #include "motor_conf.h"
 
-struct motor_pwm10p2_s {
-	volatile uint8_t * reg_pwm;
-	volatile uint8_t * port_p1;
-	volatile uint8_t * port_p2;
-	uint8_t mask_p1;
-	uint8_t mask_p2;
-}
-
 void motor_init(void);
 static void motor_pwm10_init(void);
 
@@ -27,7 +19,8 @@ void motor_init(void) {
 
 static void motor_pwm10_init(void) {
 	// Initialize a 10 bit pwm (as on the attinyX61 series)
-
+	//   All done by the datasheet.
+	
 	power_timer1_enable();
 	
 	PLLCSR = (1<<PLLE);
@@ -96,7 +89,7 @@ static void motor_pwm10_init(void) {
 	*/
 
 	// Shared with T0
-	TIMSK |= (0<<OCIE1D) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1);
+	//TIMSK &= (uint8_t) ~((0<<OCIE1D) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1));
 	//TIFR  |= (1<<OCF1D ) | (1<<OCF1A ) | (1<<OCF1B ) | (1<<TOV1 );	
 
 	TC1H = 0;
@@ -112,11 +105,13 @@ static void motor_pwm10_init(void) {
 }
 
 void motor_set(uint8_t motor, motor_speed_t speed) {
-	
+	motor_t curr_motor = motor_list[motor];
+	curr_motor.set_speed(&curr_motor,abs(speed));
+	curr_motor.set_dir(&curr_motor,sign(speed));
 	
 }
 
 int16_t motor_get(uint8_t motor, motor_speed_t speed) {
-	
+		
 }
 
