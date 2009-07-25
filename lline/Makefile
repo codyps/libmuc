@@ -11,9 +11,9 @@ F_CPU = 8000000
 FORMAT = ihex
 TARGET = main
 SRC  = main.c
-#SRC += ../common/spi_slave_usi.c
 SRC += spi_io.c ../common/queue.c
 SRC += adc.c
+#SRC += motor.c
 
 ASRC = 
 OPT = s
