@@ -70,15 +70,6 @@ int8_t q_push_o(queue_t *q, QUEUE_BASE_T x)
      return 0;
 }
 
-int8_t q_apush(queue_t *q, const QUEUE_BASE_T x[],QUEUE_INDEX_T sz) {
-	QUEUE_INDEX_T i;
-	for(i=0;i<sz;++i) {
-		int8_t ret = q_push(q,x[i]);
-		if (ret<0) return (sz-i);
-	}
-	return 0;
-}
-
 QUEUE_BASE_T q_pop(queue_t *q) {
 	QUEUE_BASE_T x;
 
@@ -97,13 +88,6 @@ QUEUE_BASE_T q_pop(queue_t *q) {
 		--(q->ct);
 	}
 	return x;
-}
-
-
-void q_apop(queue_t *q, QUEUE_BASE_T * buffer, QUEUE_INDEX_T sz) {
-	QUEUE_INDEX_T i;
-	for(i=0;i<sz;++i)
-		buffer[i]=q_pop(q);
 }
 
 bool q_empty(queue_t *q) {
