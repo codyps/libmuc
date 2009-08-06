@@ -42,9 +42,14 @@ CLINK =
 
 CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes -Wextra -Wno-main
+CWARN += -Wunsafe-loop-optimizations
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+CTUNING += -finline-functions -finline-functions-called-once
+CTUNING += -fmerge-all-constants -funsafe-loop-optimizations
+CTUNING += 
+
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
-CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA) $(CLINK)
+CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA) $(CLINK) $(CTUNING)
 
 
 #ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
@@ -238,3 +243,4 @@ depend:
 	$(CC) -M -mmcu=$(MCU) $(CDEFS) $(CINCS) $(SRC) $(ASRC) >> $(MAKEFILE)
 
 .PHONY:	all build elf hex eep lss sym program coff extcoff clean depend
+# DO NOT DELETE THIS LINE -- make depend depends on it.
