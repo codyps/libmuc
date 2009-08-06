@@ -12,6 +12,7 @@
 typedef motor_speed_t int16_t;
 typedef struct motor_pwm_s {
 	volatile uint8_t * reg_pwm;
+	volatile uint8_t * reg_pwmh;
 	volatile uint8_t * port_p1;
 	volatile uint8_t * port_p2;
 	uint8_t mask_p1;
@@ -25,6 +26,7 @@ typedef struct motor_pwm_s {
 #define MOTOR_DEF(reg, port1, index1, port2, index2) \
 	{ \
 		.reg_pwm = reg, \
+		.reg_pwmh= TC1H \
 		.port_p1 = port1, \
 		.port_p2 = port2, \
 		.mask_p1 = (uint8_t) ( 1 << (index1) ), \

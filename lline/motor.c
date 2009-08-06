@@ -13,9 +13,7 @@ static void motor_pwm10_init(void);
 
 void motor_init(void) {
 	motor_pwm10_init();
-
 }
-
 
 static void motor_pwm10_init(void) {
 	// Initialize a 10 bit pwm (as on the attinyX61 series)
@@ -62,15 +60,15 @@ static void motor_pwm10_init(void) {
 			(USE_OC1B<<PWM1B ) ;
 
 	/*
-	TCCR1B =	(0<<PWM1X ) | // PWM inversion mode (switches !OCR1x and OCR1x)
+	TCCR1B =	(0<<PWM1X ) | // PWM inversion (switch !OCR1x and OCR1x)
 			(0<<PSR1  ) | // Prescaler reset, cleared by hw
 			(0<<DTPS11) | (0<<DTPS10); // Dead time prescaler bits
 			//CS1{3,2,1,0}: prescale bits
 	*/
 		
-	TCCR1C =	(USE_OC1A<<COM1A1S)|(0<<COM1A0S) |	// Shadow bits
-			(USE_OC1B<<COM1B1S)|(0<<COM1B0S) |	// ^^
-			(USE_OC1D<<COM1D1) | (0<<COM1D0) |	// Output pin modes (OCR1D)
+	TCCR1C =	(USE_OC1A<<COM1A1S)|(0<<COM1A0S) | // Shadow bits
+			(USE_OC1B<<COM1B1S)|(0<<COM1B0S) | // ^^
+			(USE_OC1D<<COM1D1) | (0<<COM1D0) | // Output pin modes D
 			(0<<FOC1D ) | // Force output compare
 			(USE_OC1D<<PWM1D ) ;
 
@@ -92,11 +90,11 @@ static void motor_pwm10_init(void) {
 	//TIMSK &= (uint8_t) ~((0<<OCIE1D) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1));
 	//TIFR  |= (1<<OCF1D ) | (1<<OCF1A ) | (1<<OCF1B ) | (1<<TOV1 );	
 
-	TC1H = 0;
-	TCNT1 = 0;
-	OCR1A = 0;
-	OCR1B = 0;
-	OCR1D = 0;
+	//TC1H  = 0;
+	//TCNT1 = 0;
+	//OCR1A = 0;
+	//OCR1B = 0;
+	//OCR1D = 0;
 	
 	TC1H  = 0b11;
 	OCR1C = 0xFF; // Top
@@ -104,11 +102,49 @@ static void motor_pwm10_init(void) {
 	TCCR1B |= T1_PRESCALE_BITS(MOTOR_T1_PRESCALE);
 }
 
+#define H 1
+#define L 2
+
+#define MOTOR_LINE(motor,port,dir) \
+	#if (dir==H) \
+	MOTOR_LINE_H(motor,port) \
+	#elif (dir==L) \
+	MOTOR_LINE_L(motor,port)\
+	#endif
+
+#define MOTOR_LINE_H(motor,port) \
+	motor_list[motor].port_p##port |= motor_list[motor].mask_p##port
+
+#define MOTOR_LINE_L(motor,port) \
+	motor_list[motor].port_p##port &= (uint8_t) ~(motor_list[motor].mask_p##port
+/* 
+ * 1 2 Motor lines
+ * L H CCW
+ * H L CW
+ * H H Short break
+ * L L Stop 
+ *
+ */
+
 void motor_set(uint8_t motor, motor_speed_t speed) {
+	/*
 	motor_t curr_motor = motor_list[motor];
 	curr_motor.set_speed(&curr_motor,abs(speed));
 	curr_motor.set_dir(&curr_motor,sign(speed));
-	
+	*/
+	uint16_t abs_speed = abs(speed);
+	int8_t dir = sign(speed);
+
+	motor_list[motor].reg_pwmh= (abs_speed >> 8);
+	motor_list[motor].reg_pwm = (0x00FF & abs_speed);
+	if      (dir == -1) {
+		MOTOR_LINE(motor,1,H);
+		MOTOR_LINE(motor,2,L);
+	}
+	else if (dir == 1) {
+		MOTOR_LINE(motor,1,L);
+		MOTOR_LINE(motor,2,H);
+	}
 }
 
 int16_t motor_get(uint8_t motor, motor_speed_t speed) {
