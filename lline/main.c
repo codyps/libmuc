@@ -23,13 +23,16 @@
 #include "adc.h"
 //#include "motor.c"
 
-void init(void) {
+static inline void init(void);
+void main(void) __attribute__((noreturn));
+
+static inline void init() {
 	power_all_disable();
 
 	debug_led_init();
 
-     clock_prescale_set(clock_div_1);
-
+	clock_prescale_set(clock_div_1);
+     	
 	spi_io_init();
 
 	adc_init();
@@ -39,10 +42,12 @@ void init(void) {
 	sei();
 }
 
+/*
 ISR(BADISR_vect){
 }
+*/
 
-int main(void) {
+void main(){
 	init();
 
 	uint16_t adc_val[ADC_CHANNEL_CT];
@@ -67,6 +72,5 @@ int main(void) {
 		}
 		_delay_ms(200);
 	}
-	return 0;
 }
 
