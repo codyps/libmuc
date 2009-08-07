@@ -1,8 +1,6 @@
 /* queue.c
 	functions for static FIFO implimentation.
 */
-#include "debug.h"
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
