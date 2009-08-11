@@ -18,7 +18,6 @@ void q_init(queue_t *q, QUEUE_BASE_T * b, QUEUE_INDEX_T sz) {
 void q_flush(queue_t *q) {
 	q->first = q->last;
 	q->ct = 0;
-
 }
 
 QUEUE_BASE_T q_remove(queue_t *q) {
@@ -39,7 +38,7 @@ QUEUE_BASE_T q_remove(queue_t *q) {
 int8_t q_push(queue_t *q, QUEUE_BASE_T x)
 {
 	if (q_full(q)){
-	     #if (DEBUG_L(4) && defined(io_isr))
+	     #if (defined(io_isr))
 	     fprintf(io_isr,"\n{warn: push (%d)}",x);
 	     #endif
 	     return -1;
@@ -72,7 +71,7 @@ QUEUE_BASE_T q_pop(queue_t *q) {
 	QUEUE_BASE_T x;
 
 	if (q_empty(q)) {
-		#if (DEBUG_L(4) && defined(io_isr))
+		#if (defined(io_isr))
 		fprintf(io_isr,"\n{warn: pop}");
 		#endif
 		x=0x00;
