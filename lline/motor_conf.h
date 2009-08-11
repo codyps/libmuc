@@ -17,7 +17,7 @@ struct motor_pwm {
 	volatile uint8_t * port_p2;
 	uint8_t mask_p1;
 	uint8_t mask_p2;
-}
+};
 
 // Motor structure constructor
 #define MOTOR_DEF(reg, port1, index1, port2, index2) \
