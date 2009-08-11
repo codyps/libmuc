@@ -44,7 +44,6 @@ CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes -Wextra -Wno-main
 CWARN += -Wunsafe-loop-optimizations
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CTUNING += -finline-functions -finline-functions-called-once
 CTUNING += -fmerge-all-constants -funsafe-loop-optimizations
 CTUNING += 
 
@@ -205,9 +204,9 @@ extcoff: $(TARGET).elf
 
 
 # Link: create ELF output file from object files.
-$(TARGET).elf: $(OBJ)
-	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
-
+#	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
+$(TARGET).elf: 
+	$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program --output $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
 .c.o:
