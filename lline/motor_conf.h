@@ -1,7 +1,7 @@
+#include <avr/io.h>
+
 #include <math.h>
 #include <stdint.h>
-
-//#define MOTOR_PWM_CACHE_SPEED
 
 /* Configuration Helpers/ETC */
 // Prescale Calculation
@@ -9,38 +9,32 @@
 	((uint8_t)(  0x0F & (uint8_t)(( log(prescale) + log(2) )/log(2)) ))
 
 // Types
-typedef motor_speed_t int16_t;
-typedef struct motor_pwm_s {
+#define motor_speed_t int16_t
+struct motor_pwm {
 	volatile uint8_t * reg_pwm;
 	volatile uint8_t * reg_pwmh;
 	volatile uint8_t * port_p1;
 	volatile uint8_t * port_p2;
 	uint8_t mask_p1;
 	uint8_t mask_p2;
-	#ifdef MOTOR_PWM_CACHE_SPEED
-	motor_speed_t speed;
-	#endif
-} motor_pwm_t;
+}
 
 // Motor structure constructor
 #define MOTOR_DEF(reg, port1, index1, port2, index2) \
 	{ \
-		.reg_pwm = reg, \
-		.reg_pwmh= TC1H \
-		.port_p1 = port1, \
-		.port_p2 = port2, \
+		.reg_pwm = &reg, \
+		.reg_pwmh= &TC1H, \
+		.port_p1 = &port1, \
+		.port_p2 = &port2, \
 		.mask_p1 = (uint8_t) ( 1 << (index1) ), \
 		.mask_p2 = (uint8_t) ( 1 << (index2) ), \
-		#ifdef MOTOR_PWM_CACHE_SPEED \
-		.speed = 0 \
-		#endif \
 	}
 
 /* Configuable Items */
 // Motor listing
-const static motor_pwm_t motor_list[] {
-	MOTOR_DEF(OC1D,PORTA,1,PORTA,2),
-	MOTOR_DEF(OC1B,PORTB,6,PORTB,4)
+const static struct motor_pwm motor_list [] = {
+	MOTOR_DEF(OCR1D,PORTA,1,PORTA,2),
+	MOTOR_DEF(OCR1B,PORTB,6,PORTB,4)
 };
 #define MOTOR_CT ( sizeof(motor_list) )
 

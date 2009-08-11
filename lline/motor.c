@@ -6,6 +6,7 @@
 #include <avr/power.h>
 #include <util/delay.h>
 
+
 #include "motor_conf.h"
 
 void motor_init(void);
@@ -106,24 +107,19 @@ static void motor_pwm10_init(void) {
 #define L 2
 
 #define MOTOR_LINE(motor,port,dir) \
-	#if (dir==H) \
-	MOTOR_LINE_H(motor,port) \
-	#elif (dir==L) \
-	MOTOR_LINE_L(motor,port)\
-	#endif
+	( ( dir == H ) ? MOTOR_LINE_H(motor,port) : MOTOR_LINE_L(motor,port) )
 
 #define MOTOR_LINE_H(motor,port) \
-	motor_list[motor].port_p##port |= motor_list[motor].mask_p##port
+	*(motor_list[motor].port_p##port) |= motor_list[motor].mask_p##port
 
 #define MOTOR_LINE_L(motor,port) \
-	motor_list[motor].port_p##port &= (uint8_t) ~(motor_list[motor].mask_p##port
+	*(motor_list[motor].port_p##port) &= (uint8_t) ~(motor_list[motor].mask_p##port)
 /* 
  * 1 2 Motor lines
  * L H CCW
  * H L CW
- * H H Short break
+ * H H Short break (??)
  * L L Stop 
- *
  */
 
 void motor_set(uint8_t motor, motor_speed_t speed) {
@@ -133,21 +129,25 @@ void motor_set(uint8_t motor, motor_speed_t speed) {
 	curr_motor.set_dir(&curr_motor,sign(speed));
 	*/
 	uint16_t abs_speed = abs(speed);
-	int8_t dir = sign(speed);
 
-	motor_list[motor].reg_pwmh= (abs_speed >> 8);
-	motor_list[motor].reg_pwm = (0x00FF & abs_speed);
-	if      (dir == -1) {
+	*(motor_list[motor].reg_pwmh) = (abs_speed >> 8);
+	*(motor_list[motor].reg_pwm ) = (0x00FF & abs_speed);
+	
+	if      (speed > 0) {
 		MOTOR_LINE(motor,1,H);
 		MOTOR_LINE(motor,2,L);
 	}
-	else if (dir == 1) {
+	else if (speed < 0) {
 		MOTOR_LINE(motor,1,L);
 		MOTOR_LINE(motor,2,H);
+	}
+	else { // if (speed == 0)
+		MOTOR_LINE(motor,1,L);
+		MOTOR_LINE(motor,2,L);
 	}
 }
 
 int16_t motor_get(uint8_t motor, motor_speed_t speed) {
-		
+	return 0;	
 }
 
