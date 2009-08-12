@@ -15,7 +15,7 @@
 
 inline uint8_t mod( uint8_t i1, uint8_t i2) {// i1%i2
      while( i1 >= i2 ) {
-          i1 -= i2;
+          i1 = (uint8_t) (i1 - i2);
      }
      return i1;
 }
