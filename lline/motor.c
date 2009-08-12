@@ -106,13 +106,13 @@ static void motor_pwm10_init(void) {
 #define H 1
 #define L 2
 
-#define MOTOR_LINE(motor,port,dir) \
-	( ( dir == H ) ? MOTOR_LINE_H(motor,port) : MOTOR_LINE_L(motor,port) )
+#define MOTOR_PIN(motor,port,dir) \
+	MOTOR_PIN_##dir(motor,port)	
 
-#define MOTOR_LINE_H(motor,port) \
+#define MOTOR_PIN_H(motor,port) \
 	*(motor_list[motor].port_p##port) |= motor_list[motor].mask_p##port
 
-#define MOTOR_LINE_L(motor,port) \
+#define MOTOR_PIN_L(motor,port) \
 	*(motor_list[motor].port_p##port) &= (uint8_t) ~(motor_list[motor].mask_p##port)
 /* 
  * 1 2 Motor lines
@@ -128,26 +128,26 @@ void motor_set(uint8_t motor, motor_speed_t speed) {
 	curr_motor.set_speed(&curr_motor,abs(speed));
 	curr_motor.set_dir(&curr_motor,sign(speed));
 	*/
-	uint16_t abs_speed = abs(speed);
+	uint16_t abs_speed = (uint16_t) speed;
 
-	*(motor_list[motor].reg_pwmh) = (abs_speed >> 8);
+	*(motor_list[motor].reg_pwmh) = (uint8_t) (abs_speed >> 8);
 	*(motor_list[motor].reg_pwm ) = (0x00FF & abs_speed);
 	
 	if      (speed > 0) {
-		MOTOR_LINE(motor,1,H);
-		MOTOR_LINE(motor,2,L);
+		MOTOR_PIN(motor,1,H);
+		MOTOR_PIN(motor,2,L);
 	}
 	else if (speed < 0) {
-		MOTOR_LINE(motor,1,L);
-		MOTOR_LINE(motor,2,H);
+		MOTOR_PIN(motor,1,L);
+		MOTOR_PIN(motor,2,H);
 	}
 	else { // if (speed == 0)
-		MOTOR_LINE(motor,1,L);
-		MOTOR_LINE(motor,2,L);
+		MOTOR_PIN(motor,1,L);
+		MOTOR_PIN(motor,2,L);
 	}
 }
-
+/*
 int16_t motor_get(uint8_t motor, motor_speed_t speed) {
 	return 0;	
 }
-
+*/
