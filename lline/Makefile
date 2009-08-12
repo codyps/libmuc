@@ -13,7 +13,7 @@ TARGET = main
 SRC  = main.c
 SRC += spi_io.c ../common/queue.c
 SRC += adc.c
-#SRC += motor.c
+SRC += motor.c
 
 ASRC = 
 OPT = s
@@ -42,10 +42,15 @@ CLINK =
 
 CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes -Wextra -Wno-main
-CWARN += -Wunsafe-loop-optimizations
-CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+CWARN += -Wunknown-pragmas -Wfloat-equal -Wundef -Wbad-function-cast
+CWARN += -Wstrict-overflow -Wmissing-format-attribute
+CWARN += -Wunsafe-loop-optimizations -Wstrict-prototypes
+CWARN += -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion
+CWARN += -Wpacked
+CTUNING = -funsigned-char -funsigned-bitfields -fshort-enums
 CTUNING += -fmerge-all-constants -funsafe-loop-optimizations
-CTUNING += 
+CTUNING += -fstrict-overflow
+#CTUNING += -fpack-struct
 
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA) $(CLINK) $(CTUNING)
