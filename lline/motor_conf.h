@@ -32,7 +32,7 @@ struct motor_pwm {
 
 /* Configuable Items */
 // Motor listing
-const static struct motor_pwm motor_list [] = {
+static const struct motor_pwm motor_list [] = {
 	MOTOR_DEF(OCR1D,PORTA,1,PORTA,2),
 	MOTOR_DEF(OCR1B,PORTB,6,PORTB,4)
 };
