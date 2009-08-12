@@ -32,15 +32,15 @@ void adc_init(void) {
 		uint8_t channel = adc_channels[i];		
 		if ( channel >= 7) {
 			// use DIDR1, I-3
-			DIDR1 |= ( 1 << (channel - 3) );
+			DIDR1 |= (uint8_t) ( 1 << (channel - 3) );
 		}
 		else if ( channel >= 3) {
 			// use DIDR0, I+1
-			DIDR0 |= ( 1 << (channel + 1) );
+			DIDR0 |= (uint8_t) ( 1 << (channel + 1) );
 		}
 		else {
 			// use DIDR0
-			DIDR0 |= ( 1 << (channel) );
+			DIDR0 |= (uint8_t) ( 1 << (channel) );
 		}
 	}
 
@@ -124,9 +124,11 @@ ISR(ADC_vect) {
 	// the curr_ch now has the chan of the on going conversion,
 	//    we want the previous value it held.
 	if (adc_curr_chan_index == 0)	past_channel_index = ADC_CHANNEL_CT - 1;
+	// FIXME: implicit conversion: int to uint8_t
 	else	past_channel_index = adc_curr_chan_index - 1;
 
 	adc_values[past_channel_index] = ADCL;
+	// FIXME: implicit conversion: int to unsigned int
 	adc_values[past_channel_index] += (ADCH<<8);
 
 	/* Channel Setting */
