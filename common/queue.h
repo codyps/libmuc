@@ -11,16 +11,16 @@
 #define QUEUE_SZ	64
 
 typedef volatile struct {
-     QUEUE_BASE_T * buffer;	// buffer
-     QUEUE_INDEX_T first;	// position of first element
+	QUEUE_BASE_T * buffer;	// buffer
+	QUEUE_INDEX_T first;	// position of first element
 	QUEUE_INDEX_T last;	// position of last element (should be eliminated)
 	QUEUE_INDEX_T ct;	//
-	QUEUE_INDEX_T sz;	// size of the buffer
-     //uint8_t flags;      // for when i need to tack something on.
+	const QUEUE_INDEX_T sz;	// size of the buffer
+	//uint8_t flags;      // for when i need to tack something on.
 }  queue_t;
 
+#define Q_INIT(buff) { .buffer = (buff), .first = 0, .last = 0, .ct = 0, .sz = sizeof(buff) / sizeof(QUEUE_BASE_T) }
 
-void q_init(queue_t *q, QUEUE_BASE_T * buff, QUEUE_INDEX_T sz);
 int8_t q_push(queue_t *q, QUEUE_BASE_T x);
 int8_t q_push_o(queue_t *q, QUEUE_BASE_T x); // overwrites old data on q full
 QUEUE_BASE_T q_pop(queue_t *q);

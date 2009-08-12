@@ -7,14 +7,6 @@
 
 #include "queue.h"
 
-void q_init(queue_t *q, QUEUE_BASE_T * b, QUEUE_INDEX_T sz) {
-	q->first	= 0;
-	q->last	= 0;
-	q->ct	= 0;
-	q->buffer	= b;
-	q->sz	= sz;
-}
-
 void q_flush(queue_t *q) {
 	q->first = q->last;
 	q->ct = 0;
