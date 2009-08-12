@@ -58,7 +58,7 @@ void main(){
 			adc_new_data = false;
 			memcpy(adc_val, (uint16_t *) adc_values,sizeof(adc_val));
 			for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {			
-				spi_putchar(i+'0');
+				spi_putchar((char) (i+'0'));
 				spi_putchar(':');
 				spi_putchar(' ');
 				spi_puth2(adc_val[i]);
