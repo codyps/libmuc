@@ -28,7 +28,8 @@ CLK-> 2
 #define SPI_EDGE POSITIVE
 
 uint8_t tx_b[32],	rx_b[32];
-queue_t tx,		rx;
+queue_t tx = Q_INIT(tx_b);
+queue_t rx = Q_INIT(rx_b);
 
 #define spi_isr_on()	(USICR |= (1<<USIOIE))
 #define spi_isr_off()	(USICR &= (uint8_t)~(1<<USIOIE))
@@ -41,9 +42,6 @@ static FILE _spi_io = FDEV_SETUP_STREAM(spi_putc, spi_getc ,_FDEV_SETUP_RW);
 
 void spi_io_init(void) {
      power_usi_enable();
-
-	q_init(&rx, rx_b, sizeof(rx_b));
-     q_init(&tx, tx_b, sizeof(tx_b));
 
 	// Clr the flags we interupt on + counter bits in same reg. 
 	//  (default is not raised)
@@ -171,9 +169,9 @@ void spi_o_puts(char * string) {
 
 static inline uint8_t hex2ascii(uint8_t hex) {
 	hex = 0x0F & hex;
-	hex = hex + '0';
+	hex = (uint8_t) (hex + '0');
 	if (hex > '9')
-		return hex + 7; // 7 characters between nums and caps.
+		return (uint8_t) (hex + 7); // 7 characters between nums and caps.
 	else
 		return hex;
 }
