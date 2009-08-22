@@ -14,7 +14,6 @@
 #include <avr/interrupt.h>
 #include <util/delay_basic.h>
 
-#include "adc.h"
 #include "adc_conf.h"
 
 volatile uint16_t adc_values[ADC_CHANNEL_CT];
@@ -25,6 +24,10 @@ static uint8_t adc_curr_chan_index; //=0;
 void adc_init(void);
 inline static void adc_channel_set_from_index(uint8_t channel);
 inline static void adc_channel_set_next(void);
+
+uint16_t adc_get(uint8_t channel_index) {
+	return adc_values[channel_index];
+}
 
 void adc_init(void) {
 	power_adc_enable();	
@@ -99,15 +102,13 @@ void adc_init(void) {
 	// wait one adc clock cycle before setting a new channel.
 	_delay_loop_2(ADC_PRESCALE);
 
-	//adc_channel_set_next();
-	adc_curr_chan_index++;	
-
-	adc_channel_set_from_index(adc_curr_chan_index);	
+	adc_channel_set_next();
 }
 
 static inline void adc_channel_set_next(void) {
 	adc_curr_chan_index++;	
-	if (adc_curr_chan_index >= ADC_CHANNEL_CT)	adc_curr_chan_index = 0;
+	if (adc_curr_chan_index >= ADC_CHANNEL_CT) 
+		adc_curr_chan_index = 0;
 	adc_channel_set_from_index(adc_curr_chan_index);
 }
 
@@ -125,17 +126,13 @@ ISR(ADC_vect) {
 
 	// the curr_ch now has the chan of the on going conversion,
 	//    we want the previous value it held.
-	if (adc_curr_chan_index == 0) past_channel_index = ADC_CHANNEL_CT - 1;
-	else past_channel_index = (uint8_t) (adc_curr_chan_index - 1);
+	if (adc_curr_chan_index == 0)
+		past_channel_index = ADC_CHANNEL_CT - 1;
+	else
+		past_channel_index = (uint8_t) (adc_curr_chan_index - 1);
 
 	adc_values[past_channel_index] = ADCL;
 	adc_values[past_channel_index] += (uint16_t)  (ADCH<<8);
-
-	/* Channel Setting */
-	
-	// Needs ADC_PRESCALE clocks (40 on 8Mhz) from the interupt to the ADMUX
-	//   write within this function.
-	adc_channel_set_next();
 
 	/* Track refresh */
 	static uint8_t ct;
@@ -145,5 +142,10 @@ ISR(ADC_vect) {
 		adc_new_data=true;
 		ct = 0;
 	}
-}
 
+	/* Channel Setting */
+
+        // Needs ADC_PRESCALE clocks (40 on 8Mhz) from the interupt to the ADMUX
+	//   write within this function.
+	adc_channel_set_next();
+}
