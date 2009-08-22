@@ -8,8 +8,7 @@
 
 void adc_init(void);
 
-
-volatile uint16_t adc_values[ADC_CHANNEL_CT];
-volatile bool adc_new_data;
+extern volatile uint16_t adc_values[ADC_CHANNEL_CT];
+extern volatile bool adc_new_data;
 
 #endif
