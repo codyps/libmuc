@@ -9,7 +9,8 @@
 	((uint8_t)(  0x0F & (uint8_t)(( log(prescale) + log(2) )/log(2)) ))
 
 // Types
-#define motor_speed_t int16_t
+#define motor_speed_t int16_t //only 11 bits used, 10+sign
+#define motor_uspeed_t uint16_t
 struct motor_pwm {
 	volatile uint8_t * reg_pwm;
 	volatile uint8_t * reg_pwmh;
