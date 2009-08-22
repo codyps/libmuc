@@ -3,7 +3,6 @@
 	single ended continuous processing.
  */
 
-
 #include "defines.h"
 
 
@@ -123,13 +122,12 @@ ISR(ADC_vect) {
 
 	// the curr_ch now has the chan of the on going conversion,
 	//    we want the previous value it held.
-	if (adc_curr_chan_index == 0)	past_channel_index = ADC_CHANNEL_CT - 1;
+	if (adc_curr_chan_index == 0) past_channel_index = ADC_CHANNEL_CT - 1;
 	// FIXME: implicit conversion: int to uint8_t
-	else	past_channel_index = adc_curr_chan_index - 1;
+	else past_channel_index = (uint8_t) (adc_curr_chan_index - 1);
 
 	adc_values[past_channel_index] = ADCL;
-	// FIXME: implicit conversion: int to unsigned int
-	adc_values[past_channel_index] += (ADCH<<8);
+	adc_values[past_channel_index] += (uint16_t)  (ADCH<<8);
 
 	/* Channel Setting */
 	
