@@ -54,37 +54,37 @@ static void motor_pwm10_init(void) {
 
 	*/
 
-	TCCR1A =	(USE_OC1A<<COM1A1) | (0<<COM1A0) | // Output pin modes (OCR1A)
-			(USE_OC1B<<COM1B1) | (0<<COM1B0) | // ^^               (OCR1B)
-			(       0<<FOC1A ) | (0<<FOC1B ) | // Force output compare
-			(USE_OC1A<<PWM1A ) |
-			(USE_OC1B<<PWM1B ) ;
+	TCCR1A = (USE_OC1A<<COM1A1) | (0<<COM1A0) | // Output pin modes (OCR1A)
+		(USE_OC1B<<COM1B1) | (0<<COM1B0) | // ^^               (OCR1B)
+		(       0<<FOC1A ) | (0<<FOC1B ) | // Force output compare
+		(USE_OC1A<<PWM1A ) |
+		(USE_OC1B<<PWM1B ) ;
 
 	/*
-	TCCR1B =	(0<<PWM1X ) | // PWM inversion (switch !OCR1x and OCR1x)
-			(0<<PSR1  ) | // Prescaler reset, cleared by hw
-			(0<<DTPS11) | (0<<DTPS10); // Dead time prescaler bits
-			//CS1{3,2,1,0}: prescale bits
+	TCCR1B = (0<<PWM1X ) | // PWM inversion (switch !OCR1x and OCR1x)
+		(0<<PSR1  ) | // Prescaler reset, cleared by hw
+		(0<<DTPS11) | (0<<DTPS10); // Dead time prescaler bits
+		//CS1{3,2,1,0}: prescale bits
 	*/
 		
-	TCCR1C =	(USE_OC1A<<COM1A1S)|(0<<COM1A0S) | // Shadow bits
-			(USE_OC1B<<COM1B1S)|(0<<COM1B0S) | // ^^
-			(USE_OC1D<<COM1D1) | (0<<COM1D0) | // Output pin modes D
-			(0<<FOC1D ) | // Force output compare
-			(USE_OC1D<<PWM1D ) ;
+	TCCR1C = (USE_OC1A<<COM1A1S)|(0<<COM1A0S) | // Shadow bits
+		(USE_OC1B<<COM1B1S)|(0<<COM1B0S) | // ^^
+		(USE_OC1D<<COM1D1) | (0<<COM1D0) | // Output pin modes D
+		(0<<FOC1D ) | // Force output compare
+		(USE_OC1D<<PWM1D ) ;
 
-	TCCR1D =	(0<<FPIE1) | // Fault protection interrupt enable
-			(0<<FPEN1) | // FP enable
-			(0<<FPNC1) | // FP noise canceller
-			(0<<FPES1) | // FP edge select
-			(0<<FPAC1) | // FP analog comparitor enable
-			(0<<FPF1 ) | // FP interrupt flag
-			(0<<WGM11) | (1<<WGM10); // Waveform select
+	TCCR1D = (0<<FPIE1) | // Fault protection interrupt enable
+		(0<<FPEN1) | // FP enable
+		(0<<FPNC1) | // FP noise canceller
+		(0<<FPES1) | // FP edge select
+		(0<<FPAC1) | // FP analog comparitor enable
+		(0<<FPF1 ) | // FP interrupt flag
+		(0<<WGM11) | (1<<WGM10); // Waveform select
 	/*	
-	TCCR1E =	(0<<7) | (0<<6) | // Reserved (on attiny861)
-			// Output compare override enable (PWM6). OC1OEx = PBx
-			(0<<OC1OE5) | (0<<OC1OE4) | (0<<OC1OE3) | 
-			(0<<OC1OE2) | (0<<OC1OE1) | (0<<OC1OE0) ;
+	TCCR1E = (0<<7) | (0<<6) | // Reserved (on attiny861)
+		// Output compare override enable (PWM6). OC1OEx = PBx
+		(0<<OC1OE5) | (0<<OC1OE4) | (0<<OC1OE3) | 
+		(0<<OC1OE2) | (0<<OC1OE1) | (0<<OC1OE0) ;
 	*/
 
 	// Shared with T0
@@ -128,8 +128,9 @@ void motor_set(uint8_t motor, motor_speed_t speed) {
 	curr_motor.set_speed(&curr_motor,abs(speed));
 	curr_motor.set_dir(&curr_motor,sign(speed));
 	*/
-	uint16_t abs_speed = (uint16_t) speed;
+	motor_uspeed_t abs_speed = (motor_uspeed_t) speed;
 
+	// atomic
 	*(motor_list[motor].reg_pwmh) = (uint8_t) (abs_speed >> 8);
 	*(motor_list[motor].reg_pwm ) = (0x00FF & abs_speed);
 	
@@ -146,8 +147,12 @@ void motor_set(uint8_t motor, motor_speed_t speed) {
 		MOTOR_PIN(motor,2,L);
 	}
 }
-/*
-int16_t motor_get(uint8_t motor, motor_speed_t speed) {
-	return 0;	
+
+motor_speed_t motor_get(uint8_t motor) {
+	// atomic
+	motor_speed_t sp = *(motor_list[motor].reg_pwm);
+	sp += *(motor_list[motor].reg_pwmh) << 8;
+	
+	return sp;
 }
-*/
+
