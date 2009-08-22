@@ -12,12 +12,12 @@
 #define motor_speed_t int16_t //only 11 bits used, 10+sign
 #define motor_uspeed_t uint16_t
 struct motor_pwm {
-	volatile uint8_t * reg_pwm;
-	volatile uint8_t * reg_pwmh;
-	volatile uint8_t * port_p1;
-	volatile uint8_t * port_p2;
-	uint8_t mask_p1;
-	uint8_t mask_p2;
+	volatile uint8_t * const reg_pwm;
+	volatile uint8_t * const reg_pwmh;
+	volatile uint8_t * const port_p1;
+	volatile uint8_t * const port_p2;
+	const uint8_t mask_p1;
+	const uint8_t mask_p2;
 };
 
 // Motor structure constructor
