@@ -5,7 +5,6 @@
 
 #include "defines.h"
 
-
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -25,7 +24,9 @@ void adc_init(void);
 inline static void adc_channel_set_from_index(uint8_t channel);
 inline static void adc_channel_set_next(void);
 
-uint16_t adc_get(uint8_t channel_index) {
+
+
+uint16_t adc_get_i(uint8_t channel_index) {
 	return adc_values[channel_index];
 }
 
