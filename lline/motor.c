@@ -1,22 +1,43 @@
 /*
 	Low level motor control via timer based pwm.
 */
+#include "motor.h"
+#include "math.h"
 
+#include <stdbool.h>
 #include <avr/io.h>
 #include <avr/power.h>
 #include <util/delay.h>
 
+// Register usage
+#define USE_OC1A 0
+#define USE_OC1B 1
+#define USE_OC1D 1
 
-#include "motor_conf.h"
+// Prescale selection
+#define MOTOR_T1_PRESCALE 1
 
-void motor_init(void);
-static void motor_pwm10_init(void);
+struct pwm_param_s {
+  uint8_t use_oc1a:1;
+  uint8_t use_oc1b:1;
+  uint8_t use_oc1d:1;
+  uint8_t t1_prescale:5;
+} const pwm_param = { USE_OC1A, USE_OC1B, USE_OC1D, MOTOR_T1_PRESCALE };
+
+static void motor_pwm10_init(struct pwm_param_s param);
+static inline void motor_pins(motor_t *motor, uint8_t dir1, uint8_t dir2);
+static inline void motor_pin(motor_t *motor, uint8_t pin, uint8_t dir);
+static inline void motor_pin_h(motor_t *motor, uint8_t pin);
+static inline void motor_pin_l(motor_t *motor, uint8_t pin);
 
 void motor_init(void) {
-	motor_pwm10_init();
+	motor_pwm10_init(pwm_param);
 }
 
-static void motor_pwm10_init(void) {
+#define T1_PRESCALE_BITS(prescale)	\
+	((uint8_t)(  0x0F & (uint8_t)(( log(prescale) + log(2) )/log(2)) ))
+
+static void motor_pwm10_init(const struct pwm_param_s param) {
 	// Initialize a 10 bit pwm (as on the attinyX61 series)
 	//   All done by the datasheet.
 	
@@ -54,11 +75,11 @@ static void motor_pwm10_init(void) {
 
 	*/
 
-	TCCR1A = (USE_OC1A<<COM1A1) | (0<<COM1A0) | // Output pin modes (OCR1A)
-		(USE_OC1B<<COM1B1) | (0<<COM1B0) | // ^^               (OCR1B)
+	TCCR1A = ((param.use_oc1a)<<COM1A1) | (0<<COM1A0) | // Output pin modes (OCR1A)
+		((param.use_oc1b)<<COM1B1) | (0<<COM1B0) | // ^^               (OCR1B)
 		(       0<<FOC1A ) | (0<<FOC1B ) | // Force output compare
-		(USE_OC1A<<PWM1A ) |
-		(USE_OC1B<<PWM1B ) ;
+		((param.use_oc1a)<<PWM1A ) |
+		((param.use_oc1b)<<PWM1B ) ;
 
 	/*
 	TCCR1B = (0<<PWM1X ) | // PWM inversion (switch !OCR1x and OCR1x)
@@ -67,11 +88,11 @@ static void motor_pwm10_init(void) {
 		//CS1{3,2,1,0}: prescale bits
 	*/
 		
-	TCCR1C = (USE_OC1A<<COM1A1S)|(0<<COM1A0S) | // Shadow bits
-		(USE_OC1B<<COM1B1S)|(0<<COM1B0S) | // ^^
-		(USE_OC1D<<COM1D1) | (0<<COM1D0) | // Output pin modes D
+	TCCR1C = ((param.use_oc1a)<<COM1A1S)|(0<<COM1A0S) | // Shadow bits
+		((param.use_oc1b))|(0<<COM1B0S) | // ^^
+		((param.use_oc1d)<<COM1D1) | (0<<COM1D0) | // Output pin modes D
 		(0<<FOC1D ) | // Force output compare
-		(USE_OC1D<<PWM1D ) ;
+		((param.use_oc1d)<<PWM1D ) ;
 
 	TCCR1D = (0<<FPIE1) | // Fault protection interrupt enable
 		(0<<FPEN1) | // FP enable
@@ -100,20 +121,9 @@ static void motor_pwm10_init(void) {
 	TC1H  = 0b11;
 	OCR1C = 0xFF; // Top
 
-	TCCR1B |= T1_PRESCALE_BITS(MOTOR_T1_PRESCALE);
+	TCCR1B |= T1_PRESCALE_BITS(param.t1_prescale);
 }
 
-#define H 1
-#define L 2
-
-#define MOTOR_PIN(motor,port,dir) \
-	MOTOR_PIN_##dir(motor,port)	
-
-#define MOTOR_PIN_H(motor,port) \
-	*(motor_list[motor].port_p##port) |= motor_list[motor].mask_p##port
-
-#define MOTOR_PIN_L(motor,port) \
-	*(motor_list[motor].port_p##port) &= (uint8_t) ~(motor_list[motor].mask_p##port)
 /* 
  * 1 2 Motor lines
  * L H CCW
@@ -122,37 +132,67 @@ static void motor_pwm10_init(void) {
  * L L Stop 
  */
 
-void motor_set(uint8_t motor, motor_speed_t speed) {
+#define LIMIT(var,limit) \
+  if ( (var) > (limit) ) \
+    var = limit; \
+  else if ( (var) < -(limit) ) \
+    var = -limit
+
+typedef enum pin_state_e { l=false, h=true } pin_state_t;
+void motor_set(motor_t *motor, motor_speed_t speed) {
 	/*
 	motor_t curr_motor = motor_list[motor];
 	curr_motor.set_speed(&curr_motor,abs(speed));
 	curr_motor.set_dir(&curr_motor,sign(speed));
 	*/
+  LIMIT(speed,MOTOR_SPEED_MAX);
 	motor_uspeed_t abs_speed = (motor_uspeed_t) speed;
 
 	// atomic
-	*(motor_list[motor].reg_pwmh) = (uint8_t) (abs_speed >> 8);
-	*(motor_list[motor].reg_pwm ) = (0x00FF & abs_speed);
+	*(motor->reg_pwmh) = (abs_speed >> 8);
+	*(motor->reg_pwm)  = (0x00FF & abs_speed);
 	
 	if      (speed > 0) {
-		MOTOR_PIN(motor,1,H);
-		MOTOR_PIN(motor,2,L);
+		motor_pins(motor,h,l);
 	}
 	else if (speed < 0) {
-		MOTOR_PIN(motor,1,L);
-		MOTOR_PIN(motor,2,H);
+		motor_pins(motor,l,h);
 	}
-	else { // if (speed == 0)
-		MOTOR_PIN(motor,1,L);
-		MOTOR_PIN(motor,2,L);
+	else { //if (speed == 0)
+		motor_pins(motor,l,l);
 	}
 }
 
-motor_speed_t motor_get(uint8_t motor) {
+motor_speed_t motor_get(motor_t *motor) {
 	// atomic
-	motor_speed_t sp = *(motor_list[motor].reg_pwm);
-	sp += *(motor_list[motor].reg_pwmh) << 8;
+	motor_speed_t sp = *(motor->reg_pwm);
+	sp += *(motor->reg_pwmh) << 8;
 	
 	return sp;
+}
+
+static inline void motor_pins(motor_t *motor, pin_state_t dir1, pin_state_t dir2) {
+  motor_pin(motor,1,dir1);
+  motor_pin(motor,2,dir2);
+}
+
+static inline void motor_pin(motor_t *motor, uint8_t pin, pin_state_t dir) {
+  if (dir == h)
+    motor_pin_h(motor,pin);
+  else //if (dir==l)
+    motor_pin_l(motor,pin);
+}
+
+static inline void motor_pin_h(motor_t *motor, pin_state_t pin) {
+  /*  
+  volatile uint8_t * const port = motor->pin[pin-1].port;
+  const uint8_t mask  = motor->pin[pin-1].mask;
+  *port |= mask;
+  */
+  *(motor->pin[pin-1].port) |= motor->pin[pin-1].mask;
+}
+
+static inline void motor_pin_l(motor_t *motor, pin_state_t pin) {
+  *(motor->pin[pin-1].port) &= (uint8_t) ~(motor->pin[pin-1].mask);
 }
 
