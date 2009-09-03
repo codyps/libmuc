@@ -132,7 +132,19 @@ int spi_getc(FILE * stream) {
 }
 #endif
 
-void spi_puts(char * string) {
+int spi_getchar(void) {
+	int r;
+	spi_isr_off();
+	//while(q_empty(&rx));
+	if (q_empty(&rx))
+		r = EOF;
+	else
+		r = q_pop(&rx);
+	spi_isr_on();
+	return r; 
+}
+
+void spi_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
 		while(q_full(&tx)) {
@@ -149,7 +161,7 @@ void spi_puts(char * string) {
 	spi_isr_on();
 }
 
-void spi_o_puts(char * string) {
+void spi_o_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
 		if(q_full(&tx)) {
