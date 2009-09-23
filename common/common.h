@@ -13,6 +13,8 @@
 #define PIN(x)	_PIN(x)
 #define _PIN(x) PIN##x
 
+#define CT(x) (sizeof(x)/sizeof(*x))
+
 inline uint8_t mod( uint8_t i1, uint8_t i2) {// i1%i2
      while( i1 >= i2 ) {
           i1 = (uint8_t) (i1 - i2);
