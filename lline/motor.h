@@ -16,7 +16,7 @@ struct pin_s {
 typedef struct motor_s {
 	volatile uint8_t * const reg_pwm;
 	volatile uint8_t * const reg_pwmh;
-	struct pin_s pin[2];
+	const struct pin_s pin[2];
 } motor_t;
 
 // Motor structure constructor

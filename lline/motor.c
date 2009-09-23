@@ -94,6 +94,7 @@ static void motor_pwm10_init(const struct pwm_param_s param) {
 		(0<<FOC1D ) | // Force output compare
 		((param.use_oc1d)<<PWM1D ) ;
 
+	/*
 	TCCR1D = (0<<FPIE1) | // Fault protection interrupt enable
 		(0<<FPEN1) | // FP enable
 		(0<<FPNC1) | // FP noise canceller
@@ -101,6 +102,9 @@ static void motor_pwm10_init(const struct pwm_param_s param) {
 		(0<<FPAC1) | // FP analog comparitor enable
 		(0<<FPF1 ) | // FP interrupt flag
 		(0<<WGM11) | (1<<WGM10); // Waveform select
+	*/
+	TCCR1D |= (1<<WGM10);
+
 	/*	
 	TCCR1E = (0<<7) | (0<<6) | // Reserved (on attiny861)
 		// Output compare override enable (PWM6). OC1OEx = PBx
@@ -145,8 +149,8 @@ void motor_set(motor_t *motor, motor_speed_t speed) {
 	curr_motor.set_speed(&curr_motor,abs(speed));
 	curr_motor.set_dir(&curr_motor,sign(speed));
 	*/
-  LIMIT(speed,MOTOR_SPEED_MAX);
 	motor_uspeed_t abs_speed = (motor_uspeed_t) speed;
+	if (abs_speed > MOTOR_SPEED_MAX) abs_speed=MOTOR_SPEED_MAX;
 
 	// atomic
 	*(motor->reg_pwmh) = (abs_speed >> 8);
