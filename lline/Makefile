@@ -14,6 +14,7 @@ SRC  = main.c
 SRC += spi_io.c ../common/queue.c
 SRC += adc.c
 SRC += motor.c
+SRC += text_cmd.c
 
 ASRC = 
 OPT = s

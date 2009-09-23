@@ -20,8 +20,10 @@
 //#include <avr/pgmspace.h>
 
 #include "spi_io.h"
+#include "text_cmd.h"
+
 #include "adc.h"
-//#include "motor.c"
+#include "motor.h"
 
 static inline void init(void);
 void main(void) __attribute__((noreturn));
@@ -37,7 +39,7 @@ static inline void init() {
 
 	adc_init();
 	
-	//motor_init();
+	motor_init();
 
 	sei();
 }
@@ -47,13 +49,13 @@ ISR(BADISR_vect){
 }
 */
 
+
 void main(){
 	init();
 
 	uint16_t adc_val[ADC_CHANNEL_CT];
 	
-     
-    	for(;;) {
+  for(;;) {
 		if (adc_new_data) {
 			adc_new_data = false;
 			memcpy(adc_val, (uint16_t *) adc_values,sizeof(adc_val));
@@ -66,10 +68,7 @@ void main(){
 			}
 			spi_putchar('\n');
 		}
-		if (spi_io_rx_nl>0) {
-			spi_io_rx_nl--;
-			// parse new input
-		}
+    process_rx();		
 		_delay_ms(200);
 	}
 }
