@@ -147,15 +147,7 @@ int spi_getchar(void) {
 void spi_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
-		while(q_full(&tx)) {
-			spi_isr_on();
-			asm(
-				"nop\n\t"
-				"nop"
-			);
-			spi_isr_off();
-		}
-		q_push(&tx,*string);
+		_spi_putchar(*string);
 		string++;
 	}
 	spi_isr_on();
