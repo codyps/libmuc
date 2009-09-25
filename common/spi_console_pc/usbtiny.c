@@ -100,7 +100,7 @@ static int usb_in(unsigned int requestid, unsigned int val, unsigned int index,
       (char *)buffer, buflen,
       timeout);
 
-  if (nbytes != buflen) {
+  if (nbytes != 4) {
     fprintf(stderr, "%s: error: usbtiny_receive: %s (expected %d, got %d)\n",
         progname, usb_strerror(), buflen, nbytes);
     exit(1);
