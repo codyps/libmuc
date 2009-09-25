@@ -5,9 +5,9 @@
 #include "debug.h"
 #include <stdio.h>
 
-#define USE_I2C
+//#define USE_I2C
 
-#define F_CPU 16000000
+#define F_CPU 8000000
 
 FILE * io_queue;
 FILE * io_direct;

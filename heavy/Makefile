@@ -5,14 +5,16 @@
 # (GNU make, BSD make, SysV make)
 
 
-MCU = atmega640
-ADMCU = atmega640
+MCU = atmega644p
+ADMCU = atmega644p
 FORMAT = ihex
 TARGET = main
-SRC = main.c  util.c
-SRC += usart1.c
-SRC += ../common/i2c.c ../common/ex/i2c_HMC6343.c
-SRC += ../common/servo.c
+SRC = main.c
+#SRC += util.c
+#SRC += usart1.c
+SRC += ../common/spi_io.c
+#SRC += ../common/i2c.c ../common/ex/i2c_HMC6343.c
+#SRC += ../common/servo.c
 SRC += ../common/queue.c
 
 ASRC = 
