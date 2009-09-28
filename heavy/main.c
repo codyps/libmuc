@@ -38,9 +38,126 @@
 #define MAGR_ENDSTOP 4
 
 #define MAGR_BITFIELD (\
-  (1<<MAGR_DATA) | (1<<MAGR_CLK) | (1<<MAGR_MOTION) |\
+  (1<<MAGR_DATA) | (1<<MAGR_CLK) \
+   )
+//  (1<<MAGR_MOTION) |\
   (1<<MAGR_CDETECT) | (1<<MAGR_ENDSTOP)\
   )
+
+#define MAGR_BITS_PACK 5
+
+struct mag_status {
+  uint8_t motion_1;
+  uint8_t motion_0;
+
+  uint8_t insert_1;
+  uint8_t insert_0;
+
+  uint8_t end_stop_1;
+  uint8_t end_stop_0;
+
+  uint8_t data;
+  uint8_t data_ct;
+  uint8_t data_ready;
+
+} volatile mag;
+
+
+inline static uint8_t bit(uint8_t in,uint8_t pos) {
+  return ((in>>pos)&1)
+}
+
+static uint8_t flip(uint8_t in) {
+  uint8_t out = 0;
+  const uint8_t bit_ct = 8;
+  for ( uint8_t i = 0; i < bit_ct ; i++ ) {
+    if ( bit(in,i) )
+      out |= bit(in,i)<<(bit_ct-i-1);
+  }
+  return out;
+}
+
+ISR(SIG_PIN_CHANGE0) {
+  static uint8_t old_pin =  0xFF; // all pins default high
+  uint8_t new_pin = PINA;
+
+  uint8_t pin_diff = old_pin ^ new_pin;
+  
+  old_pin = new_pin;
+  
+  static uint8_t data;
+
+  if ( pin_diff & 1<<MAGR_DATA ) {
+    // data = !MAGR_DATA    
+    if ( new_pin & 1<<MAGR_DATA) {
+      data = 0;
+    }
+    else {
+      data = 1;
+    }
+  }
+
+  if ( pin_diff & 1<<MAGR_CLK ) {
+    // read done on falling edge.
+    if ( new_pin & 1<<MAGR_CLK ) {
+      //set (line 1, logic 0) 
+      // about to do something?
+    }
+    else {
+      //clear (line 0, logic 1)
+      // read data
+      mag.data |= ( data << (mag.data_ct) );
+      mag.data_ct++;
+      if (mag.data_ct >= MAGR_BITS_PACK) {
+        mag.data_ready = 1;
+      }
+    }
+  }
+
+  /*
+  if ( pin_diff & 1<<MAGR_MOTION ) {
+    if ( new_pin & 1<<MAGR_MOTION) {
+      //set (line 1, logic 0) 
+      // state = mag card no longer in motion
+      mag.motion_0 ++;
+    }
+    else {
+      //clear (line 0, logic 1)
+      // state = mag card in motion
+      mag.motion_1 ++;
+    }
+  }
+  if ( pin_diff & 1<<MAGR_CDETECT ) {
+    if ( new_pin & 1<<MAGR_CDETECT) {
+      //set (line 1, logic 0) 
+      // state = card all the way out
+      mag.insert_0 ++;
+    }
+    else {
+      //clear (line 0, logic 1)
+      // state = card begginning in
+      mag.insert_1 ++;
+    }  
+  }
+  if ( pin_diff & 1<<MAGR_ENDSTOP ) {
+    if ( new_pin & 1<<MAGR_ENDSTOP) {
+      //set (line 1, logic 0) 
+      // state = card begining to move out
+      mag.end_stop_0 ++;
+    }
+    else {
+      //clear (line 0, logic 1)
+      // state = card all the way in
+      mag.end_stop_1 ++;
+    }  
+  }
+  */
+}
+
+/*
+ISR(BADISR_vect){
+}
+*/
 
 void init(void) {
 	power_all_disable();
@@ -54,80 +171,86 @@ void init(void) {
   PCMSK0|= ( MAGR_BITFIELD );
 
   spi_io_init();
-  sei();  
+  sei();
   
   stdout = spi_io;
 
 	printf_P(PSTR("\n\n[main init done]\n\n"));
 }
 
-ISR(SIG_PIN_CHANGE0) {
-  static uint8_t pin =  0xFF; // all pins default high
-  uint8_t new_pin = PINA;
-
-  uint8_t pin_diff = pin ^ new_pin;
-
-  static bool data;
-
-  if ( pin_diff & 1<<MAGR_DATA ) {
-    // data = !MAGR_DATA    
-    data = (bool) ~(new_pin & 1<<MAGR_DATA);
-  }
-  if ( pin_diff & 1<<MAGR_CLK ) {
-    // read done on falling edge.
-    if ( new_pin & 1<<MAGR_CLK ) {
-      //set (line 1, logic 0) 
-
-    }
-    else {
-      //clear (line 0, logic 1)
-      // read data
-    }
-  }
-  if ( pin_diff & 1<<MAGR_MOTION ) {
-    if ( new_pin & 1<<MAGR_MOTION) {
-      //set (line 1, logic 0) 
-      // state = mag card no longer in motion
-    }
-    else {
-      //clear (line 0, logic 1)
-      // state = mag card in motion
-    }
-  }
-  if ( pin_diff & 1<<MAGR_CDETECT ) {
-    if ( new_pin & 1<<MAGR_CDETECT) {
-      //set (line 1, logic 0) 
-      // state = card all the way out
-    }
-    else {
-      //clear (line 0, logic 1)
-      // state = card begginning in
-    }  
-  }
-  if ( pin_diff & 1<<MAGR_ENDSTOP ) {
-    if ( new_pin & 1<<MAGR_ENDSTOP) {
-      //set (line 1, logic 0) 
-      // state = card begining to move out
-    }
-    else {
-      //clear (line 0, logic 1)
-      // state = card all the way in
-    }  
-  }
-}
-
-/*
-ISR(BADISR_vect){
-}
-*/
-
 int main(void) {
 	init();
 	for(;;) {
-        
+        /*
+    if (mag.end_stop_1) {
+//      puts_P(PSTR("end_stop_1\n"));
+      mag.end_stop_1--;
+    }
+
+    if (mag.end_stop_0) {
+  //    puts_P(PSTR("end_stop_0\n"));
+      mag.end_stop_0--;
+    }
+
+    if (mag.insert_1) {
+    //  puts_P(PSTR("insert_1\n"));
+      mag.insert_1--;
+    }
     
-		_delay_ms(400);
+    if (mag.insert_0) {
+      //puts_P(PSTR("insert_0\n"));
+      mag.insert_0--;
+    }
+
+    if (mag.motion_1) {
+      //puts_P(PSTR("motion_1\n"));
+      mag.motion_1--;
+    }
+    
+    if (mag.motion_0) {
+      //puts_P(PSTR("motion_0\n"));
+      mag.motion_0--;
+    }
+    */
+    if (mag.data_ready) {
+      uint8_t data = mag.data;
+      mag.data_ct = 0;
+      mag.data = 0;
+      mag.data_ready = 0;
+
+      for (uint8_t i = 0; i < MAGR_BITS_PACK; i++) {
+        printf("%d",(data>>i)&1);
+      }
+      uint8_t data_i = flip(data) >> (8-MAGR_BITS_PACK);
+
+      putchar('\n');
+    }
 	}
 	return 0;
 }
 
+
+/*
+ISO Track 2 table
+          	Hex	  Char Function
+0	0	0	0	1  0x00 0	Data
+1	0	0	0	0  0x01 1	Data
+0	1	0	0	0  0x02 2	Data
+1	1	0	0	1  0x03 3	Data
+0	0	1	0	0  0x04 4	Data
+1	0	1	0	1  0x05 5	Data
+0	1	1	0	1  0x06 6	Data
+1	1	1	0	0  0x07 7	Data
+0	0	0	1	0  0x08 8	Data
+1	0	0	1	1  0x09 9	Data
+0	1	0	1	1  0x0A :	Control
+1	1	0	1	0  0x0B ;	Start Sentinel
+0	0	1	1	1  0x0C <	Control
+1	0	1	1	0  0x0D =	Field Separator
+0	1	1	1	0  0x0E >	Control
+1	1	1	1	1  0x0F ?	End Sentinel
+*/
+
+uint16_t iso_t2(uint8_t in) {
+  if (  
+}
