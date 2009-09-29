@@ -3,6 +3,9 @@
 
 #define SPI_IO_STD_WAIT
 
+#define SPI_IO_TX_Q_LEN 128
+#define SPI_IO_RX_Q_LEN 32
+
 // atmegaXX4p
 
 #define SPI_MISO 6

@@ -12,7 +12,7 @@
 
 #include "spi_io.h"
 
-static uint8_t tx_b[32],	rx_b[32];
+static uint8_t tx_b[SPI_IO_TX_Q_LEN],	rx_b[SPI_IO_RX_Q_LEN];
 static queue_t tx = Q_INIT(tx_b);
 static queue_t rx = Q_INIT(rx_b);
 
