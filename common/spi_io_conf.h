@@ -1,6 +1,8 @@
 #define SPI_IO_USE_SPI
 #define SPI_IO_STANDARD
 
+#define SPI_IO_STD_WAIT
+
 // atmegaXX4p
 
 #define SPI_MISO 6

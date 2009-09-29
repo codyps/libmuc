@@ -59,7 +59,6 @@ void spi_io_init(void) {
    q_pop(
    q_push(
    q_full(
- 
  */
 
 #ifdef SPI_IO_STANDARD
@@ -67,7 +66,14 @@ int spi_putc(char c, FILE * stream) {
 	int r;	
 	spi_isr_off();
   #ifdef SPI_IO_STD_WAIT
-	while(q_full(&tx));
+	while(q_full(&tx)) {
+    spi_isr_on();
+    asm(
+      "nop \n\t"
+      "nop"
+    );
+    spi_isr_off();
+  }
   #else
 	if (q_full(&tx))
 		r = EOF;
@@ -83,7 +89,14 @@ int spi_getc(FILE * stream) {
 	int r;
 	spi_isr_off();
   #ifdef SPI_IO_STD_WAIT
-	while(q_empty(&rx));
+	while(q_empty(&rx)) {
+    spi_isr_on();
+    asm(
+      "nop \n\t"
+      "nop"
+    );
+    spi_isr_off();
+  }
   #else
 	if (q_empty(&rx))
 		r = EOF;
@@ -93,6 +106,7 @@ int spi_getc(FILE * stream) {
 	spi_isr_on();
 	return r; 
 }
+
 #endif /* SPI_IO_STANDARD */
 
 #if defined(SPI_IO_FAST_ERROR_ZERO)
@@ -108,7 +122,14 @@ int spi_getchar(void) {
 	int r;
 	spi_isr_off();
   #ifdef SPI_IO_FAST_WAIT
-	while(q_empty(&rx));
+	while(q_empty(&rx)) {
+    spi_isr_on();
+    asm(
+      "nop \n\t"
+      "nop"
+    );
+    spi_isr_off();
+  }
   #else
   if (q_empty(&rx))
 		r = EOF;
