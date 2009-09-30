@@ -25,7 +25,6 @@ static int usart1_getchar_direct(FILE * stream);
 static int usart1_putchar_direct(char c, FILE *stream);
 static FILE usart1_io_direct = FDEV_SETUP_STREAM(usart1_putchar_direct, usart1_getchar_direct,_FDEV_SETUP_RW);
 
-
 inline static void usart_udre_inter_on(void)  { UCSRB |= (uint8_t) (1<<UDRIE); }
 inline static void usart_udre_inter_off(void) { UCSRB &= (uint8_t)~(1<<UDRIE); }
 

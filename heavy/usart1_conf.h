@@ -1,12 +1,31 @@
 //FIXME: Currently the following line does nothing, had to place the '1' directly in the U_# macros
 #define USART_NUMBER	1
 
-#define U_A(_A)	COMB2(_A, 1 )
-#define U_I(_A,_B) COMB3(_A, 1 ,_B)
+#define EV(x) (x)
+
+#define U_A(_A)	COMB2(_A, EV(USART_NUMBER) )
+#define U_I(_A,_B) COMB3(_A, EV(USART_NUMBER) ,_B)
 
 #define COMB3(_A,_num,_C) _A ## _num ## _C
 #define COMB2(_A,_num) _A ## _num
 
+// Defined:
+// Functions
+/*
+
+#define usart_init U_I(usart,_init)
+
+
+
+
+#define usart_flush_rx U_I(usart,_flush_rx)
+#define usart_flush_tx U_I(usart,_flush_tx)
+
+
+
+*/
+
+// Used:
 // Registers
 //  Bits
 #define UCSRA	U_I(UCSR,A)
