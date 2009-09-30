@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 {
   // XXX: bitclock always default for now.
   // any faster than this with 1Mhz avr clock and bit errors are too likely.
-  double bitclock = 0.0002200;  
+  double bitclock = 0.0000500;  
 
   progname = argv[0];
 
