@@ -13,6 +13,8 @@
 #include <avr/power.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+
+#include <util/parity.h> 
 #include <util/delay.h>
 
 #include "util.h"
@@ -38,11 +40,9 @@
 #define MAGR_ENDSTOP 4
 
 #define MAGR_BITFIELD (\
-  (1<<MAGR_DATA) | (1<<MAGR_CLK) \
-   )
-//  (1<<MAGR_MOTION) |\
-  (1<<MAGR_CDETECT) | (1<<MAGR_ENDSTOP)\
-  )
+  (1<<MAGR_DATA) | (1<<MAGR_CLK) |\
+  (1<<MAGR_CDETECT) | (1<<MAGR_ENDSTOP) )
+//  (1<<MAGR_MOTION) |
 
 #define MAGR_BITS_PACK 5
 
@@ -64,7 +64,7 @@ struct mag_status {
 
 
 inline static uint8_t bit(uint8_t in,uint8_t pos) {
-  return ((in>>pos)&1)
+  return ((in>>pos)&1);
 }
 
 static uint8_t flip(uint8_t in) {
@@ -75,6 +75,56 @@ static uint8_t flip(uint8_t in) {
       out |= bit(in,i)<<(bit_ct-i-1);
   }
   return out;
+}
+
+/*
+ISO Track 2 table
+          	Hex	  Char Function
+0	0	0	0	1  0x00 0	Data
+1	0	0	0	0  0x01 1	Data
+0	1	0	0	0  0x02 2	Data
+1	1	0	0	1  0x03 3	Data
+0	0	1	0	0  0x04 4	Data
+1	0	1	0	1  0x05 5	Data
+0	1	1	0	1  0x06 6	Data
+1	1	1	0	0  0x07 7	Data
+0	0	0	1	0  0x08 8	Data
+1	0	0	1	1  0x09 9	Data
+0	1	0	1	1  0x0A :	Control
+1	1	0	1	0  0x0B ;	Start Sentinel
+0	0	1	1	1  0x0C <	Control
+1	0	1	1	0  0x0D =	Field Separator
+0	1	1	1	0  0x0E >	Control
+1	1	1	1	1  0x0F ?	End Sentinel
+*/
+
+static uint16_t iso_t2(uint8_t in) {
+  uint8_t in_s = in >> 1; // in stripped of the parity bit.s
+  uint8_t out;
+
+  if (in_s<0xA) {
+    out = in_s + '0';
+  }
+  else {
+    switch ( in_s ) {
+      case 0xA: out = ':'; break;
+      case 0xB: out = ';'; break;
+      case 0xC: out = '<'; break;
+      case 0xD: out = '='; break;
+      case 0xE: out = '>'; break;
+      case 0xF: out = '?'; break;
+      default : out = '_'; break;
+    }
+  }
+  
+    
+
+  if ( parity_even_bit(in_s) == (in&1) ) { 
+    return ( ('!'<<8) | (out) );
+  }
+  else {
+    return ( (' '<<8) | (out) );
+  }
 }
 
 ISR(SIG_PIN_CHANGE0) {
@@ -127,6 +177,8 @@ ISR(SIG_PIN_CHANGE0) {
       mag.motion_1 ++;
     }
   }
+  */
+
   if ( pin_diff & 1<<MAGR_CDETECT ) {
     if ( new_pin & 1<<MAGR_CDETECT) {
       //set (line 1, logic 0) 
@@ -139,6 +191,7 @@ ISR(SIG_PIN_CHANGE0) {
       mag.insert_1 ++;
     }  
   }
+  
   if ( pin_diff & 1<<MAGR_ENDSTOP ) {
     if ( new_pin & 1<<MAGR_ENDSTOP) {
       //set (line 1, logic 0) 
@@ -147,11 +200,11 @@ ISR(SIG_PIN_CHANGE0) {
     }
     else {
       //clear (line 0, logic 1)
-      // state = card all the way in
+      // state parity_even_bit(in>>1)= card all the way in
       mag.end_stop_1 ++;
     }  
   }
-  */
+  
 }
 
 /*
@@ -181,37 +234,39 @@ void init(void) {
 int main(void) {
 	init();
 	for(;;) {
-        /*
+
+    
     if (mag.end_stop_1) {
-//      puts_P(PSTR("end_stop_1\n"));
+      puts_P(PSTR("\nend_stop_1\n"));
       mag.end_stop_1--;
     }
 
     if (mag.end_stop_0) {
-  //    puts_P(PSTR("end_stop_0\n"));
+      puts_P(PSTR("end_stop_0\n\n"));
       mag.end_stop_0--;
     }
 
     if (mag.insert_1) {
-    //  puts_P(PSTR("insert_1\n"));
+      puts_P(PSTR("insert_1\n\n"));
       mag.insert_1--;
     }
     
     if (mag.insert_0) {
-      //puts_P(PSTR("insert_0\n"));
+      puts_P(PSTR("\ninsert_0\n"));
       mag.insert_0--;
     }
-
+    /*
     if (mag.motion_1) {
-      //puts_P(PSTR("motion_1\n"));
+      puts_P(PSTR("motion_1\n"));
       mag.motion_1--;
     }
     
     if (mag.motion_0) {
-      //puts_P(PSTR("motion_0\n"));
+      puts_P(PSTR("motion_0\n"));
       mag.motion_0--;
     }
     */
+
     if (mag.data_ready) {
       uint8_t data = mag.data;
       mag.data_ct = 0;
@@ -219,9 +274,21 @@ int main(void) {
       mag.data_ready = 0;
 
       for (uint8_t i = 0; i < MAGR_BITS_PACK; i++) {
-        printf("%d",(data>>i)&1);
+        printf("%d",bit(data,i));
       }
       uint8_t data_i = flip(data) >> (8-MAGR_BITS_PACK);
+      uint16_t proc = iso_t2(data);
+      uint16_t proc_i = iso_t2(data_i);
+
+      putchar('\t');
+
+      putchar(proc>>8);
+      putchar(proc&0xFF);
+
+      putchar('\t');
+
+      putchar(proc_i>>8);
+      putchar(proc_i&0xFF);
 
       putchar('\n');
     }
@@ -229,28 +296,3 @@ int main(void) {
 	return 0;
 }
 
-
-/*
-ISO Track 2 table
-          	Hex	  Char Function
-0	0	0	0	1  0x00 0	Data
-1	0	0	0	0  0x01 1	Data
-0	1	0	0	0  0x02 2	Data
-1	1	0	0	1  0x03 3	Data
-0	0	1	0	0  0x04 4	Data
-1	0	1	0	1  0x05 5	Data
-0	1	1	0	1  0x06 6	Data
-1	1	1	0	0  0x07 7	Data
-0	0	0	1	0  0x08 8	Data
-1	0	0	1	1  0x09 9	Data
-0	1	0	1	1  0x0A :	Control
-1	1	0	1	0  0x0B ;	Start Sentinel
-0	0	1	1	1  0x0C <	Control
-1	0	1	1	0  0x0D =	Field Separator
-0	1	1	1	0  0x0E >	Control
-1	1	1	1	1  0x0F ?	End Sentinel
-*/
-
-uint16_t iso_t2(uint8_t in) {
-  if (  
-}
