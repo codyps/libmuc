@@ -7,12 +7,12 @@
 
 #include "list.h"
 
+#define LIST_ERROR(...) 
+
 list_base_t list_pop_front(list_t *l) {
 
 	if (list_empty(l)) {
-		#if (defined(io_isr))
-		fprintf(io_isr,"\n{warn: pop}");
-		#endif
+    LIST_ERROR();
 		return 0x00;
 	}
 
@@ -48,10 +48,8 @@ list_base_t list_pop_back(list_t *l) {
 
 list_error_t list_push_front(list_t *l, list_base_t x) {
 	if (list_full(l)){
-	     #if (defined(io_isr))
-	     fprintf(io_isr,"\n{warn: push (%d)}",x);
-	     #endif
-	     return -1;
+    LIST_ERROR();
+	  return -1;
 	}
 
 	l->ct++;
@@ -67,10 +65,8 @@ list_error_t list_push_front(list_t *l, list_base_t x) {
 
 list_error_t list_push_back(list_t *l, list_base_t x) {
 	if (list_full(l)){
-	     #if (defined(io_isr))
-	     fprintf(io_isr,"\n{warn: push (%d)}",x);
-	     #endif
-	     return -1;
+    LIST_ERROR();    
+    return -1;
 	}
 
 	l->ct++;
@@ -100,7 +96,7 @@ list_error_t list_push_back_o(list_t *l, list_base_t x) {
 
 list_bast_t list_peek(list_t *l, list_index_t index) {
   if ( index > l->ct ) {
-    // errorz    
+    LIST_ERROR();
     return 0;
   }
 
