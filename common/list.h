@@ -10,7 +10,7 @@ typedef char list_base_t;  // allowed to use char* to access any type of mem.
 typedef uint8_t list_index_t;
 
 typedef struct {
-  LIST_BASE_T * buffer;	// buffer
+  LIST_BASE_T *restrict buffer;	// buffer
 	LIST_INDEX_T first;	// position of first element
   LIST_INDEX_T end;	// position of last element +1
 	LIST_INDEX_T ct;	// number of elements in the list
