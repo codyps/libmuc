@@ -19,13 +19,15 @@ typedef volatile struct {
 	//uint8_t flags;      // for when i need to tack something on.
 }  queue_t;
 
-#define Q_INIT(buff) { .buffer = (buff), .first = 0, .last = 0, .ct = 0, .sz = sizeof(buff) / sizeof(QUEUE_BASE_T) }
+#define Q_DEF(buff) { .buffer = (buff), .first = 0, .last = 0, .ct = 0, .sz = sizeof(buff) / sizeof(QUEUE_BASE_T) }
 
 int8_t q_push(queue_t *q, QUEUE_BASE_T x);
 int8_t q_push_o(queue_t *q, QUEUE_BASE_T x); // overwrites old data on q full
-QUEUE_BASE_T q_pop(queue_t *q);
+
+QUEUE_BASE_T q_pop(queue_t *q); // takes oldest element
+QUEUE_BASE_T q_remove(queue_t *q); // takes newest element
+
 void q_flush(queue_t *q);
-QUEUE_BASE_T q_remove(queue_t *q);
 bool q_empty(queue_t *q);
 bool q_full(queue_t *q);
 
