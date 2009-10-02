@@ -12,15 +12,17 @@
 
 #include "spi_io.h"
 
-static uint8_t tx_b[SPI_IO_TX_Q_LEN],	rx_b[SPI_IO_RX_Q_LEN];
-static queue_t tx = Q_DEF(tx_b);
-static queue_t rx = Q_DEF(rx_b);
+// NEVER ACCESS THESE DIRECTLY (they are used as 'restrict').
+static uint8_t tx_b[SPI_IO_TX_Q_LEN],	rx_b[SPI_IO_RX_Q_LEN]; 
+
+static volatile queue_t tx = Q_DEF(tx_b);
+static volatile queue_t rx = Q_DEF(rx_b);
 
 volatile uint8_t spi_io_rx_nl;
 
 #ifdef SPI_IO_STANDARD
-int spi_putc(char c, FILE * stream);
-int spi_getc(FILE * stream);
+static int spi_putc(char c, FILE * stream);
+static int spi_getc(FILE * stream);
 static FILE _spi_io = FDEV_SETUP_STREAM(spi_putc, spi_getc ,_FDEV_SETUP_RW);
 FILE * spi_io;
 #endif

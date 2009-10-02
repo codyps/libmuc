@@ -22,8 +22,8 @@ int spi_getchar(void);
 // standard io
 //#define SPI_IO_STANDARD // 106B flash / 16B ram
 #ifdef SPI_IO_STANDARD
-int spi_getc(FILE * stream);
-int spi_putc(char c, FILE * stream);
+//static int spi_getc(FILE * stream);
+//static int spi_putc(char c, FILE * stream);
 extern FILE * spi_io;
 #endif
 
