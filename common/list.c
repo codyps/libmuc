@@ -7,13 +7,16 @@
 
 #include "list.h"
 
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
 #define LIST_ERROR(...) 
 
 list_base_t list_pop_front(list_t *l) {
 
-	if (list_empty(l)) {
+	if ( unlikely( list_empty(l) ) ) {
     LIST_ERROR();
-		return 0x00;
+		return 0;
 	}
 
 	list_base_t head = l->buffer[ l->first ];
@@ -29,8 +32,8 @@ list_base_t list_pop_front(list_t *l) {
 
 list_base_t list_pop_back(list_t *l) {
 
-	if (list_empty(l)) {
-    // error.
+	if ( unlikely( list_empty(l) ) ) {
+    LIST_ERROR();
 		return 0;
 	}
 
@@ -47,7 +50,7 @@ list_base_t list_pop_back(list_t *l) {
 }
 
 list_error_t list_push_front(list_t *l, list_base_t x) {
-	if (list_full(l)){
+	if ( unlikely( list_full(l) ) ){
     LIST_ERROR();
 	  return -1;
 	}
@@ -64,7 +67,7 @@ list_error_t list_push_front(list_t *l, list_base_t x) {
 }
 
 list_error_t list_push_back(list_t *l, list_base_t x) {
-	if (list_full(l)){
+	if ( unlikely( list_full(l) ) ){
     LIST_ERROR();    
     return -1;
 	}
@@ -95,7 +98,7 @@ list_error_t list_push_back_o(list_t *l, list_base_t x) {
 }
 
 list_bast_t list_peek(list_t *l, list_index_t index) {
-  if ( index > l->ct ) {
+  if ( unlikely( index > l->ct ) ) {
     LIST_ERROR();
     return 0;
   }
@@ -118,11 +121,11 @@ void list_flush(list_t *list) {
 }
 
 bool list_empty(list_t *list) {
-	if (list->ct == 0)	return true;
+	if ( unlikely( list->ct == 0 ) )	return true;
 	else	 	return false;
 }
 
 bool list_full(list_t *list) {
-	if (list->ct >= list->sz-1)	return true;
+	if ( unlikely( list->ct >= list->sz-1 ) )	return true;
 	else 			return false;
 }
