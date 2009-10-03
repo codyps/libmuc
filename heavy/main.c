@@ -60,22 +60,23 @@ struct mag_status {
   uint8_t data_ct;
   uint8_t data_ready;
 
-} volatile mag;
+  uint8_t data_buff[64];
+  queue_t data_q;
+
+} static volatile mag = { .data_q=Q_DEF(mag.data_buff) };
 
 
 inline static uint8_t bit(uint8_t in,uint8_t pos) {
   return ((in>>pos)&1);
 }
 
-static uint8_t flip(uint8_t in) {
-  uint8_t out = 0;
-  const uint8_t bit_ct = 8;
-  for ( uint8_t i = 0; i < bit_ct ; i++ ) {
-    if ( bit(in,i) )
-      out |= bit(in,i)<<(bit_ct-i-1);
-  }
-  return out;
-}
+static uint8_t bit_reverse( uint8_t x )
+{
+    x = ((x >> 1) & 0x55) | ((x << 1) & 0xaa);
+    x = ((x >> 2) & 0x33) | ((x << 2) & 0xcc);
+    x = ((x >> 4) & 0x0f) | ((x << 4) & 0xf0);
+    return x;   
+} 
 
 /*
 ISO Track 2 table
@@ -160,6 +161,7 @@ ISR(SIG_PIN_CHANGE0) {
       mag.data_ct++;
       if (mag.data_ct >= MAGR_BITS_PACK) {
         mag.data_ready = 1;
+        q_push(&(mag.data_q),mag.data);
       }
     }
   }
@@ -276,7 +278,7 @@ int main(void) {
       for (uint8_t i = 0; i < MAGR_BITS_PACK; i++) {
         printf("%d",bit(data,i));
       }
-      uint8_t data_i = flip(data) >> (8-MAGR_BITS_PACK);
+      uint8_t data_i = bit_reverse(data) >> (8-MAGR_BITS_PACK);
       uint16_t proc = iso_t2(data);
       uint16_t proc_i = iso_t2(data_i);
 
