@@ -93,7 +93,7 @@ list_error_t list_push_back_o(list_t *l, list_base_t x) {
 	return 0;
 }
 
-list_bast_t list_peek(list_t *l, list_index_t index) {
+list_base_t list_peek(list_t *l, list_index_t index) {
 	if ( unlikely( index > l->ct ) ) {
 		LIST_ERROR();
 		return 0;
@@ -102,7 +102,7 @@ list_bast_t list_peek(list_t *l, list_index_t index) {
 	uint8_t sum = l->first + index;
 	uint8_t diff = l->first - index;
 
-	if ( sum < first ) {
+	if ( sum < l->first ) {
 		//XXX: damn overflow.
 	}
   
