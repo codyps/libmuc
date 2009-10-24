@@ -10,7 +10,8 @@
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
 
-#define LIST_ERROR(...) 
+#define LIST_ERROR(...) fprintf(stderr,"ERROR: %s:%s():%d \n",__FILE__,__FUNCTION__,__LINE__);
+
 
 list_base_t list_pop_front(list_t *l) {
 	if ( unlikely( list_empty(l) ) ) {
@@ -93,6 +94,30 @@ list_error_t list_push_back_o(list_t *l, list_base_t x) {
 	return 0;
 }
 
+list_base_t list_peek_front(list_t *l) {
+	if ( unlikely( list_empty(l) ) ) {
+		LIST_ERROR();
+		return 0;
+	}
+	
+	return l->buffer[l->first];
+}
+list_base_t list_peek_back(list_t *l) {
+	if ( unlikely( list_empty(l) ) ) {
+		LIST_ERROR();
+		return 0;
+	}
+	
+	list_index_t last = l->end-1;
+	if (last >= l->sz) {
+		last = l->sz-1;
+	}
+	
+	return l->buffer[last];
+}
+
+
+
 list_base_t list_peek(list_t *l, list_index_t index) {
 	if ( unlikely( index > l->ct ) ) {
 		LIST_ERROR();
@@ -122,6 +147,6 @@ bool list_empty(list_t *list) {
 }
 
 bool list_full(list_t *list) {
-	if ( unlikely( list->ct >= list->sz-1 ) )	return true;
+	if ( unlikely( list->ct >= list->sz ) )	return true;
 	else 			return false;
 }

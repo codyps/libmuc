@@ -19,7 +19,7 @@ typedef struct {
 } list_t;
 
 #define LIST_INITIALIZER(buff) {\
-	.buffer = (buff), .first = 0, .last = 0, .ct = 0,\
+	.buffer = (buff), .first = 0, .end = 0, .ct = 0,\
 	.sz = sizeof(buff) / sizeof(list_base_t) \
 	}
 
