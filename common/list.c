@@ -13,9 +13,8 @@
 #define LIST_ERROR(...) 
 
 list_base_t list_pop_front(list_t *l) {
-
 	if ( unlikely( list_empty(l) ) ) {
-    LIST_ERROR();
+		LIST_ERROR();
 		return 0;
 	}
 
@@ -31,45 +30,43 @@ list_base_t list_pop_front(list_t *l) {
 }
 
 list_base_t list_pop_back(list_t *l) {
-
 	if ( unlikely( list_empty(l) ) ) {
-    LIST_ERROR();
+		LIST_ERROR();
 		return 0;
 	}
 
-  l->ct--;
+	l->ct--;
 
-  l->end--;
-  if ( l->end >= l->sz) // if overflowed
-    l->end = l->sz - 1;
+	l->end--;
+	if ( l->end >= l->sz) // if overflowed
+		l->end = l->sz - 1;
 
-  list_base_t last = l->buffer[l->end];
+	list_base_t last = l->buffer[l->end];
   
-  return last;
-
+	return last;
 }
 
 list_error_t list_push_front(list_t *l, list_base_t x) {
 	if ( unlikely( list_full(l) ) ){
-    LIST_ERROR();
-	  return -1;
+		LIST_ERROR();
+		return -1;
 	}
 
 	l->ct++;
 
-  l->first--;
-  if ( l->first >= l->sz ) // if overflowed
-    l->first = l->sz - 1;
+	l->first--;
+	if ( l->first >= l->sz ) // if overflowed
+		l->first = l->sz - 1;
 
 	l->buffer[ l->first ] = x;
 
-  return 0;
+	return 0;
 }
 
 list_error_t list_push_back(list_t *l, list_base_t x) {
 	if ( unlikely( list_full(l) ) ){
-    LIST_ERROR();    
-    return -1;
+		LIST_ERROR();    
+		return -1;
 	}
 
 	l->ct++;
@@ -80,39 +77,38 @@ list_error_t list_push_back(list_t *l, list_base_t x) {
 	if ( l->end >= l->sz ) 
 		l->end = 0;
 
-  return 0;
-
+	return 0;
 }
 
 list_error_t list_push_back_o(list_t *l, list_base_t x) {
 	l->buffer[ l->end ] = x;
 
-  l->end++;
+	l->end++;
 	if ( l->end >= l->sz )
 		l->end = 0;
 
 	if (!list_full(l))
 		++(l->ct);
-
-  return 0;
+	
+	return 0;
 }
 
 list_bast_t list_peek(list_t *l, list_index_t index) {
-  if ( unlikely( index > l->ct ) ) {
-    LIST_ERROR();
-    return 0;
-  }
+	if ( unlikely( index > l->ct ) ) {
+		LIST_ERROR();
+		return 0;
+	}
 
-  uint8_t sum = l->first + index;
-  uint8_t diff = l->first - index;
+	uint8_t sum = l->first + index;
+	uint8_t diff = l->first - index;
 
-  if ( sum < first ) {
-    //XXX: damn overflow.
-  }
+	if ( sum < first ) {
+		//XXX: damn overflow.
+	}
   
-  if ( sum >= l->sz ) {
+	if ( sum >= l->sz ) {
 
-  }
+	}
 }
 
 void list_flush(list_t *list) {

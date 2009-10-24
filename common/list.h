@@ -10,17 +10,17 @@ typedef char list_base_t;  // allowed to use char* to access any type of mem.
 typedef uint8_t list_index_t;
 
 typedef struct {
-  LIST_BASE_T *restrict buffer;	// buffer
+	LIST_BASE_T *restrict buffer;	// buffer
 	LIST_INDEX_T first;	// position of first element
-  LIST_INDEX_T end;	// position of last element +1
+	LIST_INDEX_T end;	// position of last element +1
 	LIST_INDEX_T ct;	// number of elements in the list
 	const LIST_INDEX_T sz;	// size of the buffer
 } list_t;
 
-#define LIST_DEF(buff) {\
-  .buffer = (buff), .first = 0, .last = 0, .ct = 0,\
-  .sz = sizeof(buff) / sizeof(list_base_t) \
-  }
+#define LIST_INITIALIZER(buff) {\
+	.buffer = (buff), .first = 0, .last = 0, .ct = 0,\
+	.sz = sizeof(buff) / sizeof(list_base_t) \
+	}
 
 // add to front (push)
 #define list_push list_push_front
