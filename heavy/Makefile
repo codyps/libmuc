@@ -40,7 +40,7 @@ CDEFS =
 
 # Place -I options here
 CINCS = -I../common -I../
-CLINK =
+CLINK = -L/usr/lib64/binutils/avr/2.20/ldscripts
 
 CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes
@@ -141,11 +141,11 @@ all: build
 
 build: elf hex eep
 
-elf: $(TARGET).elf
-hex: $(TARGET).hex
-eep: $(TARGET).eep
-lss: $(TARGET).lss 
-sym: $(TARGET).sym
+elf: $(TARGET).elf $(TARGET).uni.elf
+hex: $(TARGET).hex $(TARGET).uni.hex
+eep: $(TARGET).eep $(TARGET).uni.eep
+lss: $(TARGET).lss $(TARGET).uni.lss
+sym: $(TARGET).sym $(TARGET).uni.sym
 
 
 # Program the device.  
@@ -195,6 +195,8 @@ extcoff: $(TARGET).elf
 $(TARGET).elf: $(OBJ)
 	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
 
+$(TARGET).uni.elf: $(SRC)
+	$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program --output $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
 .c.o:
