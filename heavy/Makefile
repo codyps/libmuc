@@ -39,8 +39,8 @@ CSTANDARD = -std=gnu99
 CDEFS =
 
 # Place -I options here
-CINCS = -I../common -I../
-CLINK = -L/usr/lib64/binutils/avr/2.20/ldscripts
+CINCS = -I../common
+CLINK =
 
 CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes
@@ -218,7 +218,8 @@ $(TARGET).uni.elf: $(SRC)
 clean:
 	$(REMOVE) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
 	$(TARGET).map $(TARGET).sym $(TARGET).lss \
-	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d)
+	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d) \
+	$(TARGET).uni.hex $(TARGET).uni.eep $(TARGET).uni.elf $(TARGET).uni.cof
 
 depend:
 	if grep '^# DO NOT DELETE' $(MAKEFILE) >/dev/null; \
