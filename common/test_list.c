@@ -69,25 +69,34 @@ void list_print(list_t *l) {
 
 int main ( int argc, char **argv ) {
 	
-	printf("> map (push_front &L) [0..10] ;\n ");
-	for (int i = 0; i < 10; i++ )
-		list_push_front(&L,i);
+	printf("> map (push_front &L) [0..11] ;\n ");
+	for(int i = 0; i <= 11; i++ )
+		if( list_push_front(&L,i) ) {
+			printf("error, %d\n",i);
+		}
 	list_print(&L);
 	
-	printf("> do (pop_back &L) 10 : ");
-	for (int i = 0; i < 9; i++)
+	printf("> do (pop_back &L) 10 : \t");
+	for(int i = 0; i < 9; i++)
 		printf("%d\t",list_pop_back(&L));
 	list_print(&L);
 	
 	printf("> map (push_back &L) [10..18] ;\n ");
-	for (int i =10;i<18;i++)
+	for(int i = 10; i < 18; i++)
 		list_push_back(&L,i);
 	list_print(&L);
 
-	printf("> do (pop_front &L) 5 : ");
-	for (int i =0; i<5;i++)
+	printf("> do (pop_front &L) 5 : \t");
+	for(int i = 0; i < 5; i++)
 		printf("%d\t",list_pop_front(&L));
 	list_print(&L);
 	
+	printf("> map peek &L [0..5] : \t");
+	for(int i = 0; i < 6; i++) {
+		printf("%d\t",list_peek(&L,i));
+		fflush(stdout);
+	}
+	list_print(&L);
+
 	return 0;
 }
