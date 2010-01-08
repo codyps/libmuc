@@ -10,12 +10,13 @@
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
 
-#define LIST_ERROR(...) fprintf(stderr,"ERROR: %s:%s():%d \n",__FILE__,__FUNCTION__,__LINE__);
+#define LIST_ERROR_NORET LIST_ERROR
+#define LIST_ERROR(...) fprintf(stderr,"\nERROR: %s:%s():%d \n",__FILE__,__FUNCTION__,__LINE__);
 
 
 list_base_t list_pop_front(list_t *l) {
 	if ( unlikely( list_empty(l) ) ) {
-		LIST_ERROR();
+		LIST_ERROR_NORET();
 		return 0;
 	}
 
@@ -32,7 +33,7 @@ list_base_t list_pop_front(list_t *l) {
 
 list_base_t list_pop_back(list_t *l) {
 	if ( unlikely( list_empty(l) ) ) {
-		LIST_ERROR();
+		LIST_ERROR_NORET();
 		return 0;
 	}
 
@@ -96,7 +97,7 @@ list_error_t list_push_back_o(list_t *l, list_base_t x) {
 
 list_base_t list_peek_front(list_t *l) {
 	if ( unlikely( list_empty(l) ) ) {
-		LIST_ERROR();
+		LIST_ERROR_NORET();
 		return 0;
 	}
 	
@@ -104,7 +105,7 @@ list_base_t list_peek_front(list_t *l) {
 }
 list_base_t list_peek_back(list_t *l) {
 	if ( unlikely( list_empty(l) ) ) {
-		LIST_ERROR();
+		LIST_ERROR_NORET();
 		return 0;
 	}
 	
@@ -119,25 +120,38 @@ list_base_t list_peek_back(list_t *l) {
 
 
 list_base_t list_peek(list_t *l, list_index_t index) {
-	if ( unlikely( index > l->ct ) ) {
-		LIST_ERROR();
+	if ( unlikely( index >= l->ct ) ) {
+		LIST_ERROR_NORET();
 		return 0;
 	}
 
-	uint8_t sum = l->first + index;
-	uint8_t diff = l->first - index;
+	list_index_t list_i, buff_i;
+	for( (buff_i = l->first, list_i = 0) ; ; (++buff_i,++list_i) ) {
+		if (buff_i >= l->sz)
+			buff_i = 0;
+		if (list_i == index)
+			return l->buffer[buff_i];
 
-	if ( sum < l->first ) {
+	}
+
+	LIST_ERROR_NORET();
+	return 0;
+
+	//uint8_t sum = l->first + index;
+	//uint8_t diff = l->first - index;
+
+	//if ( sum < l->first ) {
 		//XXX: damn overflow.
-	}
+		
+	//}
   
-	if ( sum >= l->sz ) {
-
-	}
+	//if ( sum >= l->sz ) {
+		
+	//}
 }
 
 void list_flush(list_t *list) {
-	list->first = list->end;
+	list->end = list->first;
 	list->ct = 0;
 }
 
