@@ -13,28 +13,35 @@ list_t L = LIST_INITIALIZER(buff);
 #define ITER(x) for(int i = 0; i < x->sz; i++)
 
 void list_print(list_t *l) {
-	printf("\n{-\n\t");
-        ITER(l) {
+	printf("\n{-\ni:\t");
+	// the index numbers
+	ITER(l) {
 		printf("%d\t",i);
 	}
-	printf("\n\t");
-
+	printf("\nv:\t");
+	// the contents (values)
 	ITER(l) {
 		printf("%d\t", l->buffer[i]);
         }
         printf("\n\t");
         
 	{
+	// mark elements which are valid members.
 	int list_i = 0;
 	int buff_i = l->first;
+	for( int i=0; i< buff_i; i++ ) 
+		printf("\t");
 	for( ; list_i < l-> ct; (list_i++, buff_i++) ) {
-		if (buff_i >= l->sz)
+		if (buff_i >= l->sz) {
 			buff_i = 0;
+			puts("\r\t");
+		}
 		printf("^\t");
 	}
 	printf("\n\t");
 	}
 	
+	// first and end markers.
         ITER(l) {
 		bool fst = i==l->first;
 		bool end = i==l->end;
@@ -52,6 +59,7 @@ void list_print(list_t *l) {
 	
 	
 	printf("\n");
+	// peak function results.
 	printf("\tpeek_front : %d\n", list_peek_front(&L));
 	printf("\tpeek_back  : %d\n", list_peek_back(&L));
 	
@@ -60,13 +68,25 @@ void list_print(list_t *l) {
 
 
 int main ( int argc, char **argv ) {
+	
+	printf("> map (push_front &L) [0..10] ;\n ");
 	for (int i = 0; i < 10; i++ )
 		list_push_front(&L,i);
 	list_print(&L);
-	printf(" poping: ");
+	
+	printf("> do (pop_back &L) 10 : ");
 	for (int i = 0; i < 9; i++)
 		printf("%d\t",list_pop_back(&L));
-	printf("\n");
+	list_print(&L);
+	
+	printf("> map (push_back &L) [10..18] ;\n ");
+	for (int i =10;i<18;i++)
+		list_push_back(&L,i);
+	list_print(&L);
+
+	printf("> do (pop_front &L) 5 : ");
+	for (int i =0; i<5;i++)
+		printf("%d\t",list_pop_front(&L));
 	list_print(&L);
 	
 	return 0;
