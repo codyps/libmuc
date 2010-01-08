@@ -33,7 +33,7 @@ static void spi_isr_on (void);
 static void spi_isr_off(void);
 
 void spi_io_init(void) {
-  spi_io_init_hw();
+	spi_io_init_hw();
 
 	#ifdef SPI_IO_STANDARD
 	spi_io = & _spi_io;
@@ -67,43 +67,42 @@ void spi_io_init(void) {
 int spi_putc(char c, FILE * stream) {
 	int r;	
 	spi_isr_off();
-  #ifdef SPI_IO_STD_WAIT
+	#ifdef SPI_IO_STD_WAIT
 	while(q_full(&tx)) {
-    spi_isr_on();
-    asm(
-      "nop \n\t"
-      "nop"
-    );
-    spi_isr_off();
-  }
-  #else
+	spi_isr_on();
+		asm(
+			"nop \n\t"
+			"nop"
+		);
+		spi_isr_off();
+	}
+	#else
 	if (q_full(&tx))
 		r = EOF;
 	else 
-  #endif /* SPI_IO_STD_WAIT */
+	#endif /* SPI_IO_STD_WAIT */
 		r = q_push(&tx,(uint8_t)c);
 	spi_isr_on();
 	return r;
-
 }
 
 int spi_getc(FILE * stream) {
 	int r;
 	spi_isr_off();
-  #ifdef SPI_IO_STD_WAIT
+	#ifdef SPI_IO_STD_WAIT
 	while(q_empty(&rx)) {
-    spi_isr_on();
-    asm(
-      "nop \n\t"
-      "nop"
-    );
-    spi_isr_off();
-  }
-  #else
+		spi_isr_on();
+		asm(
+			"nop \n\t"
+			"nop"
+		);
+		spi_isr_off();
+	}
+	#else
 	if (q_empty(&rx))
 		r = EOF;
 	else
-  #endif /* SPI_IO_STD_WAIT */
+	#endif /* SPI_IO_STD_WAIT */
 		r = q_pop(&rx);
 	spi_isr_on();
 	return r; 
@@ -123,20 +122,20 @@ int spi_getchar(void) {
 #endif
 	int r;
 	spi_isr_off();
-  #ifdef SPI_IO_FAST_WAIT
+	#ifdef SPI_IO_FAST_WAIT
 	while(q_empty(&rx)) {
-    spi_isr_on();
-    asm(
-      "nop \n\t"
-      "nop"
-    );
-    spi_isr_off();
-  }
-  #else
-  if (q_empty(&rx))
+		spi_isr_on();
+		asm(
+			"nop \n\t"
+			"nop"
+		);
+		spi_isr_off();
+	}
+	#else
+	if (q_empty(&rx))
 		r = EOF;
 	else
-  #endif
+	#endif
 		r = q_pop(&rx);
 	spi_isr_on();
 	return r; 
@@ -145,20 +144,20 @@ int spi_getchar(void) {
 static inline void _spi_putchar(uint8_t ch) {
 	// expects spi interupt disabled on entry, leaves it disabled on exit.
 	while(q_full(&tx)) {
-			spi_isr_on();
-			asm(
-				"nop\n\t"
-				"nop"
-			);			
-			spi_isr_off();
-		}
+		spi_isr_on();
+		asm(
+			"nop\n\t"
+			"nop"
+		);			
+		spi_isr_off();
+	}
 	q_push(&tx,ch);
 }
 
 void spi_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
-    _spi_putchar(*string);
+		_spi_putchar(*string);
 		string++;
 	}
 	spi_isr_on();
