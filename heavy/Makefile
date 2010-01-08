@@ -70,7 +70,7 @@ SCANF_LIB_FLOAT = -Wl,-u,vfscanf -lscanf_flt
 
 SCANF_LIB = 
 
-MATH_LIB = -lm
+#MATH_LIB = -lm
 
 # External memory options
 
@@ -84,8 +84,9 @@ MATH_LIB = -lm
 
 EXTMEMOPTS =
 
+LDDIR  = -Wl,-L/usr/lib/binutils/avr/2.20/
 #LDMAP = $(LDFLAGS) -Wl,-Map=$(TARGET).map,--cref
-LDFLAGS = $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
+LDFLAGS = $(LDDIR) $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 
 # Programming support using avrdude. Settings and variables.
