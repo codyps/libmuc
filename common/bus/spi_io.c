@@ -41,6 +41,11 @@ void spi_io_init(void) {
 
 }
 
+#define ISR_GIVE_OK() (!list_full(&rx))
+#define ISR_TAKE_OK() (!list_empty(&tx))
+#define ISR_GIVE(x) list_push_front(&rx,x)
+#define ISR_TAKE()  list_pop_back(&tx)
+
 // Pick which spi implimentation to use.
 #if defined(SPI_IO_USE_SPI)
 #include "spi_io_spi.c"

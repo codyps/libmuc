@@ -30,15 +30,15 @@ ISR( SIG_SPI ) {
 	// Interupt flag auto cleared by vector execution.
 
 	//transmit (tx)
-	if (!list_empty(&tx)) {
-		SPDR = list_take(&tx);
+	if (ISR_TAKE_OK(&tx)) {
+		SPDR = ISR_TAKE(x)
 	}
 	else SPDR = 0;
 
 	//recieve (rx)
 	uint8_t in = SPDR;
-	if (in != 0 && !list_full(&rx)) {
-		list_push(&rx,in);
+	if (in != 0 && ISR_GIVE_OK(&rx)) {
+		ISR_GIVE(in);
 	  	if (in == '\n')
 			spi_io_rx_nl++;
 	}
