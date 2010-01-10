@@ -103,6 +103,7 @@ list_base_t list_peek_front(list_t *l) {
 	
 	return l->buffer[l->first];
 }
+
 list_base_t list_peek_back(list_t *l) {
 	if ( unlikely( list_empty(l) ) ) {
 		LIST_ERROR_NORET();
@@ -116,8 +117,6 @@ list_base_t list_peek_back(list_t *l) {
 	
 	return l->buffer[last];
 }
-
-
 
 list_base_t list_peek(list_t *l, list_index_t index) {
 	if ( unlikely( index >= l->ct ) ) {
@@ -136,20 +135,9 @@ list_base_t list_peek(list_t *l, list_index_t index) {
 
 	LIST_ERROR_NORET();
 	return 0;
-
-	//uint8_t sum = l->first + index;
-	//uint8_t diff = l->first - index;
-
-	//if ( sum < l->first ) {
-		//XXX: damn overflow.
-		
-	//}
-  
-	//if ( sum >= l->sz ) {
-		
-	//}
 }
 
+/* Can be called from non-isr with probably no bad occourances. */
 void list_flush(list_t *list) {
 	list->end = list->first;
 	list->ct = 0;
@@ -164,3 +152,10 @@ bool list_full(list_t *list) {
 	if ( unlikely( list->ct >= list->sz ) )	return true;
 	else 			return false;
 }
+
+bool list_valid_index(list_t *list, list_index_t i) {
+	if ( likely( list->ct > i && i > 0 ) ) return true;
+	else return false;
+
+}
+
