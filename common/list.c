@@ -144,13 +144,13 @@ void list_flush(list_t *list) {
 }
 
 bool list_empty(list_t *list) {
-	if ( unlikely( list->ct == 0 ) )	return true;
-	else	 	return false;
+	if ( likely( list->ct != 0 ) )	return false;
+	else	 	return true;
 }
 
 bool list_full(list_t *list) {
-	if ( unlikely( list->ct >= list->sz ) )	return true;
-	else 			return false;
+	if ( likely( list->ct < list->sz ) )	return false;
+	else 			return true;
 }
 
 bool list_valid_index(list_t *list, list_index_t i) {
