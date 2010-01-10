@@ -6,7 +6,7 @@
 #include <avr/interrupt.h>
 
 #include "common.h"
-#include "queue.h"
+#include "list.h"
 
 #include "spi_io_conf.h"
 
@@ -15,8 +15,8 @@
 // NEVER ACCESS THESE DIRECTLY (they are used as 'restrict').
 static uint8_t tx_b[SPI_IO_TX_Q_LEN],	rx_b[SPI_IO_RX_Q_LEN]; 
 
-static volatile queue_t tx = Q_DEF(tx_b);
-static volatile queue_t rx = Q_DEF(rx_b);
+static volatile list_t tx = LIST_INITIALIZER(tx_b);
+static volatile list_t rx = LIST_INITIALIZER(rx_b);
 
 volatile uint8_t spi_io_rx_nl;
 
@@ -36,7 +36,7 @@ void spi_io_init(void) {
 	spi_io_init_hw();
 
 	#ifdef SPI_IO_STANDARD
-	spi_io = & _spi_io;
+	spi_io = &_spi_io;
 	#endif
 
 }
@@ -57,10 +57,10 @@ void spi_io_init(void) {
   spi_isr_{on,off}()
 
   tx, rx (as first func of the following) :
-   q_empty(
-   q_pop(
-   q_push(
-   q_full(
+   list_empty(
+   list_push(
+   list_take(
+   list_full(
  */
 
 #ifdef SPI_IO_STANDARD
@@ -68,29 +68,30 @@ int spi_putc(char c, FILE * stream) {
 	int r;	
 	spi_isr_off();
 	#ifdef SPI_IO_STD_WAIT
-	while(q_full(&tx)) {
-	spi_isr_on();
+	while(list_full(&tx)) {
+		spi_isr_on();
 		asm(
 			"nop \n\t"
 			"nop"
 		);
-		spi_isr_off();
+	spi_isr_off();
 	}
 	#else
-	if (q_full(&tx))
+	if (list_full(&tx))
 		r = EOF;
 	else 
 	#endif /* SPI_IO_STD_WAIT */
-		r = q_push(&tx,(uint8_t)c);
+		r = list_push(&tx,(list_base_t)c);
 	spi_isr_on();
 	return r;
+
 }
 
 int spi_getc(FILE * stream) {
 	int r;
 	spi_isr_off();
 	#ifdef SPI_IO_STD_WAIT
-	while(q_empty(&rx)) {
+	while(list_empty(&rx)) {
 		spi_isr_on();
 		asm(
 			"nop \n\t"
@@ -99,11 +100,11 @@ int spi_getc(FILE * stream) {
 		spi_isr_off();
 	}
 	#else
-	if (q_empty(&rx))
+	if (list_empty(&rx))
 		r = EOF;
 	else
 	#endif /* SPI_IO_STD_WAIT */
-		r = q_pop(&rx);
+		r = (int) list_take(&rx);
 	spi_isr_on();
 	return r; 
 }
@@ -123,7 +124,7 @@ int spi_getchar(void) {
 	int r;
 	spi_isr_off();
 	#ifdef SPI_IO_FAST_WAIT
-	while(q_empty(&rx)) {
+	while(list_empty(&rx)) {
 		spi_isr_on();
 		asm(
 			"nop \n\t"
@@ -132,26 +133,26 @@ int spi_getchar(void) {
 		spi_isr_off();
 	}
 	#else
-	if (q_empty(&rx))
+	if (list_empty(&rx))
 		r = EOF;
 	else
 	#endif
-		r = q_pop(&rx);
+		r = (int) list_take(&rx);
 	spi_isr_on();
 	return r; 
 }
 
-static inline void _spi_putchar(uint8_t ch) {
+static inline void spi_putchar_unsafe(uint8_t ch) {
 	// expects spi interupt disabled on entry, leaves it disabled on exit.
-	while(q_full(&tx)) {
-		spi_isr_on();
-		asm(
-			"nop\n\t"
-			"nop"
-		);			
-		spi_isr_off();
+	while(list_full(&tx)) {
+			spi_isr_on();
+			asm(
+				"nop\n\t"
+				"nop"
+			);			
+			spi_isr_off();
 	}
-	q_push(&tx,ch);
+	list_push(&tx,ch);
 }
 
 void spi_puts(const char * string) {
@@ -166,7 +167,7 @@ void spi_puts(const char * string) {
 void spi_o_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
-		if(q_full(&tx)) {
+		if(list_full(&tx)) {
 			spi_isr_on();
 			asm(
 				"nop\n\t"
@@ -175,7 +176,7 @@ void spi_o_puts(const char * string) {
 			);			
 			spi_isr_off();
 		}
-		q_push_o(&tx,*string);
+		list_push_front_o(&tx,*string);
 		string++;
 	}
 	spi_isr_on();
@@ -183,7 +184,7 @@ void spi_o_puts(const char * string) {
 
 void spi_putchar(uint8_t ch) {
 	spi_isr_off();
-	_spi_putchar(ch);
+	spi_putchar_unsafe(ch);
 	spi_isr_on();
 }
 
@@ -199,8 +200,8 @@ static inline uint8_t hex2ascii(uint8_t hex) {
 void spi_puth(uint8_t hex) {
 	spi_isr_off();
 
-	_spi_putchar( hex2ascii( (hex>>4 ) ) );
-	_spi_putchar( hex2ascii( (hex>>0 ) ) );
+	spi_putchar_unsafe( hex2ascii( (hex>>4 ) ) );
+	spi_putchar_unsafe( hex2ascii( (hex>>0 ) ) );
 
 	spi_isr_on();
 }
@@ -208,10 +209,10 @@ void spi_puth(uint8_t hex) {
 void spi_puth2(uint16_t hex) {
 	spi_isr_off();
 
-	_spi_putchar( hex2ascii( (uint8_t)(hex>>12) ) );
-	_spi_putchar( hex2ascii( (uint8_t)(hex>>8 ) ) );
-	_spi_putchar( hex2ascii( (uint8_t)(hex>>4 ) ) );
-	_spi_putchar( hex2ascii( (uint8_t)(hex>>0 ) ) );
+	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>12) ) );
+	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>8 ) ) );
+	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>4 ) ) );
+	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>0 ) ) );
 
 	spi_isr_on();
 }
