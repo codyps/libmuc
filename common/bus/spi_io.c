@@ -5,8 +5,8 @@
 #include <avr/power.h>
 #include <avr/interrupt.h>
 
-#include "common.h"
-#include "list.h"
+#include "../common.h"
+#include "../ds/list.h"
 
 #include "spi_io_conf.h"
 
