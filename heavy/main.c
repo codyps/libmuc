@@ -19,8 +19,8 @@
 
 #include "util.h"
 
-#include "../common/spi_io.h"
-#include "queue.h"
+#include "../common/bus/spi_io.h"
+#include "../common/ds/queue.h"
 
 /*
  Card Reader:
