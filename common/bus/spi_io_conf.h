@@ -1,6 +1,5 @@
 #define SPI_IO_USE_SPI
 #define SPI_IO_STANDARD
-
 #define SPI_IO_STD_WAIT
 
 #define SPI_IO_TX_Q_LEN 128

@@ -31,7 +31,7 @@ int i2c_reset_xfer(void) {
 }
 
 void twi_init(void) {
-	fprintf_P(io_init,PSTR("\n[twi  init "));
+	fprintf_P(io_init,PSTR("\n[twi init..."));
 	power_twi_enable();
 
 	// Enable Pullups
