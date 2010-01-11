@@ -163,7 +163,7 @@ static inline void spi_putchar_unsafe(uint8_t ch) {
 void spi_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
-		_spi_putchar(*string);
+		spi_putchar_unsafe(*string);
 		string++;
 	}
 	spi_isr_on();
