@@ -65,6 +65,19 @@ list_error_t list_push_front(list_t *l, list_base_t x) {
 	return 0;
 }
 
+void list_push_front_o(list_t *l, list_base_t x) {
+	if ( !list_full(l) ) {
+		l->ct++;
+	}
+
+	l->first--;
+	if( l->first >= l->sz )
+		l->first = l->sz - 1;
+
+	l->buffer[ l->first ] = x;
+
+}
+
 list_error_t list_push_back(list_t *l, list_base_t x) {
 	if ( unlikely( list_full(l) ) ){
 		LIST_ERROR();    
