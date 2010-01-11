@@ -25,13 +25,13 @@ typedef struct {
 
 // add to front (push)
 #define list_push list_push_front
-int8_t list_push_front(list_t *list, list_base_t x);
-int8_t list_push_front_o(list_t *list, list_base_t x);
+list_error_t list_push_front(list_t *list, list_base_t x);
+void list_push_front_o(list_t *list, list_base_t x);
 
 // add to back (append)
 #define list_append list_push_back
 list_error_t list_push_back(list_t *list, list_base_t x);
-list_error_t list_push_back_o(list_t *list, list_base_t x);
+void list_push_back_o(list_t *list, list_base_t x);
 
 // remove
 #define list_pop list_pop_front

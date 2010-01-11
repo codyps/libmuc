@@ -95,7 +95,7 @@ list_error_t list_push_back(list_t *l, list_base_t x) {
 	return 0;
 }
 
-list_error_t list_push_back_o(list_t *l, list_base_t x) {
+void list_push_back_o(list_t *l, list_base_t x) {
 	l->buffer[ l->end ] = x;
 
 	l->end++;
