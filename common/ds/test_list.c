@@ -7,14 +7,15 @@ compile with:
 #include <stdio.h>
 #include <stdint.h>
 #include "glist.h"
+#define LN char
 
-LIST_DEFINE(u8,uint8_t,uint8_t);
+LIST_DEFINE(LN,char,uint8_t);
 char buff[128];
-list_t(u8) L = LIST_INITIALIZER(buff);
+list_t(LN) L = LIST_INITIALIZER(buff);
 
 #define ITER(x) for(size_t i = 0; i < x->sz; i++)
 
-void list_print(list_t(u8) *l) {
+void list_print(list_t(LN) *l) {
 	printf("\n{-\ni:\t");
 	// the index numbers
 	ITER(l) {
@@ -62,8 +63,8 @@ void list_print(list_t(u8) *l) {
 	
 	printf("\n");
 	// peak function results.
-	printf("\tpeek_front : %d\n", list_peekf(u8)(&L));
-	printf("\tpeek_back  : %d\n", list_peekb(u8)(&L));
+	printf("\tpeek_front : %d\n", list_peekf(LN)(&L));
+	printf("\tpeek_back  : %d\n", list_peekb(LN)(&L));
 	
 	printf("-}\n\n");
 }
@@ -73,29 +74,29 @@ int main ( int argc, char **argv ) {
 	
 	printf("> map (push_front &L) [0..11] ;\n ");
 	for(int i = 0; i <= 11; i++ )
-		if( list_pushf(u8)(&L,i) ) {
+		if( list_pushf(LN)(&L,i) ) {
 			printf("error, %d\n",i);
 		}
 	list_print(&L);
 	
 	printf("> do (pop_back &L) 10 : \t");
 	for(int i = 0; i < 9; i++)
-		printf("%d\t",list_popb(u8)(&L));
+		printf("%d\t",list_popb(LN)(&L));
 	list_print(&L);
 	
 	printf("> map (push_back &L) [10..18] ;\n ");
 	for(int i = 10; i < 18; i++)
-		list_pushb(u8)(&L,i);
+		list_pushb(LN)(&L,i);
 	list_print(&L);
 
 	printf("> do (pop_front &L) 5 : \t");
 	for(int i = 0; i < 5; i++)
-		printf("%d\t",list_popf(u8)(&L));
+		printf("%d\t",list_popf(LN)(&L));
 	list_print(&L);
 	
 	printf("> map peek &L [0..5] : \t");
 	for(int i = 0; i < 6; i++) {
-		printf("%d\t",list_peek(u8)(&L,i));
+		printf("%d\t",list_peek(LN)(&L,i));
 		fflush(stdout);
 	}
 	list_print(&L);

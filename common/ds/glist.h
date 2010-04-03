@@ -9,7 +9,6 @@
 
 typedef int8_t list_error_t;
 
-
 #define LIST_ERROR_NORET LIST_ERROR
 #define LIST_ERROR(...) fprintf(stderr,"\nERROR: %s:%s():%d \n",__FILE__,__func__,__LINE__)
 
@@ -189,7 +188,7 @@ bool list_full(_name_)(list_t(_name_) *list) {   \
 		return true;                     \
 }
 
-#define _L_DEF_VALID_I(_name_, _index_t_)  \
+#define _L_DEF_VAL_I(_name_, _index_t_)  \
 bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\
 	if ( likely( list->ct > i && i > 0 ) ) \
 		return true;                       \
@@ -209,6 +208,7 @@ bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\
 	_L_DEF_PEEKF (_name_,_data_t_)             \
 	_L_DEF_PEEKB (_name_,_data_t_,_index_t_)   \
 	_L_DEF_PEEK  (_name_,_data_t_,_index_t_)   \
+	_L_DEF_VAL_I (_name_,_index_t_)            \
 	_L_DEF_FLUSH (_name_)
 
 #endif
