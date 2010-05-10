@@ -7,12 +7,15 @@
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
 
+#define CAT3(x,y,z) x##y##z
+
 typedef int8_t list_error_t;
 
 #define LIST_ERROR_NORET LIST_ERROR
 #define LIST_ERROR(...) fprintf(stderr,"\nERROR: %s:%s():%d \n",__FILE__,__func__,__LINE__)
 
-#define list_t(_name_) list_##_name_##_t
+#define list_t(_name_) CAT3(list_,_name_,_t)
+
 
 /* first = first char, end = last + 1,
  * ct = nmem, sz = max_nmem */
@@ -25,45 +28,45 @@ typedef int8_t list_error_t;
 		const _index_t_ sz; \
 	} list_t(_name_);
 	
-#define LIST_INITIALIZER(buff) {       \
-	.buffer = (buff), .first = 0,      \
-	.end = 0, .ct = 0,                 \
-	.sz = sizeof(buff) / sizeof(*buff) \
+#define LIST_INITIALIZER(buff) {     \
+	(buff),                      \
+	0, 0, 0,                     \
+	sizeof(buff) / sizeof(*buff) \
 	}
 
-#define list_popf(_name_) list_##_name_##_pop_front
-#define list_popb(_name_) list_##_name_##_pop_back
+#define list_popf(_name_) CAT3(list_,_name_,_pop_front)
+#define list_popb(_name_) CAT3(list_,_name_,_pop_back)
 
-#define list_pushf(_name_) list_##_name_##_push_front
-#define list_pushb(_name_) list_##_name_##_push_back
-#define list_pushfo(_name_) list_##_name_##_push_front_o
+#define list_pushf(_name_)  CAT3(list_,_name_,_push_front)
+#define list_pushb(_name_)  CAT3(list_,_name_,_push_back)
+#define list_pushfo(_name_) CAT3(list_,_name_,_push_front_o)
 
-#define list_peekb(_name_) list_##_name_##_peek_back
-#define list_peekf(_name_) list_##_name_##_peek_front
-#define list_peek(_name_) list_##_name_##_peek
+#define list_peekb(_name_) CAT3(list_,_name_,_peek_back)
+#define list_peekf(_name_) CAT3(list_,_name_,_peek_front)
+#define list_peek(_name_)  CAT3(list_,_name_,_peek)
 
-#define list_flush(_name_) list_##_name_##_flush
-#define list_full(_name_) list_##_name_##_full
-#define list_empty(_name_) list_##_name_##_empty
-#define list_valid_i(_name_) list_##_name_##_valid_index
+#define list_flush(_name_)   CAT3(list_,_name_,_flush)
+#define list_full(_name_)    CAT3(list_,_name_,_full)
+#define list_empty(_name_)   CAT3(list_,_name_,_empty)
+#define list_valid_i(_name_) CAT3(list_,_name_,_valid_index)
 
-#define _L_DEF_POPF(_name_,_data_t_)         \
-_data_t_ list_popf(_name_)(list_t(_name_) *l) { \
-	if ( unlikely( list_empty(_name_)(l) ) ) {       \
-		LIST_ERROR_NORET();                  \
-		return 0;                            \
-	}                                        \
-	_data_t_ head = l->buffer[ l->first ];   \
-	l->first++;                              \
-	if ( l->first >= l->sz )                 \
-		l->first = 0;                        \
-	--(l->ct);                               \
-	return head;                             \
+#define _L_DEF_POPF(_name_,_data_t_)               \
+_data_t_ list_popf(_name_)(list_t(_name_) *l) {    \
+	if ( unlikely( list_empty(_name_)(l) ) ) { \
+		LIST_ERROR_NORET();                \
+		return 0;                          \
+	}                                          \
+	_data_t_ head = l->buffer[ l->first ];     \
+	l->first++;                                \
+	if ( l->first >= l->sz )                   \
+		l->first = 0;                      \
+	--(l->ct);                                 \
+	return head;                               \
 }
 
 /* the (l->end >= l->sz) is a check for overflow. */
-#define _L_DEF_POPB(_name_,_data_t_)        \
-_data_t_ list_popb(_name_)(list_t(_name_) *l) { \
+#define _L_DEF_POPB(_name_,_data_t_)                \
+_data_t_ list_popb(_name_)(list_t(_name_) *l) {     \
 	if ( unlikely( list_empty(_name_)(l) ) ) {  \
 		LIST_ERROR_NORET();                 \
 		return 0;                           \
