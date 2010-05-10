@@ -85,9 +85,8 @@ SCANF_LIB =
 
 EXTMEMOPTS =
 
-LDDIR  = -Wl,-L/usr/lib/binutils/avr/2.20/
 #LDMAP = $(LDFLAGS) -Wl,-Map=$(TARGET).map,--cref
-LDFLAGS = $(LDDIR) $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
+LDFLAGS = $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 
 # Programming support using avrdude. Settings and variables.
@@ -195,7 +194,7 @@ extcoff: $(TARGET).elf
 
 # Link: create ELF output file from object files.
 $(TARGET).elf: $(OBJ)
-	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
+	$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
 
 $(TARGET).uni.elf: $(SRC)
 	$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program --output $@ $(LDFLAGS)
