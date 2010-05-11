@@ -1,35 +1,33 @@
 /*
 	servo implimentation.
 		configurable pins/indexes
-		currently limited to 8 servos (modification possible to support up to 3*8 = 24)
-		uses the timer in fpwm mode, repeating 8 times in the 20ms period
-		servos driven on consecutive intervals
+		currently limited to 8 servos (modification possible to
+		support	up to 3*8 = 24) uses the timer in fpwm mode, 
+		repeating 8 times in the 20ms period servos driven
+		on consecutive intervals.
 
-			|    /|    /|    /|    /|    /|    /|
-	TCNT		|   / |   / |   / |   / |   / |   / |
-	(counter)	|  /  |  /  |  /  |  /  |  /  |  /  |  .
-			| /   | /   | /   | /   | /   | /   | .
-			|/    |/    |/    |/    |/    |/    |/    |/    |/    |/
-	cycle		0     1     2     3     4     5     6     7     0     1     2
-			|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|
-			| 	      20ms				| 20ms  ...
-	output  	|_                         			 _
-		P	| |_____________________________________________| |__________
-			|      _                      			|      _
-		T	|_____| |_____________________________________________| |____
-			|            _                			|
-		IRL	|___________| |______________________________________________
-			|                  _          			|
-		IRR	|_________________| |________________________________________
-			|
-			| P   | T   | IRL | IRR	|None |	n   |  n  |  n  |
+		|    /|     |     |    /|    /|    /|
+	TCNT	|   / |     |     |   / |   / |   / |
+		|  /  |     |  /| |  /  |  /  |  /  |  .
+		| /   |     | / | | /   | /   | /   | .
+		|/    |/|   |/  | |/    |/    |/    |/    |/    |/    |/
+	cycle	0     1     2     3     4     5     6     7     0     1     2
+		|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|
+		|             20ms                              | 20ms  ...
+	outputs	|_                                               _
+	P	| |_____________________________________________| |__________
+		|      _                                        |      _
+	T	|_____| |_____________________________________________| |____
+		|            _                                  |
+	IRL	|___________| |______________________________________________
+		|                  _                            |
+	IRR	|_________________| |________________________________________
+		|
+		| P   | T   | IRL | IRR	|None |	n   |  n  |  n  |
 
-		on each cycle one of the servos is activated
-			pulled high on the overflow isr, and low on the compare 'a' isr
-
+	on each cycle one of the servos is activated
+	pulled high on the overflow isr, and low on the compare 'a' isr
 */
-
-#include "defines.h"
 
 #include <stdio.h>
 
