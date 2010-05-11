@@ -43,7 +43,6 @@
 
 /*  Time Defines */
 #define TIMER_CYCLES 5
-
 #define SERVO_PERIOD_US	20000
 
 #define TIMER_PERIOD_US (SERVO_PERIOD_US/TIMER_CYCLES)
@@ -51,7 +50,7 @@
 
 
 /* Servo Informaiton and State  */
-struct _servo {
+struct servo_s {
 	volatile uint16_t pos; // position
 	volatile uint8_t * port;
 	uint8_t  mask;
@@ -59,8 +58,11 @@ struct _servo {
 
 #define SERVO_AMOUNT (sizeof(servo)/sizeof(struct _servo))
 
-#define SERVO_INIT(_port,_index) {  .port = &(_port), .mask = (uint8_t) 1<<(_index), .pos = CLICKS_MS(1) + CLICKS_MS(1)/2 }
-struct _servo servo[] = {
+#define SERVO_INIT(_port,_index) {           \
+	.port = &(_port),                    \
+	.mask = (uint8_t) 1<<(_index),       \
+	.pos = CLICKS_MS(1) + CLICKS_MS(1)/2 }
+struct servo_s servo[] = {
 	SERVO_INIT(SERVO_P_PORT, SERVO_P_INDEX),
 	SERVO_INIT(SERVO_T_PORT, SERVO_T_INDEX),
 	SERVO_INIT(SERVO_IRL_PORT, SERVO_IRL_INDEX),
@@ -71,7 +73,8 @@ struct _servo servo[] = {
 
 /* externaly called functions */
 int8_t servo_set(uint8_t servo_number, uint16_t servo_val) {
-	if ( servo_val>CLICKS_US(1050) || servo_val<CLICKS_US(1950) || servo_number<SERVO_AMOUNT) {
+	if ((servo_val>CLICKS_US(1050) && servo_val<CLICKS_US(1950))
+	                               && servo_number<SERVO_AMOUNT) {
 		servo[servo_number].pos = servo_val;
 		return 0;
 	}
