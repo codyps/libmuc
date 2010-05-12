@@ -89,7 +89,7 @@ LDFLAGS = $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Programming support using avrdude. Settings and variables.
 
 AVRDUDE_PROGRAMMER = arduino
-AVRDUDE_PORT = "-P /dev/ttyUSB0"
+AVRDUDE_PORT = -P /dev/ttyUSB0
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep

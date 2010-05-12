@@ -13,6 +13,7 @@
 #include <util/parity.h> 
 #include <util/delay.h>
 
+#include "usart.h"
 
 /*
 ISR(BADISR_vect){
@@ -22,6 +23,8 @@ ISR(BADISR_vect){
 void init(void) {
 	power_all_disable();
 
+	usart_init();
+
 	sei();
   
 	printf_P(PSTR("\n\n[main init done]\n\n"));
@@ -30,7 +33,8 @@ void init(void) {
 int main(void) {
 	init();
 	for(;;) {
-
+		printf("Hello\n");
+		_delay_ms(100);
 	}
    	return 0;
 }
