@@ -38,38 +38,16 @@
 #include <util/atomic.h>
 
 #include "servo.h"
-#include "servo_conf.h"
-#include "util.h"
+#include "servo_def.h"
+#include "common.h"
 
 /*  Time Defines */
-#define TIMER_CYCLES 5
 #define SERVO_PERIOD_US	20000
 
 #define TIMER_PERIOD_US (SERVO_PERIOD_US/TIMER_CYCLES)
 #define TIMER_PERIOD_MS (TIMER_PERIOD_US/1000)
 
-
-/* Servo Informaiton and State  */
-struct servo_s {
-	volatile uint16_t pos; // position
-	volatile uint8_t * port;
-	uint8_t  mask;
-} ;
-
-#define SERVO_AMOUNT (sizeof(servo)/sizeof(struct _servo))
-
-#define SERVO_INIT(_port,_index) {           \
-	.port = &(_port),                    \
-	.mask = (uint8_t) 1<<(_index),       \
-	.pos = CLICKS_MS(1) + CLICKS_MS(1)/2 }
-struct servo_s servo[] = {
-	SERVO_INIT(SERVO_P_PORT, SERVO_P_INDEX),
-	SERVO_INIT(SERVO_T_PORT, SERVO_T_INDEX),
-	SERVO_INIT(SERVO_IRL_PORT, SERVO_IRL_INDEX),
-	SERVO_INIT(SERVO_IRR_PORT, SERVO_IRR_INDEX),
-	SERVO_INIT(SERVO_DUMMY_PORT, SERVO_DUMMY_INDEX)
-};
-
+#define SERVO_AMOUNT (sizeof(servo)/sizeof(struct servo_s))
 
 /* externaly called functions */
 int8_t servo_set(uint8_t servo_number, uint16_t servo_val) {
@@ -113,6 +91,16 @@ void servo_pin_init(void) {
 
 static uint8_t cycle; //= 0;
 
+/*
+struct servo_ctrl {
+	TCCRA,
+	TCCRB,
+	OCRA,
+	ICR,
+	TCNT,
+}
+*/
+
 void servo_timer_init(void) {
 	power_timer_S_enable();
 
@@ -155,18 +143,19 @@ ISR(TIMER_S_OVF_vect) {
 		cycle = 0;
 	}
 
-	if (cycle < SERVO_AMOUNT) {
-		// set servo 'cycle' pin(s) high
-		SERVO_PIN_HIGH(cycle);
-		// set the OCR5A appropratly
-		SERVO_OCRA = servo[cycle].pos;
-		servo_cmpA_isr_on();
-	//	printf("\ns%d ^",cycle);
-	}
-	else {
+	if ( cycle >= SERVO_AMOUNT ) {
+		// these servos don't exsist, delaying until next
+		// 20ms period.
 		servo_cmpA_isr_off();
 		SERVO_OCRA = 0xFFFF;
-	//	printf("\ns%d -",cycle);
+		//printf("\ns%d -",cycle);
+	} else {
+		// set servo 'cycle' pin(s) high
+		SERVO_PIN_HIGH(cycle);
+		// set the OCRA appropratly
+		SERVO_OCRA = servo[cycle].pos;
+		servo_cmpA_isr_on();
+		// printf("\ns%d ^",cycle);
 	}
 }
 

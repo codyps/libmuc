@@ -5,7 +5,7 @@
 #define _SERVO_H_
 
 #include <stdint.h>
-
+#include <avr/io.h>
 /* Servo Interface. */
 
 void servo_init(void);
@@ -19,38 +19,19 @@ int8_t servo_set(uint8_t servo_number, uint16_t servo_val);
 
 #define TIMER5_COMP_REGS 3
 
-// Servo Definitions
-#define SERVO_P   0
-#define SERVO_T	  1
-#define SERVO_IRL 2
-#define SERVO_IRR 3
-#define SERV_DUMMY 4
-
-#define SERVO_P_INDEX   3
-#define SERVO_T_INDEX	4
-#define SERVO_IRL_INDEX 5
-#define SERVO_IRR_INDEX 6
-#define SERVO_DUMMY_INDEX 7
-
-#define SERVO_P_PORT   PORTA
-#define SERVO_T_PORT   PORTA
-#define SERVO_IRL_PORT PORTA
-#define SERVO_IRR_PORT PORTA
-#define SERVO_DUMMY_PORT PORTA
-
-
 #endif // _SERVO_H_
 
+/** Data for Axon w/ RoboMagellan HW **/
+
+
 /*
-	aproximatly 2400 us and 1600 us give 90 degree angles (actualy slightly less)
+aproximatly 2400 us and 1600 us give 90 degree angles (actualy slightly less)
 */
-
-
 
 /* Math */
 
 // clicks = F_CPU / hz
-// millis|seconds|	hz			|  clicks@16e6Hz
+// ms   | secs   | hz                   |  clicks@16e6Hz
 // 20	= 2e-2  => 50			=> 320000
 // 18	= 18e-3	=>
 // 0.5	= 5e-4	=> 2000			=> 8000

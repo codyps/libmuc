@@ -1,13 +1,16 @@
+#ifndef SERVO_DEF
+#define SERVO_DEF
 
-//FIXME: Currently the following line does nothing, had to place the '5' directly in the S_# macros
-#define S_TIMER	5
+#include "servo_conf.h"
 
-#define S_A(_A)	COMB2(_A, 5 )
-#define S_I(_A,_B) COMB3(_A, 5 ,_B)
+#define S_A(_A)	COMB2(_A, SV_TIMER )
+#define S_I(_A,_B) COMB3(_A, SV_TIMER ,_B)
 
-#define COMB3(_A,_num,_C) _A ## _num ## _C
-#define COMB2(_A,_num) _A ## _num
+#define COMB3(_A,_num,_C) _COMB3(_A,_num,_C)
+#define _COMB3(_A,_num,_C) _A##_num##_C
 
+#define COMB2(_A,_num) _COMB2(_A,_num)
+#define _COMB2(_A,_num) _A##_num
 
 
 // Registers
@@ -45,3 +48,6 @@
 
 // Power macro
 #define power_timer_S_enable S_I(power_timer,_enable)
+
+
+#endif /* SERVO_DEF */
