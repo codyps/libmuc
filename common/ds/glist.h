@@ -19,20 +19,29 @@ typedef int8_t list_error_t;
 
 /* first = first char, end = last + 1,
  * ct = nmem, sz = max_nmem */
-#define _L_DEF_STRUCT(_name_,_data_t_,_index_t_) \
-	typedef struct {        \
-		_data_t_ *buffer;   \
-		_index_t_ first;    \
-		_index_t_ end;      \
-		_index_t_ ct;       \
-		const _index_t_ sz; \
-	} list_t(_name_);
+#define _L_DEF_STRUCT(_name_,dattr,_data_t_,_index_t_) \
+	typedef struct {                         \
+		_data_t_ *const restrict buffer; \
+		_index_t_ first;                 \
+		_index_t_ end;                   \
+		_index_t_ ct;                    \
+		const _index_t_ sz;              \
+	} dattr list_t(_name_);
 	
 #define LIST_INITIALIZER(buff) {     \
 	(buff),                      \
 	0, 0, 0,                     \
 	sizeof(buff) / sizeof(*buff) \
 	}
+
+/* for a stack */
+#define list_pop list_popf
+#define list_push list_pushf
+
+/* for a queue */
+#define list_get list_popb
+#define list_put list_pushf
+#define list_remove list_popf
 
 #define list_popf(_name_) CAT3(list_,_name_,_pop_front)
 #define list_popb(_name_) CAT3(list_,_name_,_pop_back)
@@ -186,32 +195,32 @@ bool list_empty(_name_)(list_t(_name_) *list) { \
 #define _L_DEF_FULL(_name_)              \
 bool list_full(_name_)(list_t(_name_) *list) {   \
 	if ( likely( list->ct < list->sz ) ) \
-		return false;                    \
+		return false;                \
 	else                                 \
-		return true;                     \
+		return true;                 \
 }
 
 #define _L_DEF_VAL_I(_name_, _index_t_)  \
 bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\
 	if ( likely( list->ct > i && i > 0 ) ) \
-		return true;                       \
-	else                                   \
-		return false;                      \
+		return true;  \
+	else                  \
+		return false; \
 }
 
-#define LIST_DEFINE(_name_,_data_t_,_index_t_) \
-	_L_DEF_STRUCT(_name_,_data_t_,_index_t_)   \
-	_L_DEF_EMPTY (_name_)                      \
-	_L_DEF_FULL  (_name_)                      \
-	_L_DEF_POPF  (_name_,_data_t_)             \
-	_L_DEF_POPB  (_name_,_data_t_)             \
-	_L_DEF_PUSHF (_name_,_data_t_)             \
-	_L_DEF_PUSHB (_name_,_data_t_)             \
-	_L_DEF_PUSHFO(_name_,_data_t_)             \
-	_L_DEF_PEEKF (_name_,_data_t_)             \
-	_L_DEF_PEEKB (_name_,_data_t_,_index_t_)   \
-	_L_DEF_PEEK  (_name_,_data_t_,_index_t_)   \
-	_L_DEF_VAL_I (_name_,_index_t_)            \
-	_L_DEF_FLUSH (_name_)
+#define LIST_DEFINE(_name_,fnattr,dattr,_data_t_,_index_t_) \
+	_L_DEF_STRUCT(_name_,dattr,_data_t_,_index_t_)   \
+	fnattr _L_DEF_EMPTY (_name_)                     \
+	fnattr _L_DEF_FULL  (_name_)                     \
+	fnattr _L_DEF_POPF  (_name_,_data_t_)            \
+	fnattr _L_DEF_POPB  (_name_,_data_t_)            \
+	fnattr _L_DEF_PUSHF (_name_,_data_t_)            \
+	fnattr _L_DEF_PUSHB (_name_,_data_t_)            \
+	fnattr _L_DEF_PUSHFO(_name_,_data_t_)            \
+	fnattr _L_DEF_PEEKF (_name_,_data_t_)            \
+	fnattr _L_DEF_PEEKB (_name_,_data_t_,_index_t_)  \
+	fnattr _L_DEF_PEEK  (_name_,_data_t_,_index_t_)  \
+	fnattr _L_DEF_VAL_I (_name_,_index_t_)           \
+	fnattr _L_DEF_FLUSH (_name_)
 
 #endif
