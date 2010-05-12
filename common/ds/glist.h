@@ -6,6 +6,7 @@
 
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
+#define __unused        __attribute__((unused))
 
 #define CAT3(x,y,z) x##y##z
 
@@ -43,6 +44,7 @@ typedef int8_t list_error_t;
 #define list_put list_pushf
 #define list_remove list_popf
 
+/* General operators. */
 #define list_popf(_name_) CAT3(list_,_name_,_pop_front)
 #define list_popb(_name_) CAT3(list_,_name_,_pop_back)
 
@@ -59,8 +61,9 @@ typedef int8_t list_error_t;
 #define list_empty(_name_)   CAT3(list_,_name_,_empty)
 #define list_valid_i(_name_) CAT3(list_,_name_,_valid_index)
 
+/* Function generators */
 #define _L_DEF_POPF(_name_,_data_t_)               \
-_data_t_ list_popf(_name_)(list_t(_name_) *l) {    \
+__unused _data_t_ list_popf(_name_)(list_t(_name_) *l) {    \
 	if ( unlikely( list_empty(_name_)(l) ) ) { \
 		LIST_ERROR_NORET();                \
 		return 0;                          \
@@ -75,7 +78,7 @@ _data_t_ list_popf(_name_)(list_t(_name_) *l) {    \
 
 /* the (l->end >= l->sz) is a check for overflow. */
 #define _L_DEF_POPB(_name_,_data_t_)                \
-_data_t_ list_popb(_name_)(list_t(_name_) *l) {     \
+__unused _data_t_ list_popb(_name_)(list_t(_name_) *l) {     \
 	if ( unlikely( list_empty(_name_)(l) ) ) {  \
 		LIST_ERROR_NORET();                 \
 		return 0;                           \
@@ -89,7 +92,7 @@ _data_t_ list_popb(_name_)(list_t(_name_) *l) {     \
 }
 
 #define _L_DEF_PUSHF(_name_,_data_t_)   \
-list_error_t list_pushf(_name_)(list_t(_name_) *l, _data_t_ x) { \
+__unused list_error_t list_pushf(_name_)(list_t(_name_) *l, _data_t_ x) { \
 	if ( unlikely( list_full(_name_)(l) ) ){ \
 		LIST_ERROR();                \
 		return -1;                   \
@@ -103,7 +106,7 @@ list_error_t list_pushf(_name_)(list_t(_name_) *l, _data_t_ x) { \
 }
 
 #define _L_DEF_PUSHFO(_name_,_data_t_)\
-void list_pushfo(_name_)(list_t(_name_) *l, _data_t_ x) {\
+__unused void list_pushfo(_name_)(list_t(_name_) *l, _data_t_ x) {\
 	if ( !list_full(_name_)(l) ) {     \
 		l->ct++;               \
 	}                          \
@@ -114,7 +117,7 @@ void list_pushfo(_name_)(list_t(_name_) *l, _data_t_ x) {\
 }
 
 #define _L_DEF_PUSHB(_name_,_data_t_) \
-list_error_t list_pushb(_name_)(list_t(_name_) *l, _data_t_ x) {\
+__unused list_error_t list_pushb(_name_)(list_t(_name_) *l, _data_t_ x) {\
 	if ( unlikely( list_full(_name_)(l) ) ){ \
 		LIST_ERROR();                \
 		return -1;                   \
@@ -128,7 +131,7 @@ list_error_t list_pushb(_name_)(list_t(_name_) *l, _data_t_ x) {\
 }
 
 #define _L_DEF_PUSHBO(_name_,_data_t_)\
-void list_pushbo(_name_)(list_t(_name_) *l, _data_t_ x) {\
+__unused void list_pushbo(_name_)(list_t(_name_) *l, _data_t_ x) {\
 	l->buffer[ l->end ] = x; \
 	l->end++;                \
 	if ( l->end >= l->sz )   \
@@ -139,7 +142,7 @@ void list_pushbo(_name_)(list_t(_name_) *l, _data_t_ x) {\
 }
 
 #define _L_DEF_PEEKF(_name_,_data_t_)   \
-_data_t_ list_peekf(_name_)(list_t(_name_) *l) {\
+__unused _data_t_ list_peekf(_name_)(list_t(_name_) *l) {\
 	if ( unlikely( list_empty(_name_)(l) ) ) {  \
 		LIST_ERROR_NORET();             \
 		return 0;                       \
@@ -148,7 +151,7 @@ _data_t_ list_peekf(_name_)(list_t(_name_) *l) {\
 }
 
 #define _L_DEF_PEEKB(_name_,_data_t_,_index_t_)  \
-_data_t_ list_peekb(_name_)(list_t(_name_) *l) {\
+__unused _data_t_ list_peekb(_name_)(list_t(_name_) *l) {\
 	if ( unlikely( list_empty(_name_)(l) ) ) { \
 		LIST_ERROR_NORET();            \
 		return 0;                      \
@@ -161,7 +164,7 @@ _data_t_ list_peekb(_name_)(list_t(_name_) *l) {\
 }
 
 #define _L_DEF_PEEK(_name_,_data_t_,_index_t_)  \
-_data_t_ list_peek(_name_)(list_t(_name_) *l, _index_t_ index) {\
+__unused _data_t_ list_peek(_name_)(list_t(_name_) *l, _index_t_ index) {\
 	if ( unlikely( index >= l->ct ) ) {         \
 		LIST_ERROR_NORET();                     \
 		return 0;                               \
@@ -179,13 +182,13 @@ _data_t_ list_peek(_name_)(list_t(_name_) *l, _index_t_ index) {\
 
 /* Can be called from non-isr with probably no bad occourances. */
 #define _L_DEF_FLUSH(_name_)    \
-void list_flush(_name_)(list_t(_name_) *list) { \
+__unused void list_flush(_name_)(list_t(_name_) *list) { \
 	list->end = list->first;    \
 	list->ct = 0;               \
 }
 
 #define _L_DEF_EMPTY(_name_)            \
-bool list_empty(_name_)(list_t(_name_) *list) { \
+__unused bool list_empty(_name_)(list_t(_name_) *list) { \
 	if ( likely( list->ct != 0 ) )      \
 		return false;                   \
 	else	 	                        \
@@ -193,7 +196,7 @@ bool list_empty(_name_)(list_t(_name_) *list) { \
 }
 
 #define _L_DEF_FULL(_name_)              \
-bool list_full(_name_)(list_t(_name_) *list) {   \
+__unused bool list_full(_name_)(list_t(_name_) *list) {   \
 	if ( likely( list->ct < list->sz ) ) \
 		return false;                \
 	else                                 \
@@ -201,7 +204,7 @@ bool list_full(_name_)(list_t(_name_) *list) {   \
 }
 
 #define _L_DEF_VAL_I(_name_, _index_t_)  \
-bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\
+__unused bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\
 	if ( likely( list->ct > i && i > 0 ) ) \
 		return true;  \
 	else                  \
