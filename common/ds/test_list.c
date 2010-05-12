@@ -9,7 +9,8 @@ compile with:
 #include "glist.h"
 #define LN char
 
-LIST_DEFINE(LN,char,uint8_t);
+/*     name,fnattr,dattr,dtype,itype */
+LIST_DEFINE(LN,static,,char,uint8_t);
 char buff[128];
 list_t(LN) L = LIST_INITIALIZER(buff);
 
@@ -19,7 +20,7 @@ void list_print(list_t(LN) *l) {
 	printf("\n{-\ni:\t");
 	// the index numbers
 	ITER(l) {
-		printf("%d\t",i);
+		printf("%zd\t",i);
 	}
 	printf("\nv:\t");
 	// the contents (values)
