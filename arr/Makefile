@@ -192,22 +192,19 @@ $(TARGET).elf: $(OBJ)
 	$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
 
 $(TARGET).uni.elf: $(SRC)
-	$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program --output $@ $(LDFLAGS)
+	$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
 .c.o:
-	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
-
+	$(CC) $(ALL_CFLAGS) -c -o $@ $<
 
 # Compile: create assembler files from C source files.
 .c.s:
-	$(CC) -S $(ALL_CFLAGS) $< -o $@
-
+	$(CC) -S $(ALL_CFLAGS) -c -o $@ $<
 
 # Assemble: create object files from assembler source files.
 .S.o:
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
-
 
 
 # Target: clean project.
