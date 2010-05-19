@@ -172,10 +172,7 @@ char *rx_reading = NULL;
  * 
  */
 
-bool msg_new_waiting;
-bool msg_buf_filling;
-
-char msg_buffer[RX_BUFF_SZ];
+uint8_t usart_msg;
 
 ISR(USART_RX_vect)
 {
