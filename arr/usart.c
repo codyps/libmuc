@@ -194,10 +194,12 @@ ISR(USART_RX_vect)
 		if(c == '\b' || c == 0x7f) {
 			// handle characters which do not add to q.
 			// backspace
-			list_remove(sio_l)(&rx_q);
-			fputc('\b',&usart_io_queue);
-			fputc(' ' ,&usart_io_queue);
-			fputc('\b',&usart_io_queue);
+			if (!list_empty(sio_l)(&rx_q)) {
+				list_remove(sio_l)(&rx_q);
+				fputc('\b',&usart_io_queue);
+				fputc(' ' ,&usart_io_queue);
+				fputc('\b',&usart_io_queue);
+			}
 		} else if(!list_full(sio_l)(&rx_q)) {
 			// normal reception.
 			if ( c == '\r') c = '\n';
