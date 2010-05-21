@@ -1,5 +1,5 @@
-#ifndef SERVO_CONF
-#define SERVO_CONF
+#ifndef SERVO_CONF_H_
+#define SERVO_CONF_H_
 
 #include "clock.h"
 
@@ -20,12 +20,10 @@ static struct servo_s servo[] = {
 };
 
 /* max number of servos. determine by dividing
- * 20ms by TIMER_CYCLES. result must be > 2ms 
+ * 20ms by SV_TIMER_CYCLES. result must be > 2ms
  */
-#define TIMER_CYCLES 5 
+#define SV_TIMER_CYCLES 5
 
 #define SV_TIMER 1
-
-
 
 #endif

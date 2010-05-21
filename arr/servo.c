@@ -42,10 +42,10 @@
 #include "common.h"
 
 /*  Time Defines */
-#define SERVO_PERIOD_US	20000
+#define SV_PERIOD_US	20000
 
-#define TIMER_PERIOD_US (SERVO_PERIOD_US/TIMER_CYCLES)
-#define TIMER_PERIOD_MS (TIMER_PERIOD_US/1000)
+#define SV_TIMER_PERIOD_US (SV_PERIOD_US/SV_TIMER_CYCLES)
+#define SV_TIMER_PERIOD_MS (SV_TIMER_PERIOD_US/1000)
 
 #define SERVO_AMOUNT (sizeof(servo)/sizeof(struct servo_s))
 
@@ -116,7 +116,7 @@ void servo_timer_init(void) {
 
 	// write the 16 bit registers.
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		SERVO_ICR = CLICKS_US(TIMER_PERIOD_US);
+		SERVO_ICR = CLICKS_US(SV_TIMER_PERIOD_US);
 		SERVO_TCNT = 0;
 
 		// set the first cycle's position (we don't get the isr)
@@ -139,7 +139,7 @@ ISR(TIMER_S_OVF_vect) {
 
 	cycle++;
 
-	if ( cycle >= (TIMER_CYCLES) ) {
+	if ( cycle >= (SV_TIMER_CYCLES) ) {
 		cycle = 0;
 	}
 
