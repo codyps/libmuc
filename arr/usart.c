@@ -190,31 +190,28 @@ ISR(USART_RX_vect)
 
 	c = UDR;
 
-	if ( !list_full(sio_l)(&rx_q) 
-	           && !( ucsra &(1<<FE) || ucsra & (1<<DOR) ) ) {
-
-		// Characters that require response.
-		if ( c == '\b' || c == 0x7f )	{
+	if(!(ucsra & (1<<FE) || ucsra & (1<<DOR))) {
+		if(c == '\b' || c == 0x7f) {
+			// handle characters which do not add to q.
 			// backspace
 			list_remove(sio_l)(&rx_q);
 			fputc('\b',&usart_io_queue);
 			fputc(' ' ,&usart_io_queue);
 			fputc('\b',&usart_io_queue);
+		} else if(!list_full(sio_l)(&rx_q)) {
+			// normal reception.
+			if ( c == '\r') c = '\n';
+			if ( c == '\n' ) {
+				usart_msg++;
+			}
+			list_put(sio_l)(&rx_q,c);
+			fputc(c,&usart_io_queue);
+		} else {
+			// full queue.
+			fputc('\a',&usart_io_queue);
 		}
-
-        	if ( c == '\r') c = '\n';
-
-		if ( c == '\n' ) {
-			usart_msg++;
-			// copy to some type of message buffer?
-		}
-
-        	list_put(sio_l)(&rx_q,c);
-		fputc(c,&usart_io_queue);
-
-	}
-	else {
-		// alert when the queue is full / error occoured.
+	} else {
+		// error in recieve occoured.
 		fputc('\a', &usart_io_queue);
 	}
 }
