@@ -41,7 +41,6 @@ bool static sem_trydec(volatile uint8_t *sem)
 	bool ret = false;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (*sem) {
-			printf("sem:%d\n",*sem);
 			(*sem)--;
 			ret = true;
 		}
@@ -64,6 +63,7 @@ void process_msg(void)
 
 		int c = getchar();
 		if (c == '\0' || c == EOF || c == '\n') {
+			/*
 			printf("got end of msg ");
 			switch(c) {
 			case '\0':
@@ -77,6 +77,7 @@ void process_msg(void)
 				break;
 			}
 			printf("\n");
+			*/
 
 			buf[i] = '\0';
 			break;
@@ -93,8 +94,9 @@ void process_msg(void)
 		if (ret == 2) {
 			printf("setting servo %d to %d\n",num,pos);
 			servo_set(num,pos);
+			return;
 		}
-	} break;
+	} 
 	default:
 		// unknown command
 		printf("unknown command \"%s\"\n",buf);
