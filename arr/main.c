@@ -36,12 +36,13 @@ void init(void)
 	printf_P(PSTR("\n\n[main init done]\n\n"));
 }
 
-bool static sem_trydec(uint8_t sem)
+bool static sem_trydec(volatile uint8_t *sem)
 {
 	bool ret = false;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		if (sem) {
-			sem--;
+		if (*sem) {
+			printf("sem:%d\n",*sem);
+			(*sem)--;
 			ret = true;
 		}
 	}
@@ -104,8 +105,8 @@ int main(void)
 {
 	init();
 	for(;;) {
-		if (sem_trydec(usart_msg)) {
-			int x = getchar();
+		if (sem_trydec(&usart_msg)) {
+			process_msg();
 		}
 	}
    	return 0;
