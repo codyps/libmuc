@@ -37,6 +37,8 @@ static FILE usart_io_direct =
 
 inline static void usart_udre_inter_on(void)  { UCSRB |= (uint8_t) (1<<UDRIE); }
 inline static void usart_udre_inter_off(void) { UCSRB &= (uint8_t)~(1<<UDRIE); }
+inline static void usart_rx_inter_on(void) { UCSRB|= (uint8_t) (1<<RXCIE); }
+inline static void usart_rx_inter_off(void) { UCSRB &= (uint8_t)~(1<<RXCIE); }
 
 void usart_flush_rx( void ) {
     list_flush(sio_l)(&rx_q);
@@ -55,11 +57,16 @@ static int usart_putchar_direct(char c, FILE *stream) {
 	return 0;
 }
 
+/* Assumes all consumers are in the same thread */
 static int usart_getchar_queue(FILE *stream) {
-	if ( !list_empty(sio_l)(&rx_q) )
-		return list_get(sio_l)(&rx_q);
-	else
+	if ( !list_empty(sio_l)(&rx_q) ) {
+		usart_rx_inter_off();
+		char ret = list_get(sio_l)(&rx_q);
+		usart_rx_inter_on();
+		return ret;
+	} else {
 		return _FDEV_EOF;
+	}
 }
 
 static int usart_putchar_queue_ts3(char c, FILE *stream) {
