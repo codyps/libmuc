@@ -179,7 +179,7 @@ char *rx_reading = NULL;
  * 
  */
 
-uint8_t usart_msg;
+volatile uint8_t usart_msg;
 
 ISR(USART_RX_vect)
 {
