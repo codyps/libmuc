@@ -13,10 +13,12 @@
 /*          name,  fnattr, dattr, dtype,itype */
 LIST_DEFINE(sio_l, static, volatile, char, uint8_t);
 
+#define RX_BUFF_SZ 64
+
 char tx_buffer[32];
 static list_t(sio_l) tx_q = LIST_INITIALIZER(tx_buffer);
 
-char rx_buffer[32];
+char rx_buffer[RX_BUFF_SZ];
 static list_t(sio_l) rx_q = LIST_INITIALIZER(rx_buffer);
 
 static int usart_getchar_queue(FILE * stream);
@@ -123,6 +125,55 @@ ISR(USART_UDRE_vect) {
 		usart_udre_inter_off();
 }
 
+
+/*
+When ISR(USART_RX_vect) [rx_isr] recieves a new line, it checks the status of
+the msg_buffer. It needs to know if it is in use. If it is, it sets the
+msg_new_waiting indicator and stores the length of this message. If the buffer
+is not in use, the rx_isr indicates the buffer is invalid, fills it, then
+indicates it is valid.
+If the rx_isr recieves a new message while it has a waiting previous message,
+it should discard the previous message.
+
+The user code should set the in use flag, then check the valid flag. If valid, 
+process the data.
+
+Could lead to data lying in the queue and not entering the message buffer due
+to a lack of new data.
+ */
+
+/** Minimize memory reads/writes, ditches the list data structure.
+ ** Possible loss of messages. 
+ * maintain 2 buffers for the recieved data.
+#define RX_SZ 32
+char rx_buff1[RX_SZ];
+char rx_buff2[RX_SZ];
+
+char *rx_filling = rx_buff1;
+bool rx_read_in_use;
+char *rx_reading = NULL;
+
+ * rx_isr:
+ *	fills rx_filling. 
+ *	on newline, swaps if !rx_read_in_use.
+ *	otherwise, re-set rx_filling.
+ *
+ * user:
+ * 	set rx_read_in_use.
+ * 	check if rx_reading != NULL.
+ * 	process rx_reading.
+ * 	clear rx_read_in_use.
+ */
+
+/**
+ * It is desirable to use the list as it could prevent the entry of
+ * messages longer than processable.
+ *
+ * 
+ */
+
+uint8_t usart_msg;
+
 ISR(USART_RX_vect)
 {
 	char c;
@@ -136,7 +187,8 @@ ISR(USART_RX_vect)
 	           && !( ucsra &(1<<FE) || ucsra & (1<<DOR) ) ) {
 
 		// Characters that require response.
-		if ( c == '\b' || c == 0x7f )	{	// backspace
+		if ( c == '\b' || c == 0x7f )	{
+			// backspace
 			list_remove(sio_l)(&rx_q);
 			fputc('\b',&usart_io_queue);
 			fputc(' ' ,&usart_io_queue);
@@ -155,7 +207,7 @@ ISR(USART_RX_vect)
 
 	}
 	else {
-	    // Return 'alarm' characters when the queue is full / error occoured.
+		// alert when the queue is full / error occoured.
 		fputc('\a', &usart_io_queue);
 	}
 }
