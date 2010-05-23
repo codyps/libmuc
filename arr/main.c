@@ -18,13 +18,14 @@
 
 #include "servo.h"
 #include "usart.h"
+#include "clock.h"
 
 /*
 ISR(BADISR_vect){
 }
 */
 
-void init(void)
+static void init(void)
 {
 	power_all_disable();
 
@@ -33,10 +34,10 @@ void init(void)
 
 	sei();
   
-	printf_P(PSTR("\n\n[main init done]\n\n"));
+	printf_P(PSTR("arr-"VERSION".\n"));
 }
 
-bool static sem_trydec(volatile uint8_t *sem)
+static bool sem_trydec(volatile uint8_t *sem)
 {
 	bool ret = false;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -48,8 +49,45 @@ bool static sem_trydec(volatile uint8_t *sem)
 	return ret;
 }
 
-void process_msg(void)
+static bool process_servo_cmd(char *msg)
 {
+	switch(msg[0]) {
+	case 's': {
+		int pos, num;
+		int ret = sscanf(msg+1," %d %d",&num,&pos);
+		if (ret == 2) {
+			if (servo_set(num,TICKS_US(pos))) {
+				printf(" error.\n");
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	case 'c':
+		printf("%d\n", servo_ct());
+		return true;
+
+	case 'q': {
+		int num;
+		int ret = sscanf(msg+1," %d",&num);
+		if (ret == 1) {
+			printf("%d\n",servo_get(num));
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	default:
+		printf("invalid servo command.\n");
+		return true;
+	}
+}
+
+static void process_msg(void)
+{
+	// TODO: the size of buf should be the length of the input queue.
 	char buf[32];
 	uint8_t i;
 	for(i = 0; ; i++) {
@@ -63,22 +101,6 @@ void process_msg(void)
 
 		int c = getchar();
 		if (c == '\0' || c == EOF || c == '\n') {
-			/*
-			printf("got end of msg ");
-			switch(c) {
-			case '\0':
-				printf("null");
-				break;
-			case EOF:
-				printf("eof");
-				break;
-			case '\n':
-				printf("newline");
-				break;
-			}
-			printf("\n");
-			*/
-
 			buf[i] = '\0';
 			break;
 		} else {
@@ -87,23 +109,24 @@ void process_msg(void)
 	}
 
 	switch(buf[0]) {
-	case 's': {
-		// servo command
-		int pos, num;
-		int ret = sscanf(buf+1,":%d:%d",&num,&pos);
-		if (ret == 2) {
-			printf("setting servo %d to %d\n",num,pos);
-			servo_set(num,pos);
-			return;
-		}
-	} 
+	case 's':
+		if(process_servo_cmd(buf+1))
+			break;
+		goto invalid_arg;
+	case 'c':
+		printf("\e[H\e[2J");
+		break;
 	default:
-		// unknown command
-		printf("unknown command \"%s\"\n",buf);
+		printf("unknown command \"%s\".\n",buf);
+		break;
 	}
+	return;
+
+	invalid_arg:
+		printf("bad args for \"%s\".\n",buf);
 }
 
-int main(void)
+__attribute__((noreturn)) void main(void)
 {
 	init();
 	for(;;) {
@@ -111,6 +134,5 @@ int main(void)
 			process_msg();
 		}
 	}
-   	return 0;
 }
 
