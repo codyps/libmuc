@@ -127,30 +127,31 @@ struct servo_ctrl {
 void servo_timer_init(void) {
 	power_timer_S_enable();
 
-	// Fast PWM, ICR5 = TOP
-	//WGM[3,2,1,0] = 1,1,1,0
-	SERVO_TCCRB = (1<<WGM3)|(1<<WGM2); //(disables timer, CS[2,1,0] = 0		)
-	SERVO_TCCRA = (1<<WGM1)|(0<<WGM0); //(disables outputs, COM[A,B,C][1,0] = 0	)
-
-	//SERVO_TIMSK = (1<<OCIEA)|(1<<OCIEB)|(1<<OCIEC)|(1<<TOIE);
-	SERVO_TIMSK = (1<<OCIEA)|(1<<TOIE);
-
-	cycle = 0;
+	// Fast PWM, ICR = TOP
+	// WGM[3,2,1,0] = 1,1,1,0 
+	//(disables timer, CS[2,1,0] = 0)
+	SERVO_TCCRB = (uint8_t)(1<<WGM3)|(1<<WGM2);
+	//(disables outputs, COM[A,B,C][1,0] = 0)
+	SERVO_TCCRA = (uint8_t)(1<<WGM1)|(0<<WGM0); 
 
 	// write the 16 bit registers.
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		SERVO_ICR = CLICKS_US(SV_TIMER_PERIOD_US);
-		SERVO_TCNT = 0;
+	uint16_t timer_ticks = TICKS_US(SV_TIMER_PERIOD_US);
+	SERVO_ICR  = timer_ticks;
+	// causes OVF_vect execution as soon as soon as the timer is enabled.
+	SERVO_TCNT = timer_ticks; 
 
-		// set the first cycle's position (we don't get the isr)
-		SERVO_OCRA = servo[0].pos;
-	};
+	// set the first cycle's position (we don't get the isr for time - 1)
+	SERVO_OCRA = servo[0].pos;
+
+	// Clear interrupt flags.
+	SV_TIFR = (uint8_t)(1<<OCFA)|(1<<TOV);
+
+	// Enable timer interrupts.
+	//SERVO_TIMSK = (1<<OCIEA)|(1<<OCIEB)|(1<<OCIEC)|(1<<TOIE);
+	SERVO_TIMSK = (uint8_t)(1<<OCIEA)|(1<<TOIE);
 
 	// Presccale & Start.
 	SERVO_TCCRB|= TIMER_PRESCALE_1;
-
-	// We don't get the first OVF isr (when cycle == 0), so pull it high now.
-	SERVO_PIN_HIGH(0);
 }
 
 
@@ -160,33 +161,40 @@ inline void servo_cmpA_isr_on(void) { SERVO_TIMSK |= (uint8_t) (1<<OCIEA); }
 // Needs to spend less than 600us, F_CPU/1000/10*6 clicks. (16e3@16e6Hz)
 ISR(TIMER_S_OVF_vect) {
 
-	cycle++;
-
-	if ( cycle >= (SV_TIMER_CYCLES) ) {
-		cycle = 0;
-	}
-
-	if ( cycle >= SERVO_AMOUNT ) {
+	if(cycle >= SERVO_AMOUNT) {
 		// these servos don't exsist, delaying until next
 		// 20ms period.
 		servo_cmpA_isr_off();
-		SERVO_OCRA = 0xFFFF;
-		//printf("\ns%d -",cycle);
 	} else {
 		// set servo 'cycle' pin(s) high
 		SERVO_PIN_HIGH(cycle);
-		// set the OCRA appropratly
-		SERVO_OCRA = servo[cycle].pos;
 		servo_cmpA_isr_on();
-		// printf("\ns%d ^",cycle);
+	}
+
+	// Set OCRA for the following cycle.
+	cycle ++;
+	if (cycle >= (SV_TIMER_CYCLES)) {
+		cycle = 0;
+	}
+
+	// Assignment must occour before the TCNT hits BOTTOM.
+	// That will always occour after the COMPA_vect executes.
+	// And interrupts need to be enabled with COMPA_vect executes.
+	if (cycle >= SERVO_AMOUNT) {
+		SERVO_OCRA = 0xFFFF;		
+	} else {
+		SERVO_OCRA = servo[cycle].pos;
 	}
 }
 
 ISR(TIMER_S_COMPA_vect) {
 	// Limit is 100 us, 1600 clicks
-	// 80 ops.
-	SERVO_PIN_LOW(cycle);
-	//printf("\ns%d v",cycle);
+	uint8_t old_cycle = cycle - 1;
+	if(cycle > old_cycle) {
+		// on overflow.
+		old_cycle = SERVO_AMOUNT - 1;
+	}
+	SERVO_PIN_LOW(old_cycle);
 }
 
 /*
