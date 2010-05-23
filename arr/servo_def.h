@@ -34,6 +34,9 @@
 
 #define SERVO_ICR	S_A(ICR)
 #define SERVO_TCNT	S_A(TCNT)
+#define SV_TIFR         S_A(TIFR)
+ #define OCFA           S_I(OCF,A)
+ #define TOV            S_A(TOV)
 
 #define SERVO_OCRA	S_I(OCR,A)
 #define SERVO_OCRB	S_I(OCR,B)
