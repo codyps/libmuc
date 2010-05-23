@@ -80,7 +80,7 @@ static bool process_servo_cmd(char *msg)
 	}
 
 	default:
-		printf("invalid servo command.\n");
+		printf_P(PSTR("invalid servo command.\n"));
 		return true;
 	}
 }
@@ -108,7 +108,24 @@ static void process_msg(void)
 		}
 	}
 
+	if(i == 0)
+		return;
+
 	switch(buf[0]) {
+	case 'u':
+		printf_P(PSTR("version not avaliable.\n"));
+		break;
+	case '?':
+	case 'h':
+		printf_P(PSTR("commands:\n"
+		              "  h -- prints this.\n"
+			      "  ss <sn> <val> -- set servos.\n"
+			      "  sq <sn> -- query servos.\n"
+			      "  sc -- get servo count.\n"
+			      "  c -- clear.\n"
+			      "  u -- version.\n"));
+		break;
+	
 	case 's':
 		if(process_servo_cmd(buf+1))
 			break;
