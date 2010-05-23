@@ -10,14 +10,15 @@
 
 void servo_init(void);
 int8_t servo_set(uint8_t servo_number, uint16_t servo_val);
+uint16_t servo_get(uint8_t servo_number);
+uint8_t servo_ct(void);
+
 #define servo_set_us(index,us) servo_set(index,CLICKS_US(us))
 
 /* Defines */
 
 #define TIMER_PRESCALE_1 ( (0<<CS2) | (0<<CS1) | (1<<CS0) )
 #define TIMER_PRESCALE_8 ( (0<<CS2) | (1<<CS1) | (0<<CS0) )
-
-#define TIMER5_COMP_REGS 3
 
 #endif // _SERVO_H_
 

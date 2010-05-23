@@ -49,21 +49,43 @@
 
 #define SERVO_AMOUNT (sizeof(servo)/sizeof(struct servo_s))
 
+// solve(x * (2e-2 / 8) = 65535, x) => x = 26214000
+// we only have 16 bits. prescale as needed.
+//#if (F_CPU > 26214000) // 26.214 MHz
+//#define SV_TIMER_PS 8
+//#else
+#define SV_TIMER_PS 1
+//#endif
+
 /* externaly called functions */
-int8_t servo_set(uint8_t servo_number, uint16_t servo_val) {
-	if ((servo_val>CLICKS_US(1050) && servo_val<CLICKS_US(1950))
-	                               && servo_number<SERVO_AMOUNT) {
-		servo[servo_number].pos = servo_val;
+int8_t servo_set(uint8_t servo_number, uint16_t servo_ticks) {
+	if ((servo_ticks > TICKS_US(600) && servo_ticks < TICKS_US(2400))
+	                               && servo_number < SERVO_AMOUNT) {
+		servo[servo_number].pos = servo_ticks;
 		return 0;
 	}
 	return -1;
 }
 
+// TODO: make constant.
+uint8_t servo_ct(void)
+{
+	return SERVO_AMOUNT;
+}
+
+uint16_t servo_get(uint8_t servo_number)
+{
+	if (servo_number < SERVO_AMOUNT)
+		return servo[servo_number].pos;
+	else
+		return 0;
+}
 
 void servo_timer_init(void);
 void servo_pin_init(void);
 
-void servo_init(void) {
+void servo_init(void) 
+{
 	servo_pin_init();
 	servo_timer_init();
 }
@@ -84,8 +106,10 @@ void servo_pin_init(void) {
 	// set the pins as outputs, low
 	// (port-1)=ddr, (port-2)=pin
 	for (uint8_t i = 0 ; i < SERVO_AMOUNT; i++) {
-		*(servo[i].port-1) |= (uint8_t)    (servo[i].mask)  ; // output
+		// port - 1 == DDR
+		printf("pin setup %d\n",i);
 		SERVO_PIN_LOW(i);
+		*(servo[i].port-1) |= (uint8_t)(servo[i].mask); // output
 	}
 }
 
