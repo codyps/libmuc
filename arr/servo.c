@@ -84,7 +84,7 @@ uint16_t servo_get(uint8_t servo_number)
 void servo_timer_init(void);
 void servo_pin_init(void);
 
-void servo_init(void) 
+void servo_init(void)
 {
 	servo_pin_init();
 	servo_timer_init();
@@ -107,7 +107,6 @@ void servo_pin_init(void) {
 	// (port-1)=ddr, (port-2)=pin
 	for (uint8_t i = 0 ; i < SERVO_AMOUNT; i++) {
 		// port - 1 == DDR
-		printf("pin setup %d\n",i);
 		SERVO_PIN_LOW(i);
 		*(servo[i].port-1) |= (uint8_t)(servo[i].mask); // output
 	}
