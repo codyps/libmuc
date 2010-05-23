@@ -18,6 +18,8 @@ SRC += usart.c
 ASRC = 
 OPT = s
 
+srcdir = .
+
 # Name of this Makefile (used for "make depend").
 MAKEFILE = Makefile
 
@@ -33,15 +35,15 @@ DEBUG = stabs
 # gnu99 - c99 plus GCC extensions
 CSTANDARD = -std=gnu99
 
-# Place -D or -U options here
-CDEFS =
+VERSION := $(shell $(srcdir)/../setlocalversion)
+CDEFS = -DVERSION="\"$(VERSION)\""
 
 # Place -I options here
 CINCS = -I../common
 CLINK =
 
 CDEBUG = -g$(DEBUG)
-CWARN = -Wall -Wstrict-prototypes
+CWARN = -Wall -Wstrict-prototypes -Wno-main
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA) $(CLINK)
