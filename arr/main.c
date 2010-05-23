@@ -34,7 +34,7 @@ static void init(void)
 
 	sei();
   
-	printf_P(PSTR("arr-"VERSION".\n"));
+	printf_P(PSTR("arr"VERSION".\n"));
 }
 
 static bool sem_trydec(volatile uint8_t *sem)
