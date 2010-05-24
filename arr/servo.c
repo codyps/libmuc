@@ -112,7 +112,6 @@ void servo_pin_init(void) {
 	}
 }
 
-static uint8_t cycle; //= 0;
 
 /*
 struct servo_ctrl {
@@ -158,6 +157,9 @@ void servo_timer_init(void) {
 inline void servo_cmpA_isr_off(void) { SERVO_TIMSK &= (uint8_t) ~(1<<OCIEA); }
 inline void servo_cmpA_isr_on(void) { SERVO_TIMSK |= (uint8_t) (1<<OCIEA); }
 
+static uint8_t cycle; //= 0;
+static uint8_t old_cycle;
+
 // Needs to spend less than 600us, F_CPU/1000/10*6 clicks. (16e3@16e6Hz)
 ISR(TIMER_S_OVF_vect) {
 
@@ -172,6 +174,7 @@ ISR(TIMER_S_OVF_vect) {
 	}
 
 	// Set OCRA for the following cycle.
+	old_cycle = cycle;
 	cycle ++;
 	if (cycle >= (SV_TIMER_CYCLES)) {
 		cycle = 0;
@@ -189,11 +192,6 @@ ISR(TIMER_S_OVF_vect) {
 
 ISR(TIMER_S_COMPA_vect) {
 	// Limit is 100 us, 1600 clicks
-	uint8_t old_cycle = cycle - 1;
-	if(cycle > old_cycle) {
-		// on overflow.
-		old_cycle = SERVO_AMOUNT - 1;
-	}
 	SERVO_PIN_LOW(old_cycle);
 }
 
