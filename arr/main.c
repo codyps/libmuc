@@ -27,7 +27,7 @@ ISR(BADISR_vect){
 
 #define NAME "arr"
 
-static const char *PROGMEM version_str = NAME VERSION".\n" ;
+static const char version_str[] PROGMEM = NAME VERSION".\n" ;
 
 static void init(void)
 {
