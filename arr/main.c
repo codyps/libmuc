@@ -25,6 +25,10 @@ ISR(BADISR_vect){
 }
 */
 
+#define NAME "arr"
+
+static const char *version_str PROGMEM = NAME VERSION".\n" ;
+
 static void init(void)
 {
 	power_all_disable();
@@ -34,7 +38,7 @@ static void init(void)
 
 	sei();
   
-	printf_P(PSTR("arr"VERSION".\n"));
+	fputs_P(version_str,stdout);
 }
 
 static bool sem_trydec(volatile uint8_t *sem)
@@ -113,7 +117,7 @@ static void process_msg(void)
 
 	switch(buf[0]) {
 	case 'u':
-		printf_P(PSTR("version not avaliable.\n"));
+		fputs_P(version_str,stdout);
 		break;
 	case '?':
 	case 'h':
