@@ -162,37 +162,41 @@ static uint8_t old_cycle;
 
 // Needs to spend less than 600us, F_CPU/1000/10*6 clicks. (16e3@16e6Hz)
 ISR(TIMER_S_OVF_vect) {
+	uint8_t l_cycle = cycle;
 
-	if(cycle >= SERVO_AMOUNT) {
+	if(l_cycle >= SERVO_AMOUNT) {
 		// these servos don't exsist, delaying until next
 		// 20ms period.
 		servo_cmpA_isr_off();
 	} else {
 		// set servo 'cycle' pin(s) high
-		SERVO_PIN_HIGH(cycle);
+		SERVO_PIN_HIGH(l_cycle);
 		servo_cmpA_isr_on();
 	}
 
 	// Set OCRA for the following cycle.
-	old_cycle = cycle;
-	cycle ++;
-	if (cycle >= (SV_TIMER_CYCLES)) {
-		cycle = 0;
+	old_cycle = l_cycle;
+	l_cycle ++ ;
+	if (l_cycle >= (SV_TIMER_CYCLES)) {
+		cycle = l_cycle = 0;
+	} else {
+		cycle = l_cycle;
 	}
 
 	// Assignment must occour before the TCNT hits BOTTOM.
 	// That will always occour after the COMPA_vect executes.
 	// And interrupts need to be enabled with COMPA_vect executes.
-	if (cycle >= SERVO_AMOUNT) {
+	if (l_cycle >= SERVO_AMOUNT) {
 		SERVO_OCRA = 0xFFFF;		
 	} else {
-		SERVO_OCRA = servo[cycle].pos;
+		SERVO_OCRA = servo[l_cycle].pos;
 	}
 }
 
 ISR(TIMER_S_COMPA_vect) {
 	// Limit is 100 us, 1600 clicks
-	SERVO_PIN_LOW(old_cycle);
+	uint8_t l_cycle = old_cycle;
+	SERVO_PIN_LOW(l_cycle);
 }
 
 /*
