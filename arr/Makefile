@@ -191,14 +191,17 @@ extcoff: $(TARGET).elf
 
 # Link: create ELF output file from object files.
 $(TARGET).elf: $(OBJ)
-	$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
+	@echo "LD $(@F)"
+	@$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
 
 $(TARGET).uni.elf: $(SRC)
-	$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
+	@echo "LDUNI $(@F) $^"
+	@$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
 .c.o:
-	$(CC) $(ALL_CFLAGS) -c -o $@ $<
+	@echo "CC $(@F)"
+	@$(CC) $(ALL_CFLAGS) -c -o $@ $<
 
 # Compile: create assembler files from C source files.
 .c.s:
