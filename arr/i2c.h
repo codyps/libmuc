@@ -10,7 +10,11 @@ struct i2c_msg {
 	uint8_t *buf;
 };
 
+void i2c_init(void); // initialization.
+void i2c_main_handler(void); // main loop context manager.
+
 void i2c_xfer(struct i2c_msg msgs[], uint8_t ct,
                void (*cb)(struct i2c_msg *msg));
+
 
 #endif
