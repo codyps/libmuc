@@ -2,9 +2,11 @@
 #include <avr/interrupt.h>
 #include <avr/power.h>
 #include <util/twi.h>
+
 #include "glist.h"
 #include "i2c.h"
 
+// an i2c "transaction"
 struct i2c_trans {
 	struct i2c_msg msgs[];
 	uint8_t ct;
@@ -15,7 +17,6 @@ struct i2c_trans {
 LIST_DEFINE(i2c_trans, static,      , struct i2c_trans, uint8_t);
 static struct i2c_trans i2c_trans_buf[4];
 static list_t(i2c_trans) i2c_trans_queue = LIST_INITIALIZER(i2c_trans_buf);
-
 
 static inline void twi_inter_on(void)
 {
@@ -50,16 +51,41 @@ void i2c_main_handler(void)
 
 }
 
-void i2c_xfer(struct i2c_msg msgs[], uint8_t ct, void (*cb)(struct i2c_msg *msg))
+void i2c_xfer(struct i2c_msg msgs[], uint8_t ct,
+               void (*cb)(struct i2c_msg *msg))
 {
+	struct i2c_msg l_msg;
+	l_msg.msgs = msgs;
+	l_msg.ct   = ct;
+	l_msg.cb   = cb;
 
+	i2c_xfer_trans(&l_msg);
+}
+
+void i2c_xfer_trans(struct i2c_trans *trans)
+{
+	uint8_t len, twcr = TWCR;
+	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
+
+	len = LIST_CT(i2c_trans_queue);
+	list_push(i2c_trans)(&i2c_trans_queue,*trans);
+	if(len == 0) {
+		//TODO: start i2c work.
+		
+
+		twcr |= (uint8_t)(1<<TWIE);
+	}
+
+	TWCR = twcr;
 }
 
 ISR(TWI_vect)
 {
 	uint8_t tw_status = TW_STATUS;
 
-	twi_inter_off();
+	uint8_t twcr = TWCR;
+	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
+
 	sei();
 
 	switch(tw_status) {
@@ -82,6 +108,6 @@ ISR(TWI_vect)
 	}
 
 	cli();
-	twi_inter_on();
+	TWCR = twcr;
 }
 
