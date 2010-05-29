@@ -68,7 +68,7 @@ typedef int8_t list_error_t;
 __unused _data_t_ list_popf(_name_)(list_t(_name_) *l) {    \
 	if ( unlikely( list_empty(_name_)(l) ) ) { \
 		LIST_ERROR_NORET();                \
-		return 0;                          \
+		return (_data_t_)0;                \
 	}                                          \
 	_data_t_ head = l->buffer[ l->first ];     \
 	l->first++;                                \
@@ -83,7 +83,7 @@ __unused _data_t_ list_popf(_name_)(list_t(_name_) *l) {    \
 __unused _data_t_ list_popb(_name_)(list_t(_name_) *l) {     \
 	if ( unlikely( list_empty(_name_)(l) ) ) {  \
 		LIST_ERROR_NORET();                 \
-		return 0;                           \
+		return (_data_t_)0;                 \
 	}                                       \
 	l->ct--;                                \
 	l->end--;                               \
@@ -147,39 +147,39 @@ __unused void list_pushbo(_name_)(list_t(_name_) *l, _data_t_ x) {\
 __unused _data_t_ list_peekf(_name_)(list_t(_name_) *l) {\
 	if ( unlikely( list_empty(_name_)(l) ) ) {  \
 		LIST_ERROR_NORET();             \
-		return 0;                       \
-	}                                   \
-	return l->buffer[l->first];         \
+		return (_data_t)0;              \
+	}                                       \
+	return l->buffer[l->first];             \
 }
 
 #define _L_DEF_PEEKB(_name_,_data_t_,_index_t_)  \
 __unused _data_t_ list_peekb(_name_)(list_t(_name_) *l) {\
 	if ( unlikely( list_empty(_name_)(l) ) ) { \
 		LIST_ERROR_NORET();            \
-		return 0;                      \
+		return (_data_t_)0;            \
 	}                                  \
 	_index_t_ last = l->end-1;         \
 	if (last >= l->sz) {               \
-		last = l->sz-1;                \
+		last = l->sz-1;            \
 	}                                  \
 	return l->buffer[last];            \
 }
 
 #define _L_DEF_PEEK(_name_,_data_t_,_index_t_)  \
 __unused _data_t_ list_peek(_name_)(list_t(_name_) *l, _index_t_ index) {\
-	if ( unlikely( index >= l->ct ) ) {         \
-		LIST_ERROR_NORET();                     \
-		return 0;                               \
-	}                                           \
-	_index_t_ list_i, buff_i;                   \
-	for( (buff_i = l->first, list_i = 0) ; ; (++buff_i,++list_i) ) {\
-		if (buff_i >= l->sz)                    \
-			buff_i = 0;                         \
-		if (list_i == index)                    \
-			return l->buffer[buff_i];           \
-	}                                           \
-	LIST_ERROR_NORET();                         \
-	return 0;                                   \
+	if ( unlikely( index >= l->ct ) ) {                              \
+		LIST_ERROR_NORET();                                      \
+		return (_data_t)0;                                       \
+	}                                                                \
+	_index_t_ list_i, buff_i;                                        \
+	for((buff_i = l->first, list_i = 0);; (++buff_i,++list_i)) {     \
+		if (buff_i >= l->sz)                                     \
+			buff_i = 0;                                      \
+		if (list_i == index)                                     \
+			return l->buffer[buff_i];                        \
+	}                                                                \
+	LIST_ERROR_NORET();                                              \
+	return (_data_t_)0;                                              \
 }
 
 /* Can be called from non-isr with probably no bad occourances. */
