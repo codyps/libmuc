@@ -17,6 +17,8 @@ typedef int8_t list_error_t;
 
 #define list_t(_name_) CAT3(list_,_name_,_t)
 
+#define LIST_CT(list) ((list).ct)
+#define LIST_SZ(list) ((list).sz)
 
 /* first = first char, end = last + 1,
  * ct = nmem, sz = max_nmem */
@@ -92,7 +94,7 @@ __unused _data_t_ list_popb(_name_)(list_t(_name_) *l) {     \
 }
 
 #define _L_DEF_PUSHF(_name_,_data_t_)   \
-__unused list_error_t list_pushf(_name_)(list_t(_name_) *l, _data_t_ x) { \
+__unused int8_t list_pushf(_name_)(list_t(_name_) *l, _data_t_ x) { \
 	if ( unlikely( list_full(_name_)(l) ) ){ \
 		LIST_ERROR();                \
 		return -1;                   \
@@ -117,7 +119,7 @@ __unused void list_pushfo(_name_)(list_t(_name_) *l, _data_t_ x) {\
 }
 
 #define _L_DEF_PUSHB(_name_,_data_t_) \
-__unused list_error_t list_pushb(_name_)(list_t(_name_) *l, _data_t_ x) {\
+__unused int8_t list_pushb(_name_)(list_t(_name_) *l, _data_t_ x) {\
 	if ( unlikely( list_full(_name_)(l) ) ){ \
 		LIST_ERROR();                \
 		return -1;                   \
