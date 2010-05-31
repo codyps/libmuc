@@ -59,15 +59,15 @@ ISR( SIG_USI_OVERFLOW ) {
 	USISR = (1<<USIOIF); // Clear interupt flag and counter.
 	
 	//transmit (tx)
-	if (!list_empty(&tx)) {
-		USIDR = list_pop_back(&tx);
+	if (ISR_TAKE_OK(&tx)) {
+		USIDR = ISR_TAKE(&tx);
 	}
 	else USIDR = 0;
 
 	//recieve (rx)
 	uint8_t in = USIBR;
-	if (in != 0 && !list_full(&rx)) {
-	        list_push_front(&rx,in);
+	if (in != 0 && ISR_GIVE_OK(&rx)) {
+	        ISR_GIVE(&rx,in);
 		if (in == '\n')
 			spi_io_rx_nl++;
 	}

@@ -6,17 +6,21 @@
 #include <avr/interrupt.h>
 
 #include "../common.h"
-#include "../ds/list.h"
+
+#include "ds/glist.h"
 
 #include "spi_io_conf.h"
 
 #include "spi_io.h"
 
+/*          name, fnattr, dattr, data_t, index_t*/
+LIST_DEFINE(x, static, volatile, uint8_t, uint8_t);
+
 // NEVER ACCESS THESE DIRECTLY (they are used as 'restrict').
 static uint8_t tx_b[SPI_IO_TX_Q_LEN],	rx_b[SPI_IO_RX_Q_LEN]; 
 
-static volatile list_t tx = LIST_INITIALIZER(tx_b);
-static volatile list_t rx = LIST_INITIALIZER(rx_b);
+static volatile list_t(x) tx = LIST_INITIALIZER(tx_b);
+static volatile list_t(x) rx = LIST_INITIALIZER(rx_b);
 
 volatile uint8_t spi_io_rx_nl;
 
@@ -41,10 +45,10 @@ void spi_io_init(void) {
 
 }
 
-#define ISR_GIVE_OK() (!list_full(&rx))
-#define ISR_TAKE_OK() (!list_empty(&tx))
-#define ISR_GIVE(x) list_push_front(&rx,x)
-#define ISR_TAKE()  list_pop_back(&tx)
+#define ISR_GIVE_OK() (!list_full(x)(&rx))
+#define ISR_TAKE_OK() (!list_empty(x)(&tx))
+#define ISR_GIVE(z) list_pushf(x)(&rx,z)
+#define ISR_TAKE()  list_popb(x)(&tx)
 
 // Pick which spi implimentation to use.
 #if defined(SPI_IO_USE_SPI)
@@ -73,7 +77,7 @@ int spi_putc(char c, FILE * stream) {
 	int r;	
 	spi_isr_off();
 	#ifdef SPI_IO_STD_WAIT
-	while(list_full(&tx)) {
+	while(list_full(x)(&tx)) {
 		spi_isr_on();
 		asm(
 			"nop \n\t"
@@ -82,11 +86,11 @@ int spi_putc(char c, FILE * stream) {
 	spi_isr_off();
 	}
 	#else
-	if (list_full(&tx))
+	if (list_full(x)(&tx))
 		r = EOF;
 	else 
 	#endif /* SPI_IO_STD_WAIT */
-		r = list_push(&tx,(list_base_t)c);
+		r = list_push(x)(&tx,c);
 	spi_isr_on();
 	return r;
 
@@ -96,7 +100,7 @@ int spi_getc(FILE * stream) {
 	int r;
 	spi_isr_off();
 	#ifdef SPI_IO_STD_WAIT
-	while(list_empty(&rx)) {
+	while(list_empty(x)(&rx)) {
 		spi_isr_on();
 		asm(
 			"nop \n\t"
@@ -105,11 +109,11 @@ int spi_getc(FILE * stream) {
 		spi_isr_off();
 	}
 	#else
-	if (list_empty(&rx))
+	if (list_empty(x)(&rx))
 		r = EOF;
 	else
 	#endif /* SPI_IO_STD_WAIT */
-		r = (int) list_take(&rx);
+		r = (int) list_get(x)(&rx);
 	spi_isr_on();
 	return r; 
 }
@@ -129,7 +133,7 @@ int spi_getchar(void) {
 	int r;
 	spi_isr_off();
 	#ifdef SPI_IO_FAST_WAIT
-	while(list_empty(&rx)) {
+	while(list_empty(x)(&rx)) {
 		spi_isr_on();
 		asm(
 			"nop \n\t"
@@ -138,18 +142,18 @@ int spi_getchar(void) {
 		spi_isr_off();
 	}
 	#else
-	if (list_empty(&rx))
+	if (list_empty(x)(&rx))
 		r = EOF;
 	else
 	#endif
-		r = (int) list_take(&rx);
+		r = (int) list_get(x)(&rx);
 	spi_isr_on();
 	return r; 
 }
 
 static inline void spi_putchar_unsafe(uint8_t ch) {
 	// expects spi interupt disabled on entry, leaves it disabled on exit.
-	while(list_full(&tx)) {
+	while(list_full(x)(&tx)) {
 			spi_isr_on();
 			asm(
 				"nop\n\t"
@@ -157,7 +161,7 @@ static inline void spi_putchar_unsafe(uint8_t ch) {
 			);			
 			spi_isr_off();
 	}
-	list_push(&tx,ch);
+	list_push(x)(&tx,ch);
 }
 
 void spi_puts(const char * string) {
@@ -172,7 +176,7 @@ void spi_puts(const char * string) {
 void spi_o_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
-		if(list_full(&tx)) {
+		if(list_full(x)(&tx)) {
 			spi_isr_on();
 			asm(
 				"nop\n\t"
@@ -181,7 +185,7 @@ void spi_o_puts(const char * string) {
 			);			
 			spi_isr_off();
 		}
-		list_push_front_o(&tx,*string);
+		list_pushfo(x)(&tx,*string);
 		string++;
 	}
 	spi_isr_on();
