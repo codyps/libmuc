@@ -19,8 +19,8 @@
 
 #include "util.h"
 
-#include "../common/bus/spi_io.h"
-#include "../common/ds/queue.h"
+#include "bus/spi_io.h"
+#include "ds/glist.h"
 
 /*
  Card Reader:
@@ -46,6 +46,9 @@
 
 #define MAGR_BITS_PACK 5
 
+/*          name, fnattr, dattr, data_t          , index_t*/
+LIST_DEFINE(mag, static, volatile, uint8_t, uint8_t);
+
 struct mag_status {
   uint8_t motion_1;
   uint8_t motion_0;
@@ -61,9 +64,9 @@ struct mag_status {
   uint8_t data_ready;
 
   uint8_t data_buff[64];
-  queue_t data_q;
+  volatile list_t(mag) data_q;
 
-} static volatile mag = { .data_q=Q_INIT(mag.data_buff) };
+} static volatile mag = { .data_q=LIST_INITIALIZER(mag.data_buff) };
 
 
 inline static uint8_t bit(uint8_t in,uint8_t pos) {
@@ -128,7 +131,8 @@ static uint16_t iso_t2(uint8_t in) {
   }
 }
 
-ISR(SIG_PIN_CHANGE0) {
+ISR(SIG_PIN_CHANGE0)
+{
   static uint8_t old_pin =  0xFF; // all pins default high
   uint8_t new_pin = PINA;
 
@@ -161,7 +165,7 @@ ISR(SIG_PIN_CHANGE0) {
       mag.data_ct++;
       if (mag.data_ct >= MAGR_BITS_PACK) {
         mag.data_ready = 1;
-        q_push(&(mag.data_q),mag.data);
+        list_push(mag)(&(mag.data_q),mag.data);
       }
     }
   }
