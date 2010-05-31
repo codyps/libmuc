@@ -14,6 +14,7 @@ TARGET = main
 SRC  = main.c
 SRC += servo.c
 SRC += usart.c
+SRC += i2c.c
 
 ASRC = 
 OPT = s
@@ -175,15 +176,18 @@ extcoff: $(TARGET).elf
 .SUFFIXES: .elf .hex .eep .lss .sym
 
 .elf.hex:
-	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
+	@echo OBJCOPY $@
+	@$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
 .elf.eep:
-	-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
+	@echo OBJCOPY $@
+	@-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
 	--change-section-lma .eeprom=0 -O $(FORMAT) $< $@
 
 # Create extended listing file from ELF output file.
 .elf.lss:
-	$(OBJDUMP) -h -S $< > $@
+	@OBJDUMP $@
+	@$(OBJDUMP) -h -S $< > $@
 
 # Create a symbol table from ELF output file.
 .elf.sym:
