@@ -91,7 +91,7 @@ ISR(TWI_vect)
 	case TW_BUS_ERROR:
 	case TW_MT_ARB_LOST:
 	default:
-
+		break;
 	}
 
 	cli();
