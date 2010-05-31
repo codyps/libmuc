@@ -17,7 +17,7 @@ typedef volatile struct {
 	const QUEUE_INDEX_T sz;	// size of the buffer
 } queue_t;
 
-#define Q_DEF(buff) { .buffer = (buff), .first = 0, .last = 0, \
+#define Q_INIT(buff) { .buffer = (buff), .first = 0, .last = 0, \
 	.ct = 0, .sz = sizeof(buff) / sizeof(QUEUE_BASE_T) }
 
 // adds a new element

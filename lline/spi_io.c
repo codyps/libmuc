@@ -6,7 +6,7 @@
 #include <avr/interrupt.h>
 
 #include "common.h"
-#include "queue.h"
+#include "ds/queue.h"
 
 #include "spi_io.h"
 
@@ -27,7 +27,7 @@ CLK-> 2
 #define POSITIVE 0
 #define SPI_EDGE POSITIVE
 
-uint8_t tx_b[32],	rx_b[32];
+uint8_t tx_b[32], rx_b[32];
 queue_t tx = Q_INIT(tx_b);
 queue_t rx = Q_INIT(rx_b);
 
@@ -80,11 +80,12 @@ void spi_io_init(void) {
 
 }
 
-ISR( SIG_USI_OVERFLOW ) {
-     USISR = (1<<USIOIF); // Clear interupt flag and counter.
+ISR(SIG_USI_OVERFLOW)
+{
+	USISR = (1<<USIOIF); // Clear interupt flag and counter.
 	
 	//transmit (tx)
-     if (!q_empty(&tx)) {
+	if (!q_empty(&tx)) {
 		USIDR = q_pop(&tx);
 	}
 	else USIDR = 0;
@@ -144,15 +145,6 @@ int spi_getchar(void) {
 	return r; 
 }
 
-void spi_puts(const char * string) {
-	spi_isr_off();
-	while(*string) {
-		_spi_putchar(*string);
-		string++;
-	}
-	spi_isr_on();
-}
-
 void spi_o_puts(const char * string) {
 	spi_isr_off();
 	while(*string) {
@@ -191,6 +183,15 @@ static inline void _spi_putchar(uint8_t ch) {
 			spi_isr_off();
 		}
 	q_push(&tx,ch);
+}
+
+void spi_puts(const char * string) {
+	spi_isr_off();
+	while(*string) {
+		_spi_putchar(*string);
+		string++;
+	}
+	spi_isr_on();
 }
 
 void spi_putchar(uint8_t ch) {
