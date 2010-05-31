@@ -63,7 +63,7 @@ struct mag_status {
   uint8_t data_buff[64];
   queue_t data_q;
 
-} static volatile mag = { .data_q=Q_DEF(mag.data_buff) };
+} static volatile mag = { .data_q=Q_INIT(mag.data_buff) };
 
 
 inline static uint8_t bit(uint8_t in,uint8_t pos) {

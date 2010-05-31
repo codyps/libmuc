@@ -105,7 +105,7 @@ void list_push_back_o(list_t *l, list_base_t x) {
 	if (!list_full(l))
 		++(l->ct);
 	
-	return 0;
+	return;
 }
 
 list_base_t list_peek_front(list_t *l) {
