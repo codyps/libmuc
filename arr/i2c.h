@@ -7,7 +7,7 @@
 struct i2c_trans {
 	struct i2c_msg *msgs;
 	uint8_t ct;
-	void (*cb)(struct i2c_msg *msg);
+	void (*cb)(struct i2c_trans *msg);
 };
 
 struct i2c_msg {
