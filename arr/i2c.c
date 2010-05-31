@@ -7,12 +7,10 @@
 #include "ds/glist.h"
 #include "i2c.h"
 
-// an i2c "transaction"
-struct i2c_trans {
-	struct i2c_msg *msgs;
-	uint8_t ct;
-	void (*cb)(struct i2c_msg *msg);
-};
+/** I2C Clock Generation **/
+#define F_SCL 100000
+#define TWI_PS_MSK 0
+#define TWI_BR_VAL -(16*F_SCL-F_CPU)/(2*F_SCL)
 
 /*          name     , fnattr, dattr, data_t          , index_t*/
 LIST_DEFINE(i2c_trans, static,      , struct i2c_trans *, uint8_t);
@@ -52,7 +50,7 @@ void i2c_main_handler(void)
 
 }
 
-void i2c_xfer_trans(struct i2c_trans *trans)
+void i2c_xfer(struct i2c_trans *trans)
 {
 	uint8_t len, twcr = TWCR;
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
@@ -66,17 +64,6 @@ void i2c_xfer_trans(struct i2c_trans *trans)
 	}
 
 	TWCR = twcr;
-}
-
-void i2c_xfer(struct i2c_msg msgs[], uint8_t ct,
-               void (*cb)(struct i2c_msg *msg))
-{
-	struct i2c_msg l_msg;
-	l_msg.msgs = msgs;
-	l_msg.ct   = ct;
-	l_msg.cb   = cb;
-
-	i2c_xfer_trans(&l_msg);
 }
 
 ISR(TWI_vect)
