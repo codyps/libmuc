@@ -129,7 +129,7 @@ MV = mv -f
 OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) 
 
 # Define all listing files.
-LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
+LST = $(SRC:.c=.lst) $(ASRC:.S=.lst) 
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
@@ -220,7 +220,10 @@ $(TARGET).uni.elf: $(SRC)
 clean:
 	$(REMOVE) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
 	$(TARGET).map $(TARGET).sym $(TARGET).lss \
-	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d) \
+	$(OBJ) \
+	$(LST) \
+	$(SRC:.c=.s) \
+	$(SRC:.c=.d) \
 	$(TARGET).uni.hex $(TARGET).uni.eep $(TARGET).uni.elf $(TARGET).uni.cof
 
 depend:
