@@ -90,7 +90,7 @@ static bool process_servo_cmd(char *msg)
 		int num;
 		int ret = sscanf(msg+1," %d",&num);
 		if (ret == 1) {
-			printf("%d\n",TICKS_US(servo_get(num)));
+			printf("%d\n",US_TICKS(servo_get(num)));
 			return true;
 		} else {
 			return false;
