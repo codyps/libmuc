@@ -127,7 +127,7 @@ static void process_msg(void)
 			      "  sq <sn> -- query servos.\n"
 			      "  sc -- get servo count.\n"
 			      "  c -- clear.\n"
-			      "  e -- togle echo.\n"
+			      "  e{+,-,} -- echo ctrl.\n"
 			      "  u -- version.\n"));
 		break;
 	
@@ -139,7 +139,16 @@ static void process_msg(void)
 		printf("\e[H\e[2J");
 		break;
 	case 'e':
-		usart_echo ^= 1;
+		switch(buf[1]) {
+		case '+':
+			usart_echo = 1;
+			break;
+		case '-':
+			usart_echo = 0;
+			break;
+		default:
+			usart_echo ^= 1;
+		}
 		break;
 	default:
 		printf("unknown command \"%s\".\n",buf);
