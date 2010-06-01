@@ -22,7 +22,7 @@ struct pwm_param_s {
   uint8_t use_oc1b:1;
   uint8_t use_oc1d:1;
   uint8_t t1_prescale:5;
-} const pwm_param = { USE_OC1A, USE_OC1B, USE_OC1D, MOTOR_T1_PRESCALE };
+} static const pwm_param = { USE_OC1A, USE_OC1B, USE_OC1D, MOTOR_T1_PRESCALE };
 
 static void motor_pwm10_init(struct pwm_param_s param);
 static inline void motor_pins(motor_t *motor, uint8_t dir1, uint8_t dir2);
