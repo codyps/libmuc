@@ -196,9 +196,11 @@ ISR(USART_RX_vect)
 			// backspace
 			if (!list_empty(sio_l)(&rx_q)) {
 				list_remove(sio_l)(&rx_q);
-				fputc('\b',&usart_io_queue);
-				fputc(' ' ,&usart_io_queue);
-				fputc('\b',&usart_io_queue);
+				if (usart_echo) {
+					fputc('\b',&usart_io_queue);
+					fputc(' ' ,&usart_io_queue);
+					fputc('\b',&usart_io_queue);
+				}
 			}
 		} else if(!list_full(sio_l)(&rx_q)) {
 			// normal reception.
@@ -207,7 +209,8 @@ ISR(USART_RX_vect)
 				usart_msg++;
 			}
 			list_put(sio_l)(&rx_q,c);
-			fputc(c,&usart_io_queue);
+			if (usart_echo)
+				fputc(c,&usart_io_queue);
 		} else {
 			// full queue.
 			fputc('\a',&usart_io_queue);

@@ -127,6 +127,7 @@ static void process_msg(void)
 			      "  sq <sn> -- query servos.\n"
 			      "  sc -- get servo count.\n"
 			      "  c -- clear.\n"
+			      "  e -- togle echo.\n"
 			      "  u -- version.\n"));
 		break;
 	
@@ -136,6 +137,9 @@ static void process_msg(void)
 		goto invalid_arg;
 	case 'c':
 		printf("\e[H\e[2J");
+		break;
+	case 'e':
+		usart_echo ^= 1;
 		break;
 	default:
 		printf("unknown command \"%s\".\n",buf);
