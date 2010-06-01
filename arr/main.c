@@ -68,11 +68,36 @@ static bool process_servo_cmd(char *msg)
 			return false;
 		}
 	}
+
+	case 'S': {
+		int pos, num;
+		int ret = sscanf(msg+1," %d %d",&num,&pos);
+		if (ret == 2) {
+			if (servo_set(num,pos)) {
+				printf(" error.\n");
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	case 'c':
-		printf("%d\n", servo_ct());
+		printf("%d\n",servo_ct());
 		return true;
 
 	case 'q': {
+		int num;
+		int ret = sscanf(msg+1," %d",&num);
+		if (ret == 1) {
+			printf("%d\n",TICKS_US(servo_get(num)));
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	case 'Q': {
 		int num;
 		int ret = sscanf(msg+1," %d",&num);
 		if (ret == 1) {
@@ -124,7 +149,8 @@ static void process_msg(void)
 		printf_P(PSTR("commands:\n"
 		              "  h -- prints this.\n"
 			      "  ss <sn> <val> -- set servos.\n"
-			      "  sq <sn> -- query servos.\n"
+			      "  sq <sn> -- query servos (uS).\n"
+			      "  s{S,Q} -- \" \" (ticks).\n"
 			      "  sc -- get servo count.\n"
 			      "  c -- clear.\n"
 			      "  e{+,-,} -- echo ctrl.\n"
