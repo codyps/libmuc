@@ -189,6 +189,11 @@ __unused void list_flush(_name_)(list_t(_name_) *list) { \
 	list->ct = 0;               \
 }
 
+#define LIST_FLUSH(_list_) do {          \
+	(_list_)->end = (_list_)->first;   \
+	(_list_)->ct = 0;                \
+	} while(0)
+
 #define _L_DEF_EMPTY(_name_)            \
 __unused bool list_empty(_name_)(list_t(_name_) *list) { \
 	if ( likely( list->ct != 0 ) )      \
@@ -197,6 +202,9 @@ __unused bool list_empty(_name_)(list_t(_name_) *list) { \
 		return true;                    \
 }
 
+#define LIST_EMPTY(_list_) \
+	((likely((_list_)->ct != 0))?false:true)
+
 #define _L_DEF_FULL(_name_)              \
 __unused bool list_full(_name_)(list_t(_name_) *list) {   \
 	if ( likely( list->ct < list->sz ) ) \
@@ -204,6 +212,9 @@ __unused bool list_full(_name_)(list_t(_name_) *list) {   \
 	else                                 \
 		return true;                 \
 }
+
+#define LIST_FULL(_list_) \
+	((likely((_list_)->ct < (_list_)->sz))? false : true)
 
 #define _L_DEF_VAL_I(_name_, _index_t_)  \
 __unused bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\
