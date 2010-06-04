@@ -20,6 +20,6 @@ struct i2c_msg {
 void i2c_init(void); // initialization.
 void i2c_main_handler(void); // main loop context manager.
 
-void i2c_xfer(struct i2c_trans *tran);
+void i2c_transfer(struct i2c_trans *tran);
 
 #endif

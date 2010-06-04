@@ -32,27 +32,38 @@ void i2c_init(void)
 	power_twi_enable();
 
 	// Disable TWI hw.
-	TWCR = 0;
+	TWCR = (1<<TWINT); // TWINT is cleared by writing 1 to it.
 
-	// TODO: Setup the pins.
-	
-	// TODO: Set baud rate.
+	// Setup the pins.
+	// SCL = PC5 / 28 / Analog 5
+	// SDA = PC4 / 27 / Analog 4
+
+	// both inputs
+	DDRC &= (uint8_t) ~((uint8_t)(1<<PC5)|(1<<PC4));
+
+	// enable internal pull ups.
+	PORTC |= (uint8_t)(1<<PC5)|(1<<PC4);
+
+	// Set baud rate.
 	TWBR = TWI_BR_VAL;
 	TWSR|= TWI_PS_MSK;
 
-	// Slave setup.
+	// TODO: Slave setup.
 	
-	// 
+	// TWI hw enable.
+	TWCR = (uint8_t)(1<<TWEN)|(1<<TWEA)|(1<<TWINT);
 }
 
 void i2c_main_handler(void)
 {
-
+	// TODO: check for completed i2c_transfers and call their callbacks.
 }
 
-void i2c_xfer(struct i2c_trans *trans)
+void i2c_transfer(struct i2c_trans *trans)
 {
 	uint8_t len, twcr = TWCR;
+
+	// temporarily disable TWI interrupt.
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 
 	len = LIST_CT(i2c_trans_queue);
@@ -70,9 +81,11 @@ ISR(TWI_vect)
 {
 	uint8_t tw_status = TW_STATUS;
 
+	// Temporary disable of TWI isr
 	uint8_t twcr = TWCR;
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 
+	// Enable other interrupts.
 	sei();
 
 	switch(tw_status) {
@@ -94,6 +107,7 @@ ISR(TWI_vect)
 		break;
 	}
 
+	// Change things back to normal.
 	cli();
 	TWCR = twcr;
 }
