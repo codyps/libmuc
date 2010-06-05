@@ -17,7 +17,8 @@ struct i2c_msg {
 	uint8_t *buf;
 };
 
-void i2c_init(void); // initialization.
+void i2c_init_master(void);
+void i2c_init_slave(uint8_t slave_addr, uint8_t slave_addr_msk);
 void i2c_main_handler(void); // main loop context manager.
 
 void i2c_transfer(struct i2c_trans *tran);

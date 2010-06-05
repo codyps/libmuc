@@ -27,7 +27,7 @@ static inline void twi_inter_off(void)
 	TWCR &= (uint8_t) ~(1<<TWIE);
 }
 
-void i2c_init(void)
+void i2c_init_master(void)
 {
 	power_twi_enable();
 
@@ -35,6 +35,7 @@ void i2c_init(void)
 	TWCR = (1<<TWINT); // TWINT is cleared by writing 1 to it.
 
 	// Setup the pins.
+	// XXX: move somewhere else?
 	// SCL = PC5 / 28 / Analog 5
 	// SDA = PC4 / 27 / Analog 4
 
@@ -42,16 +43,24 @@ void i2c_init(void)
 	DDRC &= (uint8_t) ~((uint8_t)(1<<PC5)|(1<<PC4));
 
 	// enable internal pull ups.
-	PORTC |= (uint8_t)(1<<PC5)|(1<<PC4);
+	PORTC |= (uint8_t)((1<<PC5)|(1<<PC4));
 
 	// Set baud rate.
 	TWBR = TWI_BR_VAL;
 	TWSR|= TWI_PS_MSK;
 
-	// TODO: Slave setup.
-	
 	// TWI hw enable.
 	TWCR = (uint8_t)(1<<TWEN)|(1<<TWEA)|(1<<TWINT);
+}
+
+/* slave_addr:
+ *  bits 7:1 set the slave addr (all 0 to disble)
+ *  bit 0 set responce to general call.
+ */
+void i2c_init_slave(uint8_t slave_addr, uint8_t slave_addr_msk) {
+	// TODO: Slave setup.
+	TWAR = slave_addr;
+	TWAMR = slave_addr_msk;
 }
 
 void i2c_main_handler(void)
