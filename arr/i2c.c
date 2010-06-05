@@ -100,21 +100,49 @@ ISR(TWI_vect)
 	switch(tw_status) {
 	case TW_START:
 	case TW_REP_START:
+		// if we wanted a start, send an address
+		// otherwise, wait?
 
 	case TW_MT_SLA_ACK:
+		// address is acknowleged. (a sla+w was sent last)
+		// begin sending data.
+
 	case TW_MT_SLA_NACK:
+		// address not acknowledged. Device may not be on bus.
+
 	case TW_MT_DATA_ACK:
+		// data send succeeded.
+		// if more data to send, send data.
+		// otherwise, check what to do next.
+
 	case TW_MT_DATA_NACK:
+		// data send nacked (may have succeeded but been the last needed.
+		// not really too clear).
 
 	//case TW_MT_ARB_LOST: // identical to the following:
 	case TW_MR_ARB_LOST:
+		// wait our turn to retry.
 	
 	case TW_MR_SLA_ACK:
+		// Slave acked read request, sla+r sent.
+		// begin reading data in next interrrupt.
+	
 	case TW_MR_SLA_NACK:
+		// Slave did not ack read request. may not be on bus.
+		// Retry?
 
 	case TW_MR_DATA_ACK:
+		// we have some data, read it.
+
 	case TW_MR_DATA_NACK:
-	
+		// looks like we nacked the last packet.
+		// should see what we got. (probably the end of a
+		// reception cycle).
+
+
+	/* Slave */
+	/* TODO: not presently targeted */
+	/*
 	case TW_ST_SLA_ACK:
 	case TW_ST_ARB_LOST_SLA_ACK:
 	case TW_ST_DATA_ACK:
@@ -130,10 +158,16 @@ ISR(TWI_vect)
 	case TW_SR_GCALL_DATA_ACK:
 	case TW_SR_GCALL_DATA_NACK:
 	case TW_SR_STOP:
+	*/
+
 	case TW_NO_INFO:
+		// shouldn't be here.
+		break;
 
 	case TW_BUS_ERROR:
 	default:
+		// TODO: handle errors.
+
 		break;
 	}
 
