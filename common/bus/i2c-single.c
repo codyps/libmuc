@@ -13,28 +13,37 @@
 #include "i2c.h"
 #include "i2c-single.h"
 
+static struct i2c_trans *c_trans;
+static uint8_t msg_idx; // current msg in c_trans->msgs[msg_idx].
+static uint8_t buf_idx; // current pos in c_trans->msgs[msg_idx]->buf
+static bool trans_complete;
+
 void i2c_transfer(struct i2c_trans *trans)
 {
+	while(c_trans);
 
-
+	c_trans = trans;
 }
 
-int i2c_start_xfer(void) {
+void i2c_main_handler(void)
+{
+	if(c_trans && trans_complete) {
+		c_trans->cb(c_trans,/* status */ 0);
+		c_trans = 0;
+	}
+}
+
+void i2c_start_xfer(void)
+{
 	if (i2c_mode == I2C_IDLE) {
 		i2c_mode = I2C_BUSY;
 		TWCR  = TWCR_START;
-		return 0;
+		return;
 	}
 	#if DEBUG_L(2)
 	fprintf_P(stderr,PSTR("\n[i2c] start %d"),i2c_mode);
 	#endif
-	return -1;
-}
-
-int i2c_reset_xfer(void) {
-	i2c_mode = I2C_BUSY;
-	TWCR  = TWCR_RESET;
-	return 0;
+	return;
 }
 
 void i2c_init_master(void) 
@@ -44,16 +53,15 @@ void i2c_init_master(void)
 
 	// Enable Pullups
 	// FIXME: axon specific.
-	DDRD&=(uint8_t)~((1<<0)|(1<<1));
-	PORTD|=((1<<0)|(1<<1));
+	DDRD &= (uint8_t) ~((1<<0)|(1<<1));
+	PORTD |= ((1<<0)|(1<<1));
 
 	// Disable TWI
-	TWCR=0;
-	//TWCR&=(uint8_t)~(1<<TWEN);
+	TWCR = 0;
 
 	// Set SCL Clock
-	TWBR=TWI_BR_VAL;
-	TWSR|=TWI_PS_MSK;
+	TWBR = TWI_BR_VAL;
+	TWSR = TWI_PS_MSK;
 
 	// Set Slave ADDR
 	//TWAR=I2C_SLAVE_ADDR<<1+I2C_GENERAL_CALL_EN;
@@ -72,55 +80,54 @@ void i2c_init_master(void)
 inline static void twi_inter_on(void) { TWCR|=(1<<TWIE); }
 inline static void twi_inter_off(void) { TWCR&=(uint8_t)~(1<<TWIE); }
 
-ISR(TWI_vect) {
+ISR(TWI_vect)
+{
 	uint8_t tw_status = (uint8_t)TW_STATUS;
-
+	uint8_t twcr = (uint8_t)TWCR;
 	// Don't block more critical ISRs
-	twi_inter_off();
+
+	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 	sei();
 
+	struct i2c_msg c_msg = c_trans->msgs[msg_idx];
 	switch(tw_status) {
 	case TW_START:
 	case TW_REP_START: {
 		// Send Slave Addr.
-		if	(w_data_buf_pos == 0 && w_data_buf_len != 0) {
-			i2c_mode 	= I2C_MT;
-			TWDR 		= dev_w_addr;
-			TWCR 		= TWCR_BASE;
-
-		}
-		else if (r_data_buf_pos == 0 && r_data_buf_len != 0) {
-			i2c_mode	= I2C_MR;
-			TWDR		= dev_r_addr;
-			TWCR		= TWCR_BASE;
-		}
-		else {
-			twi_printf_P(PSTR("\n[err] {r,w}_data_buf_pos != 0\n"));
-		}
+		uint8_t addr = c_msg->addr;
+		TWDR = addr;
+		i2c_mode = (addr & 1) ? I2C_MT : I2C_MR;
+		twcr = TWCR_BASE;
 	} break;
 	// MASTER TRANSMIT
 	case TW_MT_SLA_ACK: {
 		// sla+w ack,
 		// start writing data
-		TWDR		= w_data_buf[0]; //[w_data_buf_pos]
-		w_data_buf_pos	= 1;
-		TWCR		= TWCR_BASE;
+		if (c_msg->len)
+			TWDR    = c_msg->buf[0];
+			buf_idx = 1;
+			twcr    = TWCR_BASE;
+		} else {
+			//TODO: handle case where no data is to be transmitted.
+		}
 	} break;
 	case TW_MT_DATA_ACK: {
 		// data acked
 		// send more data or rep_start to read.
-		if (w_data_buf_pos == w_data_buf_len) {
-			// Done writing data
-			// issue repstart for read
-			// FIXME: when read len = zero?
-			i2c_mode = I2C_BUSY;
-			TWCR = TWCR_START;
-		}
-		else {
-			// More data to be writen.
-			TWDR = w_data_buf[w_data_buf_pos];
-			w_data_buf_pos++;
-			TWCR = TWCR_BASE;
+	
+		if (buf_idx < c_msg->len) {
+			// more data to transmit.
+			TWDR = c_msg->buf[buf_idx];
+			buf_idx ++;
+			twcr = TWCR_BASE;
+		} else {
+			// check if we have another message, if so repstart.
+			if (msg_idx < c_trans->ct) {
+				i2c_mode = I2C_BUSY;
+				twcr = TWCR_START;
+				buf_idx = 0;
+				msg_idx ++;
+			}
 		}
 	} break;
 
@@ -128,85 +135,81 @@ ISR(TWI_vect) {
 	case TW_MR_SLA_ACK: {
 		// sla+r ack
 		// wait for first data packet.
-		TWCR = TWCR_BASE;
+		twcr = TWCR_BASE;
 	} break;
 
 	case TW_MR_DATA_ACK: {
 		// Data read, wait for next read with ack or nack
 
-		r_data_buf[r_data_buf_pos] = TWDR;
-		r_data_buf_pos ++;
+		c_msg->buf[buf_idx] = TWDR;
+		buf_idx++;
 
-		if (r_data_buf_pos == (r_data_buf_len-1) ) {
+		if (buf_idx == (c_msg->len - 1)) {
 			// One more read to go, send nak
-			TWCR = TWCR_NACK;
-		}
-		else if (r_data_buf_pos >= r_data_buf_len) {
+			twcr = TWCR_NACK;
+		} else if (buf_idx >= c_msg->len) {
 			// No more data to read.
 			i2c_mode = I2C_IDLE;
 			// call the callback
-			if (xfer_complete_cb != NULL)
-				TWCR = xfer_complete_cb();
-			else
-				TWCR = TWCR_STOP;
-		}
-		else {
+			if (c_trans->cb != NULL)
+				c_trans->cb(c_trans,0);
+
+			twcr = TWCR_STOP;
+		} else {
 			// Continue to read data.
-			TWCR = TWCR_BASE;
+			twcr = TWCR_BASE;
 		}
 	} break;
 
 	case TW_MR_DATA_NACK: {
 		// Done transmitting,
 		// check packet length, call the cb
-		r_data_buf[r_data_buf_pos] = TWDR;
-		r_data_buf_pos ++;
-		if (r_data_buf_pos != r_data_buf_len) {
-
+		c_msg->buf[buf_idx] = TWDR;
+		buf_idx ++;
+		if (buf_idx != c_msg->len) {
 			//FIXME: not enough data read, handle?
 			#if DEBUG_L(1)
 			twi_printf_P(PSTR("\n[err] i2c: short"));
 			#endif
 			r_data_buf_pos = 0;
 			w_data_buf_pos = 0;
-			TWCR = TWCR_START;
+			twcr = TWCR_START;
 
-		}
-		else {
+		} else {
+
 			i2c_mode = I2C_IDLE;
-
+		
 			//call the callback
-			if (xfer_complete_cb != NULL)
-				TWCR = xfer_complete_cb();
-			else
-				TWCR = TWCR_STOP;
+			if (c_trans->cb != NULL)
+				c_trans->cb(c_trans,0);
+			
+			twcr = TWCR_STOP;
 		}
 	} break;
 	// Errors
 	case TW_MT_SLA_NACK: {
 		// sla+w nack
 		// restart bus and begin the same transmition again.
-		w_data_buf_pos = 0;
-		r_data_buf_pos = 0;
+		buf_idx = 0;
+		msg_idx = 0;
 		i2c_mode = I2C_BUSY;
-		TWCR = TWCR_START;
+		twcr = TWCR_START;
 	} break;
 	case TW_MT_DATA_NACK: {
 		// data nacked, rep_start and retransmit.
 		// FIXME: should reset or repstart?
-		w_data_buf_pos = 0;
-		r_data_buf_pos = 0;
+		buf_idx = 0;
 		i2c_mode = I2C_BUSY;
-		TWCR = TWCR_START;
+		twcr = TWCR_START;
 	} break;
 	case TW_MR_SLA_NACK: {
 		// sla+r nack,
 		//???? (rep_start/try again a few times)
 		// reset entire transaction
-		w_data_buf_pos = 0;
-		r_data_buf_pos = 0;
+		buf_idx = 0;
+		msg_idx = 0;
 		i2c_mode = I2C_BUSY;
-		TWCR 	= TWCR_START;
+		twcr 	= TWCR_START;
 		#if DEBUG_L(2)
 		twi_printfP(PSTR("\n[err] i2c: SLA+R NACK"));
 		#endif
@@ -218,26 +221,26 @@ ISR(TWI_vect) {
 		twi_printf_P(PSTR("\n[err]TWI_BUS_ERROR\n"));
 		#endif
 		i2c_mode = I2C_IDLE; //XXX:??
-		TWCR = TWCR_STOP;
+		twcr = TWCR_STOP;
 	} break;
-	case TW_MT_ARB_LOST:
+	//case TW_MT_ARB_LOST:
 	case TW_MR_ARB_LOST: {
 		// Wait for stop condition.
 		// Only needed for multi master bus.
 		// Send Start when bus becomes free.
-		w_data_buf_pos = 0;
-		r_data_buf_pos = 0;
+		buf_idx = 0;
+		msg_idx = 0;
 		i2c_mode = I2C_BUSY;
-		TWCR = TWCR_START;
+		twcr = TWCR_START;
 	} break;
 	default: {
 		twi_printf_P(PSTR("\n[i2c] unknown tw_status %x"),tw_status);
-		TWCR |= (1<<TWINT);
+		twcr |= (1<<TWINT);
 	} break;
 	}
 
 	// Reenable twi interrupt.
 	cli();
-	twi_inter_on();
+	TWCR = twcr;
 }
 
