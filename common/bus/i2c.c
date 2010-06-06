@@ -65,7 +65,7 @@ inline static void twi_inter_on(void) { TWCR|=(1<<TWIE); }
 inline static void twi_inter_off(void) { TWCR&=(uint8_t)~(1<<TWIE); }
 
 ISR(TWI_vect) {
-	uint8_t tw_status = TW_STATUS;
+	uint8_t tw_status = (uint8_t)TW_STATUS;
 
 	// Don't block more critical ISRs
 	twi_inter_off();
