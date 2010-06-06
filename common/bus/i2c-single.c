@@ -11,6 +11,13 @@
 #include <util/twi.h>
 
 #include "i2c.h"
+#include "i2c-single.h"
+
+void i2c_transfer(struct i2c_trans *trans)
+{
+
+
+}
 
 int i2c_start_xfer(void) {
 	if (i2c_mode == I2C_IDLE) {
@@ -30,7 +37,8 @@ int i2c_reset_xfer(void) {
 	return 0;
 }
 
-void twi_init(void) {
+void i2c_init_master(void) 
+{
 	fprintf_P(io_init,PSTR("\n[twi init..."));
 	power_twi_enable();
 
