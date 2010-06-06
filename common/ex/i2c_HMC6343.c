@@ -40,7 +40,7 @@ void hmc6343_init_static(void) {
 	w_data_buf = &cmd;
 	w_data_buf_pos = 0;
 	
-	xfer_complete_cb = &hmc6343_cb;
+	xfer_complete_cb = hmc6343_cb;
 	head_data_updated = false;
 }
 
