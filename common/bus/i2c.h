@@ -1,14 +1,6 @@
 #ifndef I2C_H_
 #define I2C_H_
-
 #include <stdint.h>
-
-// an i2c "transaction"
-struct i2c_trans {
-	struct i2c_msg *msgs;
-	uint8_t ct;
-	void (*cb)(struct i2c_trans *msg);
-};
 
 struct i2c_msg {
 	uint8_t addr;
@@ -17,9 +9,16 @@ struct i2c_msg {
 	uint8_t *buf;
 };
 
+/* an i2c "transaction" */
+struct i2c_trans {
+	struct i2c_msg *msgs;
+	uint8_t ct;
+	void (*cb)(uint8_t status, struct i2c_trans *msg);
+};
+
 void i2c_init_master(void);
 void i2c_init_slave(uint8_t slave_addr, uint8_t slave_addr_msk);
-void i2c_main_handler(void); // main loop context manager.
+void i2c_main_handler(void); /* main loop context manager. */
 
 void i2c_transfer(struct i2c_trans *tran);
 
