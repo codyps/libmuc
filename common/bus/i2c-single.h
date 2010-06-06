@@ -8,24 +8,6 @@
 #define TWI_PS_MSK 0
 #define TWI_BR_VAL -(16*F_SCL-F_CPU)/(2*F_SCL)
 
-/** Slave Mode **/
-// Slave Address(s) for device  0b7654321
-#define I2C_SLAVE_ADDR		0b0011100
-#define I2C_SLAVE_ADDR_MSK	0b0000000
-// Respond to General Call in Slave mode?
-#define I2C_GENERAL_CALL_EN 0
-
-/** State Control **/
-typedef enum {	I2C_IDLE = 0, 
-		I2C_BUSY = 1,
-		I2C_MT = 2,
-		I2C_MR = 3,
-		I2C_ST = 4,
-		I2C_SR = 5
-} i2c_mode_t;
-i2c_mode_t i2c_mode;
-
-
 /** TWCR Control Values **/
 // Enabe TWI, Clear INT flag, Enable Ack, Enable Interupt
 #define TWCR_NACK  ( (uint8_t)(1<<TWEN)|(1<<TWINT)|(1<<TWIE) )
