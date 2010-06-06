@@ -5,43 +5,39 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "i2c-single.h"
+#include "i2c.h"
 #include "i2c_HMC6343.h"
 
-#define data_buf_len 6
-uint8_t data_buf[data_buf_len];
-uint8_t cmd;
+static void hmc6343_cb(struct i2c_trans *tran, uint8_t status);
 
-uint8_t hmc6343_cb(void) {
-	head.head_msb  = data_buf[0];
-	head.head_lsb  = data_buf[1];
-	head.pitch_msb = data_buf[2];
-	head.pitch_lsb = data_buf[3];
-	head.roll_msb  = data_buf[4];
-	head.roll_lsb  = data_buf[5];
+static uint8_t cmd_buf [] = { HMC6343_POST_HEAD };
+static uint8_t recv_buf [6];
+
+static struct i2c_msg msgs [] = {
+	{ HMC6343_ADDR_W, 0, sizeof(cmd_buf), cmd_buf },
+	{ HMC6343_ADDR_R, 0, sizeof(recv_buf), recv_buf }
+};
+
+static struct i2c_trans trans = {
+	msgs,
+	sizeof(msgs) / sizeof(struct i2c_msg),
+	hmc6343_cb
+};
+
+static void hmc6343_cb(struct i2c_trans *tran, uint8_t status) {
+	head.head_msb  = recv_buf[0];
+	head.head_lsb  = recv_buf[1];
+	head.pitch_msb = recv_buf[2];
+	head.pitch_lsb = recv_buf[3];
+	head.roll_msb  = recv_buf[4];
+	head.roll_lsb  = recv_buf[5];
 	
-	hmc6343_init_static();
+	hmc6343_get_head();
 	head_data_updated = true;
 
 //	fprintf_P(io_isr,PSTR("\nhead:%d pitch:%d roll:%d \n"),	head.head,head.pitch,head.roll);
-	return TWCR_STOP;
 }
 
-void hmc6343_init_static(void) {
-	dev_w_addr = HMC6343_ADDR_W;
-	dev_r_addr = HMC6343_ADDR_R;
-
-	r_data_buf_len = data_buf_len;
-	r_data_buf = data_buf;
-	r_data_buf_pos = 0;
-	
-	w_data_buf_len = 1;
-	cmd = HMC6343_POST_HEAD;
-	w_data_buf = &cmd;
-	w_data_buf_pos = 0;
-	
-	xfer_complete_cb = hmc6343_cb;
-	head_data_updated = false;
+void hmc6343_get_head(void) {
+	i2c_transfer(&trans);
 }
-
-
