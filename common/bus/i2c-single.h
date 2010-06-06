@@ -1,6 +1,5 @@
-
-#ifndef _TWI_I2C_H_
-#define _TWI_I2C_H_
+#ifndef I2C_SINGLE_H_
+#define I2C_SINGLE_H_
 
 #include <util/twi.h>
 
@@ -80,12 +79,8 @@ volatile uint8_t r_data_buf_pos;
 
 uint8_t (*xfer_complete_cb)(void);
 
-
 /** Functions **/
-void twi_init(void);
 int i2c_reset_xfer(void);
 int i2c_start_xfer(void);
-
-
 
 #endif
