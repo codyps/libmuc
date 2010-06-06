@@ -34,21 +34,4 @@ i2c_mode_t i2c_mode;
 #define TWCR_STOP  ( (uint8_t)TWCR_BASE|(1<<TWSTO) )
 #define TWCR_RESET ( (uint8_t)TWCR_BASE|(1<<TWSTO)|(1<<TWSTA) )
 
-/** Static Bus Operation **/
-uint8_t dev_w_addr;
-uint8_t dev_r_addr;
-
-uint8_t w_data_buf_len;
-uint8_t * w_data_buf;
-volatile uint8_t w_data_buf_pos;
-
-uint8_t r_data_buf_len;
-volatile uint8_t * r_data_buf;
-volatile uint8_t r_data_buf_pos;
-
-uint8_t (*xfer_complete_cb)(void);
-
-/** Functions **/
-void i2c_start_xfer(void);
-
 #endif
