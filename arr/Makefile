@@ -14,7 +14,7 @@ TARGET = main
 SRC  = main.c
 SRC += servo.c
 SRC += usart.c
-SRC += i2c.c
+SRC += ../common/bus/i2c-multi.c
 
 ASRC = 
 OPT = s
