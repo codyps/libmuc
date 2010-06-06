@@ -23,6 +23,7 @@ void i2c_transfer(struct i2c_trans *trans)
 	while(c_trans);
 
 	c_trans = trans;
+	TWCR = TWCR_START;
 }
 
 void i2c_main_handler(void)
@@ -31,19 +32,6 @@ void i2c_main_handler(void)
 		c_trans->cb(c_trans,/* status */ 0);
 		c_trans = 0;
 	}
-}
-
-void i2c_start_xfer(void)
-{
-	if (i2c_mode == I2C_IDLE) {
-		i2c_mode = I2C_BUSY;
-		TWCR  = TWCR_START;
-		return;
-	}
-	#if DEBUG_L(2)
-	fprintf_P(stderr,PSTR("\n[i2c] start %d"),i2c_mode);
-	#endif
-	return;
 }
 
 void i2c_init_master(void) 
@@ -68,7 +56,6 @@ void i2c_init_master(void)
 	//TWAMR=I2C_SLAVE_ADDR_MSK<<1;
 
 	// Enable TWI base settings
-	i2c_mode = I2C_IDLE;
 	TWCR = TWCR_BASE;
 	fprintf_P(io_init,PSTR("done]"));
 }
@@ -96,7 +83,6 @@ ISR(TWI_vect)
 		// Send Slave Addr.
 		uint8_t addr = c_msg->addr;
 		TWDR = addr;
-		i2c_mode = (addr & 1) ? I2C_MT : I2C_MR;
 		twcr = TWCR_BASE;
 	} break;
 	// MASTER TRANSMIT
@@ -123,7 +109,6 @@ ISR(TWI_vect)
 		} else {
 			// check if we have another message, if so repstart.
 			if (msg_idx < c_trans->ct) {
-				i2c_mode = I2C_BUSY;
 				twcr = TWCR_START;
 				buf_idx = 0;
 				msg_idx ++;
@@ -149,7 +134,6 @@ ISR(TWI_vect)
 			twcr = TWCR_NACK;
 		} else if (buf_idx >= c_msg->len) {
 			// No more data to read.
-			i2c_mode = I2C_IDLE;
 			// call the callback
 			if (c_trans->cb != NULL)
 				c_trans->cb(c_trans,0);
@@ -176,9 +160,6 @@ ISR(TWI_vect)
 			twcr = TWCR_START;
 
 		} else {
-
-			i2c_mode = I2C_IDLE;
-		
 			//call the callback
 			if (c_trans->cb != NULL)
 				c_trans->cb(c_trans,0);
@@ -192,14 +173,12 @@ ISR(TWI_vect)
 		// restart bus and begin the same transmition again.
 		buf_idx = 0;
 		msg_idx = 0;
-		i2c_mode = I2C_BUSY;
 		twcr = TWCR_START;
 	} break;
 	case TW_MT_DATA_NACK: {
 		// data nacked, rep_start and retransmit.
 		// FIXME: should reset or repstart?
 		buf_idx = 0;
-		i2c_mode = I2C_BUSY;
 		twcr = TWCR_START;
 	} break;
 	case TW_MR_SLA_NACK: {
@@ -208,7 +187,6 @@ ISR(TWI_vect)
 		// reset entire transaction
 		buf_idx = 0;
 		msg_idx = 0;
-		i2c_mode = I2C_BUSY;
 		twcr 	= TWCR_START;
 		#if DEBUG_L(2)
 		twi_printfP(PSTR("\n[err] i2c: SLA+R NACK"));
@@ -220,7 +198,6 @@ ISR(TWI_vect)
 		#if DEBUG_L(1)
 		twi_printf_P(PSTR("\n[err]TWI_BUS_ERROR\n"));
 		#endif
-		i2c_mode = I2C_IDLE; //XXX:??
 		twcr = TWCR_STOP;
 	} break;
 	//case TW_MT_ARB_LOST:
@@ -230,7 +207,6 @@ ISR(TWI_vect)
 		// Send Start when bus becomes free.
 		buf_idx = 0;
 		msg_idx = 0;
-		i2c_mode = I2C_BUSY;
 		twcr = TWCR_START;
 	} break;
 	default: {
