@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "i2c.h"
+#include "i2c-single.h"
 #include "i2c_HMC6343.h"
 
 #define data_buf_len 6
