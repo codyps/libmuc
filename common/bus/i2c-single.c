@@ -84,7 +84,6 @@ void i2c_init_master(void)
 	twcr = TWCR_STOP;              \
 } while (0)
 
-static uint8_t exp_twsr;
 ISR(TWI_vect)
 {
 	uint8_t tw_status = (uint8_t)TW_STATUS;
@@ -135,12 +134,18 @@ ISR(TWI_vect)
 	/** MASTER READ **/
 	case TW_MR_SLA_ACK:
 		/* wait for first data packet. */
-		twcr = TWCR_BASE;
+		if (c_msg->len) {
+			twcr = TWCR_BASE;
+		} else {
+			buf_idx = 0; /* not needed */
+			NEXT_MSG();
+		}
 		break;
 
 	case TW_MR_DATA_ACK: {
 		/* Data read, wait for next read with ack or nack */
-
+		/* this state will not occour without a check of len
+		 * to be sure the array write will be defined */
 		c_msg->buf[buf_idx] = TWDR;
 		buf_idx++;
 
@@ -179,8 +184,8 @@ ISR(TWI_vect)
 	/* NACKs : we don't know how to recover from these,
 	 * let the callback deal with it. */
 	case TW_MT_SLA_NACK: 
-	case TW_MT_DATA_NACK:
 	case TW_MR_SLA_NACK:
+	case TW_MT_DATA_NACK:
 		TW_STOP(tw_status);
 		break;
 	
@@ -198,6 +203,10 @@ ISR(TWI_vect)
 		msg_idx = 0;
 		twcr = TWCR_START;
 	} break;
+
+	case TW_NO_INFO:
+		//??
+		break;
 
 	default: {
 		twi_printf_P(PSTR("\n[i2c] unk twsr %x"),tw_status);
