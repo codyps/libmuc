@@ -71,15 +71,17 @@ ISR(TWI_vect)
 {
 	uint8_t tw_status = (uint8_t)TW_STATUS;
 	uint8_t twcr = (uint8_t)TWCR;
-	// Don't block more critical ISRs
 
-	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
+	/* Don't block more critical ISRs */
+	/* clearing TWINT causes the bus to proceed, dont clear it yet */
+	TWCR = (uint8_t)twcr & (uint8_t)~((1<<TWIE)|(1<<TWINT));
 	sei();
 
 	struct i2c_msg c_msg = c_trans->msgs[msg_idx];
 	switch(tw_status) {
 	case TW_START:
 	case TW_REP_START: {
+		// FIXME: assumes we sent the 'start'
 		// Send Slave Addr.
 		uint8_t addr = c_msg->addr;
 		TWDR = addr;
