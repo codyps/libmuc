@@ -99,13 +99,13 @@ ISR(TWI_vect)
 	struct i2c_msg *c_msg = &(c_trans->msgs[msg_idx]);
 	switch(tw_status) {
 	case TW_START:
-	case TW_REP_START: {
-		// FIXME: assumes we sent the 'start'
-		// Send Slave Addr.
+	case TW_REP_START:
+		/* FIXME: assumes we sent the 'start' */
 		TWDR = c_msg->addr;
 		twcr = TWCR_BASE;
-	} break;
-	// MASTER TRANSMIT
+		break;
+
+	/** MASTER TRANSMIT **/
 	case TW_MT_SLA_ACK: {
 		// sla+w ack,
 		// start writing data
@@ -137,28 +137,27 @@ ISR(TWI_vect)
 		}
 	} break;
 
-	// MASTER READ
-	case TW_MR_SLA_ACK: {
-		// sla+r ack
-		// wait for first data packet.
+	/** MASTER READ **/
+	case TW_MR_SLA_ACK:
+		/* wait for first data packet. */
 		twcr = TWCR_BASE;
-	} break;
+		break;
 
 	case TW_MR_DATA_ACK: {
-		// Data read, wait for next read with ack or nack
+		/* Data read, wait for next read with ack or nack */
 
 		c_msg->buf[buf_idx] = TWDR;
 		buf_idx++;
 
 		if (buf_idx == (c_msg->len - 1)) {
-			// One more read to go, send nak
+			/* One more read to go, send nak */
 			twcr = TWCR_NACK;
 		} else if (buf_idx >= c_msg->len) {
 			/* No data left for this message, move to next */
 			buf_idx = 0;
 			NEXT_MSG();
 		} else {
-			// Continue to read data.
+			/* Continue to read data. */
 			twcr = TWCR_BASE;
 		}
 	} break;
@@ -182,7 +181,7 @@ ISR(TWI_vect)
 			NEXT_MSG();
 		}
 	} break;
-	// Errors
+	/* NACKs */
 	case TW_MT_SLA_NACK: 
 	case TW_MT_DATA_NACK:
 	case TW_MR_SLA_NACK:
@@ -195,11 +194,9 @@ ISR(TWI_vect)
 		#endif
 		TW_STOP(TW_BUS_ERROR);
 	} break;
-	//case TW_MT_ARB_LOST:
+	/* case TW_MT_ARB_LOST: */
 	case TW_MR_ARB_LOST: {
-		// Wait for stop condition.
-		// Only needed for multi master bus.
-		// Send Start when bus becomes free.
+		/* Send Start when bus becomes free. */
 		buf_idx = 0;
 		msg_idx = 0;
 		twcr = TWCR_START;
