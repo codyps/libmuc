@@ -81,6 +81,7 @@ void i2c_init_master(void)
 #define TW_STOP(_status_) do {         \
 	trans_status = _status_;       \
 	trans_complete = true;         \
+	twcr = TWCR_STOP;              \
 } while (0)
 
 static uint8_t exp_twsr;
@@ -182,24 +183,11 @@ ISR(TWI_vect)
 		}
 	} break;
 	// Errors
-	case TW_MT_SLA_NACK: {
-		// sla+w nack
-		TW_STOP(TW_MT_SLA_NACK);
-	} break;
-	case TW_MT_DATA_NACK: {
-		// data nacked, rep_start and retransmit.
-		TW_STOP(TW_MT_DATA_NACK);
-	} break;
-	case TW_MR_SLA_NACK: {
-		// sla+r nack,
-		//???? (rep_start/try again a few times)
-		// reset entire transaction
-		TW_STOP(TW_MR_DATA_NACK);
-		#if DEBUG_L(2)
-		twi_printfP(PSTR("\n[i2c] SLA+R NACK"));
-		#endif
-	} break;
-
+	case TW_MT_SLA_NACK: 
+	case TW_MT_DATA_NACK:
+	case TW_MR_SLA_NACK:
+		TW_STOP(tw_status);
+		break;
 	// other
 	case TW_BUS_ERROR: {
 		#if DEBUG_L(1)
@@ -222,8 +210,8 @@ ISR(TWI_vect)
 	} break;
 	}
 
-	// Reenable twi interrupt.
 	cli();
+	/* Unstick the TWI hw */
 	TWCR = twcr;
 }
 
