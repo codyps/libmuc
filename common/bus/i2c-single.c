@@ -107,8 +107,6 @@ ISR(TWI_vect)
 
 	/** MASTER TRANSMIT **/
 	case TW_MT_SLA_ACK: {
-		// sla+w ack,
-		// start writing data
 		if (c_msg->len)
 			TWDR    = c_msg->buf[0];
 			buf_idx = 1;
@@ -121,9 +119,6 @@ ISR(TWI_vect)
 		}
 	} break;
 	case TW_MT_DATA_ACK: {
-		// data acked
-		// send more data or rep_start to read.
-	
 		if (buf_idx < c_msg->len) {
 			// more data to transmit.
 			TWDR = c_msg->buf[buf_idx];
@@ -163,12 +158,11 @@ ISR(TWI_vect)
 	} break;
 
 	case TW_MR_DATA_NACK: {
-		// Done transmitting,
-		// check packet length, call the cb
+		/* We nacked the last piece of data. */
 		c_msg->buf[buf_idx] = TWDR;
 		buf_idx ++;
 		if (buf_idx != c_msg->len) {
-			//FIXME: not enough data read, handle?
+			/* FIXME: not enough data read, handle? */
 			#if DEBUG_L(1)
 			twi_printf_P(PSTR("\n[err] i2c: short"));
 			#endif
@@ -181,19 +175,22 @@ ISR(TWI_vect)
 			NEXT_MSG();
 		}
 	} break;
-	/* NACKs */
+	
+	/* NACKs : we don't know how to recover from these,
+	 * let the callback deal with it. */
 	case TW_MT_SLA_NACK: 
 	case TW_MT_DATA_NACK:
 	case TW_MR_SLA_NACK:
 		TW_STOP(tw_status);
 		break;
-	// other
+	
 	case TW_BUS_ERROR: {
 		#if DEBUG_L(1)
 		twi_printf_P(PSTR("\n[i2c] TWI_BUS_ERROR\n"));
 		#endif
 		TW_STOP(TW_BUS_ERROR);
 	} break;
+
 	/* case TW_MT_ARB_LOST: */
 	case TW_MR_ARB_LOST: {
 		/* Send Start when bus becomes free. */
@@ -201,6 +198,7 @@ ISR(TWI_vect)
 		msg_idx = 0;
 		twcr = TWCR_START;
 	} break;
+
 	default: {
 		twi_printf_P(PSTR("\n[i2c] unk twsr %x"),tw_status);
 		twcr |= (1<<TWINT);
