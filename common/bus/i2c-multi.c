@@ -40,10 +40,10 @@ void i2c_init_master(void)
 	// SDA = PC4 / 27 / Analog 4
 
 	// both inputs
-	DDRC &= (uint8_t) ~((uint8_t)(1<<PC5)|(1<<PC4));
+	DDRC &= (uint8_t) ~((uint8_t)(1<<5)|(1<<4));
 
 	// enable internal pull ups.
-	PORTC |= (uint8_t)((1<<PC5)|(1<<PC4));
+	PORTC |= (uint8_t)((1<<5)|(1<<4));
 
 	// Set baud rate.
 	TWBR = TWI_BR_VAL;
