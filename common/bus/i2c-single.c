@@ -2,6 +2,8 @@
 #include "defines.h"
 
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #include <avr/io.h>
 #include <avr/power.h>
