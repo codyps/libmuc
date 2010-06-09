@@ -35,6 +35,7 @@ static void init(void)
 
 	usart_init();
 	servo_init();
+	i2c_init_master();
 
 	sei();
   
@@ -181,6 +182,7 @@ __attribute__((noreturn)) void main(void)
 		if (usart_new_msg()) {
 			process_msg();
 		}
+		i2c_main_handler();
 	}
 }
 
