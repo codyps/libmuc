@@ -40,7 +40,6 @@ void i2c_main_handler(void)
 
 void i2c_init_master(void) 
 {
-	fprintf_P(stderr,PSTR("\n[twi init..."));
 	power_twi_enable();
 
 	// Enable Pullups
@@ -61,7 +60,6 @@ void i2c_init_master(void)
 
 	// Enable TWI base settings
 	TWCR = TWCR_BASE;
-	fprintf_P(stderr,PSTR("done]"));
 }
 
 // Debug output for the TWI ISR
