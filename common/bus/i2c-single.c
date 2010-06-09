@@ -73,6 +73,7 @@ void i2c_init_master(void)
 	if (msg_idx < c_trans->ct) {   \
 		twcr = TWCR_START;     \
 	} else {                       \
+		trans_status = 0;      \
 		trans_complete = true; \
 		twcr = TWCR_STOP;      \
 	}                              \
@@ -183,13 +184,10 @@ ISR(TWI_vect)
 	case TW_MT_SLA_NACK: 
 	case TW_MR_SLA_NACK:
 	case TW_MT_DATA_NACK:
+	case TW_BUS_ERROR:
 		TW_STOP(tw_status);
 		break;
 	
-	case TW_BUS_ERROR:
-		TW_STOP(TW_BUS_ERROR);
-		break;
-
 	/* case TW_MT_ARB_LOST: */
 	case TW_MR_ARB_LOST: {
 		/* Send Start when bus becomes free. */
