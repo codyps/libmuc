@@ -1,6 +1,4 @@
 // TWI ctrl
-#include "defines.h"
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -42,7 +40,7 @@ void i2c_main_handler(void)
 
 void i2c_init_master(void) 
 {
-	fprintf_P(io_init,PSTR("\n[twi init..."));
+	fprintf_P(stderr,PSTR("\n[twi init..."));
 	power_twi_enable();
 
 	// Enable Pullups
@@ -63,7 +61,7 @@ void i2c_init_master(void)
 
 	// Enable TWI base settings
 	TWCR = TWCR_BASE;
-	fprintf_P(io_init,PSTR("done]"));
+	fprintf_P(stderr,PSTR("done]"));
 }
 
 // Debug output for the TWI ISR
@@ -108,7 +106,7 @@ ISR(TWI_vect)
 
 	/** MASTER TRANSMIT **/
 	case TW_MT_SLA_ACK: {
-		if (c_msg->len)
+		if (c_msg->len) {
 			TWDR    = c_msg->buf[0];
 			buf_idx = 1;
 			twcr    = TWCR_BASE;
@@ -170,9 +168,6 @@ ISR(TWI_vect)
 		buf_idx ++;
 		if (buf_idx != c_msg->len) {
 			/* FIXME: not enough data read, handle? */
-			#if DEBUG_L(1)
-			twi_printf_P(PSTR("\n[err] i2c: short"));
-			#endif
 			TW_STOP(TW_MR_DATA_NACK);
 		} else {
 			/* looks like we expected this, and thus
@@ -191,12 +186,9 @@ ISR(TWI_vect)
 		TW_STOP(tw_status);
 		break;
 	
-	case TW_BUS_ERROR: {
-		#if DEBUG_L(1)
-		twi_printf_P(PSTR("\n[i2c] TWI_BUS_ERROR\n"));
-		#endif
+	case TW_BUS_ERROR:
 		TW_STOP(TW_BUS_ERROR);
-	} break;
+		break;
 
 	/* case TW_MT_ARB_LOST: */
 	case TW_MR_ARB_LOST: {
