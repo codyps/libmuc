@@ -16,6 +16,7 @@
 #include <util/parity.h> 
 #include <util/delay.h>
 
+#include "bus/i2c.h"
 #include "servo.h"
 #include "usart.h"
 #include "clock.h"
