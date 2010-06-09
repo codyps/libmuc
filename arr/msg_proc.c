@@ -71,7 +71,7 @@ static bool process_servo_cmd(char *msg)
 void process_msg(void)
 {
 	// TODO: the size of buf should be the length of the input queue.
-	char buf[32];
+	char buf[USART_RX_BUFF_SZ];
 	uint8_t i;
 	for(i = 0; ; i++) {
 		if (i > sizeof(buf)) {
@@ -79,6 +79,7 @@ void process_msg(void)
 			// means that process_msg was called when
 			// the rx buffer does not contain a complete message.
 			printf("process error\n");
+			usart_flush_msg();
 			return;
 		}
 
