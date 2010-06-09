@@ -12,9 +12,10 @@ USART
 
 void usart_init(void);
 
-void usart_flush_rx( void );
-void usart_flush_tx( void );
-volatile uint8_t usart_msg;
+void usart_flush_msg(void)
+void usart_flush_rx(void);
+void usart_flush_tx(void);
+bool usart_new_msg(void);
 volatile bool usart_echo;
 
 #endif

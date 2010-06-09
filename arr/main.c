@@ -41,18 +41,6 @@ static void init(void)
 	fputs_P(version_str,stdout);
 }
 
-static bool sem_trydec(volatile uint8_t *sem)
-{
-	bool ret = false;
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		if (*sem) {
-			(*sem)--;
-			ret = true;
-		}
-	}
-	return ret;
-}
-
 static bool process_servo_cmd(char *msg)
 {
 	switch(msg[0]) {
@@ -190,7 +178,7 @@ __attribute__((noreturn)) void main(void)
 {
 	init();
 	for(;;) {
-		if (sem_trydec(&usart_msg)) {
+		if (usart_new_msg()) {
 			process_msg();
 		}
 	}
