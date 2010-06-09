@@ -211,7 +211,7 @@ ISR(USART_RX_vect)
 		if(c == '\b' || c == 0x7f) {
 			// handle characters which do not add to q.
 			// backspace
-			if (!list_empty(sio_l)(&rx_q)) {
+			if (!LIST_EMPTY(&rx_q)) {
 				list_remove(sio_l)(&rx_q);
 				if (usart_echo) {
 					fputc('\b',&usart_io_queue);
@@ -219,7 +219,7 @@ ISR(USART_RX_vect)
 					fputc('\b',&usart_io_queue);
 				}
 			}
-		} else if(!list_full(sio_l)(&rx_q)) {
+		} else if(!LIST_FULL(&rx_q)) {
 			// normal reception.
 			if ( c == '\r') c = '\n';
 			if ( c == '\n' ) {
