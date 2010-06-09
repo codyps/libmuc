@@ -13,12 +13,12 @@
 /*          name,  fnattr, dattr, dtype,itype */
 LIST_DEFINE(sio_l, static, volatile, char, uint8_t);
 
-#define RX_BUFF_SZ 64
+static volatile uint8_t usart_msg;
 
 char tx_buffer[32];
 static list_t(sio_l) tx_q = LIST_INITIALIZER(tx_buffer);
 
-char rx_buffer[RX_BUFF_SZ];
+char rx_buffer[USART_RX_BUFF_SZ];
 static list_t(sio_l) rx_q = LIST_INITIALIZER(rx_buffer);
 
 static int usart_getchar_queue(FILE * stream);
@@ -197,7 +197,6 @@ char *rx_reading = NULL;
  * 
  */
 
-static volatile uint8_t usart_msg;
 
 ISR(USART_RX_vect)
 {
