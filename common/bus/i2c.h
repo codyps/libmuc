@@ -9,6 +9,9 @@ struct i2c_msg {
 	uint8_t *buf;
 };
 
+#define I2C_MSG(addr, buf) { addr, 0, sizeof(buf), buf }
+#define I2C_TRANS(msgs,cb) { msgs, sizeof(msgs)/sizeof(*msgs), cb }
+
 /* an i2c "transaction" */
 struct i2c_trans {
 	struct i2c_msg *msgs;
