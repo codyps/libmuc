@@ -5,7 +5,7 @@ USART
 #ifndef _USART_H_
 #define _USART_H_
 
-#include <stdint.h>
+#include <stdbool.h>
 
 #define BAUD 38400
 #include <util/setbaud.h>
