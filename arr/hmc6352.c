@@ -1,5 +1,6 @@
 #include "i2c.h"
 
+/* This style of programming on the i2c bus consumes a considerable amount of memory */
 static uint8_t w_buf[] = { 'r' /* 'g' */, 0 /* addr */}; /* read eeprom / read ram */
 static uint8_t r_buf[1];
 static struct i2c_msg msgs[] = {
