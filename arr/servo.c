@@ -59,7 +59,7 @@
 
 /* externaly called functions */
 int8_t servo_set(uint8_t servo_number, uint16_t servo_ticks) {
-	if ((servo_ticks > TICKS_US(600) && servo_ticks < TICKS_US(2400))
+	if ((servo_ticks >= TICKS_US(500) && servo_ticks <= TICKS_US(2500))
 	                               && servo_number < SERVO_AMOUNT) {
 		servo[servo_number].pos = servo_ticks;
 		return 0;
