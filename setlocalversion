@@ -21,7 +21,7 @@ if head=`git rev-parse --verify --short HEAD 2>/dev/null`; then
 
 	# If we are past a tagged commit (like "v2.6.30-rc5-302-g72357d5"),
 	# we pretty print it.
-	if atag="`git describe 2>/dev/null`"; then
+	if atag="`git describe --tags 2>/dev/null`"; then
 		echo "$atag" \
 		 | awk -F- \
 		  '{if (NF == 3)
