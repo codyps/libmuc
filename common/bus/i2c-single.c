@@ -20,12 +20,17 @@ static uint8_t buf_idx; // current pos in c_trans->msgs[msg_idx]->buf
 static volatile bool trans_complete;
 static volatile uint8_t trans_status;
 
+#define DEBUG(s, ...) printf_P(PSTR(s),# __VA_ARGS__)
+
 void i2c_transfer(struct i2c_trans *trans)
 {
-	while(c_trans);
-
-	c_trans = trans;
-	TWCR = TWCR_START;
+	if (!c_trans) {
+		DEBUG("i2c: trans start.\n");
+		c_trans = trans;
+		TWCR = TWCR_START;
+	} else {
+		DEBUG("i2c: trans pend %p.\n", c_trans);
+	}
 }
 
 void i2c_main_handler(void)
