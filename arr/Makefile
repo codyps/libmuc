@@ -16,6 +16,7 @@ SRC += msg_proc.c
 SRC += version.c
 SRC += servo.c
 SRC += usart.c
+SRC += hmc6352.c
 SRC += ../common/bus/i2c-single.c
 
 ASRC = 

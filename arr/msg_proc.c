@@ -1,11 +1,13 @@
 
+#include <stdio.h>
+#include <stdbool.h>
+#include <avr/pgmspace.h>
+
 #include "version.h"
 #include "servo.h"
 #include "clock.h"
 #include "usart.h"
-#include <avr/pgmspace.h>
-#include <stdio.h>
-#include <stdbool.h>
+#include "hmc6352.h"
 
 static bool process_servo_cmd(char *msg)
 {
@@ -63,7 +65,7 @@ static bool process_servo_cmd(char *msg)
 	}
 
 	default:
-		printf_P(PSTR("invalid servo command.\n"));
+		puts_P(PSTR("invalid servo command.\n"));
 		return true;
 	}
 }
@@ -78,7 +80,7 @@ void process_msg(void)
 			// exceeded buffer size.
 			// means that process_msg was called when
 			// the rx buffer does not contain a complete message.
-			printf("process error\n");
+			puts_P(PSTR("process error\n"));
 			usart_flush_msg();
 			return;
 		}
@@ -107,6 +109,7 @@ void process_msg(void)
 			      "  sq <sn> -- query servos (uS).\n"
 			      "  s{S,Q} -- \" \" (ticks).\n"
 			      "  sc -- get servo count.\n"
+			      "  i -- read hmc6352 memory.\n"
 			      "  c -- clear.\n"
 			      "  e{+,-,} -- echo ctrl.\n"
 			      "  u -- version.\n"));
@@ -131,14 +134,17 @@ void process_msg(void)
 			usart_echo ^= 1;
 		}
 		break;
+	case 'i':
+		hmc6352_read_mem();
+		break;
 	default:
-		printf("unknown command \"%s\".\n",buf);
+		printf_P(PSTR("unknown command \"%s\".\n"), buf);
 		break;
 	}
 	return;
 
 	invalid_arg:
-		printf("bad args for \"%s\".\n",buf);
+		printf_P(PSTR("bad args for \"%s\".\n"), buf);
 }
 
 
