@@ -43,11 +43,11 @@ static void read_b_cb(struct i2c_trans *trans, uint8_t status)
 void hmc6352_read_mem(void)
 {
 	if (i2c_trans_pending()) {
-		puts_P(PSTR("hmc6352: already attempting com.\n"));
+		puts_P(PSTR("hmc6352: already attempting com."));
 		return;
 	}
 
-	puts_P(PSTR("hmc6352: read mem.\n"));
+	puts_P(PSTR("hmc6352: read mem."));
 	w_buf[1] = 0;
 	last = 0xff;
 	i2c_transfer(&cmd);
