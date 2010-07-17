@@ -24,6 +24,7 @@ static uint8_t last;
 
 static void read_b_cb(struct i2c_trans *trans, uint8_t status)
 {
+	printf("hmc6352: callback\n");
 	if (status) {
 		printf("i2c error: %d\n", status);
 		return;
@@ -39,6 +40,7 @@ static void read_b_cb(struct i2c_trans *trans, uint8_t status)
 
 void hmc6352_read_mem(void)
 {
+	printf("hmc6352: read mem.\n");
 	w_buf[1] = 0;
 	last = 0xff;
 	i2c_transfer(&cmd);
