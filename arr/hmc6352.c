@@ -2,6 +2,8 @@
 #include "ex/i2c_HMC6352_cmd.h"
 #include "hmc6352.h"
 
+#include <avr/pgmspace.h>
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -40,7 +42,12 @@ static void read_b_cb(struct i2c_trans *trans, uint8_t status)
 
 void hmc6352_read_mem(void)
 {
-	printf("hmc6352: read mem.\n");
+	if (i2c_trans_pending()) {
+		puts_P(PSTR("hmc6352: already attempting com.\n"));
+		return;
+	}
+
+	puts_P(PSTR("hmc6352: read mem.\n"));
 	w_buf[1] = 0;
 	last = 0xff;
 	i2c_transfer(&cmd);

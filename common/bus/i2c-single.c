@@ -10,6 +10,7 @@
 
 #include <util/twi.h>
 
+#include "common.h"
 #include "i2c.h"
 #include "i2c-single.h"
 
@@ -22,15 +23,21 @@ static volatile uint8_t trans_status;
 
 #define DEBUG(s, ...) printf_P(PSTR(s),# __VA_ARGS__)
 
+bool i2c_trans_pending(void)
+{
+	return !!c_trans;
+}
+
 void i2c_transfer(struct i2c_trans *trans)
 {
-	if (!c_trans) {
-		DEBUG("i2c: trans start.\n");
-		c_trans = trans;
-		TWCR = TWCR_START;
-	} else {
+	if (unlikely(i2c_trans_pending())) {
 		DEBUG("i2c: trans pend %p.\n", c_trans);
+		return;
 	}
+
+	DEBUG("i2c: trans start.\n");
+	c_trans = trans;
+	TWCR = TWCR_START;
 }
 
 void i2c_main_handler(void)
