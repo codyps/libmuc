@@ -129,10 +129,10 @@ REMOVE = rm -f
 MV = mv -f
 
 # Define all object files.
-OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) 
+OBJ = $(SRC:=.o) $(ASRC:=.o)
 
 # Define all listing files.
-LST = $(SRC:.c=.lst) $(ASRC:.S=.lst) 
+LST = $(SRC:=.lst) $(ASRC:=.lst)
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
@@ -143,6 +143,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 # Default target.
 all: build
 
+rebuild : | clean build
 build: elf hex eep
 
 elf: $(TARGET).elf $(TARGET).uni.elf
@@ -168,16 +169,18 @@ COFFCONVERT=$(OBJCOPY) --debugging \
 --change-section-address .eeprom-0x810000 
 
 
-coff: $(TARGET).elf
+coff: $(TARGET).cof
+extcoff: $(TARGET).extcof
+
+%.cof: %.elf
 	$(COFFCONVERT) -O coff-avr $(TARGET).elf $(TARGET).cof
 
 
-extcoff: $(TARGET).elf
-	$(COFFCONVERT) -O coff-ext-avr $(TARGET).elf $(TARGET).cof
+%.extcof: %.elf
+	$(COFFCONVERT) -O coff-ext-avr $(TARGET).elf $(TARGET).extcof
 
 
-.SUFFIXES: .elf .hex .eep .lss .sym
-
+.SUFFIXES: .elf .hex .eep
 .elf.hex:
 	@echo OBJCOPY $@
 	@$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
@@ -188,34 +191,34 @@ extcoff: $(TARGET).elf
 	--change-section-lma .eeprom=0 -O $(FORMAT) $< $@
 
 # Create extended listing file from ELF output file.
-.elf.lss:
+%.elf.lss: %.elf
 	@OBJDUMP $@
 	@$(OBJDUMP) -h -S $< > $@
 
 # Create a symbol table from ELF output file.
-.elf.sym:
+%.elf.sym: %.elf
 	$(NM) -n $< > $@
 
 # Link: create ELF output file from object files.
-$(TARGET).elf: $(OBJ)
-	@echo "LD $(@F)"
-	@$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
-
 $(TARGET).uni.elf: $(SRC)
 	@echo "LDUNI $(@F) $^"
 	@$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
 
+$(TARGET).elf: $(OBJ)
+	@echo "LD $(@F)"
+	@$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
+
 # Compile: create object files from C source files.
-.c.o:
+%.c.o: %.c
 	@echo "CC $(@F)"
 	@$(CC) $(ALL_CFLAGS) -c -o $@ $<
 
 # Compile: create assembler files from C source files.
-.c.s:
+%.c.s: %.s
 	$(CC) -S $(ALL_CFLAGS) -c -o $@ $<
 
 # Assemble: create object files from assembler source files.
-.S.o:
+%.S.o: %.S
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 
@@ -240,4 +243,4 @@ depend:
 		>> $(MAKEFILE); \
 	$(CC) -M -mmcu=$(MCU) $(CDEFS) $(CINCS) $(SRC) $(ASRC) >> $(MAKEFILE)
 
-.PHONY:	all build elf hex eep lss sym program coff extcoff clean depend
+.PHONY:	all build elf hex eep lss sym program coff extcoff clean depend rebuild
