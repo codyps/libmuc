@@ -201,7 +201,7 @@ extcoff: $(TARGET).extcof
 
 # Link: create ELF output file from object files.
 $(TARGET).uni.elf: $(SRC)
-	@echo "LDUNI $(@F) $^"
+	@echo "CCLD $(@F) $^"
 	@$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
 
 $(TARGET).elf: $(OBJ)
