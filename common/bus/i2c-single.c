@@ -18,10 +18,10 @@ static struct i2c_trans *c_trans;
 static uint8_t msg_idx; // current msg in c_trans->msgs[msg_idx].
 static uint8_t buf_idx; // current pos in c_trans->msgs[msg_idx]->buf
 
-static volatile bool trans_complete;
-static volatile uint8_t trans_status;
+static bool trans_complete;
+static uint8_t trans_status;
 
-#define DEBUG(s, ...) printf_P(PSTR(s),# __VA_ARGS__)
+#define DEBUG(s, ...) printf_P(PSTR("i2c: " s),# __VA_ARGS__)
 
 bool i2c_trans_pending(void)
 {
@@ -31,11 +31,11 @@ bool i2c_trans_pending(void)
 void i2c_transfer(struct i2c_trans *trans)
 {
 	if (unlikely(i2c_trans_pending())) {
-		DEBUG("i2c: trans pend %p.\n", c_trans);
+		DEBUG("trans pend %p.\n", c_trans);
 		return;
 	}
 
-	DEBUG("i2c: trans start.\n");
+	DEBUG("trans start.\n");
 	c_trans = trans;
 	TWCR = TWCR_START;
 }
@@ -99,10 +99,12 @@ ISR(TWI_vect)
 {
 	uint8_t tw_status = (uint8_t)TW_STATUS;
 
-	/* clearing TWINT causes the bus to proceed, don't auto clear it */
+	/* writing 1 to TWINT causes the bus to proceed,
+	 * don't auto clear it */
 	uint8_t twcr = (uint8_t)TWCR & (uint8_t)~(1<<TWINT);
 
-	/* Don't block more critical ISRs */
+	/* disable TWI interrupt and enable global interupts,
+	 * don't block more critical ISRs */
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 	sei();
 
