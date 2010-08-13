@@ -453,7 +453,7 @@ DRESULT disk_ioctl (
 {
 	DRESULT res;
 	uint8_t n, csd[16], *ptr = buff;
-	WORD csize;
+	uint16_t csize;
 
 
 	if (drv) return RES_PARERR;
@@ -493,19 +493,19 @@ DRESULT disk_ioctl (
 		case GET_SECTOR_COUNT :	/* Get number of sectors on the disk (uint32_t) */
 			if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) {
 				if ((csd[0] >> 6) == 1) {	/* SDC ver 2.00 */
-					csize = csd[9] + ((WORD)csd[8] << 8) + 1;
+					csize = csd[9] + ((uint16_t)csd[8] << 8) + 1;
 					*(uint32_t*)buff = (uint32_t)csize << 10;
 				} else {					/* SDC ver 1.XX or MMC*/
 					n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
-					csize = (csd[8] >> 6) + ((WORD)csd[7] << 2) + ((WORD)(csd[6] & 3) << 10) + 1;
+					csize = (csd[8] >> 6) + ((uint16_t)csd[7] << 2) + ((uint16_t)(csd[6] & 3) << 10) + 1;
 					*(uint32_t*)buff = (uint32_t)csize << (n - 9);
 				}
 				res = RES_OK;
 			}
 			break;
 
-		case GET_SECTOR_SIZE :	/* Get R/W sector size (WORD) */
-			*(WORD*)buff = 512;
+		case GET_SECTOR_SIZE :	/* Get R/W sector size (uint16_t) */
+			*(uint16_t*)buff = 512;
 			res = RES_OK;
 			break;
 
@@ -522,9 +522,9 @@ DRESULT disk_ioctl (
 			} else {					/* SDv1 or MMCv3 */
 				if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) {	/* Read CSD */
 					if (CardType & CT_SD1) {	/* SDv1 */
-						*(uint32_t*)buff = (((csd[10] & 63) << 1) + ((WORD)(csd[11] & 128) >> 7) + 1) << ((csd[13] >> 6) - 1);
+						*(uint32_t*)buff = (((csd[10] & 63) << 1) + ((uint16_t)(csd[11] & 128) >> 7) + 1) << ((csd[13] >> 6) - 1);
 					} else {					/* MMCv3 */
-						*(uint32_t*)buff = ((WORD)((csd[10] & 124) >> 2) + 1) * (((csd[11] & 3) << 3) + ((csd[11] & 224) >> 5) + 1);
+						*(uint32_t*)buff = ((uint16_t)((csd[10] & 124) >> 2) + 1) * (((csd[11] & 3) << 3) + ((csd[11] & 224) >> 5) + 1);
 					}
 					res = RES_OK;
 				}
