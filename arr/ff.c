@@ -221,21 +221,9 @@ static WCHAR LfnBuf[_MAX_LFN + 1];
    Module Private Functions
 
 ---------------------------------------------------------------------------*/
-
-
 /*-----------------------------------------------------------------------*/
 /* String functions                                                      */
 /*-----------------------------------------------------------------------*/
-
-/* Compare memory to memory */
-static
-int mem_cmp (const void* dst, const void* src, int cnt) {
-	const BYTE *d = (const BYTE *)dst, *s = (const BYTE *)src;
-	int r = 0;
-
-	while (cnt-- && (r = *d++ - *s++) == 0) ;
-	return r;
-}
 
 /* Check if chr is contained in the string */
 static
@@ -1010,11 +998,11 @@ FRESULT dir_find (
 			} else {					/* An SFN entry is found */
 				if (!ord && sum == sum_sfn(dir)) break;	/* LFN matched? */
 				ord = 0xFF; dj->lfn_idx = 0xFFFF;	/* Reset LFN sequence */
-				if (!(dj->fn[NS] & NS_LOSS) && !mem_cmp(dir, dj->fn, 11)) break;	/* SFN matched? */
+				if (!(dj->fn[NS] & NS_LOSS) && !memcmp(dir, dj->fn, 11)) break;	/* SFN matched? */
 			}
 		}
 #else		/* Non LFN configuration */
-		if (!(dir[DIR_Attr] & AM_VOL) && !mem_cmp(dir, dj->fn, 11)) /* Is it a valid entry? */
+		if (!(dir[DIR_Attr] & AM_VOL) && !memcmp(dir, dj->fn, 11)) /* Is it a valid entry? */
 			break;
 #endif
 		res = dir_next(dj, 0);		/* Next entry */
