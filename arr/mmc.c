@@ -52,10 +52,10 @@ static volatile
 DSTATUS Stat = STA_NOINIT;	/* Disk status */
 
 static volatile
-BYTE Timer1, Timer2;	/* 100Hz decrement timer */
+uint8_t Timer1, Timer2;	/* 100Hz decrement timer */
 
 static
-BYTE CardType;			/* Card type flags */
+uint8_t CardType;			/* Card type flags */
 
 
 /*-----------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ BYTE CardType;			/* Card type flags */
 /*-----------------------------------------------------------------------*/
 
 static
-BYTE rcvr_spi (void)
+uint8_t rcvr_spi (void)
 {
 	SPDR = 0xFF;
 	loop_until_bit_is_set(SPSR, SPIF);
@@ -175,11 +175,11 @@ int chk_power(void)		/* Socket power state: 0=off, 1=on */
 
 static
 int rcvr_datablock (
-	BYTE *buff,			/* Data buffer to store received data */
+	uint8_t *buff,			/* Data buffer to store received data */
 	UINT btr			/* Byte count (must be multiple of 4) */
 )
 {
-	BYTE token;
+	uint8_t token;
 
 
 	Timer1 = 20;
@@ -209,11 +209,11 @@ int rcvr_datablock (
 #if _READONLY == 0
 static
 int xmit_datablock (
-	const BYTE *buff,	/* 512 byte data block to be transmitted */
-	BYTE token			/* Data/Stop token */
+	const uint8_t *buff,	/* 512 byte data block to be transmitted */
+	uint8_t token			/* Data/Stop token */
 )
 {
-	BYTE resp, wc;
+	uint8_t resp, wc;
 
 
 	if (!wait_ready()) return 0;
@@ -243,12 +243,12 @@ int xmit_datablock (
 /*-----------------------------------------------------------------------*/
 
 static
-BYTE send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
-	BYTE cmd,		/* Command index */
+uint8_t send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
+	uint8_t cmd,		/* Command index */
 	DWORD arg		/* Argument */
 )
 {
-	BYTE n, res;
+	uint8_t n, res;
 
 
 	if (cmd & 0x80) {	/* ACMD<n> is the command sequense of CMD55-CMD<n> */
@@ -263,10 +263,10 @@ BYTE send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
 
 	/* Send command packet */
 	xmit_spi(0x40 | cmd);				/* Start + Command index */
-	xmit_spi((BYTE)(arg >> 24));		/* Argument[31..24] */
-	xmit_spi((BYTE)(arg >> 16));		/* Argument[23..16] */
-	xmit_spi((BYTE)(arg >> 8));			/* Argument[15..8] */
-	xmit_spi((BYTE)arg);				/* Argument[7..0] */
+	xmit_spi((uint8_t)(arg >> 24));		/* Argument[31..24] */
+	xmit_spi((uint8_t)(arg >> 16));		/* Argument[23..16] */
+	xmit_spi((uint8_t)(arg >> 8));			/* Argument[15..8] */
+	xmit_spi((uint8_t)arg);				/* Argument[7..0] */
 	n = 0x01;							/* Dummy CRC + Stop */
 	if (cmd == CMD0) n = 0x95;			/* Valid CRC for CMD0(0) */
 	if (cmd == CMD8) n = 0x87;			/* Valid CRC for CMD8(0x1AA) */
@@ -296,10 +296,10 @@ BYTE send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_initialize (
-	BYTE drv		/* Physical drive nmuber (0) */
+	uint8_t drv		/* Physical drive nmuber (0) */
 )
 {
-	BYTE n, cmd, ty, ocr[4];
+	uint8_t n, cmd, ty, ocr[4];
 
 
 	if (drv) return STA_NOINIT;			/* Supports only single drive */
@@ -352,7 +352,7 @@ DSTATUS disk_initialize (
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_status (
-	BYTE drv		/* Physical drive nmuber (0) */
+	uint8_t drv		/* Physical drive nmuber (0) */
 )
 {
 	if (drv) return STA_NOINIT;		/* Supports only single drive */
@@ -366,10 +366,10 @@ DSTATUS disk_status (
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_read (
-	BYTE drv,			/* Physical drive nmuber (0) */
-	BYTE *buff,			/* Pointer to the data buffer to store read data */
+	uint8_t drv,			/* Physical drive nmuber (0) */
+	uint8_t *buff,			/* Pointer to the data buffer to store read data */
 	DWORD sector,		/* Start sector number (LBA) */
-	BYTE count			/* Sector count (1..255) */
+	uint8_t count			/* Sector count (1..255) */
 )
 {
 	if (drv || !count) return RES_PARERR;
@@ -404,10 +404,10 @@ DRESULT disk_read (
 
 #if _READONLY == 0
 DRESULT disk_write (
-	BYTE drv,			/* Physical drive nmuber (0) */
-	const BYTE *buff,	/* Pointer to the data to be written */
+	uint8_t drv,			/* Physical drive nmuber (0) */
+	const uint8_t *buff,	/* Pointer to the data to be written */
 	DWORD sector,		/* Start sector number (LBA) */
-	BYTE count			/* Sector count (1..255) */
+	uint8_t count			/* Sector count (1..255) */
 )
 {
 	if (drv || !count) return RES_PARERR;
@@ -446,13 +446,13 @@ DRESULT disk_write (
 
 #if _USE_IOCTL != 0
 DRESULT disk_ioctl (
-	BYTE drv,		/* Physical drive nmuber (0) */
-	BYTE ctrl,		/* Control code */
+	uint8_t drv,		/* Physical drive nmuber (0) */
+	uint8_t ctrl,		/* Control code */
 	void *buff		/* Buffer to send/receive control data */
 )
 {
 	DRESULT res;
-	BYTE n, csd[16], *ptr = buff;
+	uint8_t n, csd[16], *ptr = buff;
 	WORD csize;
 
 
@@ -472,7 +472,7 @@ DRESULT disk_ioctl (
 			res = RES_OK;
 			break;
 		case 2:		/* Sub control code == 2 (POWER_GET) */
-			*(ptr+1) = (BYTE)chk_power();
+			*(ptr+1) = (uint8_t)chk_power();
 			res = RES_OK;
 			break;
 		default :
@@ -582,8 +582,8 @@ DRESULT disk_ioctl (
 
 void disk_timerproc (void)
 {
-	static BYTE pv;
-	BYTE n, s;
+	static uint8_t pv;
+	uint8_t n, s;
 
 
 	n = Timer1;						/* 100Hz decrement timer */
