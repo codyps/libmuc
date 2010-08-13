@@ -3,15 +3,14 @@
 /-----------------------------------------------------------------------*/
 
 #ifndef _DISKIO
-
+#include <stdint.h>
 #define _READONLY	0	/* 1: Read-only mode */
 #define _USE_IOCTL	1
 
-#include "integer.h"
 
 
 /* Status of Disk Functions */
-typedef BYTE	DSTATUS;
+typedef uint8_t	DSTATUS;
 
 /* Results of Disk Functions */
 typedef enum {
@@ -26,13 +25,13 @@ typedef enum {
 /*---------------------------------------*/
 /* Prototypes for disk control functions */
 
-DSTATUS disk_initialize (BYTE);
-DSTATUS disk_status (BYTE);
-DRESULT disk_read (BYTE, BYTE*, DWORD, BYTE);
+DSTATUS disk_initialize (uint8_t);
+DSTATUS disk_status (uint8_t);
+DRESULT disk_read (uint8_t, uint8_t*, uint32_t, uint8_t);
 #if	_READONLY == 0
-DRESULT disk_write (BYTE, const BYTE*, DWORD, BYTE);
+DRESULT disk_write (uint8_t, const uint8_t*, uint32_t, uint8_t);
 #endif
-DRESULT disk_ioctl (BYTE, BYTE, void*);
+DRESULT disk_ioctl (uint8_t, uint8_t, void*);
 void	disk_timerproc (void);
 
 
