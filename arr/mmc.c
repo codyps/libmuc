@@ -245,7 +245,7 @@ int xmit_datablock (
 static
 uint8_t send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
 	uint8_t cmd,		/* Command index */
-	DWORD arg		/* Argument */
+	uint32_t arg		/* Argument */
 )
 {
 	uint8_t n, res;
@@ -368,7 +368,7 @@ DSTATUS disk_status (
 DRESULT disk_read (
 	uint8_t drv,			/* Physical drive nmuber (0) */
 	uint8_t *buff,			/* Pointer to the data buffer to store read data */
-	DWORD sector,		/* Start sector number (LBA) */
+	uint32_t sector,		/* Start sector number (LBA) */
 	uint8_t count			/* Sector count (1..255) */
 )
 {
@@ -406,7 +406,7 @@ DRESULT disk_read (
 DRESULT disk_write (
 	uint8_t drv,			/* Physical drive nmuber (0) */
 	const uint8_t *buff,	/* Pointer to the data to be written */
-	DWORD sector,		/* Start sector number (LBA) */
+	uint32_t sector,		/* Start sector number (LBA) */
 	uint8_t count			/* Sector count (1..255) */
 )
 {
@@ -490,15 +490,15 @@ DRESULT disk_ioctl (
 			}
 			break;
 
-		case GET_SECTOR_COUNT :	/* Get number of sectors on the disk (DWORD) */
+		case GET_SECTOR_COUNT :	/* Get number of sectors on the disk (uint32_t) */
 			if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) {
 				if ((csd[0] >> 6) == 1) {	/* SDC ver 2.00 */
 					csize = csd[9] + ((WORD)csd[8] << 8) + 1;
-					*(DWORD*)buff = (DWORD)csize << 10;
+					*(uint32_t*)buff = (uint32_t)csize << 10;
 				} else {					/* SDC ver 1.XX or MMC*/
 					n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
 					csize = (csd[8] >> 6) + ((WORD)csd[7] << 2) + ((WORD)(csd[6] & 3) << 10) + 1;
-					*(DWORD*)buff = (DWORD)csize << (n - 9);
+					*(uint32_t*)buff = (uint32_t)csize << (n - 9);
 				}
 				res = RES_OK;
 			}
@@ -509,22 +509,22 @@ DRESULT disk_ioctl (
 			res = RES_OK;
 			break;
 
-		case GET_BLOCK_SIZE :	/* Get erase block size in unit of sector (DWORD) */
+		case GET_BLOCK_SIZE :	/* Get erase block size in unit of sector (uint32_t) */
 			if (CardType & CT_SD2) {	/* SDv2? */
 				if (send_cmd(ACMD13, 0) == 0) {	/* Read SD status */
 					rcvr_spi();
 					if (rcvr_datablock(csd, 16)) {				/* Read partial block */
 						for (n = 64 - 16; n; n--) rcvr_spi();	/* Purge trailing data */
-						*(DWORD*)buff = 16UL << (csd[10] >> 4);
+						*(uint32_t*)buff = 16UL << (csd[10] >> 4);
 						res = RES_OK;
 					}
 				}
 			} else {					/* SDv1 or MMCv3 */
 				if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) {	/* Read CSD */
 					if (CardType & CT_SD1) {	/* SDv1 */
-						*(DWORD*)buff = (((csd[10] & 63) << 1) + ((WORD)(csd[11] & 128) >> 7) + 1) << ((csd[13] >> 6) - 1);
+						*(uint32_t*)buff = (((csd[10] & 63) << 1) + ((WORD)(csd[11] & 128) >> 7) + 1) << ((csd[13] >> 6) - 1);
 					} else {					/* MMCv3 */
-						*(DWORD*)buff = ((WORD)((csd[10] & 124) >> 2) + 1) * (((csd[11] & 3) << 3) + ((csd[11] & 224) >> 5) + 1);
+						*(uint32_t*)buff = ((WORD)((csd[10] & 124) >> 2) + 1) * (((csd[11] & 3) << 3) + ((csd[11] & 224) >> 5) + 1);
 					}
 					res = RES_OK;
 				}
