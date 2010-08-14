@@ -106,8 +106,8 @@ ISR(TWI_vect)
 	 * don't auto clear it */
 	uint8_t twcr = (uint8_t)TWCR & (uint8_t)~(1<<TWINT);
 
-	/* disable TWI interrupt and enable global interupts,
-	 * don't block more critical ISRs */
+	/* disable TWI interrupt and enable global interrupts
+	 * to avoid blocking more timing sensitive ISRs */
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 	sei();
 
