@@ -1,9 +1,9 @@
-#ifndef SPI_H_
-#define SPI_H_
+#ifndef SSPI_H_
+#define SSPI_H_
 #include <stdint.h>
 
-void spi_master_init(void);
-uint8_t spi_xfer(uint8_t data);
+void sspi_master_init(void);
+uint8_t sspi_xfer(uint8_t data);
 
 enum spr_e {
 	SPR_DIV4,

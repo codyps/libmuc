@@ -1,10 +1,10 @@
 #include <stdint.h>
 #include <avr/io.h>
 
-#include "spi_master_conf.h"
-#include "spi_master.h"
+#include "sspi_master_conf.h"
+#include "sspi_master.h"
 
-void spi_master_init(void)
+void sspi_master_init(void)
 {
 	/** IO Dir */
 
@@ -26,7 +26,7 @@ void spi_master_init(void)
 		| (0 << CPOL) | (0 << CPHA) | (SPRx & 2);
 }
 
-uint8_t spi_xfer(uint8_t data)
+uint8_t sspi_xfer(uint8_t data)
 {
 	uint8_t ret;
 	SPDR = data;
