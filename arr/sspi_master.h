@@ -3,7 +3,8 @@
 #include <stdint.h>
 
 void sspi_master_init(void);
-uint8_t sspi_xfer(uint8_t data);
+uint8_t sspi_xfer_byte(uint8_t data);
+void sspi_xfer(uint8_t *dst, uint8_t *src, uint16_t len);
 
 enum spr_e {
 	SPR_DIV4,
@@ -11,7 +12,6 @@ enum spr_e {
 	SPR_DIV64,
 	SPR_DIV128
 };
-
 #define spi_set_clk(clk)                                               \
 	do {                                                           \
 		uint8_t spcr = SPCR;                                   \

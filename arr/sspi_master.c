@@ -26,7 +26,7 @@ void sspi_master_init(void)
 		| (0 << CPOL) | (0 << CPHA) | (SPRx & 2);
 }
 
-uint8_t sspi_xfer(uint8_t data)
+uint8_t sspi_xfer_byte(uint8_t data)
 {
 	uint8_t ret;
 	SPDR = data;
@@ -35,3 +35,17 @@ uint8_t sspi_xfer(uint8_t data)
 	ret = SPDR;
 	return ret;
 }
+
+void sspi_xfer(uint8_t *dst, uint8_t *src, uint16_t len)
+{
+	uint16_t *end = src + len;
+	while (src != end) {
+		SPDR = *src;
+		src ++;
+		while(!(SPSR & (1 << SPIF)))
+			;
+		*dst = SPDR;
+		dst ++;
+	}
+}
+
