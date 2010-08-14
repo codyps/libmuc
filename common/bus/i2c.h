@@ -13,11 +13,14 @@ struct i2c_msg {
 #define I2C_MSG(addr, buf) { addr, 0, sizeof(buf), buf }
 #define I2C_TRANS(msgs,cb) { msgs, sizeof(msgs)/sizeof(*msgs), cb }
 
+struct i2c_trans;
+typedef void (*i2c_cb_t)(struct i2c_trans *trans, uint8_t status);
+
 /* an i2c "transaction" */
 struct i2c_trans {
 	struct i2c_msg *msgs;
 	uint8_t ct;
-	void (*cb)(struct i2c_trans *trans, uint8_t status);
+	i2c_cb_t cb;
 };
 
 void i2c_init_master(void);
