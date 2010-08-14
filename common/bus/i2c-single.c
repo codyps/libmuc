@@ -81,6 +81,7 @@ void i2c_init_master(void)
 #define twi_printf_P(...) fprintf_P(stdout,__VA_ARGS__);
 
 #define NEXT_MSG() do {                \
+	buf_idx = 0;                   \
 	msg_idx++;                     \
 	if (msg_idx < c_trans->ct) {   \
 		twcr = TWCR_START;     \
@@ -128,7 +129,6 @@ ISR(TWI_vect)
 		} else {
 			/* No data to transmit, so we need to go to
 			 * the next msg */
-			buf_idx = 0; /* should be 0 even without this */
 			NEXT_MSG();
 		}
 		break;
@@ -141,7 +141,6 @@ ISR(TWI_vect)
 		} else {
 			/* We are done with the present message,
 			 * move to the next */
-			buf_idx = 0;
 			NEXT_MSG();
 		}
 		break;
@@ -152,7 +151,6 @@ ISR(TWI_vect)
 		if (c_msg->len) {
 			twcr = TWCR_BASE;
 		} else {
-			buf_idx = 0; /* not needed */
 			NEXT_MSG();
 		}
 		break;
@@ -169,7 +167,6 @@ ISR(TWI_vect)
 			twcr = TWCR_NACK;
 		} else if (buf_idx >= c_msg->len) {
 			/* No data left for this message, move to next */
-			buf_idx = 0;
 			NEXT_MSG();
 		} else {
 			/* Continue to read data. */
@@ -188,7 +185,6 @@ ISR(TWI_vect)
 			/* looks like we expected this, and thus
 			 * the message is done. move to the next
 			 */
-			buf_idx = 0;
 			NEXT_MSG();
 		}
 		break;
