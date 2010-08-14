@@ -43,14 +43,16 @@ void i2c_transfer(struct i2c_trans *trans)
 void i2c_main_handler(void)
 {
 	if(c_trans && trans_complete) {
-		c_trans->cb(c_trans, trans_status);
+		i2c_cb_t scb = c_trans->cb;
 		c_trans = 0;
 		trans_status = 0;
 		trans_complete = 0;
+		if (scb)
+			scb(c_trans, trans_status);
 	}
 }
 
-void i2c_init_master(void) 
+void i2c_init_master(void)
 {
 	power_twi_enable();
 
@@ -118,31 +120,31 @@ ISR(TWI_vect)
 		break;
 
 	/** MASTER TRANSMIT **/
-	case TW_MT_SLA_ACK: {
+	case TW_MT_SLA_ACK:
 		if (c_msg->len) {
 			TWDR    = c_msg->buf[0];
 			buf_idx = 1;
 			twcr    = TWCR_BASE;
 		} else {
-			/* No data to transmit, so we need to go to 
+			/* No data to transmit, so we need to go to
 			 * the next msg */
 			buf_idx = 0; /* should be 0 even without this */
-			NEXT_MSG();	
+			NEXT_MSG();
 		}
-	} break;
-	case TW_MT_DATA_ACK: {
+		break;
+	case TW_MT_DATA_ACK:
 		if (buf_idx < c_msg->len) {
 			// more data to transmit.
 			TWDR = c_msg->buf[buf_idx];
 			buf_idx++;
 			twcr = TWCR_BASE;
 		} else {
-			/* We are done with the present message, 
+			/* We are done with the present message,
 			 * move to the next */
 			buf_idx = 0;
 			NEXT_MSG();
 		}
-	} break;
+		break;
 
 	/** MASTER READ **/
 	case TW_MR_SLA_ACK:
@@ -155,7 +157,7 @@ ISR(TWI_vect)
 		}
 		break;
 
-	case TW_MR_DATA_ACK: {
+	case TW_MR_DATA_ACK:
 		/* Data read, wait for next read with ack or nack */
 		/* this state will not occour without a check of len
 		 * to be sure the array write will be defined */
@@ -173,9 +175,9 @@ ISR(TWI_vect)
 			/* Continue to read data. */
 			twcr = TWCR_BASE;
 		}
-	} break;
+		break;
 
-	case TW_MR_DATA_NACK: {
+	case TW_MR_DATA_NACK:
 		/* We nacked the last piece of data. */
 		c_msg->buf[buf_idx] = TWDR;
 		buf_idx ++;
@@ -189,33 +191,33 @@ ISR(TWI_vect)
 			buf_idx = 0;
 			NEXT_MSG();
 		}
-	} break;
-	
+		break;
+
 	/* NACKs : we don't know how to recover from these,
 	 * let the callback deal with it. */
-	case TW_MT_SLA_NACK: 
+	case TW_MT_SLA_NACK:
 	case TW_MR_SLA_NACK:
 	case TW_MT_DATA_NACK:
 	case TW_BUS_ERROR:
 		TW_STOP(tw_status);
 		break;
-	
+
 	/* case TW_MT_ARB_LOST: */
-	case TW_MR_ARB_LOST: {
+	case TW_MR_ARB_LOST:
 		/* Send Start when bus becomes free. */
 		buf_idx = 0;
 		msg_idx = 0;
 		twcr = TWCR_START;
-	} break;
+		break;
 
 	case TW_NO_INFO:
 		//??
 		break;
 
-	default: {
+	default:
 		twi_printf_P(PSTR("\n[i2c] unk twsr %x"),tw_status);
 		twcr |= (1<<TWINT);
-	} break;
+		break;
 	}
 
 	cli();
