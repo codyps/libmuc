@@ -28,11 +28,13 @@ static uint8_t trans_status;
 
 void i2c_status(void)
 {
+	DEBUG("tw_status: %p\n", TW_STATUS);
 	DEBUG("c_trans: %p\n", c_trans);
 	DEBUG("msg_idx: %d\n", msg_idx);
 	DEBUG("buf_idx: %d\n", buf_idx);
-	DEBUG("SDA: %d\n", PIN(TWI_PORT) & (1 << TWI_SDA_IX));
-	DEBUG("SCL: %d\n", PIN(TWI_PORT) & (1 << TWI_SCL_IX));
+	uint8_t port = PIN(TWI_PORT);
+	DEBUG("SDA: %d\n", port & (1 << TWI_SDA_IX));
+	DEBUG("SCL: %d\n", port & (1 << TWI_SCL_IX));
 }
 
 bool i2c_trans_pending(void)
