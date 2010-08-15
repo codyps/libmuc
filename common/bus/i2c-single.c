@@ -21,7 +21,19 @@ static uint8_t buf_idx; // current pos in c_trans->msgs[msg_idx]->buf
 static bool trans_complete;
 static uint8_t trans_status;
 
-#define DEBUG(s, ...) printf_P(PSTR("i2c: " s),# __VA_ARGS__)
+#define DEBUG(s, ...) printf_P(PSTR("i2c: " s), ## __VA_ARGS__)
+#define TWI_PORT C
+#define TWI_SDA_IX 4
+#define TWI_SCL_IX 5
+
+void i2c_status(void)
+{
+	DEBUG("c_trans: %p\n", c_trans);
+	DEBUG("msg_idx: %d\n", msg_idx);
+	DEBUG("buf_idx: %d\n", buf_idx);
+	DEBUG("SDA: %d\n", PIN(TWI_PORT) & (1 << TWI_SDA_IX));
+	DEBUG("SCL: %d\n", PIN(TWI_PORT) & (1 << TWI_SCL_IX));
+}
 
 bool i2c_trans_pending(void)
 {
@@ -58,8 +70,8 @@ void i2c_init_master(void)
 
 	// Enable Pullups
 	// FIXME: axon specific.
-	DDRC &= (uint8_t) ~((1<<4)|(1<<5));
-	PORTC |= ((1<<4)|(1<<5));
+	DDR(TWI_PORT) &= (uint8_t) ~((1<<TWI_SDA_IX)|(1<<TWI_SCL_IX));
+	PORT(TWI_PORT) |= ((1<<TWI_SDA_IX)|(1<<TWI_SCL_IX));
 
 	// Disable TWI
 	TWCR = 0;
@@ -101,7 +113,7 @@ void i2c_init_master(void)
 } while (0)
 
 
-#define IDEBUG(s, ...) printf_P(PSTR(s),# __VA_ARGS__);
+#define IDEBUG(s, ...) printf_P(PSTR(s), ## __VA_ARGS__);
 ISR(TWI_vect)
 {
 	uint8_t tw_status = (uint8_t)TW_STATUS;
@@ -114,7 +126,7 @@ ISR(TWI_vect)
 	 * to avoid blocking more timing sensitive ISRs */
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 	sei();
-	IDEBUG("twi_isr %d:", tw_status);
+	twi_printf("twi_isr %x:", tw_status);
 	struct i2c_msg *c_msg = &(c_trans->msgs[msg_idx]);
 	switch(tw_status) {
 	case TW_START:
