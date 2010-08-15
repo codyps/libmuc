@@ -10,7 +10,7 @@
 /* This style of programming on the i2c bus consumes a considerable
  * amount of memory
  */
-#define DEBUG(x , ...) printf_P(PSTR("hmc6352: " x),# __VA_ARGS__)
+#define DEBUG(x , ...) printf_P(PSTR("hmc6352: " x), ## __VA_ARGS__)
 
 /* read eeprom / read ram */
 static uint8_t w_buf[] = { 'r' /* 'g' */, 0 /* addr */};
@@ -30,7 +30,7 @@ static void read_multi_cb(struct i2c_trans *trans, uint8_t status)
 		return;
 	}
 
-	DEBUG("%d => %d\n", w_buf[1], r_buf[0]);
+	DEBUG("%x => %x\n", w_buf[1], r_buf[0]);
 
 	if (w_buf[1] < last) {
 		w_buf[1] ++;
@@ -59,7 +59,7 @@ static void read_one_cb(struct i2c_trans *trans, uint8_t status)
 		return;
 	}
 
-	DEBUG("%d => %d\n", w_buf[1], r_buf[0]);
+	DEBUG("%x => %x\n", w_buf[1], r_buf[0]);
 }
 
 void hmc6352_read_mem(uint8_t addr)
