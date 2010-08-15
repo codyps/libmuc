@@ -7,13 +7,17 @@
 #include "servo.h"
 #include "clock.h"
 #include "usart.h"
+#include "bus/i2c.h"
 #include "hmc6352.h"
 
 static void process_hmc6352_cmd(char *msg)
 {
 	switch(msg[0]) {
-	case 'A':
+	case 'a':
 		hmc6352_read_all_mem();
+		return;
+	case 's':
+		i2c_status();
 		return;
 	case ' ': {
 		int addr;
@@ -28,8 +32,9 @@ static void process_hmc6352_cmd(char *msg)
 	default:
 	help:
 		puts_P(PSTR("hmc6352:\n"
-			    "  iA       -- read all mem\n"
-			    "  i <addr> -- read address"));
+			    "  ia       -- read all mem\n"
+			    "  i <addr> -- read address\n"
+			    "  is       -- i2c status"));
 	}
 }
 
@@ -133,7 +138,7 @@ void process_msg(void)
 			      "  sq <sn> -- query servos (uS).\n"
 			      "  s{S,Q} -- \" \" (ticks).\n"
 			      "  sc -- get servo count.\n"
-			      "  i -- read hmc6352 memory.\n"
+			      "  i{a,s, <addr>} -- read hmc6352 memory.\n"
 			      "  c -- clear.\n"
 			      "  e{+,-,} -- echo ctrl.\n"
 			      "  u -- version.\n"));
