@@ -8,8 +8,9 @@
 #include <stdint.h>
 
 /* This style of programming on the i2c bus consumes a considerable
- * amount of memory 
+ * amount of memory
  */
+#define DEBUG(x , ...) printf_P(PSTR("hmc6352: " x),# __VA_ARGS__)
 
 /* read eeprom / read ram */
 static uint8_t w_buf[] = { 'r' /* 'g' */, 0 /* addr */};
@@ -18,21 +19,18 @@ static struct i2c_msg msgs[] = {
 	I2C_MSG(HMC6352_ADDR_W, w_buf),
 	I2C_MSG(HMC6352_ADDR_R, r_buf)
 };
-
-static void read_b_cb(struct i2c_trans *trans, uint8_t status);
-static struct i2c_trans cmd = I2C_TRANS(msgs, read_b_cb);
+static struct i2c_trans cmd = I2C_TRANS(msgs, 0);
 
 static uint8_t last;
 
-static void read_b_cb(struct i2c_trans *trans, uint8_t status)
+static void read_multi_cb(struct i2c_trans *trans, uint8_t status)
 {
-	printf("hmc6352: callback\n");
 	if (status) {
-		printf("i2c error: %d\n", status);
+		DEBUG("i2c error: %d\n", status);
 		return;
 	}
 
-	printf("i2c: %d => %d\n", w_buf[1], r_buf[0]);
+	DEBUG("%d => %d\n", w_buf[1], r_buf[0]);
 
 	if (w_buf[1] < last) {
 		w_buf[1] ++;
@@ -40,15 +38,40 @@ static void read_b_cb(struct i2c_trans *trans, uint8_t status)
 	}
 }
 
-void hmc6352_read_mem(void)
+void hmc6352_read_all_mem(void)
 {
 	if (i2c_trans_pending()) {
-		puts_P(PSTR("hmc6352: already attempting com."));
+		DEBUG("already attempting com.\n");
 		return;
 	}
 
-	puts_P(PSTR("hmc6352: read mem."));
+	DEBUG("read mem.\n");
 	w_buf[1] = 0;
 	last = 0xff;
+	cmd.cb = read_multi_cb;
 	i2c_transfer(&cmd);
 }
+
+static void read_one_cb(struct i2c_trans *trans, uint8_t status)
+{
+	if (status) {
+		DEBUG("i2c error: %d\n", status);
+		return;
+	}
+
+	DEBUG("%d => %d\n", w_buf[1], r_buf[0]);
+}
+
+void hmc6352_read_mem(uint8_t addr)
+{
+	if (i2c_trans_pending()) {
+		DEBUG("already attempting com.\n");
+		return;
+	}
+
+	DEBUG("read mem.\n");
+	w_buf[1] = addr;
+	cmd.cb = read_one_cb;
+	i2c_transfer(&cmd);
+}
+

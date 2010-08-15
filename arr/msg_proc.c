@@ -9,12 +9,36 @@
 #include "usart.h"
 #include "hmc6352.h"
 
+static void process_hmc6352_cmd(char *msg)
+{
+	switch(msg[0]) {
+	case 'A':
+		hmc6352_read_all_mem();
+		return;
+	case ' ': {
+		int addr;
+		int ret = sscanf(msg+1, "%d", &addr);
+		if (ret == 1) {
+			hmc6352_read_mem(addr);
+			return;
+		} else {
+			goto help;
+		}
+	}
+	default:
+	help:
+		puts_P(PSTR("hmc6352:\n"
+			    "  iA       -- read all mem\n"
+			    "  i <addr> -- read address"));
+	}
+}
+
 static bool process_servo_cmd(char *msg)
 {
 	switch(msg[0]) {
 	case 's': {
 		int pos, num;
-		int ret = sscanf(msg+1," %d %d",&num,&pos);
+		int ret = sscanf(msg+1,"%d %d",&num,&pos);
 		if (ret == 2) {
 			if (servo_set(num,TICKS_US(pos))) {
 				printf(" error.\n");
@@ -114,7 +138,7 @@ void process_msg(void)
 			      "  e{+,-,} -- echo ctrl.\n"
 			      "  u -- version.\n"));
 		break;
-	
+
 	case 's':
 		if(process_servo_cmd(buf+1))
 			break;
@@ -135,7 +159,7 @@ void process_msg(void)
 		}
 		break;
 	case 'i':
-		hmc6352_read_mem();
+		process_hmc6352_cmd(buf+1);
 		break;
 	default:
 		printf_P(PSTR("unknown command \"%s\".\n"), buf);
