@@ -16,7 +16,7 @@ enum spr_e {
 	do {                                                           \
 		uint8_t spcr = SPCR;                                   \
 		/* 0xfc = 0b11111100 */                                \
-		SPCR = (spcr & ~((1 << SPR1) | (1 << SPR0))) | clk;    \
+		SPCR = (spcr & ~((1 << SPR1) | (1 << SPR0))) | (clk);  \
 	} while(0)
 
 #endif
