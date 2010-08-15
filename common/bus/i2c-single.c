@@ -58,8 +58,8 @@ void i2c_init_master(void)
 
 	// Enable Pullups
 	// FIXME: axon specific.
-	DDRD &= (uint8_t) ~((1<<0)|(1<<1));
-	PORTD |= ((1<<0)|(1<<1));
+	DDRC &= (uint8_t) ~((1<<4)|(1<<5));
+	PORTC |= ((1<<4)|(1<<5));
 
 	// Disable TWI
 	TWCR = 0;
@@ -81,6 +81,7 @@ void i2c_init_master(void)
 #define twi_printf_P(...) fprintf_P(stdout,__VA_ARGS__);
 
 #define NEXT_MSG() do {                \
+	IDEBUG("tw next msg\n");   \
 	buf_idx = 0;                   \
 	msg_idx++;                     \
 	if (msg_idx < c_trans->ct) {   \
@@ -93,11 +94,14 @@ void i2c_init_master(void)
 } while(0)
 
 #define TW_STOP(_status_) do {         \
+	IDEBUG("tw stop\n");       \
 	trans_status = _status_;       \
 	trans_complete = true;         \
 	twcr = TWCR_STOP;              \
 } while (0)
 
+
+#define IDEBUG(s, ...) printf_P(PSTR(s),# __VA_ARGS__);
 ISR(TWI_vect)
 {
 	uint8_t tw_status = (uint8_t)TW_STATUS;
@@ -110,18 +114,20 @@ ISR(TWI_vect)
 	 * to avoid blocking more timing sensitive ISRs */
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 	sei();
-
+	IDEBUG("twi_isr %d:", tw_status);
 	struct i2c_msg *c_msg = &(c_trans->msgs[msg_idx]);
 	switch(tw_status) {
 	case TW_START:
 	case TW_REP_START:
 		/* FIXME: assumes we sent the 'start' */
+		IDEBUG("START\n");
 		TWDR = c_msg->addr;
 		twcr = TWCR_BASE;
 		break;
 
 	/** MASTER TRANSMIT **/
 	case TW_MT_SLA_ACK:
+		IDEBUG("MT_SLA_ACK\n");
 		if (c_msg->len) {
 			TWDR    = c_msg->buf[0];
 			buf_idx = 1;
@@ -133,6 +139,7 @@ ISR(TWI_vect)
 		}
 		break;
 	case TW_MT_DATA_ACK:
+		IDEBUG("MT_DATA_ACK\n");
 		if (buf_idx < c_msg->len) {
 			// more data to transmit.
 			TWDR = c_msg->buf[buf_idx];
@@ -147,6 +154,7 @@ ISR(TWI_vect)
 
 	/** MASTER READ **/
 	case TW_MR_SLA_ACK:
+		IDEBUG("MR_SLA_ACK\n");
 		/* wait for first data packet. */
 		if (c_msg->len) {
 			twcr = TWCR_BASE;
@@ -156,6 +164,7 @@ ISR(TWI_vect)
 		break;
 
 	case TW_MR_DATA_ACK:
+		IDEBUG("MR_DATA_ACK\n");
 		/* Data read, wait for next read with ack or nack */
 		/* this state will not occour without a check of len
 		 * to be sure the array write will be defined */
@@ -175,6 +184,7 @@ ISR(TWI_vect)
 		break;
 
 	case TW_MR_DATA_NACK:
+		IDEBUG("MR_DATA_NACK\n");
 		/* We nacked the last piece of data. */
 		c_msg->buf[buf_idx] = TWDR;
 		buf_idx ++;
@@ -195,11 +205,13 @@ ISR(TWI_vect)
 	case TW_MR_SLA_NACK:
 	case TW_MT_DATA_NACK:
 	case TW_BUS_ERROR:
+		IDEBUG("NACK||ERROR\n");
 		TW_STOP(tw_status);
 		break;
 
 	/* case TW_MT_ARB_LOST: */
 	case TW_MR_ARB_LOST:
+		IDEBUG("ARB_LOST\n");
 		/* Send Start when bus becomes free. */
 		buf_idx = 0;
 		msg_idx = 0;
@@ -207,11 +219,12 @@ ISR(TWI_vect)
 		break;
 
 	case TW_NO_INFO:
+		IDEBUG("NO_INFO\n");
 		//??
 		break;
 
 	default:
-		twi_printf_P(PSTR("\n[i2c] unk twsr %x"),tw_status);
+		IDEBUG("twi_isr: unk twsr %x",tw_status);
 		twcr |= (1<<TWINT);
 		break;
 	}
