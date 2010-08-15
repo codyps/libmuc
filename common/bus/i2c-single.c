@@ -28,7 +28,8 @@ static uint8_t trans_status;
 
 void i2c_status(void)
 {
-	DEBUG("tw_status: %p\n", TW_STATUS);
+	DEBUG("tw_status: %x\n", TW_STATUS);
+	DEBUG("twcr: %x\n", TWCR);
 	DEBUG("c_trans: %p\n", c_trans);
 	DEBUG("msg_idx: %d\n", msg_idx);
 	DEBUG("buf_idx: %d\n", buf_idx);
