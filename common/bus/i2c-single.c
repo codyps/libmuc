@@ -31,8 +31,8 @@ void i2c_status(void)
 	DEBUG("c_trans: %p\n", c_trans);
 	DEBUG("msg_idx: %d\n", msg_idx);
 	DEBUG("buf_idx: %d\n", buf_idx);
-	DEBUG("SDA: %d\n", PIN(TWI_PORT) & (1 << TWI_SDA_IX));
-	DEBUG("SCL: %d\n", PIN(TWI_PORT) & (1 << TWI_SCL_IX));
+	DEBUG("SDA: %d\n", PIN(TWI_PORT) & (1 << TWI_SDA_IX) >> TWI_SDA_IX);
+	DEBUG("SCL: %d\n", PIN(TWI_PORT) & (1 << TWI_SCL_IX) >> TWI_SCL_IX);
 }
 
 bool i2c_trans_pending(void)
