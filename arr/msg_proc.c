@@ -19,6 +19,9 @@ static void process_hmc6352_cmd(char *msg)
 	case 's':
 		i2c_status();
 		return;
+	case 'r':
+		i2c_trans_retry();
+		return;
 	case ' ': {
 		int addr;
 		int ret = sscanf(msg+1, "%d", &addr);
@@ -34,7 +37,8 @@ static void process_hmc6352_cmd(char *msg)
 		puts_P(PSTR("hmc6352:\n"
 			    "  ia       -- read all mem\n"
 			    "  i <addr> -- read address\n"
-			    "  is       -- i2c status"));
+			    "  is       -- i2c status\n"
+			    "  ir       -- i2c reset"));
 	}
 }
 

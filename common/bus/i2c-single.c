@@ -37,6 +37,15 @@ void i2c_status(void)
 	DEBUG("SCL: %d\n", port & (1 << TWI_SCL_IX));
 }
 
+void i2c_trans_retry(void)
+{
+	cli();
+	msg_idx = 0;
+	buf_idx = 0;
+	TWCR = TWCR_RESET;
+	sei();
+}
+
 bool i2c_trans_pending(void)
 {
 	return !!c_trans;

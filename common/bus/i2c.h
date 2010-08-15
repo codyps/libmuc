@@ -29,5 +29,6 @@ void i2c_main_handler(void); /* main loop context manager. */
 bool i2c_trans_pending(void);
 void i2c_transfer(struct i2c_trans *tran);
 void i2c_status(void);
+void i2c_trans_retry(void);
 
 #endif
