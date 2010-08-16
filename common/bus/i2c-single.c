@@ -101,9 +101,6 @@ void i2c_init_master(void)
 	TWCR = TWCR_BASE;
 }
 
-// Debug output for the TWI ISR
-#define twi_printf(...)	fprintf(stdout,__VA_ARGS__);
-#define twi_printf_P(...) fprintf_P(stdout,__VA_ARGS__);
 
 #define TW_STOP(_status_) do {         \
 	IDEBUG("tw stop\n");           \
@@ -136,7 +133,7 @@ ISR(TWI_vect)
 	 * to avoid blocking more timing sensitive ISRs */
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 	sei();
-	twi_printf("twi_isr %x:", tw_status);
+	IDEBUG("twi_isr %x:", tw_status);
 	struct i2c_msg *c_msg = &(c_trans->msgs[msg_idx]);
 	switch(tw_status) {
 	case TW_START:
