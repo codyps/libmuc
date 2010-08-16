@@ -55,7 +55,7 @@ bool i2c_trans_pending(void)
 void i2c_transfer(struct i2c_trans *trans)
 {
 	if (unlikely(i2c_trans_pending())) {
-		DEBUG("trans pend %p.\n", c_trans);
+		DEBUG("pending %p, %p ignored\n", c_trans, trans);
 		return;
 	}
 
@@ -70,9 +70,9 @@ void i2c_main_handler(void)
 		i2c_cb_t scb = c_trans->cb;
 		msg_idx = 0;
 		buf_idx = 0;
-		c_trans = 0;
 		trans_status = 0;
 		trans_complete = 0;
+		c_trans = 0;
 		if (scb)
 			scb(c_trans, trans_status);
 	}
@@ -83,7 +83,6 @@ void i2c_init_master(void)
 	power_twi_enable();
 
 	// Enable Pullups
-	// FIXME: axon specific.
 	DDR(TWI_PORT) &= (uint8_t) ~((1<<TWI_SDA_IX)|(1<<TWI_SCL_IX));
 	PORT(TWI_PORT) |= ((1<<TWI_SDA_IX)|(1<<TWI_SCL_IX));
 
@@ -106,26 +105,23 @@ void i2c_init_master(void)
 #define twi_printf(...)	fprintf(stdout,__VA_ARGS__);
 #define twi_printf_P(...) fprintf_P(stdout,__VA_ARGS__);
 
-#define NEXT_MSG() do {                \
-	IDEBUG("tw next msg\n");   \
-	buf_idx = 0;                   \
-	msg_idx++;                     \
-	if (msg_idx < c_trans->ct) {   \
-		twcr = TWCR_START;     \
-	} else {                       \
-		trans_status = 0;      \
-		trans_complete = true; \
-		twcr = TWCR_STOP;      \
-	}                              \
-} while(0)
-
 #define TW_STOP(_status_) do {         \
-	IDEBUG("tw stop\n");       \
+	IDEBUG("tw stop\n");           \
 	trans_status = _status_;       \
 	trans_complete = true;         \
 	twcr = TWCR_STOP;              \
 } while (0)
 
+#define NEXT_MSG() do {                \
+	IDEBUG("tw next msg\n");       \
+	buf_idx = 0;                   \
+	msg_idx++;                     \
+	if (msg_idx < c_trans->ct) {   \
+		twcr = TWCR_START;     \
+	} else {                       \
+		TW_STOP(0);            \
+	}                              \
+} while(0)
 
 #define IDEBUG(s, ...) printf_P(PSTR(s), ## __VA_ARGS__);
 ISR(TWI_vect)
