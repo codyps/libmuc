@@ -20,6 +20,7 @@ SRC += ../common/ds/list.c
 ASRC = 
 OPT = s
 
+
 # Name of this Makefile (used for "make depend").
 MAKEFILE = Makefile
 
@@ -138,7 +139,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 # Default target.
 all: build
-
+rebuild: | clean build
 build: elf hex eep
 
 elf: $(TARGET).elf $(TARGET).uni.elf

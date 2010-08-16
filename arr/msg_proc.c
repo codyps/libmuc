@@ -7,14 +7,47 @@
 #include "servo.h"
 #include "clock.h"
 #include "usart.h"
+#include "bus/i2c.h"
 #include "hmc6352.h"
+
+static void process_hmc6352_cmd(char *msg)
+{
+	switch(msg[0]) {
+	case 'a':
+		hmc6352_read_all_mem();
+		return;
+	case 's':
+		i2c_status();
+		return;
+	case 'r':
+		i2c_trans_retry();
+		return;
+	case ' ': {
+		int addr;
+		int ret = sscanf(msg+1, "%d", &addr);
+		if (ret == 1) {
+			hmc6352_read_mem(addr);
+			return;
+		} else {
+			goto help;
+		}
+	}
+	default:
+	help:
+		puts_P(PSTR("hmc6352:\n"
+			    "  ia       -- read all mem\n"
+			    "  i <addr> -- read address\n"
+			    "  is       -- i2c status\n"
+			    "  ir       -- i2c reset"));
+	}
+}
 
 static bool process_servo_cmd(char *msg)
 {
 	switch(msg[0]) {
 	case 's': {
 		int pos, num;
-		int ret = sscanf(msg+1," %d %d",&num,&pos);
+		int ret = sscanf(msg+1,"%d %d",&num,&pos);
 		if (ret == 2) {
 			if (servo_set(num,TICKS_US(pos))) {
 				printf(" error.\n");
@@ -109,12 +142,12 @@ void process_msg(void)
 			      "  sq <sn> -- query servos (uS).\n"
 			      "  s{S,Q} -- \" \" (ticks).\n"
 			      "  sc -- get servo count.\n"
-			      "  i -- read hmc6352 memory.\n"
+			      "  i{a,s, <addr>} -- read hmc6352 memory.\n"
 			      "  c -- clear.\n"
 			      "  e{+,-,} -- echo ctrl.\n"
 			      "  u -- version.\n"));
 		break;
-	
+
 	case 's':
 		if(process_servo_cmd(buf+1))
 			break;
@@ -135,7 +168,7 @@ void process_msg(void)
 		}
 		break;
 	case 'i':
-		hmc6352_read_mem();
+		process_hmc6352_cmd(buf+1);
 		break;
 	default:
 		printf_P(PSTR("unknown command \"%s\".\n"), buf);

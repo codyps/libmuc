@@ -19,14 +19,14 @@
 #define CT(x) (sizeof(x)/sizeof(*x))
 
 inline uint8_t mod( uint8_t i1, uint8_t i2) {// i1%i2
-     while( i1 >= i2 ) {
-          i1 = (uint8_t) (i1 - i2);
-     }
-     return i1;
+	while( i1 >= i2 ) {
+		i1 = (uint8_t) (i1 - i2);
+	}
+	return i1;
 }
 
 inline void memset_16(uint16_t * dest, uint16_t val, uint8_t len) {
-     do { 
+	do {
 		len--;
 		dest[len] = val;
 	} while (len!=0);
@@ -34,7 +34,7 @@ inline void memset_16(uint16_t * dest, uint16_t val, uint8_t len) {
 
 inline void print_bin(uint8_t inp, FILE * stream) {
 	for(int8_t j=7; j>=0; --j) {
-	   	fputc(((inp&(1<<j))>>j)+'0',stream);
+		fputc(((inp&(1<<j))>>j)+'0',stream);
 	}
 }
 

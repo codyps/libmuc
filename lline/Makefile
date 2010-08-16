@@ -153,7 +153,8 @@ ALL_ASFLAGS += -DF_CPU=$(F_CPU)
 
 # Default target.
 all: build
-	
+
+rebuild: | clean build
 size: elf
 	$(SIZE) -C --mcu=$(MCU) $(TARGET).elf 
 

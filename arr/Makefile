@@ -44,13 +44,14 @@ CDEFS = -DVERSION="\"$(VERSION)\""
 
 # Place -I options here
 CINCS = -I../common
-CLINK =
+CLINK = -Wl,--as-needed
 
 CDEBUG = -g$(DEBUG)
 CWARN = -Wall -Wstrict-prototypes -Wno-main
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
-CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA) $(CLINK)
+CFLAGS += $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD)
+CFLAGS += $(CEXTRA) $(CLINK)
 
 
 #ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
