@@ -105,8 +105,8 @@ static void power_on(void)
 {
 	PORTE &= ~0x80;		/* Socket power ON */
 	for (Timer1 = 3; Timer1;) ;	/* Wait for 30ms */
-	PORTB = 0 b10110101;	/* Enable drivers */
-	DDRB = 0 b11000111;
+	PORTB = 0b10110101;	/* Enable drivers */
+	DDRB = 0b11000111;
 	SPCR = 0x52;		/* Enable SPI function in mode 0 */
 	SPSR = 0x01;		/* 2x mode */
 }
@@ -117,8 +117,8 @@ static void power_off(void)
 	deselect();
 
 	SPCR = 0;		/* Disable SPI function */
-	DDRB = 0 b11000000;	/* Disable drivers */
-	PORTB = 0 b10110000;
+	DDRB = 0b11000000;	/* Disable drivers */
+	PORTB = 0b10110000;
 	PORTE |= 0x80;		/* Socket power OFF */
 	Stat |= STA_NOINIT;	/* Set STA_NOINIT */
 }
