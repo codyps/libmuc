@@ -58,7 +58,8 @@
 //#endif
 
 /* externaly called functions */
-int8_t servo_set(uint8_t servo_number, uint16_t servo_ticks) {
+int8_t servo_set(uint8_t servo_number, uint16_t servo_ticks)
+{
 	if ((servo_ticks >= TICKS_US(500) && servo_ticks <= TICKS_US(2500))
 	                               && servo_number < SERVO_AMOUNT) {
 		servo[servo_number].pos = servo_ticks;
@@ -81,8 +82,8 @@ uint16_t servo_get(uint8_t servo_number)
 		return 0;
 }
 
-void servo_timer_init(void);
-void servo_pin_init(void);
+static void servo_timer_init(void);
+static void servo_pin_init(void);
 
 void servo_init(void)
 {
@@ -101,14 +102,15 @@ void servo_init(void)
 		( *servo[_servo_].port |= (uint8_t)  (servo[_servo_].mask) )
 
 
-void servo_pin_init(void) {
+static void servo_pin_init(void)
+{
 
 	// set the pins as outputs, low
 	// (port-1)=ddr, (port-2)=pin
 	for (uint8_t i = 0 ; i < SERVO_AMOUNT; i++) {
 		// port - 1 == DDR
 		SERVO_PIN_LOW(i);
-		*(servo[i].port-1) |= (uint8_t)(servo[i].mask); // output
+		*(servo[i].port - 1) |= (uint8_t)(servo[i].mask); // output
 	}
 }
 
@@ -123,7 +125,8 @@ struct servo_ctrl {
 }
 */
 
-void servo_timer_init(void) {
+static void servo_timer_init(void)
+{
 	power_timer_S_enable();
 
 	// Fast PWM, ICR = TOP
@@ -154,15 +157,22 @@ void servo_timer_init(void) {
 }
 
 
-inline void servo_cmpA_isr_off(void) { SERVO_TIMSK &= (uint8_t) ~(1<<OCIEA); }
-inline void servo_cmpA_isr_on(void) { SERVO_TIMSK |= (uint8_t) (1<<OCIEA); }
+static inline void servo_cmpA_isr_off(void)
+{
+	SERVO_TIMSK &= (uint8_t) ~(1<<OCIEA);
+}
+
+static inline void servo_cmpA_isr_on(void)
+{
+	SERVO_TIMSK |= (uint8_t) (1<<OCIEA);
+}
 
 static uint8_t cycle; //= 0;
 static uint8_t old_cycle;
 
 // Needs to spend less than 600us, F_CPU/1000/10*6 clicks. (16e3@16e6Hz)
-ISR(TIMER_S_OVF_vect) {
-
+ISR(TIMER_S_OVF_vect)
+{
 	if(cycle >= SERVO_AMOUNT) {
 		// these servos don't exsist, delaying until next
 		// 20ms period.
@@ -190,17 +200,18 @@ ISR(TIMER_S_OVF_vect) {
 	}
 }
 
-ISR(TIMER_S_COMPA_vect) {
+ISR(TIMER_S_COMPA_vect)
+{
 	// Limit is 100 us, 1600 clicks
 	SERVO_PIN_LOW(old_cycle);
 }
 
 /*
-ISR(TIMER_S_COMPB_vect) {
-
+ISR(TIMER_S_COMPB_vect)
+{
 }
 
-ISR(TIMER_S_COMPC_vect) {
-
+ISR(TIMER_S_COMPC_vect)
+{
 }
 */
