@@ -28,14 +28,22 @@ static uint8_t trans_status;
 
 void i2c_status(void)
 {
+	DEBUG("--------------\n");
 	DEBUG("tw_status: %x\n", TW_STATUS);
 	DEBUG("twcr: %x\n", TWCR);
+	DEBUG("TWBR: %x\n", TWBR);
 	DEBUG("c_trans: %p\n", c_trans);
 	DEBUG("msg_idx: %d\n", msg_idx);
 	DEBUG("buf_idx: %d\n", buf_idx);
-	uint8_t port = PIN(TWI_PORT);
-	DEBUG("SDA: %d\n", port & (1 << TWI_SDA_IX));
-	DEBUG("SCL: %d\n", port & (1 << TWI_SCL_IX));
+	uint8_t pin = PIN(TWI_PORT);
+	DEBUG("SDA: %x\n", (pin & (1 << TWI_SDA_IX)) >> TWI_SDA_IX);
+	DEBUG("SCL: %x\n", (pin & (1 << TWI_SCL_IX)) >> TWI_SCL_IX);
+	uint8_t ddr = DDR(TWI_PORT);
+	uint8_t port = PORT(TWI_PORT);
+
+	DEBUG("pin: %x\n", pin);
+	DEBUG("ddr: %x\n", ddr);
+	DEBUG("prt: %x\n", port);
 }
 
 void i2c_trans_retry(void)
@@ -66,15 +74,16 @@ void i2c_transfer(struct i2c_trans *trans)
 
 void i2c_main_handler(void)
 {
-	if(c_trans && trans_complete) {
-		i2c_cb_t scb = c_trans->cb;
+	if(unlikely(c_trans && trans_complete)) {
+		struct i2c_trans *tr = c_trans;
+		uint8_t tr_status = trans_status;
 		msg_idx = 0;
 		buf_idx = 0;
 		trans_status = 0;
 		trans_complete = 0;
 		c_trans = 0;
-		if (scb)
-			scb(c_trans, trans_status);
+		if (tr->cb)
+			tr->cb(tr, tr_status);
 	}
 }
 
@@ -87,18 +96,18 @@ void i2c_init_master(void)
 	PORT(TWI_PORT) |= ((1<<TWI_SDA_IX)|(1<<TWI_SCL_IX));
 
 	// Disable TWI
-	TWCR = 0;
+	//TWCR = 0;
 
 	// Set SCL Clock
 	TWBR = TWI_BR_VAL;
 	TWSR = TWI_PS_MSK;
 
 	// Set Slave ADDR
-	//TWAR=I2C_SLAVE_ADDR<<1+I2C_GENERAL_CALL_EN;
-	//TWAMR=I2C_SLAVE_ADDR_MSK<<1;
+	//TWAR = I2C_SLAVE_ADDR<<1+I2C_GENERAL_CALL_EN;
+	//TWAMR = I2C_SLAVE_ADDR_MSK<<1;
 
 	// Enable TWI base settings
-	TWCR = TWCR_BASE;
+	TWCR = (1 << TWEN) | (1 << TWIE) | (1 << TWEA);
 }
 
 
