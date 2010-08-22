@@ -31,12 +31,15 @@ static inline void adc_channel_set_next(void)
 	adc_channel_set_from_index(adc_curr_chan_index);
 }
 
+#define adc_isr_stop() ADCSRA &= ~(1 << ADIE); asm("":::"memory")
+#define adc_isr_start() ADCSRA |= (1 << ADIE); asm("":::"memory")
+
 uint16_t adc_get_i(uint8_t channel_index) {
 	uint16_t ret;
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		ret = adc_values[channel_index];
-	}
-	return adc_values[channel_index];
+	adc_isr_stop();
+	ret = adc_values[channel_index];
+	adc_isr_start();
+	return ret;
 }
 
 void adc_init(void) {
@@ -45,18 +48,7 @@ void adc_init(void) {
 	// Digital Input Disable	
 	for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {
 		uint8_t channel = adc_channels[i];		
-		if ( channel >= 7) {
-			// use DIDR1, I-3
-			DIDR1 |= (uint8_t) ( 1 << (channel - 3) );
-		}
-		else if ( channel >= 3) {
-			// use DIDR0, I+1
-			DIDR0 |= (uint8_t) ( 1 << (channel + 1) );
-		}
-		else {
-			// use DIDR0
-			DIDR0 |= (uint8_t) ( 1 << (channel) );
-		}
+		DIDR0 |= (1 << channel);
 	}
 
 	/*	
