@@ -18,6 +18,7 @@ SRC += servo.c
 SRC += usart.c
 SRC += hmc6352.c
 SRC += ../common/bus/i2c-single.c
+SRC += adc.c
 
 ASRC = 
 OPT = s
@@ -126,7 +127,7 @@ OBJDUMP = avr-objdump
 SIZE = avr-size
 NM = avr-nm
 AVRDUDE = avrdude
-REMOVE = rm -f
+RM = rm -f
 MV = mv -f
 
 # Define all object files.
@@ -150,7 +151,7 @@ build: elf hex eep
 elf: $(TARGET).elf $(TARGET).uni.elf
 hex: $(TARGET).hex $(TARGET).uni.hex
 eep: $(TARGET).eep $(TARGET).uni.eep
-lss: $(TARGET).lss $(TARGET).uni.lss
+lss: $(TARGET).elf.lss $(TARGET).uni.elf.lss
 sym: $(TARGET).sym $(TARGET).uni.sym
 
 
@@ -193,7 +194,7 @@ extcoff: $(TARGET).extcof
 
 # Create extended listing file from ELF output file.
 %.elf.lss: %.elf
-	@OBJDUMP $@
+	@echo OBJDUMP $@
 	@$(OBJDUMP) -h -S $< > $@
 
 # Create a symbol table from ELF output file.
@@ -225,7 +226,7 @@ $(TARGET).elf: $(OBJ)
 
 # Target: clean project.
 clean:
-	$(REMOVE) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
+	$(RM) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
 	$(TARGET).map $(TARGET).sym $(TARGET).lss \
 	$(OBJ) \
 	$(LST) \
