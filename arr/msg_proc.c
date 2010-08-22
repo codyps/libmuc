@@ -4,7 +4,7 @@
 #include <avr/pgmspace.h>
 
 #include "version.h"
-#include "servo.h"
+//#include "servo.h"
 #include "clock.h"
 #include "usart.h"
 #include "bus/i2c.h"
@@ -42,6 +42,7 @@ static void process_hmc6352_cmd(char *msg)
 	}
 }
 
+#ifdef SERVO_H_
 static bool process_servo_cmd(char *msg)
 {
 	switch(msg[0]) {
@@ -102,6 +103,7 @@ static bool process_servo_cmd(char *msg)
 		return true;
 	}
 }
+#endif
 
 void process_msg(void)
 {
@@ -147,11 +149,13 @@ void process_msg(void)
 			      "  e{+,-,} -- echo ctrl.\n"
 			      "  u -- version.\n"));
 		break;
-
+#ifdef SERVO_H_
 	case 's':
 		if(process_servo_cmd(buf+1))
 			break;
-		goto invalid_arg;
+		printf_P(PSTR("bad args for \"%s\".\n"), buf);
+		break;
+#endif
 	case 'c':
 		printf("\e[H\e[2J");
 		break;
@@ -176,8 +180,6 @@ void process_msg(void)
 	}
 	return;
 
-	invalid_arg:
-		printf_P(PSTR("bad args for \"%s\".\n"), buf);
 }
 
 
