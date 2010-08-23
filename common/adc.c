@@ -27,8 +27,8 @@ static inline void adc_channel_set_from_index(uint8_t chan)
 
 static inline void adc_channel_set_next(void)
 {
-	adc_curr_chan_index++;	
-	if (adc_curr_chan_index >= ADC_CHANNEL_CT) 
+	adc_curr_chan_index++;
+	if (adc_curr_chan_index >= ADC_CHANNEL_CT)
 		adc_curr_chan_index = 0;
 	adc_channel_set_from_index(adc_curr_chan_index);
 }
@@ -52,8 +52,8 @@ uint16_t adc_get_i(uint8_t channel_index) {
 }
 
 void adc_init(void) {
-	power_adc_enable();	
-	
+	power_adc_enable();
+
 	/* Digital Input Disable */
 	for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {
 		uint8_t channel = adc_chan_map[i];
@@ -62,7 +62,7 @@ void adc_init(void) {
 		DIDR0 |= (1 << channel);
 	}
 
-	/*	
+	/*
 	 * REFS2 REFS1 REFS0 Voltage Reference (VREF) Selection
 	 * ->  X     0     0   VCC , disconnected from AREF.
 	 *     X     0     1   AREF pin, Internal Voltage Reference turned off.
@@ -97,7 +97,7 @@ void adc_init(void) {
 	 *     1     1     0   Timer/Counter1 Overflow
 	 *     1     1     1   Watchdog Interrupt Request
 	 */
-	
+
 #if 0
 	ADCSRB = (0<<BIN)   /* Bipolar input mode */
 		|(0<<GSEL)  /* Diff input Gain, (20x -> 32x, 1x -> 8x) */
