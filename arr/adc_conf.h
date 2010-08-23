@@ -18,7 +18,7 @@
 #define ADC_F (F_CPU/ADC_PRESCALE)
 #define ADC_CYCLE ( F_CPU / ADC_F ) // == ADC_PRESCALE
 
-static const uint8_t adc_channels [] = { 0, 4, 5, 6 };
+static const uint8_t adc_channels[] = { 0, 4, 5, 6 };
 #define ADC_CHANNEL_CT ( sizeof(adc_channels) )
 
 #endif /*_ADC_CONF_H_*/
