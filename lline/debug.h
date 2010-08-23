@@ -7,7 +7,7 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
-#define DEBUG_LED_P	A
+#define DEBUG_LED_P A
 #define DEBUG_LED_I 4
 
 #define DEBUG_LED_PIN  PIN(DEBUG_LED_P)
@@ -32,11 +32,11 @@ inline static void debug_led_flash(uint16_t len,uint16_t out) {
 }
 
 
-#define led_d(state)				\
-			if (state==0)			\
-				debug_led_off();	\
-			else					\
-				debug_led_on()
+#define led_d(state)     \
+if (state==0)            \
+	debug_led_off(); \
+else                     \
+	debug_led_on()
 
 /* Debuging */
 #define DEBUG 1

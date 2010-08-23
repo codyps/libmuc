@@ -17,48 +17,33 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-//#include <avr/pgmspace.h>
-
 #include "spi_io.h"
 #include "text_cmd.h"
 
 #include "adc.h"
 #include "motor.h"
 
-static inline void init(void);
-void main(void) __attribute__((noreturn));
-
-static inline void init() {
+__attribute__((always_inline)) 
+static inline void init(void)
+{
 	power_all_disable();
-
 	debug_led_init();
-
 	clock_prescale_set(clock_div_1);
-     	
 	spi_io_init();
-
 	adc_init();
-	
 	motor_init();
-
 	sei();
 }
 
-/*
-ISR(BADISR_vect){
-}
-*/
-
-
-void main(){
+__attribute__((noreturn))
+void main(void)
+{
 	init();
-
-	uint16_t adc_val[ADC_CHANNEL_CT];
-	
-  for(;;) {
+	uint16_t adc_val[ADC_CHANNEL_CT];	
+	for(;;) {
 		if (adc_new_data) {
 			adc_new_data = false;
-			memcpy(adc_val, (uint16_t *) adc_values,sizeof(adc_val));
+			memcpy(adc_val, (uint8_t *)adc_values,sizeof(adc_val));
 			for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {			
 				spi_putchar((char) (i+'0'));
 				spi_putchar(':');
@@ -68,7 +53,7 @@ void main(){
 			}
 			spi_putchar('\n');
 		}
-    process_rx();		
+		process_rx();		
 		_delay_ms(200);
 	}
 }

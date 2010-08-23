@@ -17,12 +17,12 @@ void print_adc_get_i(uint8_t channel_i)
 	spi_putchar('\n');
 }
 
-typedef struct text_cmd_s {
-	const char text;
-	const uint8_t param_ct;
+typedef const struct text_cmd_s {
+	char text;
+	uint8_t param_ct;
 	union {
 //  void (* const func0 )(void);
-		void (*const func1) (uint8_t, ...);
+		void (*func1) (uint8_t, ...);
 //  void (* const func2 )(...);
 	} func;
 } text_cmd_t;
