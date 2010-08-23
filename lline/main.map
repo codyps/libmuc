@@ -1,0 +1,509 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o (exit)
+/usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+                              main.o (__do_copy_data)
+/usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+                              main.o (__do_clear_bss)
+
+Allocating common symbols
+Common symbol       size              file
+
+rx_b                0x20              spi_io.o
+adc_new_data        0x1               adc.o
+tx_b                0x20              spi_io.o
+adc_values          0x8               adc.o
+spi_io_rx_nl        0x1               main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x0000000000000000 0x0000000000002000 xr
+data             0x0000000000800060 0x000000000000ffa0 rw !x
+eeprom           0x0000000000810000 0x0000000000010000 rw !x
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+LOAD main.o
+LOAD spi_io.o
+LOAD ../common/ds/queue.o
+LOAD adc.o
+LOAD motor.o
+LOAD text_cmd.o
+LOAD /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a
+LOAD /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/libc.a
+LOAD /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x0000000000000000      0x5d6
+ *(.vectors)
+ .vectors       0x0000000000000000       0x26 /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+                0x0000000000000000                __vectors
+                0x0000000000000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+                0x0000000000000026                . = ALIGN (0x2)
+                0x0000000000000026                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x0000000000000026        0x0 linker stubs
+ *(.trampolines*)
+                0x0000000000000026                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x0000000000000026                __ctors_start = .
+ *(.ctors)
+                0x0000000000000026                __ctors_end = .
+                0x0000000000000026                __dtors_start = .
+ *(.dtors)
+                0x0000000000000026                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x0000000000000026        0x0 /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+                0x0000000000000026                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x0000000000000026        0xc /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x0000000000000032       0x16 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+                0x0000000000000032                __do_copy_data
+ .init4         0x0000000000000048       0x10 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+                0x0000000000000048                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x0000000000000058        0x4 /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+ *(.init9)
+ *(.text)
+ .text          0x000000000000005c        0x2 /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+                0x000000000000005c                __vector_1
+                0x000000000000005c                __vector_12
+                0x000000000000005c                __bad_interrupt
+                0x000000000000005c                __vector_6
+                0x000000000000005c                __vector_3
+                0x000000000000005c                __vector_13
+                0x000000000000005c                __vector_17
+                0x000000000000005c                __vector_7
+                0x000000000000005c                __vector_5
+                0x000000000000005c                __vector_4
+                0x000000000000005c                __vector_9
+                0x000000000000005c                __vector_2
+                0x000000000000005c                __vector_15
+                0x000000000000005c                __vector_14
+                0x000000000000005c                __vector_10
+                0x000000000000005c                __vector_16
+                0x000000000000005c                __vector_18
+ .text          0x000000000000005e       0x96 main.o
+                0x000000000000005e                main
+ .text          0x00000000000000f4      0x1e4 spi_io.o
+                0x00000000000000f4                spi_io_init
+                0x0000000000000140                spi_puth2
+                0x00000000000001aa                spi_puth
+                0x00000000000001d6                spi_putchar
+                0x00000000000001de                spi_puts
+                0x00000000000001fa                spi_o_puts
+                0x000000000000022e                spi_getchar
+                0x0000000000000250                __vector_8
+ .text          0x00000000000002d8       0xf0 ../common/ds/queue.o
+                0x00000000000002d8                q_flush
+                0x00000000000002e2                q_remove
+                0x0000000000000312                q_push
+                0x0000000000000348                q_push_o
+                0x000000000000037a                q_pop
+                0x00000000000003aa                q_empty
+                0x00000000000003b8                q_full
+ .text          0x00000000000003c8       0xf4 adc.o
+                0x00000000000003c8                adc_get_i
+                0x00000000000003de                adc_init
+                0x0000000000000436                __vector_11
+ .text          0x00000000000004bc       0xd2 motor.o
+                0x00000000000004bc                motor_get
+                0x0000000000000510                motor_set
+                0x0000000000000552                motor_init
+ .text          0x000000000000058e       0x44 text_cmd.o
+                0x000000000000058e                process_rx
+                0x00000000000005ae                print_adc_get_i
+ .text          0x00000000000005d2        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+ .text          0x00000000000005d2        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+ .text          0x00000000000005d2        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+                0x00000000000005d2                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x00000000000005d2        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+ .text.libgcc   0x00000000000005d2        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+ .text.libgcc   0x00000000000005d2        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+                0x00000000000005d2                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x00000000000005d2        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+                0x00000000000005d2                exit
+                0x00000000000005d2                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x00000000000005d2        0x4 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+ *(.fini0)
+                0x00000000000005d6                _etext = .
+
+.data           0x0000000000800060       0x1e load address 0x00000000000005d6
+                0x0000000000800060                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x0000000000800060        0x0 /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+ .data          0x0000000000800060        0x0 main.o
+ .data          0x0000000000800060        0xc spi_io.o
+                0x0000000000800060                tx
+                0x0000000000800066                rx
+ .data          0x000000000080006c        0x0 ../common/ds/queue.o
+ .data          0x000000000080006c        0x4 adc.o
+ .data          0x0000000000800070        0x0 motor.o
+ .data          0x0000000000800070        0xd text_cmd.o
+                0x0000000000800075                text_cmd_list
+ .data          0x000000000080007d        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+ .data          0x000000000080007d        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+ .data          0x000000000080007d        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x000000000080007e                . = ALIGN (0x2)
+ *fill*         0x000000000080007d        0x1 00
+                0x000000000080007e                _edata = .
+                0x000000000080007e                PROVIDE (__data_end, .)
+
+.bss            0x000000000080007e       0x4b
+                0x000000000080007e                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x000000000080007e        0x0 /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+ .bss           0x000000000080007e        0x0 main.o
+ .bss           0x000000000080007e        0x0 spi_io.o
+ .bss           0x000000000080007e        0x0 ../common/ds/queue.o
+ .bss           0x000000000080007e        0x1 adc.o
+ .bss           0x000000000080007f        0x0 motor.o
+ .bss           0x000000000080007f        0x0 text_cmd.o
+ .bss           0x000000000080007f        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+ .bss           0x000000000080007f        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+ .bss           0x000000000080007f        0x0 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x000000000080007f        0x1 main.o
+                0x000000000080007f                spi_io_rx_nl
+ COMMON         0x0000000000800080       0x40 spi_io.o
+                0x0000000000800080                rx_b
+                0x00000000008000a0                tx_b
+ COMMON         0x00000000008000c0        0x9 adc.o
+                0x00000000008000c0                adc_new_data
+                0x00000000008000c1                adc_values
+                0x00000000008000c9                PROVIDE (__bss_end, .)
+                0x00000000000005d6                __data_load_start = LOADADDR (.data)
+                0x00000000000005f4                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x00000000008000c9        0x0
+                0x00000000008000c9                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x00000000008000c9                PROVIDE (__noinit_end, .)
+                0x00000000008000c9                _end = .
+                0x00000000008000c9                PROVIDE (__heap_start, .)
+
+.eeprom         0x0000000000810000        0x0
+ *(.eeprom*)
+                0x0000000000810000                __eeprom_end = .
+
+.stab           0x0000000000000000     0x1be4
+ *(.stab)
+ .stab          0x0000000000000000      0x690 main.o
+ .stab          0x0000000000000690      0x7d4 spi_io.o
+                                        0x9fc (size before relaxing)
+ .stab          0x0000000000000e64      0x444 ../common/ds/queue.o
+                                        0x63c (size before relaxing)
+ .stab          0x00000000000012a8      0x354 adc.o
+                                        0x528 (size before relaxing)
+ .stab          0x00000000000015fc      0x390 motor.o
+                                        0x5b8 (size before relaxing)
+ .stab          0x000000000000198c      0x258 text_cmd.o
+                                        0x4d4 (size before relaxing)
+
+.stabstr        0x0000000000000000     0x1297
+ *(.stabstr)
+ .stabstr       0x0000000000000000     0x1297 main.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(main.elf elf32-avr)
+LOAD linker stubs
+
+Cross Reference Table
+
+Symbol                                            File
+__bad_interrupt                                   /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__bss_end                                         /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+__bss_start                                       /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+__data_end                                        /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+__data_load_start                                 /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+__data_start                                      /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+__do_clear_bss                                    /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_clear_bss.o)
+                                                  text_cmd.o
+                                                  motor.o
+                                                  adc.o
+                                                  ../common/ds/queue.o
+                                                  spi_io.o
+                                                  main.o
+__do_copy_data                                    /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_copy_data.o)
+                                                  text_cmd.o
+                                                  motor.o
+                                                  adc.o
+                                                  ../common/ds/queue.o
+                                                  spi_io.o
+                                                  main.o
+__heap_end                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__init                                            /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__stack                                           /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_1                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_10                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_11                                       adc.o
+                                                  /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_12                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_13                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_14                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_15                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_16                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_17                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_18                                       /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_2                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_3                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_4                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_5                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_6                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_7                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_8                                        spi_io.o
+                                                  /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_9                                        /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vector_default                                  /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+__vectors                                         /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+_exit                                             /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+adc_get_i                                         adc.o
+                                                  text_cmd.o
+adc_init                                          adc.o
+                                                  main.o
+adc_new_data                                      adc.o
+                                                  main.o
+adc_values                                        adc.o
+                                                  main.o
+exit                                              /usr/lib/gcc/avr/4.4.4/avr25/libgcc.a(_exit.o)
+                                                  /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+main                                              main.o
+                                                  /usr/lib/gcc/avr/4.4.4/../../../../avr/lib/avr25/crttn861.o
+motor_get                                         motor.o
+motor_init                                        motor.o
+                                                  main.o
+motor_set                                         motor.o
+                                                  text_cmd.o
+print_adc_get_i                                   text_cmd.o
+process_rx                                        text_cmd.o
+                                                  main.o
+q_empty                                           ../common/ds/queue.o
+                                                  spi_io.o
+q_flush                                           ../common/ds/queue.o
+q_full                                            ../common/ds/queue.o
+                                                  spi_io.o
+q_pop                                             ../common/ds/queue.o
+                                                  spi_io.o
+q_push                                            ../common/ds/queue.o
+                                                  spi_io.o
+q_push_o                                          ../common/ds/queue.o
+                                                  spi_io.o
+q_remove                                          ../common/ds/queue.o
+rx                                                spi_io.o
+rx_b                                              spi_io.o
+spi_getchar                                       spi_io.o
+                                                  text_cmd.o
+spi_io_init                                       spi_io.o
+                                                  main.o
+spi_io_rx_nl                                      text_cmd.o
+                                                  spi_io.o
+                                                  main.o
+spi_o_puts                                        spi_io.o
+spi_putchar                                       spi_io.o
+                                                  text_cmd.o
+                                                  main.o
+spi_puth                                          spi_io.o
+                                                  text_cmd.o
+spi_puth2                                         spi_io.o
+                                                  text_cmd.o
+                                                  main.o
+spi_puts                                          spi_io.o
+                                                  text_cmd.o
+text_cmd_list                                     text_cmd.o
+tx                                                spi_io.o
+tx_b                                              spi_io.o

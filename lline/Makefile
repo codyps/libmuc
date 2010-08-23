@@ -97,7 +97,7 @@ MATH_LIB =
 
 EXTMEMOPTS =
 
-#LDMAP = $(LDFLAGS) -Wl,-Map=$(TARGET).map,--cref
+LDMAP = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS = $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 LDFLAGS += -Wl,--as-needed
 
@@ -215,7 +215,7 @@ extcoff: $(TARGET).elf
 $(TARGET).elf: $(OBJ)
 	@echo LD $@
 	@$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
-	#$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program --output $@ $(LDFLAGS)
+#$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program --output $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
 .c.o:

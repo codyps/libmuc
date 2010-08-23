@@ -23,7 +23,6 @@
 #include "adc.h"
 #include "motor.h"
 
-__attribute__((always_inline)) 
 static inline void init(void)
 {
 	power_all_disable();
