@@ -1,9 +1,6 @@
 #ifndef ADC_CONF_H_
 #define ADC_CONF_H_
-
 #include <stdint.h>
-#include <math.h>
-
 #include "clock.h"
 
 /* ADC Prescale calculation (2^n | uint n < 8 ) */

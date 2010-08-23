@@ -2,7 +2,6 @@
 #define ADC_CONF_H_
 
 #include <stdint.h>
-#include <math.h>
 
 #include "clock.h"
 
