@@ -1,3 +1,4 @@
 *.eep
 *.elf
 *.hex
+*.lss
