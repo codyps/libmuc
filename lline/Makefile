@@ -15,6 +15,7 @@ SRC += spi_io.c ../common/ds/queue.c
 SRC += adc.c
 SRC += motor.c
 SRC += text_cmd.c
+SRC += drive.c
 
 ASRC =
 OPT = s

@@ -1,5 +1,6 @@
-#include <avr/io.h>
+#ifndef MOTOR_CONF_H_
 
+#include <avr/io.h>
 #include <stdint.h>
 
 /* Configuable Items */
@@ -22,3 +23,5 @@ PB4 -> BIN2
 M1/A -> right
 M2/B -> left
 */
+
+#endif
