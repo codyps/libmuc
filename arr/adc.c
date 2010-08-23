@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <avr/io.h>
 #include <avr/power.h>
@@ -35,6 +36,13 @@ static inline void adc_channel_set_next(void)
 #define adc_isr_stop() ADCSRA &= ~(1 << ADIE); asm("":::"memory")
 #define adc_isr_start() ADCSRA |= (1 << ADIE); asm("":::"memory")
 
+void adc_val_cpy(uint16_t *dst)
+{
+	adc_isr_stop();
+	memcpy(dst, adc_values, ADC_CHANNEL_CT * sizeof(*adc_values));
+	adc_isr_start();
+}
+
 uint16_t adc_get_i(uint8_t channel_index) {
 	uint16_t ret;
 	adc_isr_stop();
@@ -49,6 +57,8 @@ void adc_init(void) {
 	/* Digital Input Disable */
 	for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {
 		uint8_t channel = adc_channels[i];
+
+		/* XXX: hardware specific */
 		DIDR0 |= (1 << channel);
 	}
 
