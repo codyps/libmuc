@@ -6,6 +6,16 @@
 
 #include "adc_conf.h"
 
+#define ADC_PRESCALE_BITS                     \
+	( (uint8_t) ceil( log((double)F_CPU / \
+		ADC_MAX_CLK)/log(2) ) )
+#define ADC_PRESCALE \
+	((uint8_t) pow(2,ADC_PRESCALE_BITS))
+#define ADC_F (F_CPU/ADC_PRESCALE)
+#define ADC_CYCLE ( F_CPU / ADC_F ) // == ADC_PRESCALE
+
+#define ADC_CHANNEL_CT ( sizeof(adc_chan_map) )
+
 void adc_init(void);
 uint16_t adc_get_i(uint8_t sensor_i);
 
