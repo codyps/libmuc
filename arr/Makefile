@@ -18,7 +18,7 @@ SRC += servo.c
 SRC += usart.c
 SRC += hmc6352.c
 SRC += ../common/bus/i2c-single.c
-SRC += adc.c
+SRC += ../common/adc.c
 
 ASRC = 
 OPT = s
