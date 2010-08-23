@@ -50,8 +50,8 @@ CWARN += -Wcast-qual -Wcast-align -Wwrite-strings
 #CWARN += -Wconversion
 CWARN += -Wpacked
 CTUNING = -funsigned-char -funsigned-bitfields -fshort-enums
-CTUNING += -fmerge-all-constants -funsafe-loop-optimizations
-CTUNING += -fstrict-overflow
+CTUNING += -funsafe-loop-optimizations
+#CTUNING += -fmerge-all-constants
 #CTUNING += -fpack-struct
 
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
