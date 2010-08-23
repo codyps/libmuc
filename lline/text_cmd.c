@@ -69,13 +69,14 @@ void process_rx(void)
 				}
 				//invalid command.
 				state = INP_WAIT;
-
- TEXT_SCAN_SUCC:
+TEXT_SCAN_SUCC:
 				break;
 
 			case INP_CMD_FOUND:
-				// we just found a command (on the last character).
-				if (text_cmd_list[cmd_num].param_ct == param_ct) {
+				// we just found a command (on the last
+				// character).
+				if (text_cmd_list[cmd_num].param_ct
+						== param_ct) {
 
 				}
 				break;
