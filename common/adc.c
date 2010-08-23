@@ -22,7 +22,7 @@ static uint8_t adc_curr_chan_index;
 static inline void adc_channel_set_from_index(uint8_t chan)
 {
 	/* 0xe0 == 0b11100000 */
-	ADMUX = (ADMUX & 0xe0) | adc_channels[chan];
+	ADMUX = (ADMUX & 0xe0) | adc_chan_map[chan];
 }
 
 static inline void adc_channel_set_next(void)
@@ -56,7 +56,7 @@ void adc_init(void) {
 	
 	/* Digital Input Disable */
 	for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {
-		uint8_t channel = adc_channels[i];
+		uint8_t channel = adc_chan_map[i];
 
 		/* XXX: hardware specific */
 		DIDR0 |= (1 << channel);
