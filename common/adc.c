@@ -57,9 +57,13 @@ void adc_init(void) {
 	/* Digital Input Disable */
 	for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {
 		uint8_t channel = adc_chan_map[i];
-
 		/* XXX: hardware specific */
+#if defined(__AVR_ATmega328P__)
 		DIDR0 |= (1 << channel);
+#else
+# error "Hardware not supported by adc lib"
+#endif
+
 	}
 
 	/*
