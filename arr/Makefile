@@ -18,6 +18,7 @@ SRC += servo.c
 SRC += usart.c
 SRC += hmc6352.c
 SRC += motor.c
+SRC += drive.c
 SRC += ../common/bus/i2c-single.c
 SRC += ../common/adc.c
 
