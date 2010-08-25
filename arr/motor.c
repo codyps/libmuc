@@ -6,6 +6,7 @@ void motors_init(void)
 {
 	uint8_t i;
 	for(i = 0; i < MOTORS_CT; i++) {
+		const struct motor_s *motor = motors + i;
 		*(motor->dir_port - 1) |= motor->dir_mask;
 		
 		*(motor->enable_port - 1) |= motor->enable_mask;
@@ -16,25 +17,24 @@ void motors_init(void)
 	}
 }
 
-static void motor_set_forward(struct motor_s *motor)
+static void motor_set_forward(const struct motor_s *motor)
 {
 	*(motor->dir_port) |= motor->dir_mask;
 }
 
-static void motor_set_forward(struct motor_s *motor)
+static void motor_set_reverse(const struct motor_s *motor)
 {
 	*(motor->dir_port) &= ~(motor->dir_mask);
 }
 
-static int16_t scale_speed(struct motor_s *motor, int16_t speed)
+static int16_t scale_speed(const struct motor_s *motor, int16_t speed)
 {
-	uint16_t range = motor->speed_limit;
-	return speed * range / INT16_MAX;
+	return (uint32_t)(speed * MOTOR_SPEED_MAX) / INT16_MAX;
 }
 
 void motor_set(uint8_t idx, int16_t speed)
 {
-	struct motor_s *motor = motors + idx;
+	const struct motor_s *motor = motors + idx;
 
 
 	if (speed >= 0) {
