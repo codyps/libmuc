@@ -150,11 +150,11 @@ all: build
 rebuild : | clean build
 build: elf hex eep
 
-elf: $(TARGET).elf $(TARGET).uni.elf
-hex: $(TARGET).hex $(TARGET).uni.hex
-eep: $(TARGET).eep $(TARGET).uni.eep
-lss: $(TARGET).elf.lss $(TARGET).uni.elf.lss
-sym: $(TARGET).sym $(TARGET).uni.sym
+elf: $(TARGET).elf $(TARGET).u.elf
+hex: $(TARGET).hex $(TARGET).u.hex
+eep: $(TARGET).eep $(TARGET).u.eep
+lss: $(TARGET).elf.lss $(TARGET).u.elf.lss
+sym: $(TARGET).sym $(TARGET).u.sym
 
 
 # Program the device.  
@@ -204,11 +204,11 @@ extcoff: $(TARGET).extcof
 	$(NM) -n $< > $@
 
 # Link: create ELF output file from object files.
-$(TARGET).uni.elf: $(SRC)
+%.u.elf: $(SRC)
 	@echo "CCLD $(@F) $^"
 	@$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
 
-$(TARGET).elf: $(OBJ)
+%.elf: $(OBJ)
 	@echo "LD $(@F)"
 	@$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
 
@@ -227,14 +227,14 @@ $(TARGET).elf: $(OBJ)
 
 
 # Target: clean project.
-clean:
-	$(RM) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
-	$(TARGET).map $(TARGET).sym $(TARGET).lss \
-	$(OBJ) \
-	$(LST) \
-	$(SRC:.c=.s) \
-	$(SRC:.c=.d) \
-	$(TARGET).uni.hex $(TARGET).uni.eep $(TARGET).uni.elf $(TARGET).uni.cof
+%.clean : 
+	$(RM) $*.hex $*.eep $*.cof $*.elf $*.map $*.sym $*.elf.lss
+
+clean: | $(TARGET).clean $(TARGET).u.clean
+	$(RM) $(OBJ) \
+	      $(LST) \
+	      $(SRC:.c=.s) \
+	      $(SRC:.c=.d)
 
 depend:
 	if grep '^# DO NOT DELETE' $(MAKEFILE) >/dev/null; \
@@ -247,4 +247,5 @@ depend:
 		>> $(MAKEFILE); \
 	$(CC) -M -mmcu=$(MCU) $(CDEFS) $(CINCS) $(SRC) $(ASRC) >> $(MAKEFILE)
 
-.PHONY:	all build elf hex eep lss sym program coff extcoff clean depend rebuild
+.PHONY:	all build elf hex eep lss sym program coff extcoff clean depend \
+	rebuild %.clean
