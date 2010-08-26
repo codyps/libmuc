@@ -17,7 +17,6 @@ SRC += version.c
 SRC += usart.c
 SRC += motor.c
 SRC += drive.c
-SRC += ../common/bus/i2c-single.c
 SRC += ../common/adc.c
 
 ASRC = 
