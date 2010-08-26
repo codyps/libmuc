@@ -17,7 +17,6 @@
 #include <util/delay.h>
 
 #include "bus/i2c.h"
-#include "servo.h"
 #include "usart.h"
 #include "clock.h"
 #include "msg_proc.h"
@@ -32,7 +31,6 @@ static inline void init(void)
 	power_all_disable();
 
 	usart_init();
-	servo_init();
 	i2c_init_master();
 
 	sei();
