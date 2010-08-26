@@ -4,12 +4,11 @@
 #include <avr/pgmspace.h>
 
 #include "version.h"
-//#include "servo.h"
 #include "clock.h"
 #include "usart.h"
-#include "bus/i2c.h"
-#include "hmc6352.h"
 
+#ifdef HMC6352_H_
+#include "bus/i2c.h"
 static void process_hmc6352_cmd(char *msg)
 {
 	switch(msg[0]) {
@@ -41,6 +40,7 @@ static void process_hmc6352_cmd(char *msg)
 			    "  ir       -- i2c reset"));
 	}
 }
+#endif
 
 #ifdef SERVO_H_
 static bool process_servo_cmd(char *msg)
@@ -140,11 +140,15 @@ void process_msg(void)
 	case 'h':
 		printf_P(PSTR("commands:\n"
 		              "  h -- prints this.\n"
+#ifdef SERVO_H_
 			      "  ss <sn> <val> -- set servos.\n"
 			      "  sq <sn> -- query servos (uS).\n"
 			      "  s{S,Q} -- \" \" (ticks).\n"
 			      "  sc -- get servo count.\n"
+#endif
+#ifdef HMC6352_H_
 			      "  i{a,s, <addr>} -- read hmc6352 memory.\n"
+#endif
 			      "  c -- clear.\n"
 			      "  e{+,-,} -- echo ctrl.\n"
 			      "  u -- version.\n"));
@@ -171,9 +175,11 @@ void process_msg(void)
 			usart_echo ^= 1;
 		}
 		break;
+#ifdef HMC6352_H_
 	case 'i':
 		process_hmc6352_cmd(buf+1);
 		break;
+#endif
 	default:
 		printf_P(PSTR("unknown command \"%s\".\n"), buf);
 		break;
