@@ -10,14 +10,16 @@ ADMCU = atmega328p
 F_CPU = 16000000
 
 FORMAT = ihex
-TARGET = main
+TARGET = arr
 SRC  = main.c
 SRC += msg_proc.c
 SRC += version.c
 SRC += usart.c
 SRC += motor.c
 SRC += drive.c
+SRC += line.c
 SRC += ../common/adc.c
+
 
 ASRC = 
 OPT = s
@@ -40,7 +42,7 @@ DEBUG = stabs
 CSTANDARD = -std=gnu99
 
 VERSION := $(shell $(srcdir)/../setlocalversion)
-CDEFS = -DVERSION="\"$(VERSION)\""
+CDEFS = -DVERSION="\"$(TARGET)$(VERSION)\""
 
 # Place -I options here
 CINCS = -I../common
