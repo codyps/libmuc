@@ -20,7 +20,7 @@ struct motor_s {
 #endif
 };
 
-#define MOTOR_SPEED_MAX 0xFFFF
+#define MOTOR_SPEED_MAX INT16_MAX
 
 #define MOTOR_INIT(en_port, en_idx, dir_port, dir_idx,         \
 		pwm_port, pwm_idx, pwm_reg)                    \

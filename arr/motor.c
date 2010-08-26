@@ -1,6 +1,11 @@
 
+#include <stdint.h>
 #include "motor.h"
 #include "motor_conf.h"
+
+/* 15bits.
+ * Makes handling rounding conditions much simpler */
+#define TIMER1_TOP INT16_MAX
 
 static void pwm_timer1_init(void)
 {
@@ -36,7 +41,7 @@ static void pwm_timer1_init(void)
 	TCNT1 = 0;
 	OCR1A = 0;
 	OCR1B = 0;
-	ICR1 = 0xFFFF; /* TOP */
+	ICR1 = TIMER1_TOP; /* TOP */
 
 	/* no interrupts for us */
 	TIMSK1 = (0 << ICIE1)
@@ -82,10 +87,12 @@ static void motor_set_reverse(const struct motor_s *motor)
 	*(motor->dir_port) &= ~(motor->dir_mask);
 }
 
-static int16_t scale_speed(const struct motor_s *motor, int16_t speed)
+#if (MOTOR_SPEED_MAX != TIMER1_TOP)
+static uint16_t scale_speed(const struct motor_s *motor, uint16_t speed)
 {
-	return (uint32_t)(speed * MOTOR_SPEED_MAX) / INT16_MAX;
+	return (uint32_t)(speed * MOTOR_SPEED_MAX) / TIMER1_TOP;
 }
+#endif
 
 void motor_set(uint8_t idx, int16_t speed)
 {
@@ -99,9 +106,11 @@ void motor_set(uint8_t idx, int16_t speed)
 		/* XXX: this transform is driver specific */
 		speed = -speed;
 	}
-
-	uint8_t sval = scale_speed(motor, speed);
-
-	/* XXX: driver specific setting */
+#if (MOTOR_SPEED_MAX != TIMER1_TOP)
+	uint16_t sval = scale_speed(motor, speed);
 	*(motor->pwm_reg) = sval;
+#else
+	/* XXX: driver specific setting */
+	*(motor->pwm_reg) = speed;
+#endif
 }

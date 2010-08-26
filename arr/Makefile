@@ -213,6 +213,7 @@ extcoff: $(TARGET).extcof
 	@$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
+.SECONDARY:
 %.c.o: %.c
 	@echo "CC $(@F)"
 	@$(CC) $(ALL_CFLAGS) -c -o $@ $<
