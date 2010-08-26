@@ -16,7 +16,6 @@
 #include <util/parity.h> 
 #include <util/delay.h>
 
-#include "bus/i2c.h"
 #include "usart.h"
 #include "clock.h"
 #include "msg_proc.h"
@@ -31,7 +30,6 @@ static inline void init(void)
 	power_all_disable();
 
 	usart_init();
-	i2c_init_master();
 
 	sei();
   
@@ -44,7 +42,6 @@ __attribute__((noreturn)) void main(void)
 		if (usart_new_msg()) {
 			process_msg();
 		}
-		i2c_main_handler();
 	}
 }
 
