@@ -51,7 +51,8 @@ static struct pid_s pid_turn;
 
 static int16_t motor_velocity = MOTOR_SPEED_MAX;
 
-__attribute__((noreturn)) void main(void)
+__attribute__((noreturn))
+void main(void)
 {
 	init();
 	for(;;) {
@@ -62,6 +63,7 @@ __attribute__((noreturn)) void main(void)
 		adc_val_cpy(adc_vals);
 		int16_t pos = line_update(&line, 1, adc_vals);
 		int16_t turn = pid_update(&pid_turn, 1, pos);
+		/* XXX: motor speed should be throtled in some cases */
 		drive_set(motor_velocity, turn);
 	}
 }
