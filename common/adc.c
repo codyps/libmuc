@@ -55,11 +55,16 @@ void adc_init(void) {
 	power_adc_enable();
 
 	/* Digital Input Disable */
-	for (uint8_t i = 0; i < ADC_CHANNEL_CT; i++) {
+	uint8_t i;
+	for (i = 0; i < ADC_CHANNEL_CT; i++) {
 		uint8_t channel = adc_chan_map[i];
-
 		/* XXX: hardware specific */
+#if defined(__AVR_ATmega328P__)
 		DIDR0 |= (1 << channel);
+#else
+# error "Hardware not supported by adc lib"
+#endif
+
 	}
 
 	/*
@@ -127,8 +132,7 @@ ISR(ADC_vect)
 	else
 		past_channel_index = (uint8_t) (adc_curr_chan_index - 1);
 
-	adc_values[past_channel_index] = ADCL;
-	adc_values[past_channel_index] += (uint16_t)  (ADCH<<8);
+	adc_values[past_channel_index] = ADC;
 
 	if (adc_curr_chan_index == 0) {
 		adc_new_data = true;

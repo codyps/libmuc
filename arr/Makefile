@@ -10,15 +10,17 @@ ADMCU = atmega328p
 F_CPU = 16000000
 
 FORMAT = ihex
-TARGET = main
+TARGET = arr
 SRC  = main.c
 SRC += msg_proc.c
 SRC += version.c
-SRC += servo.c
 SRC += usart.c
-SRC += hmc6352.c
-SRC += ../common/bus/i2c-single.c
+SRC += motor.c
+SRC += drive.c
+SRC += line.c
+SRC += pid.c
 SRC += ../common/adc.c
+
 
 ASRC = 
 OPT = s
@@ -41,7 +43,7 @@ DEBUG = stabs
 CSTANDARD = -std=gnu99
 
 VERSION := $(shell $(srcdir)/../setlocalversion)
-CDEFS = -DVERSION="\"$(VERSION)\""
+CDEFS = -DVERSION="\"$(TARGET)$(VERSION)\""
 
 # Place -I options here
 CINCS = -I../common
@@ -148,11 +150,11 @@ all: build
 rebuild : | clean build
 build: elf hex eep
 
-elf: $(TARGET).elf $(TARGET).uni.elf
-hex: $(TARGET).hex $(TARGET).uni.hex
-eep: $(TARGET).eep $(TARGET).uni.eep
-lss: $(TARGET).elf.lss $(TARGET).uni.elf.lss
-sym: $(TARGET).sym $(TARGET).uni.sym
+elf: $(TARGET).elf $(TARGET).u.elf
+hex: $(TARGET).hex $(TARGET).u.hex
+eep: $(TARGET).eep $(TARGET).u.eep
+lss: $(TARGET).elf.lss $(TARGET).u.elf.lss
+sym: $(TARGET).sym $(TARGET).u.sym
 
 
 # Program the device.  
@@ -202,15 +204,16 @@ extcoff: $(TARGET).extcof
 	$(NM) -n $< > $@
 
 # Link: create ELF output file from object files.
-$(TARGET).uni.elf: $(SRC)
+%.u.elf: $(SRC)
 	@echo "CCLD $(@F) $^"
 	@$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
 
-$(TARGET).elf: $(OBJ)
+%.elf: $(OBJ)
 	@echo "LD $(@F)"
 	@$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
+.SECONDARY:
 %.c.o: %.c
 	@echo "CC $(@F)"
 	@$(CC) $(ALL_CFLAGS) -c -o $@ $<
@@ -225,14 +228,14 @@ $(TARGET).elf: $(OBJ)
 
 
 # Target: clean project.
-clean:
-	$(RM) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
-	$(TARGET).map $(TARGET).sym $(TARGET).lss \
-	$(OBJ) \
+%.clean : 
+	$(RM) $*.hex $*.eep $*.cof $*.elf $*.map $*.sym $*.elf.lss
+
+clean: | $(TARGET).clean $(TARGET).u.clean
+	$(RM) $(OBJ) \
 	$(LST) \
 	$(SRC:.c=.s) \
-	$(SRC:.c=.d) \
-	$(TARGET).uni.hex $(TARGET).uni.eep $(TARGET).uni.elf $(TARGET).uni.cof
+	$(SRC:.c=.d)
 
 depend:
 	if grep '^# DO NOT DELETE' $(MAKEFILE) >/dev/null; \
@@ -245,4 +248,5 @@ depend:
 		>> $(MAKEFILE); \
 	$(CC) -M -mmcu=$(MCU) $(CDEFS) $(CINCS) $(SRC) $(ASRC) >> $(MAKEFILE)
 
-.PHONY:	all build elf hex eep lss sym program coff extcoff clean depend rebuild
+.PHONY:	all build elf hex eep lss sym program coff extcoff clean depend \
+	rebuild %.clean
