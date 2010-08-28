@@ -113,7 +113,7 @@ void i2c_init_master(void)
 
 #define TW_STOP(_status_) do {         \
 	IDEBUG("tw stop\n");           \
-	trans_status = _status_;       \
+	trans_status = (_status_);     \
 	trans_complete = true;         \
 	twcr = TWCR_STOP;              \
 } while (0)
@@ -129,7 +129,8 @@ void i2c_init_master(void)
 	}                              \
 } while(0)
 
-#define IDEBUG(s, ...) printf_P(PSTR(s), ## __VA_ARGS__);
+//#define IDEBUG(s, ...) printf_P(PSTR(s), ## __VA_ARGS__);
+#define IDEBUG(s, ...)
 ISR(TWI_vect)
 {
 	uint8_t tw_status = (uint8_t)TW_STATUS;
@@ -140,8 +141,10 @@ ISR(TWI_vect)
 
 	/* disable TWI interrupt and enable global interrupts
 	 * to avoid blocking more timing sensitive ISRs */
+#ifdef TWI_UNBLOCK
 	TWCR = (uint8_t)twcr & (uint8_t)~(1<<TWIE);
 	sei();
+#endif
 	IDEBUG("twi_isr %x:", tw_status);
 	struct i2c_msg *c_msg = &(c_trans->msgs[msg_idx]);
 	switch(tw_status) {
@@ -227,16 +230,6 @@ ISR(TWI_vect)
 		}
 		break;
 
-	/* NACKs : we don't know how to recover from these,
-	 * let the callback deal with it. */
-	case TW_MT_SLA_NACK:
-	case TW_MR_SLA_NACK:
-	case TW_MT_DATA_NACK:
-	case TW_BUS_ERROR:
-		IDEBUG("NACK||ERROR\n");
-		TW_STOP(tw_status);
-		break;
-
 	/* case TW_MT_ARB_LOST: */
 	case TW_MR_ARB_LOST:
 		IDEBUG("ARB_LOST\n");
@@ -246,18 +239,22 @@ ISR(TWI_vect)
 		twcr = TWCR_START;
 		break;
 
+	/* NACKs : we don't know how to recover from these,
+	 * let the callback deal with it. */
+	case TW_MT_SLA_NACK:
+	case TW_MR_SLA_NACK:
+	case TW_MT_DATA_NACK:
+	case TW_BUS_ERROR:
 	case TW_NO_INFO:
-		IDEBUG("NO_INFO\n");
-		//??
-		break;
-
 	default:
-		IDEBUG("twi_isr: unk twsr %x",tw_status);
-		twcr |= (1<<TWINT);
+		IDEBUG("NACK||ERROR||NOINFO\n");
+		TW_STOP(tw_status);
 		break;
 	}
 
+#ifdef TWI_UNBLOCK
 	cli();
+#endif
 	/* Unstick the TWI hw */
 	TWCR = twcr;
 }
