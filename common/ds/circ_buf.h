@@ -13,6 +13,9 @@ struct circ_buf8 {
 
 #define CIRC_SPACE(head,tail,size) CIRC_CNT((tail),((head)+1),(size))
 
+#define CIRC_NEXT(tail, length) (((tail) + 1) & ((length) - 1))
+#define CIRC_NEXT_EQ(tail, length) ((tail) = (((tail) + 1) & ((length - 1))))
+
 #define CIRC_CNT_TO_END(head,tail,size) \
 	({typeof(head) end = (size) - (tail); \
 	  typeof(head) n = ((head) + end) & ((size) - 1); \

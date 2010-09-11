@@ -1,8 +1,9 @@
 #include <avr/io.h>
+#include <common/ds/circ_buf.h>
 
-#define START_BYTE 0x7e
-#define ESC_BYTE 0x7d
-#define ESC_MASK 0x20
+#define START_BYTE ((uint8_t)0x7e)
+#define ESC_BYTE ((uint8_t)0x7d)
+#define ESC_MASK ((uint8_t)0x20)
 /* 0x7e => 0x7d, 0x5e
  * 0x7d => 0x7d, 0x5d
  */
@@ -30,8 +31,8 @@
 #define sizeof_member(thing, member) \
 	sizeof(((thing *)0)->member)
 
-#define PB_BB_LEN 128
-#define PB_PI_LEN 8
+#define PB_BB_LEN ((uint8_t)128)
+#define PB_PI_LEN ((uint8_t)8)
 struct packet_buf {
 	uint8_t byte_buf[PB_BB_LEN]; /* bytes */
 	uint8_t p_idx[PB_PI_LEN]; /* arrays of packet starts in bytes */
@@ -39,14 +40,13 @@ struct packet_buf {
 	uint8_t tail; /* next packet_idx_buf loc to write to  */
 };
 
-#define CIRC_NEXT(tail, length) (((tail) + 1) & ((length) - 1))
-#define CIRC_NEXT_EQ(tail, length) ((tail) = (((tail) + 1) & ((length - 1))))
 
 static struct packet_buf tx, rx;
 
 ISR(USART0_RX_vect)
 {
 	static bool is_escaped;
+	static bool recv_started;
 	uint8_t status = UCSR0A;
 	uint8_t data = UDR0;
 
@@ -64,20 +64,31 @@ ISR(USART0_RX_vect)
 		/* TODO: prepare for start, reset packet position, etc. */
 
 		if (rx.p_idx[rx.tail] != rx.p_idx[next_tail]) {
-			/* if the packet length is non-zero */
+			/* packet length is non-zero */
+			if (next_tail == CIRC_NEXT(next_tail,PB_PI_LEN)) {
+				/* no space in p_idx for another packet */
+				return;
+			}
 
+			recv_started = true;
 			rx.tail = next_tail;
 
-			/* Initial posisition of the next byte is at the start of
-			 * the packet */
-			rx.p_idx[CIRC_NEXT(rx.tail,PB_PI_LEN)] = rx.p_idx[rx.tail];
+			/* Initial posisition of the next byte is at the
+			 * start of the packet */
+			rx.p_idx[CIRC_NEXT(rx.tail,PB_PI_LEN)] =
+				rx.p_idx[rx.tail];
 		}
 		/* otherwise, we have zero bytes in the packet, no need to
 		 * advance */
 		return;
 	}
 
-	if (data & 0x7F) { /* (data == 0x7f || data == 0xff) */
+	if (recv_started = false) {
+		/* ignore stuff until we get a start byte */
+		return;
+	}
+
+	if (data & (uint8_t)0x7F) { /* (data == 0x7f || data == 0xff) */
 		/* packet reset */
 		goto drop_packet;
 	}
@@ -101,15 +112,16 @@ ISR(USART0_RX_vect)
 	if (rx.p_idx[next_tail] != rx.p_idx[rx.head]) {
 		rx.buf[rx.p_idx[next_tail]] = data;
 		CIRC_NEXT_EQ(rx.p_idx[next_tail],PB_PB_LEN);
+		return;
 	} else {
 		/* well, shucks. we're out of space, drop the packet */
 		goto drop_packet;
 	}
-	return;
 
 drop_packet:
 	/* first byte of the sequence we are writing to; */
 	rx.p_idx[next_tail] = rx.p_idx[rx.tail];
+	recv_started = false;
 }
 
 ISR(USART0_TX_vect)
