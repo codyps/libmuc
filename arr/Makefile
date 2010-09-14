@@ -15,10 +15,10 @@ SRC  = main.c
 SRC += msg_proc.c
 SRC += version.c
 SRC += usart.c
-SRC += motor.c
+SRC += ../common/motor.c
 SRC += drive.c
 SRC += line.c
-SRC += pid.c
+SRC += ../common/pid.c
 SRC += ../common/adc.c
 
 

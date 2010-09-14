@@ -29,7 +29,7 @@ static void pwm_timer1_init(void)
 	 * 15 1 1 1 1 Fast PWM                    OCR1A  BOTTOM    TOP
 	 */
 
-	/* Stop timer and set part of waveform generation 
+	/* Stop timer and set part of waveform generation
 	 * WGM13:2 = 10 */
 	TCCR1B = (1 << WGM13) | (0 << WGM12);
 
@@ -68,10 +68,10 @@ void motors_init(void)
 	for(i = 0; i < MOTORS_CT; i++) {
 		const struct motor_s *motor = motors + i;
 		*(motor->dir_port - 1) |= motor->dir_mask;
-		
+
 		*(motor->enable_port - 1) |= motor->enable_mask;
 		*(motor->enable_port) |= motor->enable_mask;
-		
+
 		*(motor->pwm_port - 1) |= motor->pwm_mask;
 		*(motor->pwm_reg) = 0;
 	}
