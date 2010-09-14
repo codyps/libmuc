@@ -1,9 +1,8 @@
 #include <avr/io.h>
 #include <common/ds/circ_buf.h>
 
-#define START_BYTE ((uint8_t)0x7e)
-#define ESC_BYTE ((uint8_t)0x7d)
-#define ESC_MASK ((uint8_t)0x20)
+#include "proto.h"
+
 /* 0x7e => 0x7d, 0x5e
  * 0x7d => 0x7d, 0x5d
  */
@@ -39,7 +38,6 @@ struct packet_buf {
 	uint8_t head; /* next packet_idx_buf loc to read from */
 	uint8_t tail; /* next packet_idx_buf loc to write to  */
 };
-
 
 static struct packet_buf tx, rx;
 
@@ -83,12 +81,12 @@ ISR(USART0_RX_vect)
 		return;
 	}
 
-	if (recv_started = false) {
+	if (!recv_started) {
 		/* ignore stuff until we get a start byte */
 		return;
 	}
 
-	if (data & (uint8_t)0x7F) { /* (data == 0x7f || data == 0xff) */
+	if (data == RESET_BYTE) {
 		/* packet reset */
 		goto drop_packet;
 	}
@@ -136,7 +134,7 @@ ISR(USART0_TX_vect)
 		return;
 	}
 
-	if (data >= ESC_BYTE) {
+	if (data == ESC_BYTE || data == START_BYTE || data == ABORT_BYTE) {
 		is_escaped = true;
 		UDR0 = ESC_BYTE;
 		return;
@@ -145,7 +143,7 @@ ISR(USART0_TX_vect)
 	UDR0 = data;
 }
 
-void usart0_init(void)
+static void usart0_init(void)
 {
 	/* Asyncronous 38400 */
 
@@ -156,7 +154,7 @@ void usart0_init(void)
 	 */
 }
 
-void hldc0_init(void)
+static void hldc0_init(void)
 {
 	usart0_init();
 }
