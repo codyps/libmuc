@@ -11,7 +11,7 @@ F_CPU = 16000000
 
 FORMAT = ihex
 TARGET = mctrl
-SRC  = main.c
+SRC  = main.c frame_async.c
 
 ASRC = 
 OPT = s
@@ -37,7 +37,7 @@ VERSION := $(shell $(srcdir)/../setlocalversion)
 CDEFS = -DVERSION="\"$(TARGET)$(VERSION)\""
 
 # Place -I options here
-CINCS = -I../common
+CINCS = -I../
 CLINK = -Wl,--as-needed
 
 CDEBUG = -g$(DEBUG)
