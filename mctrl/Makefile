@@ -144,11 +144,11 @@ all: build
 rebuild : | clean build
 build: elf hex eep
 
-elf: $(TARGET).elf $(TARGET).u.elf
-hex: $(TARGET).hex $(TARGET).u.hex
-eep: $(TARGET).eep $(TARGET).u.eep
-lss: $(TARGET).elf.lss $(TARGET).u.elf.lss
-sym: $(TARGET).sym $(TARGET).u.sym
+elf: $(TARGET).u.elf $(TARGET).elf
+hex: $(TARGET).u.hex $(TARGET).hex
+eep: $(TARGET).u.eep $(TARGET).eep
+lss: $(TARGET).u.elf.lss $(TARGET).elf.lss
+sym: $(TARGET).u.sym $(TARGET).sym
 
 
 # Program the device.  
