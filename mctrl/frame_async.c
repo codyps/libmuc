@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "common/ds/circ_buf.h"
+#include "ds/circ_buf.h"
 
 #include "proto.h"
 
