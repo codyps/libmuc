@@ -74,7 +74,7 @@ void spi_io_init(void) {
 
 #ifdef SPI_IO_STANDARD
 int spi_putc(char c, FILE * stream) {
-	int r;	
+	int r;
 	spi_isr_off();
 	#ifdef SPI_IO_STD_WAIT
 	while(list_full(x)(&tx)) {
@@ -88,9 +88,12 @@ int spi_putc(char c, FILE * stream) {
 	#else
 	if (list_full(x)(&tx))
 		r = EOF;
-	else 
+	else
 	#endif /* SPI_IO_STD_WAIT */
-		r = list_push(x)(&tx,c);
+	{
+		list_push(x)(&tx,c);
+		r = 0;
+	}
 	spi_isr_on();
 	return r;
 

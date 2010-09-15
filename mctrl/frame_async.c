@@ -43,6 +43,13 @@ struct packet_buf {
 	uint8_t tail; /* next packet_idx_buf loc to write to  */
 };
 
+
+struct trans_buf {
+	uint8_t buf[64];
+	uint8_t head;
+	uint8_t tail;
+} tx;
+
 static struct packet_buf rx;
 
 ISR(USART_RX_vect)
@@ -63,7 +70,7 @@ ISR(USART_RX_vect)
 	}
 
 	if (data == START_BYTE) {
-		/* TODO: prepare for start, reset packet position, etc. */
+		/* prepare for start, reset packet position, etc. */
 
 		if (rx.p_idx[rx.tail] != rx.p_idx[next_tail]) {
 			/* packet length is non-zero */
