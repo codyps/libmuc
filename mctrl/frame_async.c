@@ -34,30 +34,61 @@
 #define sizeof_member(type, member) \
 	sizeof(((type *)0)->member)
 
-#define PB_BB_LEN ((uint8_t)128)
-#define PB_PI_LEN ((uint8_t)8)
 struct packet_buf {
-	uint8_t buf[PB_BB_LEN]; /* bytes */
+	uint8_t buf[128]; /* bytes */
 
 	/* array of packet starts in bytes (byte heads and tails,
 	 * depending on index */
-	uint8_t p_idx[PB_PI_LEN];
+	uint8_t p_idx[8];
 	uint8_t head; /* next packet_idx_buf loc to read from (head_packet) */
 	uint8_t tail; /* next packet_idx_buf loc to write to  (tail_packet) */
 };
 
 static struct packet_buf rx, tx;
+#define usart0_udre_unlock() do {        \
+		UCSR0B |= (1 << UDRIE0); \
+		asm(:::"memory");        \
+	} while(0)
+
+#define usart0_udre_lock() do {           \
+		UCSR0B &= ~(1 << UDRIE0); \
+		asm(:::"memory");         \
+	} while(0)
 
 ISR(USART_UDRE_vect)
 {
-	/* Data can be written to UDR as the last bits of data have moved
-	 * into the hardware shift register */
-	static bool is_escaped;
-	/* Check the next byte in the queue */
-	uint8_t data = PEAK();
+	/* Only enabled when we have data */
+	static bool packet_started;
+	uint8_t loc = tx.p_idx[tx.tail];
+
+	if (loc == tx.p_idx[tx.head]) {
+		/* empty */
+		usart0_udre_lock();
+		return;
+	}
+
+	/* TODO: is it a new packet? */
+	if (!packet_started) {
+		packet_started = true;
+		UDR0 = START_BYTE;
+		return;
+	}
+
+	uint8_t data = tx.buf[loc];
+	if (data == START_BYTE || data == ESC_BYTE || data == RESET_BYTE) {
+		UDR0 = ESC_BYTE;
+		tx.buf[loc] ^= ESC_MASK;
+		return;
+	}
 
 	UDR0 = data;
-	ADVANCE();
+	loc = (tx.p_idx[tx.tail] + 1) & (sizeof(tx.buf) - 1);
+
+	uint8_t next_tail = (tx.tail + 1) & (sizeof(tx.p_idx) - 1);
+	if (tx.p_idx[next_tail] == loc) {
+
+		packet_done = true;
+	}
 }
 
 static bool frame_start_flag;
@@ -116,7 +147,7 @@ void frame_done(void)
 	 * imediatly that new data can be read) */
 	tx.p_idx[new_next_head] = tx.p_idx[new_head];
 	tx.head = new_head;
-
+	uart0_udre_unlock();
 	frame_start_flag = false;
 }
 
@@ -129,7 +160,7 @@ void frame_send(void *data, uint8_t nbytes)
 	uint8_t count = CIRC_CNT(next_b_head, cur_b_tail, sizeof(tx.buf));
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (count < nbytes) {
-		tx_drop_packet();
+		return;
 	}
 
 	/* do we have space for the packet_idx? */
@@ -154,6 +185,7 @@ void frame_send(void *data, uint8_t nbytes)
 	/* advance packet idx */
 	tx.p_idx[(next_head + 1) & (sizeof(tx.p_idx) - 1)] = next_b_head;
 	tx.head = next_head;
+	uart0_udre_unlock();
 }
 
 ISR(USART_RX_vect)
@@ -228,12 +260,13 @@ ISR(USART_RX_vect)
 	/* first byte we can't overwrite; */
 	if (rx.p_idx[next_head] != rx.p_idx[rx.tail]) {
 		rx.buf[rx.p_idx[next_head]] = data;
-		rx.p_idx[next_head] = (rx.p_idx[next_head] + 1) & (sizeof(rx.p_idx) - 1);
+		rx.p_idx[next_head] =
+			(rx.p_idx[next_head] + 1) & (sizeof(rx.p_idx) - 1);
 		return;
-	} else {
-		/* well, shucks. we're out of space, drop the packet */
-		goto drop_packet;
 	}
+
+	/* well, shucks. we're out of space, drop the packet */
+	/* goto drop_packet; */
 
 drop_packet:
 	/* first byte of the sequence we are writing to; */
@@ -241,7 +274,6 @@ drop_packet:
 	recv_started = false;
 	is_escaped = false;
 }
-
 
 static void usart0_init(void)
 {
@@ -265,8 +297,8 @@ static void usart0_init(void)
 	UCSR0A = 0;
 #endif
 
-	/* Enable RX & UDRE isr, EN recv and trans, 8 bit data */
-	UCSR0B = (1 << RXCIE0) | (1 << UDRIE0)
+	/* Enable RX isr, disable UDRE isr, EN recv and trans, 8 bit data */
+	UCSR0B = (1 << RXCIE0) | (0 << UDRIE0)
 		| (1 << RXEN0) | (1 << TXEN0)
 		| (0 << UCSZ02);
 }
