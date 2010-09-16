@@ -96,5 +96,4 @@ void heart_set_speed(uint8_t sp)
 void heart_set_brightness(uint8_t br)
 {
 
-
 }
