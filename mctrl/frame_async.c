@@ -55,6 +55,26 @@ static struct packet_buf rx, tx;
 		asm(:::"memory");         \
 	} while(0)
 
+uint8_t *frame_recv(void)
+{
+	if (rx.tail != rx.head)
+		return rx.buf + rx.p_idx[rx.tail];
+	else
+		return NULL;
+}
+
+uint8_t frame_recv_len(void)
+{
+	/* This should only be called following frame_recv succeeding */
+	return CIRC_CNT(rx.p_idx[rx.head],rx.p_idx[rx.tail],sizeof(rx.buf));
+}
+
+void frame_recv_drop(void)
+{
+	/* This should only be called following frame_recv succeeding */
+	rx.tail = (rx.tail + 1) & (sizeof(rx.p_idx) - 1);
+}
+
 ISR(USART_UDRE_vect)
 {
 	/* Only enabled when we have data */
@@ -303,7 +323,7 @@ static void usart0_init(void)
 		| (0 << UCSZ02);
 }
 
-void hldc0_init(void)
+void frame_init(void)
 {
 	usart0_init();
 }
