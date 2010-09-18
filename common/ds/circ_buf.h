@@ -18,13 +18,13 @@ struct circ_buf8 {
 /* is circ_buf full */
 #define CIRC_FULL(head,tail,size) (CIRC_NEXT(tail,size) == (head))
 
-/* next tail location */
-#define CIRC_NEXT(tail,size) CIRC_NEXT_I(tail,1,size)
-#define CIRC_NEXT_I(tail,isz,size) (((tail) + (isz)) & ((size) - 1))
+/* next index (head/tail) location */
+#define CIRC_NEXT(index,size) CIRC_NEXT_I(index,1,size)
+#define CIRC_NEXT_I(index,isz,size) (((index) + (isz)) & ((size) - 1))
 
-/* assign next tail location to tail */
-#define CIRC_NEXT_EQ(tail,size) CIRC_NEXT_I_EQ(tail,1,size)
-#define CIRC_NEXT_I_EQ(tail,isz,size) ((tail) = (((tail) + (isz)) & ((size - 1))))
+/* assign next index (head/tail) location to index */
+#define CIRC_NEXT_EQ(index,size) CIRC_NEXT_I_EQ(index,1,size)
+#define CIRC_NEXT_I_EQ(index,isz,size) ((index) = (((index) + (isz)) & ((size - 1))))
 
 #define CIRC_CNT_TO_END(head,tail,size) \
 	({typeof(head) end = (size) - (tail); \

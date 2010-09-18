@@ -1,9 +1,13 @@
+#include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
+#include "common.h"
 #include "ds/circ_buf.h"
+
 
 #include "proto.h"
 
@@ -45,14 +49,14 @@ struct packet_buf {
 };
 
 static struct packet_buf rx, tx;
-#define usart0_udre_unlock() do {        \
-		UCSR0B |= (1 << UDRIE0); \
-		asm(:::"memory");        \
+#define usart0_udre_unlock() do {         \
+		UCSR0B |= (1 << UDRIE0);  \
+		asm("":::"memory");       \
 	} while(0)
 
 #define usart0_udre_lock() do {           \
 		UCSR0B &= ~(1 << UDRIE0); \
-		asm(:::"memory");         \
+		asm("":::"memory");       \
 	} while(0)
 
 uint8_t *frame_recv(void)
@@ -78,16 +82,28 @@ void frame_recv_drop(void)
 ISR(USART_UDRE_vect)
 {
 	/* Only enabled when we have data */
-	static bool packet_started;
-	uint8_t loc = tx.p_idx[tx.tail];
 
-	if (loc == tx.p_idx[tx.head]) {
-		/* empty */
-		usart0_udre_lock();
+	static bool packet_started;
+	static bool packet_done;
+	uint8_t loc = tx.p_idx[tx.tail];
+	uint8_t next_tail = (tx.tail + 1) & (sizeof(tx.p_idx) - 1);
+
+	if (packet_done) {
+		packet_done = false;
+		/* advance the packet idx. */
+		tx.tail = next_tail;
+		if (tx.tail == tx.head) {
+			usart0_udre_lock();
+			packet_started = false;
+		} else {
+			packet_started = true;
+		}
+
+		UDR0 = START_BYTE;
 		return;
 	}
 
-	/* TODO: is it a new packet? */
+	/* is it a new packet? */
 	if (!packet_started) {
 		packet_started = true;
 		UDR0 = START_BYTE;
@@ -102,11 +118,10 @@ ISR(USART_UDRE_vect)
 	}
 
 	UDR0 = data;
-	loc = (tx.p_idx[tx.tail] + 1) & (sizeof(tx.buf) - 1);
+	tx.p_idx[tx.tail] = (loc + 1) & (sizeof(tx.buf) - 1);
 
-	uint8_t next_tail = (tx.tail + 1) & (sizeof(tx.p_idx) - 1);
-	if (tx.p_idx[next_tail] == loc) {
-
+	if (tx.p_idx[tx.tail] == tx.p_idx[next_tail]) {
+		/* no more bytes, signal packet completion */
 		packet_done = true;
 	}
 }
@@ -129,7 +144,8 @@ void frame_append_u8(uint8_t x)
 
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 1) {
-		tx_drop_packet();
+		tx.p_idx[next_head] = tx.p_idx[tx.head];
+		frame_start_flag = false;
 	}
 
 	tx.buf[next_b_head] = x;
@@ -146,10 +162,11 @@ void frame_append_u16(uint16_t x)
 
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 2) {
-		tx_drop_packet();
+		tx.p_idx[next_head] = tx.p_idx[tx.head];
+		frame_start_flag = false;
 	}
 
-	tx.buf[next_b_head] = (uint8_t)(x >> CHAR_BIT);
+	tx.buf[next_b_head] = (uint8_t)(x >> 8);
 	tx.buf[(next_b_head + 1) & (sizeof(tx.buf) - 1)] = (uint8_t)x & 0xFF;
 
 	tx.p_idx[next_head] = (tx.p_idx[next_head] + 2) & (sizeof(tx.buf) - 1);
@@ -167,7 +184,7 @@ void frame_done(void)
 	 * imediatly that new data can be read) */
 	tx.p_idx[new_next_head] = tx.p_idx[new_head];
 	tx.head = new_head;
-	uart0_udre_unlock();
+	usart0_udre_unlock();
 	frame_start_flag = false;
 }
 
@@ -185,7 +202,7 @@ void frame_send(void *data, uint8_t nbytes)
 
 	/* do we have space for the packet_idx? */
 	if (next_head == cur_tail) {
-		tx_drop_packet();
+		return;
 	}
 
 	uint8_t space_to_end = MIN(CIRC_SPACE_TO_END(next_b_head, cur_b_tail,
@@ -195,7 +212,6 @@ void frame_send(void *data, uint8_t nbytes)
 	memcpy(tx.buf + next_b_head, data, space_to_end);
 
 	/* copy second segment if it exsists */
-	uint8_t seg2_len = count - space_to_end;
 	memcpy(tx.buf, data + space_to_end, count - space_to_end);
 
 	/* advance packet length */
@@ -205,7 +221,7 @@ void frame_send(void *data, uint8_t nbytes)
 	/* advance packet idx */
 	tx.p_idx[(next_head + 1) & (sizeof(tx.p_idx) - 1)] = next_b_head;
 	tx.head = next_head;
-	uart0_udre_unlock();
+	usart0_udre_unlock();
 }
 
 ISR(USART_RX_vect)

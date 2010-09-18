@@ -6,7 +6,7 @@ __attribute__((noreturn))
 void main(void)
 {
 	cli();
-	hldc0_init();
+	frame_init();
 	sei();
 	for(;;) {
 
