@@ -79,6 +79,11 @@ void frame_recv_drop(void)
 	rx.tail = (rx.tail + 1) & (sizeof(rx.p_idx) - 1);
 }
 
+uint8_t frame_recv_ct(void)
+{
+	return CIRC_CNT(rx.head,rx.tail,sizeof(rx.p_idx));
+}
+
 ISR(USART_UDRE_vect)
 {
 	/* Only enabled when we have data */

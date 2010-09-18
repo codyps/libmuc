@@ -20,6 +20,7 @@ uint8_t *frame_recv(void);
 uint8_t frame_recv_len(void);
 /* discard the current recv packet */
 void frame_recv_drop(void);
-
+/* number of packets currently waiting in queue */
+uint8_t frame_recv_ct(void);
 
 #endif
