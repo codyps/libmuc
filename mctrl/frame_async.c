@@ -108,6 +108,14 @@ ISR(USART_UDRE_vect)
 		return;
 	}
 
+	/* Error case for UDRIE enabled when ring empty */
+	if (tx.tail == tx.head || loc == tx.p_idx[next_tail]) {
+		usart0_udre_lock();
+		packet_started = false;
+		packet_done = false;
+		return;
+	}
+
 	/* is it a new packet? */
 	if (!packet_started) {
 		packet_started = true;
@@ -136,6 +144,7 @@ void frame_start(void)
 {
 	if (CIRC_SPACE(tx.head, tx.tail, sizeof(tx.p_idx))) {
 		frame_start_flag = true;
+		tx.p_idx[CIRC_NEXT(tx.head,sizeof(tx.p_idx))] = tx.p_idx[tx.head];
 	}
 }
 
@@ -195,36 +204,37 @@ void frame_done(void)
 
 void frame_send(void *data, uint8_t nbytes)
 {
-	uint8_t next_head = CIRC_NEXT(tx.head, sizeof(tx.p_idx));
-	uint8_t next_b_head = tx.p_idx[next_head];
+	uint8_t cur_head = tx.head;
+	uint8_t cur_b_head = tx.p_idx[cur_head];
 	uint8_t cur_tail = tx.tail;
 	uint8_t cur_b_tail= tx.p_idx[cur_tail];
-	uint8_t count = CIRC_CNT(next_b_head, cur_b_tail, sizeof(tx.buf));
+	uint8_t count = CIRC_CNT(cur_b_head, cur_b_tail, sizeof(tx.buf));
+	uint8_t space = CIRC_SPACE(cur_b_head, cur_b_tail, sizeof(tx.buf));
 	/* Can we advance our packet bytes? if not, drop packet */
-	if (count < nbytes) {
+	if (nbytes > space) {
 		return;
 	}
 
+	uint8_t next_head = CIRC_NEXT(cur_head, sizeof(tx.p_idx));
 	/* do we have space for the packet_idx? */
 	if (next_head == cur_tail) {
 		return;
 	}
 
-	uint8_t space_to_end = MIN(CIRC_SPACE_TO_END(next_b_head, cur_b_tail,
+	uint8_t space_to_end = MIN(CIRC_SPACE_TO_END(cur_b_head, cur_b_tail,
 				sizeof(tx.buf)), nbytes);
 
 	/* copy first segment of data (may be split) */
-	memcpy(tx.buf + next_b_head, data, space_to_end);
+	memcpy(tx.buf + cur_b_head, data, space_to_end);
 
-	/* copy second segment if it exsists */
+	/* copy second segment if it exsists (count - space_to_end == 0
+	 * when it doesn't) */
 	memcpy(tx.buf, data + space_to_end, count - space_to_end);
 
 	/* advance packet length */
-	next_b_head = (next_b_head + nbytes) & (sizeof(tx.buf) - 1);
-	tx.p_idx[next_head] = next_b_head;
+	tx.p_idx[next_head] = (cur_b_head + nbytes) & (sizeof(tx.buf) - 1);
 
 	/* advance packet idx */
-	tx.p_idx[(next_head + 1) & (sizeof(tx.p_idx) - 1)] = next_b_head;
 	tx.head = next_head;
 	usart0_udre_unlock();
 }
