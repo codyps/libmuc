@@ -8,7 +8,6 @@
 #include "common.h"
 #include "ds/circ_buf.h"
 
-
 #include "proto.h"
 
 /* 0x7e => 0x7d, 0x5e
@@ -70,7 +69,9 @@ uint8_t *frame_recv(void)
 uint8_t frame_recv_len(void)
 {
 	/* This should only be called following frame_recv succeeding */
-	return CIRC_CNT(rx.p_idx[rx.head],rx.p_idx[rx.tail],sizeof(rx.buf));
+	return CIRC_CNT(rx.p_idx[rx.head],
+			rx.p_idx[CIRC_NEXT(rx.head,sizeof(rx.p_idx))],
+			sizeof(rx.buf));
 }
 
 void frame_recv_drop(void)
@@ -235,6 +236,14 @@ void frame_send(void *data, uint8_t nbytes)
 	tx.p_idx[next_head] = (cur_b_head + nbytes) & (sizeof(tx.buf) - 1);
 
 	/* advance packet idx */
+	/* XXX: if we usart0_udre_lock() prior to setting tx.head,
+	 * the error check in the ISR for an empty packet can be avoided.
+	 * As we know that the currently inserted data will not have been
+	 * processed, while without the locking if the added packet is short
+	 * enough and the ISR is unlocked when we set tx.head, the ISR may be
+	 * able to process the entire added packet and disable itself prior
+	 * to us calling usart0_udre_unlock().
+	 */
 	tx.head = next_head;
 	usart0_udre_unlock();
 }
@@ -260,7 +269,7 @@ ISR(USART_RX_vect)
 		/* prepare for start, reset packet position, etc. */
 		/* packet length is non-zero */
 		if (rx.p_idx[next_head] != rx.p_idx[rx.tail]) {
-			if (((next_head + 1) & (sizeof(rx.p_idx) - 1)) == rx.tail) {
+			if (CIRC_NEXT(next_head,sizeof(rx.p_idx))== rx.tail) {
 				/* no space in p_idx for another packet */
 
 				/* Essentailly a packet drop, but we want recv_started
@@ -272,7 +281,7 @@ ISR(USART_RX_vect)
 
 				/* Initial posisition of the next byte is at the
 				 * start of the packet */
-				rx.p_idx[(next_head + 1) & (sizeof(rx.p_idx) - 1)] =
+				rx.p_idx[CIRC_NEXT(rx.head,sizeof(rx.p_idx))] =
 					rx.p_idx[rx.head];
 			}
 		}
