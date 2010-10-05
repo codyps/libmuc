@@ -48,11 +48,14 @@ struct packet_buf {
 };
 
 static struct packet_buf rx, tx;
+
+#define usart0_udre_isr_on() (UCSR0B |= (1 << UDRIE0))
 #define usart0_udre_unlock() do {         \
 		UCSR0B |= (1 << UDRIE0);  \
 		asm("":::"memory");       \
 	} while(0)
 
+#define usart0_udre_isr_off() (UCSR0B &= ~(1 << UDRIE0))
 #define usart0_udre_lock() do {           \
 		UCSR0B &= ~(1 << UDRIE0); \
 		asm("":::"memory");       \
@@ -87,19 +90,25 @@ uint8_t frame_recv_ct(void)
 
 ISR(USART_UDRE_vect)
 {
-	/* Only enabled when we have data */
-
+	/* Only enabled when we have data.
+	 * Bytes inseted into location indicated by next_tail.
+	 * Tail advanced on packet completion.
+	 *
+	 * Expectations:
+	 *    tx.p_idx[tx.tail] is the next byte to transmit
+	 *    tx.p_idx[next_tail] is the end of the currently
+	 *        transmitted packet
+	 */
 	static bool packet_started;
-	static bool packet_done;
 	uint8_t loc = tx.p_idx[tx.tail];
-	uint8_t next_tail = (tx.tail + 1) & (sizeof(tx.p_idx) - 1);
+	uint8_t next_tail = CIRC_NEXT(tx.tail,sizeof(tx.p_idx));
 
-	if (packet_done) {
-		packet_done = false;
+	if (loc == tx.p_idx[next_tail]) {
+		/* no more bytes, signal packet completion */
 		/* advance the packet idx. */
 		tx.tail = next_tail;
 		if (tx.tail == tx.head) {
-			usart0_udre_lock();
+			usart0_udre_isr_off();
 			packet_started = false;
 		} else {
 			packet_started = true;
@@ -109,11 +118,11 @@ ISR(USART_UDRE_vect)
 		return;
 	}
 
-	/* Error case for UDRIE enabled when ring empty */
-	if (tx.tail == tx.head || loc == tx.p_idx[next_tail]) {
-		usart0_udre_lock();
+	/* Error case for UDRIE enabled when ring empty
+	 * no packet indexes seen */
+	if (tx.tail == tx.head) {
 		packet_started = false;
-		packet_done = false;
+		usart0_udre_isr_off();
 		return;
 	}
 
@@ -127,17 +136,14 @@ ISR(USART_UDRE_vect)
 	uint8_t data = tx.buf[loc];
 	if (data == START_BYTE || data == ESC_BYTE || data == RESET_BYTE) {
 		UDR0 = ESC_BYTE;
-		tx.buf[loc] ^= ESC_MASK;
+		tx.buf[loc] = data ^ ESC_MASK;
 		return;
 	}
 
 	UDR0 = data;
-	tx.p_idx[tx.tail] = (loc + 1) & (sizeof(tx.buf) - 1);
 
-	if (tx.p_idx[tx.tail] == tx.p_idx[next_tail]) {
-		/* no more bytes, signal packet completion */
-		packet_done = true;
-	}
+	/* Advance byte pointer */
+	tx.p_idx[tx.tail] = CIRC_NEXT(loc,sizeof(tx.buf));
 }
 
 static bool frame_start_flag;
@@ -263,7 +269,7 @@ ISR(USART_RX_vect)
 
 	/* safe location (in rx.p_idx) to store the location of the next
 	 * byte to write; */
-	uint8_t next_head = (rx.head + 1) & (sizeof(rx.p_idx) - 1);
+	uint8_t next_head = CIRC_NEXT(rx.head,sizeof(rx.p_idx));
 
 	/* check `status` for error conditions */
 	if (status & ((1 << FE0) | (1 << DOR0) | (1<< UPE0))) {
@@ -274,18 +280,21 @@ ISR(USART_RX_vect)
 	if (data == START_BYTE) {
 		/* prepare for start, reset packet position, etc. */
 		/* packet length is non-zero */
+		recv_started = true;
+		is_escaped = false;
 		if (rx.p_idx[next_head] != rx.p_idx[rx.tail]) {
-			if (CIRC_NEXT(next_head,sizeof(rx.p_idx))== rx.tail) {
+			/* Need to get some data for packet to be valid */
+			if (CIRC_NEXT(next_head,sizeof(rx.p_idx)) == rx.tail) {
 				/* no space in p_idx for another packet */
 
-				/* Essentailly a packet drop, but we want recv_started
-				 * set as this is a START_BYTE, after all. */
-				/* goto drop_packet; */
+				/* Essentailly a packet drop, but we want
+				 * recv_started set as this is a START_BYTE,
+				 * after all. */
 				rx.p_idx[next_head] = rx.p_idx[rx.head];
 			} else {
 				rx.head = next_head;
 
-				/* Initial posisition of the next byte is at the
+				/* Initial position of the next byte is at the
 				 * start of the packet */
 				rx.p_idx[CIRC_NEXT(rx.head,sizeof(rx.p_idx))] =
 					rx.p_idx[rx.head];
@@ -294,8 +303,6 @@ ISR(USART_RX_vect)
 
 		/* otherwise, we have zero bytes in the packet, no need to
 		 * advance */
-		is_escaped = false;
-		recv_started = true;
 		return;
 	}
 
@@ -335,10 +342,10 @@ ISR(USART_RX_vect)
 	/* goto drop_packet; */
 
 drop_packet:
-	/* first byte of the sequence we are writing to; */
-	rx.p_idx[next_head] = rx.p_idx[rx.head];
 	recv_started = false;
 	is_escaped = false;
+	/* first byte of the sequence we are writing to; */
+	rx.p_idx[next_head] = rx.p_idx[rx.head];
 }
 
 static void usart0_init(void)
