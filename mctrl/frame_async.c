@@ -157,6 +157,7 @@ void frame_append_u8(uint8_t x)
 	uint8_t next_head = (tx.head + 1) & (sizeof(tx.p_idx) - 1);
 	uint8_t next_b_head = tx.p_idx[next_head];
 
+	/* OFF by one (one spot not used) */
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 1) {
 		tx.p_idx[next_head] = tx.p_idx[tx.head];
@@ -175,6 +176,7 @@ void frame_append_u16(uint16_t x)
 	uint8_t next_head = (tx.head + 1) & (sizeof(tx.p_idx) - 1);
 	uint8_t next_b_head = tx.p_idx[next_head];
 
+	/* OFF by one (one spot not used) */
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 2) {
 		tx.p_idx[next_head] = tx.p_idx[tx.head];
@@ -203,14 +205,18 @@ void frame_done(void)
 	frame_start_flag = false;
 }
 
-void frame_send(void *data, uint8_t nbytes)
+void frame_send(const void *data, uint8_t nbytes)
 {
 	uint8_t cur_head = tx.head;
 	uint8_t cur_b_head = tx.p_idx[cur_head];
 	uint8_t cur_tail = tx.tail;
 	uint8_t cur_b_tail= tx.p_idx[cur_tail];
+
+	/* we can fill .buf up completely, so these macros aren't
+	 * exactly right */
 	uint8_t count = CIRC_CNT(cur_b_head, cur_b_tail, sizeof(tx.buf));
 	uint8_t space = CIRC_SPACE(cur_b_head, cur_b_tail, sizeof(tx.buf));
+
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (nbytes > space) {
 		return;
