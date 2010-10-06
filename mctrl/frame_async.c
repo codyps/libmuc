@@ -80,12 +80,14 @@ uint8_t frame_recv_len(void)
 void frame_recv_drop(void)
 {
 	/* This should only be called following frame_recv succeeding */
-	rx.tail = (rx.tail + 1) & (sizeof(rx.p_idx) - 1);
+	rx.tail = CIRC_NEXT(rx.tail,sizeof(rx.p_idx));
 }
 
 uint8_t frame_recv_ct(void)
 {
-	return CIRC_CNT(rx.head,rx.tail,sizeof(rx.p_idx));
+	return CIRC_CNT(rx.head,
+			rx.tail,
+			sizeof(rx.p_idx));
 }
 
 ISR(USART_UDRE_vect)
@@ -282,7 +284,9 @@ ISR(USART_RX_vect)
 		/* packet length is non-zero */
 		recv_started = true;
 		is_escaped = false;
-		if (rx.p_idx[next_head] != rx.p_idx[rx.tail]) {
+
+		/* is there any data in the packet? */
+		if (rx.p_idx[rx.head] != rx.p_idx[next_head]) {
 			/* Need to get some data for packet to be valid */
 			if (CIRC_NEXT(next_head,sizeof(rx.p_idx)) == rx.tail) {
 				/* no space in p_idx for another packet */
@@ -292,12 +296,15 @@ ISR(USART_RX_vect)
 				 * after all. */
 				rx.p_idx[next_head] = rx.p_idx[rx.head];
 			} else {
+				/* advance the packet idx */
 				rx.head = next_head;
 
-				/* Initial position of the next byte is at the
-				 * start of the packet */
-				rx.p_idx[CIRC_NEXT(rx.head,sizeof(rx.p_idx))] =
-					rx.p_idx[rx.head];
+				/* rx.p_idx[next_head] will be set correctly,
+				 * update rx.p_idx[next_next_head] to be the
+				 * same as rx.p_idx[next_head]
+				 */
+				rx.p_idx[CIRC_NEXT(next_head,sizeof(rx.p_idx))] =
+					rx.p_idx[next_head];
 			}
 		}
 
