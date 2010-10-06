@@ -90,6 +90,99 @@ uint8_t frame_recv_ct(void)
 			sizeof(rx.p_idx));
 }
 
+ISR(USART_RX_vect)
+{
+	static bool is_escaped;
+	static bool recv_started;
+	uint8_t status = UCSR0A;
+	uint8_t data = UDR0;
+
+	/* safe location (in rx.p_idx) to store the location of the next
+	 * byte to write; */
+	uint8_t next_head = CIRC_NEXT(rx.head,sizeof(rx.p_idx));
+
+	/* check `status` for error conditions */
+	if (status & ((1 << FE0) | (1 << DOR0) | (1<< UPE0))) {
+		/* frame error, data over run, parity error */
+		goto drop_packet;
+	}
+
+	if (data == START_BYTE) {
+		/* prepare for start, reset packet position, etc. */
+		/* packet length is non-zero */
+		recv_started = true;
+		is_escaped = false;
+
+		/* is there any data in the packet? */
+		if (rx.p_idx[rx.head] != rx.p_idx[next_head]) {
+			/* Need to get some data for packet to be valid */
+			if (CIRC_NEXT(next_head,sizeof(rx.p_idx)) == rx.tail) {
+				/* no space in p_idx for another packet */
+
+				/* Essentailly a packet drop, but we want
+				 * recv_started set as this is a START_BYTE,
+				 * after all. */
+				rx.p_idx[next_head] = rx.p_idx[rx.head];
+			} else {
+				/* advance the packet idx */
+				rx.head = next_head;
+
+				/* rx.p_idx[next_head] will be set correctly,
+				 * update rx.p_idx[next_next_head] to be the
+				 * same as rx.p_idx[next_head]
+				 */
+				rx.p_idx[CIRC_NEXT(next_head,sizeof(rx.p_idx))] =
+					rx.p_idx[next_head];
+			}
+		}
+
+		/* otherwise, we have zero bytes in the packet, no need to
+		 * advance */
+		return;
+	}
+
+	if (!recv_started) {
+		/* ignore stuff until we get a start byte */
+		return;
+	}
+
+	if (data == RESET_BYTE) {
+		goto drop_packet;
+	}
+
+	if (data == ESC_BYTE) {
+		/* Possible error check: is_escaped should not already
+		 * be true */
+		is_escaped = true;
+		return;
+	}
+
+	if (is_escaped) {
+		/* Possible error check: is data of one of the allowed
+		 * escaped bytes? */
+		/* we previously recieved an escape char, transform data */
+		is_escaped = false;
+		data ^= ESC_MASK;
+	}
+
+	/* first byte we can't overwrite; */
+	if (rx.p_idx[next_head] != rx.p_idx[rx.tail]) {
+		rx.buf[rx.p_idx[next_head]] = data;
+		rx.p_idx[next_head] =
+			(rx.p_idx[next_head] + 1) & (sizeof(rx.p_idx) - 1);
+		return;
+	}
+
+	/* well, shucks. we're out of space, drop the packet */
+	/* goto drop_packet; */
+
+drop_packet:
+	recv_started = false;
+	is_escaped = false;
+	/* first byte of the sequence we are writing to; */
+	rx.p_idx[next_head] = rx.p_idx[rx.head];
+}
+
 ISR(USART_UDRE_vect)
 {
 	/* Only enabled when we have data.
@@ -262,98 +355,6 @@ void frame_send(const void *data, uint8_t nbytes)
 	usart0_udre_unlock();
 }
 
-ISR(USART_RX_vect)
-{
-	static bool is_escaped;
-	static bool recv_started;
-	uint8_t status = UCSR0A;
-	uint8_t data = UDR0;
-
-	/* safe location (in rx.p_idx) to store the location of the next
-	 * byte to write; */
-	uint8_t next_head = CIRC_NEXT(rx.head,sizeof(rx.p_idx));
-
-	/* check `status` for error conditions */
-	if (status & ((1 << FE0) | (1 << DOR0) | (1<< UPE0))) {
-		/* frame error, data over run, parity error */
-		goto drop_packet;
-	}
-
-	if (data == START_BYTE) {
-		/* prepare for start, reset packet position, etc. */
-		/* packet length is non-zero */
-		recv_started = true;
-		is_escaped = false;
-
-		/* is there any data in the packet? */
-		if (rx.p_idx[rx.head] != rx.p_idx[next_head]) {
-			/* Need to get some data for packet to be valid */
-			if (CIRC_NEXT(next_head,sizeof(rx.p_idx)) == rx.tail) {
-				/* no space in p_idx for another packet */
-
-				/* Essentailly a packet drop, but we want
-				 * recv_started set as this is a START_BYTE,
-				 * after all. */
-				rx.p_idx[next_head] = rx.p_idx[rx.head];
-			} else {
-				/* advance the packet idx */
-				rx.head = next_head;
-
-				/* rx.p_idx[next_head] will be set correctly,
-				 * update rx.p_idx[next_next_head] to be the
-				 * same as rx.p_idx[next_head]
-				 */
-				rx.p_idx[CIRC_NEXT(next_head,sizeof(rx.p_idx))] =
-					rx.p_idx[next_head];
-			}
-		}
-
-		/* otherwise, we have zero bytes in the packet, no need to
-		 * advance */
-		return;
-	}
-
-	if (!recv_started) {
-		/* ignore stuff until we get a start byte */
-		return;
-	}
-
-	if (data == RESET_BYTE) {
-		goto drop_packet;
-	}
-
-	if (data == ESC_BYTE) {
-		/* Possible error check: is_escaped should not already
-		 * be true */
-		is_escaped = true;
-		return;
-	}
-
-	if (is_escaped) {
-		/* Possible error check: is data of one of the allowed
-		 * escaped bytes? */
-		/* we previously recieved an escape char, transform data */
-		is_escaped = false;
-		data ^= ESC_MASK;
-	}
-
-	/* first byte we can't overwrite; */
-	if (rx.p_idx[next_head] != rx.p_idx[rx.tail]) {
-		rx.buf[rx.p_idx[next_head]] = data;
-		rx.p_idx[next_head] =
-			(rx.p_idx[next_head] + 1) & (sizeof(rx.p_idx) - 1);
-		return;
-	}
-
-	/* well, shucks. we're out of space, drop the packet */
-	/* goto drop_packet; */
-
-drop_packet:
-	recv_started = false;
-	is_escaped = false;
-	/* first byte of the sequence we are writing to; */
-	rx.p_idx[next_head] = rx.p_idx[rx.head];
-}
 
 static void usart0_init(void)
 {
