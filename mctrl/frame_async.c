@@ -72,8 +72,8 @@ uint8_t *frame_recv(void)
 uint8_t frame_recv_len(void)
 {
 	/* This should only be called following frame_recv succeeding */
-	return CIRC_CNT(rx.p_idx[rx.head],
-			rx.p_idx[CIRC_NEXT(rx.head,sizeof(rx.p_idx))],
+	return CIRC_CNT(rx.p_idx[rx.tail],
+			rx.p_idx[CIRC_NEXT(rx.tail,sizeof(rx.p_idx))],
 			sizeof(rx.buf));
 }
 
