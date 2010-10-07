@@ -61,6 +61,13 @@ static struct packet_buf rx, tx;
 		asm("":::"memory");       \
 	} while(0)
 
+void frame_loop(void)
+{
+
+}
+
+/*** Reception of Data ***/
+/** receive: consumer, modifies tail **/
 uint8_t *frame_recv(void)
 {
 	if (rx.tail != rx.head)
@@ -90,6 +97,7 @@ uint8_t frame_recv_ct(void)
 			sizeof(rx.p_idx));
 }
 
+/** recieve: producer, modifies head **/
 ISR(USART_RX_vect)
 {
 	static bool is_escaped;
@@ -183,6 +191,8 @@ drop_packet:
 	rx.p_idx[next_head] = rx.p_idx[rx.head];
 }
 
+/*** Transmision of Data ***/
+/** transmit: consumer of data, modifies tail **/
 ISR(USART_UDRE_vect)
 {
 	/* Only enabled when we have data.
@@ -241,6 +251,7 @@ ISR(USART_UDRE_vect)
 	tx.p_idx[tx.tail] = CIRC_NEXT(loc,sizeof(tx.buf));
 }
 
+/** transmit: producer of data, modifies head **/
 static bool frame_start_flag;
 void frame_start(void)
 {
@@ -258,7 +269,6 @@ void frame_append_u8(uint8_t x)
 	uint8_t next_head = (tx.head + 1) & (sizeof(tx.p_idx) - 1);
 	uint8_t next_b_head = tx.p_idx[next_head];
 
-	/* OFF by one (one spot not used) */
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 1) {
 		tx.p_idx[next_head] = tx.p_idx[tx.head];
@@ -277,7 +287,6 @@ void frame_append_u16(uint16_t x)
 	uint8_t next_head = (tx.head + 1) & (sizeof(tx.p_idx) - 1);
 	uint8_t next_b_head = tx.p_idx[next_head];
 
-	/* OFF by one (one spot not used) */
 	/* Can we advance our packet bytes? if not, drop packet */
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 2) {
 		tx.p_idx[next_head] = tx.p_idx[tx.head];
@@ -355,7 +364,7 @@ void frame_send(const void *data, uint8_t nbytes)
 	usart0_udre_unlock();
 }
 
-
+/*** Initialization ***/
 static void usart0_init(void)
 {
 	/* Disable ISRs, recv, and trans */
