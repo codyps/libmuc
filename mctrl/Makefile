@@ -11,12 +11,13 @@ F_CPU = 16000000
 
 FORMAT = ihex
 TARGET = mctrl
-SRC  = main.c 
+SRC  = main.c
 SRC += frame_async.c
+SRC += error_led.c
 SRC += ../common/motor.c
 SRC += ../common/pid.c
 
-ASRC = 
+ASRC =
 OPT = s
 
 srcdir = .

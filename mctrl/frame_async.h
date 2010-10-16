@@ -11,7 +11,7 @@ void frame_append_u16(uint16_t n);
 void frame_done(void); /* dispatch the constructed packet */
 
 /* Full Packet transmit */
-void frame_send(void *data, uint8_t nbytes);
+void frame_send(const void *data, uint8_t nbytes);
 
 /** Reception **/
 /* pointer to packer returned. NULL if no packet avaliable */
