@@ -32,9 +32,9 @@ struct circ_buf8 {
 	  n < end ? n : end;})
 
 #define CIRC_SPACE_TO_END(head,tail,size) \
-	({typeof(head) end = (size) - (tail); \
-	  typeof(head) n = ((head) + end) & ((size) - 1); \
-	  n < end ? n : end+1;})
+	({typeof(head) end = (size) - 1 - (head); \
+	  typeof(head) n = (end + (tail)) & ((size)-1); \
+	  n <= end ? n : end+1;})
 
 
 #endif
