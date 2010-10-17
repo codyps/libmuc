@@ -87,6 +87,9 @@ static FILE usart0_io_direct = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FD
 
 # define TX_BYTE_SEND(byte) (UDR0 = (byte))
 
+# define RX_ISR() ISR(USART_RX_vect)
+# define TX_ISR() ISR(USART_UDRE_vect)
+
 #else /* !defined(AVR) */
 
 # ifdef DEBUG
@@ -102,8 +105,10 @@ static FILE usart0_io_direct = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FD
 # define RX_STATUS_GET() 0
 # define RX_STATUS_IS_ERROR(status) false
 
-
 # define TX_BYTE_SEND(byte) putchar(byte)
+
+# define TX_ISR() void frame_tx_isr(void)
+# define RX_ISR() void frame_rx_isr(void)
 
 #endif
 
@@ -174,7 +179,7 @@ uint8_t frame_recv_ct(void)
 }
 
 /** recieve: producer, modifies head **/
-ISR(USART_RX_vect)
+RX_ISR()
 {
 	static bool is_escaped;
 	static bool recv_started;
@@ -295,7 +300,7 @@ drop_packet:
 
 /*** Transmision of Data ***/
 /** transmit: consumer of data, modifies tail **/
-ISR(USART_UDRE_vect)
+TX_ISR()
 {
 	/* Only enabled when we have data.
 	 * Bytes inseted into location indicated by next_tail.
