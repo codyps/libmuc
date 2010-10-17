@@ -16,7 +16,7 @@
 #define PIN(x)	_PIN(x)
 #define _PIN(x) PIN##x
 
-#define MIN(x,y) (((x)>(y))?(y):(x))
+#define MIN(x,y) (((x)<(y))?(x):(y))
 
 #define CT(x) (sizeof(x)/sizeof(*x))
 

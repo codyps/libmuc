@@ -25,7 +25,7 @@ void main(void)
 			frame_recv_drop();
 		} else {
 			ct++;
-			_delay_ms(50);
+			_delay_ms(20);
 		}
 
 		if (ct == 0) {
