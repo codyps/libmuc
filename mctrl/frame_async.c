@@ -38,7 +38,7 @@
 	sizeof(((type *)0)->member)
 
 struct packet_buf {
-	uint8_t buf[64]; /* bytes */
+	uint8_t buf[32]; /* bytes */
 
 	/* array of packet starts in bytes (byte heads and tails,
 	 * depending on index */
@@ -123,8 +123,9 @@ uint8_t *frame_recv(void)
 uint8_t frame_recv_len(void)
 {
 	/* This should only be called following frame_recv succeeding */
-	return CIRC_CNT(rx.p_idx[rx.tail],
-			rx.p_idx[CIRC_NEXT(rx.tail,sizeof(rx.p_idx))],
+	uint8_t tail = rx.tail;
+	return CIRC_CNT(rx.p_idx[tail],
+			rx.p_idx[CIRC_NEXT(tail,sizeof(rx.p_idx))],
 			sizeof(rx.buf));
 }
 
@@ -154,6 +155,7 @@ ISR(USART_RX_vect)
 	uint8_t next_head = CIRC_NEXT(rx.head,sizeof(rx.p_idx));
 
 	printf("\nRX: data %c(%d)\n", data,data);
+	print_packet_buf(&rx);
 	print_wait();
 
 	/* check `status` for error conditions */
@@ -235,11 +237,12 @@ ISR(USART_RX_vect)
 		print_wait();
 	}
 
-	/* first byte we can't overwrite; */
-	if (rx.p_idx[next_head] != rx.p_idx[rx.tail]) {
+	/* do we have another byte to write into? */
+	/* FIXME: don't need full CIRC_SPACE calculation */
+	if (CIRC_SPACE(rx.p_idx[next_head], rx.p_idx[rx.tail], sizeof(rx.buf))) {
 		rx.buf[rx.p_idx[next_head]] = data;
 		rx.p_idx[next_head] =
-			(rx.p_idx[next_head] + 1) & (sizeof(rx.p_idx) - 1);
+			(rx.p_idx[next_head] + 1) & (sizeof(rx.buf) - 1);
 
 		printf("RX:: wrote stuff.\n");
 		print_wait();

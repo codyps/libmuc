@@ -20,12 +20,13 @@ void main(void)
 		if (f) {
 			led_flash(5);
 			ct = 0;
-			uint8_t flen = frame_recv_len();
-			frame_send(f, flen);
+			uint8_t flen = frame_recv_len() + '0';
+			frame_send(&flen, 1);
+			frame_send(f, flen - '0');
 			frame_recv_drop();
 		} else {
 			ct++;
-			_delay_ms(20);
+			_delay_ms(70);
 		}
 
 		if (ct == 0) {
