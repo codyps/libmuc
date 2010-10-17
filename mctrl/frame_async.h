@@ -4,9 +4,14 @@
 
 void frame_init(void);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 /* debug */
 void frame_timeout(void);
+#endif
+
+#ifndef AVR
+void frame_tx_isr(void);
+void frame_rx_isr(void);
 #endif
 
 /** Transmision **/
@@ -20,12 +25,19 @@ void frame_done(void); /* dispatch the constructed packet */
 void frame_send(const void *data, uint8_t nbytes);
 
 /** Reception **/
-/* pointer to packer returned. NULL if no packet avaliable */
-uint8_t *frame_recv(void);
-/* length of current recv packet. Only rely on result if frame_recv is valid */
+
+/* Copy the packet into dst[], which hase length dst_len.
+ * return the actual length of the packet. */
+uint8_t frame_recv_copy(uint8_t *dst, uint8_t dst_len);
+
+/* length of current recv packet. Intended to be used with frame_recv_byte */
 uint8_t frame_recv_len(void);
+/* returns the next byte in the current packet.
+ * Returns 0 when packet is empty */
+uint8_t frame_recv_byte(void);
+
 /* discard the current recv packet */
-void frame_recv_drop(void);
+void frame_recv_next(void);
 /* number of packets currently waiting in queue */
 uint8_t frame_recv_ct(void);
 

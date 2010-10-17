@@ -147,27 +147,62 @@ void frame_timeout(void)
 
 /*** Reception of Data ***/
 /** receive: consumer, modifies tail **/
-uint8_t *frame_recv(void)
-{
-	if (rx.tail != rx.head)
-		return rx.buf + rx.p_idx[rx.tail];
-	else
-		return NULL;
-}
-
-
+/* called first to determine if we have a packet */
 uint8_t frame_recv_len(void)
 {
-	/* This should only be called following frame_recv succeeding */
 	uint8_t tail = rx.tail;
-	return CIRC_CNT(rx.p_idx[tail],
-			rx.p_idx[CIRC_NEXT(tail,sizeof(rx.p_idx))],
-			sizeof(rx.buf));
+	if (tail != rx.head) {
+		return CIRC_CNT(rx.p_idx[tail],
+				rx.p_idx[CIRC_NEXT(tail,sizeof(rx.p_idx))],
+				sizeof(rx.buf));
+	} else {
+		return 0;
+	}
 }
 
-void frame_recv_drop(void)
+/* get next byte from packet */
+uint8_t frame_recv_byte(void)
 {
-	/* This should only be called following frame_recv succeeding */
+	uint8_t curr_tail = rx.tail;
+	uint8_t next_tail = CIRC_NEXT(curr_tail, sizeof(rx.p_idx));
+	uint8_t curr_b_tail = rx.p_idx[curr_tail];
+	uint8_t next_b_tail = rx.p_idx[next_tail];
+
+	if (curr_b_tail != next_b_tail) {
+		uint8_t data = rx.buf[curr_b_tail];
+		rx.p_idx[curr_tail] = CIRC_NEXT(curr_b_tail, sizeof(rx.buf));
+		return data;
+	} else {
+		return 0;
+	}
+}
+
+/* returns length of packet */
+uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
+{
+	uint8_t curr_tail = rx.tail;
+	if (rx.tail != rx.head) {
+		uint8_t curr_b_tail = rx.p_idx[curr_tail];
+		uint8_t next_tail = CIRC_NEXT(rx.tail, sizeof(rx.p_idx));
+		uint8_t next_b_tail = rx.p_idx[next_tail];
+		uint8_t ct = CIRC_CNT(curr_b_tail, next_b_tail, sizeof(rx.buf));
+		uint8_t ct_to_end = CIRC_CNT_TO_END(curr_b_tail, next_b_tail, sizeof(rx.buf));
+
+		uint8_t cpy1_len = MIN(len, ct_to_end);
+		uint8_t cpy2_len = MIN(len, ct) - cpy1_len;
+
+		memcpy(dst, rx.buf + curr_b_tail, cpy1_len);
+		memcpy(dst + cpy1_len, rx.buf, cpy2_len);
+
+		return ct;
+	} else {
+		return 0;
+	}
+}
+
+void frame_recv_next(void)
+{
+	/* This should only be called following frame_recv_len succeeding */
 	rx.tail = CIRC_NEXT(rx.tail,sizeof(rx.p_idx));
 }
 
