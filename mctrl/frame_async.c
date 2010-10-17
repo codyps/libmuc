@@ -38,7 +38,7 @@
 	sizeof(((type *)0)->member)
 
 struct packet_buf {
-	uint8_t buf[128]; /* bytes */
+	uint8_t buf[64]; /* bytes */
 
 	/* array of packet starts in bytes (byte heads and tails,
 	 * depending on index */
@@ -61,10 +61,53 @@ static struct packet_buf rx, tx;
 		asm("":::"memory");       \
 	} while(0)
 
-void frame_loop(void)
+/* {{ DEBUG */
+#ifdef DEBUG
+static int usart0_putchar_direct(char c, FILE *stream) {
+	if (c == '\n')
+		putc('\r', stream);
+	loop_until_bit_is_set(UCSR0A, UDRE0);
+	UDR0 = c;
+	return 0;
+}
+
+static void print_wait(void)
 {
+	loop_until_bit_is_set(UCSR0A, UDRE0);
+}
+
+static FILE usart0_io_direct = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FDEV_SETUP_WRITE);
+
+static void print_packet_buf(struct packet_buf *b)
+{
+	printf("head %02d  tail %02d  p_idx(%d) ", b->head, b->tail, sizeof(b->p_idx));
+	uint8_t i;
+	for (i = 0; ;) {
+		printf("%02d", b->p_idx[i]);
+		i++;
+		if (i < sizeof(b->p_idx))
+			printf(" | ");
+		else
+			break;
+	}
+
+	printf("  buf ");
+	for(i = 0; i < sizeof(b->buf); i++) {
+		printf("%d | ", b->buf[i]);
+	}
+}
+
+void frame_timeout(void)
+{
+	printf("\n{{ tx: ");
+	print_packet_buf(&tx);
+	printf(" }}\n{{ rx: ");
+	print_packet_buf(&rx);
+	printf(" }}\n");
 
 }
+#endif
+/* DEBUG }} */
 
 /*** Reception of Data ***/
 /** receive: consumer, modifies tail **/
@@ -75,6 +118,7 @@ uint8_t *frame_recv(void)
 	else
 		return NULL;
 }
+
 
 uint8_t frame_recv_len(void)
 {
@@ -205,10 +249,10 @@ ISR(USART_UDRE_vect)
 	 *        transmitted packet
 	 */
 	static bool packet_started;
-	uint8_t loc = tx.p_idx[tx.tail];
+	uint8_t cur_b_tail = tx.p_idx[tx.tail];
 	uint8_t next_tail = CIRC_NEXT(tx.tail,sizeof(tx.p_idx));
 
-	if (loc == tx.p_idx[next_tail]) {
+	if (cur_b_tail == tx.p_idx[next_tail]) {
 		/* no more bytes, signal packet completion */
 		/* advance the packet idx. */
 		tx.tail = next_tail;
@@ -238,17 +282,18 @@ ISR(USART_UDRE_vect)
 		return;
 	}
 
-	uint8_t data = tx.buf[loc];
+	uint8_t data = tx.buf[cur_b_tail];
+
 	if (data == START_BYTE || data == ESC_BYTE || data == RESET_BYTE) {
 		UDR0 = ESC_BYTE;
-		tx.buf[loc] = data ^ ESC_MASK;
+		tx.buf[cur_b_tail] = data ^ ESC_MASK;
 		return;
 	}
 
 	UDR0 = data;
 
 	/* Advance byte pointer */
-	tx.p_idx[tx.tail] = CIRC_NEXT(loc,sizeof(tx.buf));
+	tx.p_idx[tx.tail] = CIRC_NEXT(cur_b_tail,sizeof(tx.buf));
 }
 
 /** transmit: producer of data, modifies head **/
@@ -322,9 +367,9 @@ void frame_send(const void *data, uint8_t nbytes)
 	uint8_t cur_tail = tx.tail;
 	uint8_t cur_b_tail= tx.p_idx[cur_tail];
 
-	/* we can fill .buf up completely, so these macros aren't
-	 * exactly right */
-	uint8_t count = CIRC_CNT(cur_b_head, cur_b_tail, sizeof(tx.buf));
+	/* we can fill .buf up completely only in the case that the packet
+	 * buffer has more than 1 packet (which is very likely), so use
+	 * the standard circ buffer managment here to keep the space open */
 	uint8_t space = CIRC_SPACE(cur_b_head, cur_b_tail, sizeof(tx.buf));
 
 	/* Can we advance our packet bytes? if not, drop packet */
@@ -338,15 +383,17 @@ void frame_send(const void *data, uint8_t nbytes)
 		return;
 	}
 
-	uint8_t space_to_end = MIN(CIRC_SPACE_TO_END(cur_b_head, cur_b_tail,
-				sizeof(tx.buf)), nbytes);
+	/* amount to copy in first memcpy */
+	uint8_t space_to_end =
+		MIN(CIRC_SPACE_TO_END(cur_b_head, cur_b_tail, sizeof(tx.buf)),
+				nbytes);
 
 	/* copy first segment of data (may be split) */
 	memcpy(tx.buf + cur_b_head, data, space_to_end);
 
-	/* copy second segment if it exsists (count - space_to_end == 0
+	/* copy second segment if it exsists (nbytes - space_to_end == 0
 	 * when it doesn't) */
-	memcpy(tx.buf, data + space_to_end, count - space_to_end);
+	memcpy(tx.buf, data + space_to_end, nbytes - space_to_end);
 
 	/* advance packet length */
 	tx.p_idx[next_head] = (cur_b_head + nbytes) & (sizeof(tx.buf) - 1);
@@ -361,6 +408,10 @@ void frame_send(const void *data, uint8_t nbytes)
 	 * to us calling usart0_udre_unlock().
 	 */
 	tx.head = next_head;
+
+	/* XXX: do we need to set
+	 * tx.p_idx[next_next_head] = tx.p_idx[next_head]
+	 * ? */
 	usart0_udre_unlock();
 }
 
@@ -372,7 +423,7 @@ static void usart0_init(void)
 
 	/* Asyncronous, parity odd, 1 bit stop, 8 bit data */
 	UCSR0C = (0 << UMSEL01) | (0 << UMSEL00)
-		| (1 << UPM01) | (1 << UPM00)
+		| (1 << UPM01)  | (1 << UPM00)
 		| (0 << USBS0)
 		| (1 << UCSZ01) | (1 << UCSZ00);
 
@@ -391,6 +442,11 @@ static void usart0_init(void)
 	UCSR0B = (1 << RXCIE0) | (0 << UDRIE0)
 		| (1 << RXEN0) | (1 << TXEN0)
 		| (0 << UCSZ02);
+
+	/* XXX: debugging */
+#ifdef DEBUG
+	stdout = stderr = &usart0_io_direct;
+#endif
 }
 
 void frame_init(void)

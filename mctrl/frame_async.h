@@ -4,6 +4,12 @@
 
 void frame_init(void);
 
+#ifdef DEBUG
+/* debug */
+void frame_timeout(void);
+#endif
+
+/** Transmision **/
 /* Packet building */
 void frame_start(void);
 void frame_append_u8(uint8_t n);
