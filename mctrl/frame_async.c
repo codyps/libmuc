@@ -49,20 +49,10 @@ struct packet_buf {
 
 static struct packet_buf rx, tx;
 
-#define usart0_udre_isr_on() (UCSR0B |= (1 << UDRIE0))
-#define usart0_udre_unlock() do {         \
-		UCSR0B |= (1 << UDRIE0);  \
-		asm("":::"memory");       \
-	} while(0)
 
-#define usart0_udre_isr_off() (UCSR0B &= ~(1 << UDRIE0))
-#define usart0_udre_lock() do {           \
-		UCSR0B &= ~(1 << UDRIE0); \
-		asm("":::"memory");       \
-	} while(0)
-
+#if defined(AVR)
 /* {{ DEBUG */
-#ifdef DEBUG
+# ifdef DEBUG
 static int usart0_putchar_direct(char c, FILE *stream) {
 	if (c == '\n')
 		putc('\r', stream);
@@ -77,7 +67,48 @@ static void print_wait(void)
 }
 
 static FILE usart0_io_direct = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FDEV_SETUP_WRITE);
+# endif
 
+# define usart0_udre_isr_on() (UCSR0B |= (1 << UDRIE0))
+# define usart0_udre_unlock() do {         \
+		UCSR0B |= (1 << UDRIE0);  \
+		asm("":::"memory");       \
+	} while(0)
+
+# define usart0_udre_isr_off() (UCSR0B &= ~(1 << UDRIE0))
+# define usart0_udre_lock() do {           \
+		UCSR0B &= ~(1 << UDRIE0); \
+		asm("":::"memory");       \
+	} while(0)
+
+# define RX_BYTE_GET() UDR0
+# define RX_STATUS_GET() UCSR0A
+# define RX_STATUS_IS_ERROR(status) ((status) & ((1 << FE0) | (1 << DOR0) | (1<< UPE0)))
+
+# define TX_BYTE_SEND(byte) (UDR0 = (byte))
+
+#else /* !defined(AVR) */
+
+# ifdef DEBUG
+#  define print_wait()
+# endif
+
+# define usart0_udre_isr_on()
+# define usart0_udre_unlock()
+# define usart0_udre_isr_off()
+# define usart0_udre_lock()
+
+# define RX_BYTE_GET() getchar()
+# define RX_STATUS_GET() 0
+# define RX_STATUS_IS_ERROR(status) false
+
+
+# define TX_BYTE_SEND(byte) putchar(byte)
+
+#endif
+
+
+#ifdef DEBUG
 static void print_packet_buf(struct packet_buf *b)
 {
 	printf("head %02d  tail %02d  p_idx(%d) ", b->head, b->tail, sizeof(b->p_idx));
@@ -147,8 +178,8 @@ ISR(USART_RX_vect)
 {
 	static bool is_escaped;
 	static bool recv_started;
-	uint8_t status = UCSR0A;
-	uint8_t data = UDR0;
+	uint8_t status = RX_STATUS_GET();
+	uint8_t data = RX_BYTE_GET();
 
 	/* safe location (in rx.p_idx) to store the location of the next
 	 * byte to write; */
@@ -159,7 +190,7 @@ ISR(USART_RX_vect)
 	print_wait();
 
 	/* check `status` for error conditions */
-	if (status & ((1 << FE0) | (1 << DOR0) | (1<< UPE0))) {
+	if (RX_STATUS_IS_ERROR(status)) {
 		/* frame error, data over run, parity error */
 		printf("RX:: error, drop\n");
 		print_wait();
@@ -290,7 +321,7 @@ ISR(USART_UDRE_vect)
 			packet_started = true;
 		}
 
-		UDR0 = START_BYTE;
+		TX_BYTE_SEND(START_BYTE);
 		return;
 	}
 
@@ -305,19 +336,19 @@ ISR(USART_UDRE_vect)
 	/* is it a new packet? */
 	if (!packet_started) {
 		packet_started = true;
-		UDR0 = START_BYTE;
+		TX_BYTE_SEND(START_BYTE);
 		return;
 	}
 
 	uint8_t data = tx.buf[cur_b_tail];
 
 	if (data == START_BYTE || data == ESC_BYTE || data == RESET_BYTE) {
-		UDR0 = ESC_BYTE;
+		TX_BYTE_SEND(ESC_BYTE);
 		tx.buf[cur_b_tail] = data ^ ESC_MASK;
 		return;
 	}
 
-	UDR0 = data;
+	TX_BYTE_SEND(data);
 
 	/* Advance byte pointer */
 	tx.p_idx[tx.tail] = CIRC_NEXT(cur_b_tail,sizeof(tx.buf));
@@ -442,7 +473,9 @@ void frame_send(const void *data, uint8_t nbytes)
 	usart0_udre_unlock();
 }
 
+
 /*** Initialization ***/
+#ifdef AVR
 static void usart0_init(void)
 {
 	/* Disable ISRs, recv, and trans */
@@ -471,7 +504,7 @@ static void usart0_init(void)
 		| (0 << UCSZ02);
 
 	/* XXX: debugging */
-#ifdef DEBUG
+#if defined(DEBUG)
 	stdout = stderr = &usart0_io_direct;
 #endif
 }
@@ -480,3 +513,4 @@ void frame_init(void)
 {
 	usart0_init();
 }
+#endif /* AVR */
