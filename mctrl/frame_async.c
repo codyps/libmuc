@@ -119,17 +119,17 @@ static void print_packet_buf(struct packet_buf *b)
 	printf("head %02d  tail %02d  p_idx(%d) ", b->head, b->tail, sizeof(b->p_idx));
 	uint8_t i;
 	for (i = 0; ;) {
-		printf("%02d", b->p_idx[i]);
+		printf("%d", b->p_idx[i]);
 		i++;
 		if (i < sizeof(b->p_idx))
-			printf(" | ");
+			putchar(' ');
 		else
 			break;
 	}
 
 	printf("  buf ");
 	for(i = 0; i < sizeof(b->buf); i++) {
-		printf("%d | ", b->buf[i]);
+		printf("%c ", b->buf[i]);
 	}
 }
 
@@ -152,8 +152,8 @@ uint8_t frame_recv_len(void)
 {
 	uint8_t tail = rx.tail;
 	if (tail != rx.head) {
-		return CIRC_CNT(rx.p_idx[tail],
-				rx.p_idx[CIRC_NEXT(tail,sizeof(rx.p_idx))],
+		return CIRC_CNT(rx.p_idx[CIRC_NEXT(tail,sizeof(rx.p_idx))],
+				rx.p_idx[tail],
 				sizeof(rx.buf));
 	} else {
 		return 0;
@@ -181,12 +181,12 @@ uint8_t frame_recv_byte(void)
 uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
 {
 	uint8_t curr_tail = rx.tail;
-	if (rx.tail != rx.head) {
+	if (curr_tail != rx.head) {
 		uint8_t curr_b_tail = rx.p_idx[curr_tail];
 		uint8_t next_tail = CIRC_NEXT(rx.tail, sizeof(rx.p_idx));
 		uint8_t next_b_tail = rx.p_idx[next_tail];
-		uint8_t ct = CIRC_CNT(curr_b_tail, next_b_tail, sizeof(rx.buf));
-		uint8_t ct_to_end = CIRC_CNT_TO_END(curr_b_tail, next_b_tail, sizeof(rx.buf));
+		uint8_t ct = CIRC_CNT(next_b_tail, curr_b_tail, sizeof(rx.buf));
+		uint8_t ct_to_end = CIRC_CNT_TO_END(next_b_tail, curr_b_tail, sizeof(rx.buf));
 
 		uint8_t cpy1_len = MIN(len, ct_to_end);
 		uint8_t cpy2_len = MIN(len, ct) - cpy1_len;
@@ -227,6 +227,7 @@ RX_ISR()
 
 	printf("\nRX: data %c(%d)\n", data,data);
 	print_packet_buf(&rx);
+	putchar('\n');
 	print_wait();
 
 	/* check `status` for error conditions */
@@ -247,7 +248,8 @@ RX_ISR()
 		/* is there any data in the packet? */
 		if (rx.p_idx[rx.head] != rx.p_idx[next_head]) {
 			/* Need to get some data for packet to be valid */
-			if (CIRC_NEXT(next_head,sizeof(rx.p_idx)) == rx.tail) {
+			uint8_t next_next_head = CIRC_NEXT(next_head, sizeof(rx.p_idx));
+			if (next_next_head == rx.tail) {
 				/* no space in p_idx for another packet */
 
 				/* Essentailly a packet drop, but we want
@@ -263,8 +265,7 @@ RX_ISR()
 				 * update rx.p_idx[next_next_head] to be the
 				 * same as rx.p_idx[next_head]
 				 */
-				rx.p_idx[CIRC_NEXT(next_head,sizeof(rx.p_idx))] =
-					rx.p_idx[next_head];
+				rx.p_idx[next_next_head] = rx.p_idx[next_head];
 				printf("RX::: stored old packet\n");
 			}
 		}
