@@ -4,6 +4,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include <stdio.h>
+
 #include "error_led.h"
 #include "frame_async.h"
 
@@ -23,7 +25,10 @@ void main(void)
 		if (len) {
 			led_flash(5);
 			ct = 0;
-			frame_send(&len, 1);
+			printf("len: %d\n", len);
+			printf("data: ");
+			fwrite(buf, MIN(len,sizeof(buf)), 1, stdout);
+			putchar('\n');
 			frame_send(buf, MIN(len, sizeof(buf)));
 			frame_recv_next();
 		} else {
