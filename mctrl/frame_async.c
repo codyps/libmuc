@@ -225,16 +225,9 @@ RX_ISR()
 	 * byte to write; */
 	uint8_t next_head = CIRC_NEXT(rx.head,sizeof(rx.p_idx));
 
-	printf("\nRX: data %c(%d)\n", data,data);
-	print_packet_buf(&rx);
-	putchar('\n');
-	print_wait();
-
 	/* check `status` for error conditions */
 	if (RX_STATUS_IS_ERROR(status)) {
 		/* frame error, data over run, parity error */
-		printf("RX:: error, drop\n");
-		print_wait();
 		goto drop_packet;
 	}
 
@@ -244,7 +237,6 @@ RX_ISR()
 		recv_started = true;
 		is_escaped = false;
 
-		printf("RX:: got start\n");
 		/* is there any data in the packet? */
 		if (rx.p_idx[rx.head] != rx.p_idx[next_head]) {
 			/* Need to get some data for packet to be valid */
@@ -255,7 +247,6 @@ RX_ISR()
 				/* Essentailly a packet drop, but we want
 				 * recv_started set as this is a START_BYTE,
 				 * after all. */
-				printf("RX::: no space, drop old packet\n");
 				rx.p_idx[next_head] = rx.p_idx[rx.head];
 			} else {
 				/* advance the packet idx */
@@ -266,11 +257,9 @@ RX_ISR()
 				 * same as rx.p_idx[next_head]
 				 */
 				rx.p_idx[next_next_head] = rx.p_idx[next_head];
-				printf("RX::: stored old packet\n");
 			}
 		}
 
-		print_wait();
 		/* otherwise, we have zero bytes in the packet, no need to
 		 * advance */
 		return;
@@ -278,20 +267,14 @@ RX_ISR()
 
 	if (!recv_started) {
 		/* ignore stuff until we get a start byte */
-		printf("RX:: recieve not started, ignore byte\n");
-		print_wait();
 		return;
 	}
 
 	if (data == RESET_BYTE) {
-		printf("RX:: reset byte, drop packet\n");
-		print_wait();
 		goto drop_packet;
 	}
 
 	if (data == ESC_BYTE) {
-		printf("RX:: escape byte, waiting.\n");
-		print_wait();
 		/* Possible error check: is_escaped should not already
 		 * be true */
 		is_escaped = true;
@@ -305,8 +288,6 @@ RX_ISR()
 		is_escaped = false;
 		data ^= ESC_MASK;
 
-		printf("RX:: escape %c(%d) = %c(%d)\n", data^ESC_MASK, data^ESC_MASK, data, data);
-		print_wait();
 	}
 
 	/* do we have another byte to write into? */
@@ -316,13 +297,9 @@ RX_ISR()
 		rx.p_idx[next_head] =
 			(rx.p_idx[next_head] + 1) & (sizeof(rx.buf) - 1);
 
-		printf("RX:: wrote stuff.\n");
-		print_wait();
 		return;
 	}
 
-	printf("RX:: blast, out of buf space\n");
-	print_wait();
 
 	/* well, shucks. we're out of space, drop the packet */
 	/* goto drop_packet; */

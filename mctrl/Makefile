@@ -38,7 +38,7 @@ DEBUG = stabs
 CSTANDARD = -std=gnu99
 
 VERSION := $(shell $(srcdir)/../setlocalversion)
-CDEFS = -DVERSION="\"$(TARGET)$(VERSION)\"" -DDEBUG
+CDEFS = -DVERSION="\"$(TARGET)$(VERSION)\""
 
 # Place -I options here
 CINCS = -I../common
