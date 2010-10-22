@@ -36,6 +36,8 @@ uint8_t sspi_xfer_byte(uint8_t data)
 	return ret;
 }
 
+/* @max spi clock we have 16 ticks per byte transfered
+ * (F_SPI <= F_CLK / 2) */
 void sspi_xfer(uint8_t *dst, uint8_t *src, uint16_t len)
 {
 	uint8_t *end = src + len;
