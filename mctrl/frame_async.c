@@ -10,7 +10,8 @@
 
 #include "proto.h"
 
-/* 0x7e => 0x7d, 0x5e
+/* 0x7f => 0x7d, 0x5f
+ * 0x7e => 0x7d, 0x5e
  * 0x7d => 0x7d, 0x5d
  */
 
@@ -66,7 +67,8 @@ static void print_wait(void)
 	loop_until_bit_is_set(UCSR0A, UDRE0);
 }
 
-static FILE usart0_io_direct = FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FDEV_SETUP_WRITE);
+static FILE usart0_io_direct =
+	FDEV_SETUP_STREAM(usart0_putchar_direct, NULL,_FDEV_SETUP_WRITE);
 # endif
 
 # define usart0_udre_isr_on() (UCSR0B |= (1 << UDRIE0))
@@ -150,10 +152,10 @@ void frame_timeout(void)
 /* called first to determine if we have a packet */
 uint8_t frame_recv_len(void)
 {
-	uint8_t tail = rx.tail;
-	if (tail != rx.head) {
-		return CIRC_CNT(rx.p_idx[CIRC_NEXT(tail,sizeof(rx.p_idx))],
-				rx.p_idx[tail],
+	uint8_t p_tail = rx.tail;
+	if (p_tail != rx.head) {
+		return CIRC_CNT(rx.p_idx[CIRC_NEXT(p_tail,sizeof(rx.p_idx))],
+				rx.p_idx[p_tail],
 				sizeof(rx.buf));
 	} else {
 		return 0;
@@ -163,14 +165,14 @@ uint8_t frame_recv_len(void)
 /* get next byte from packet */
 uint8_t frame_recv_byte(void)
 {
-	uint8_t curr_tail = rx.tail;
-	uint8_t next_tail = CIRC_NEXT(curr_tail, sizeof(rx.p_idx));
-	uint8_t curr_b_tail = rx.p_idx[curr_tail];
-	uint8_t next_b_tail = rx.p_idx[next_tail];
+	uint8_t p_curr_tail = rx.tail;
+	uint8_t p_next_tail = CIRC_NEXT(p_curr_tail, sizeof(rx.p_idx));
+	uint8_t b_curr_tail = rx.p_idx[p_curr_tail];
+	uint8_t b_next_tail = rx.p_idx[p_next_tail];
 
-	if (curr_b_tail != next_b_tail) {
-		uint8_t data = rx.buf[curr_b_tail];
-		rx.p_idx[curr_tail] = CIRC_NEXT(curr_b_tail, sizeof(rx.buf));
+	if (b_curr_tail != b_next_tail) {
+		uint8_t data = rx.buf[b_curr_tail];
+		rx.p_idx[p_curr_tail] = CIRC_NEXT(b_curr_tail, sizeof(rx.buf));
 		return data;
 	} else {
 		return 0;
@@ -186,7 +188,8 @@ uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
 		uint8_t next_tail = CIRC_NEXT(rx.tail, sizeof(rx.p_idx));
 		uint8_t next_b_tail = rx.p_idx[next_tail];
 		uint8_t ct = CIRC_CNT(next_b_tail, curr_b_tail, sizeof(rx.buf));
-		uint8_t ct_to_end = CIRC_CNT_TO_END(next_b_tail, curr_b_tail, sizeof(rx.buf));
+		uint8_t ct_to_end = CIRC_CNT_TO_END(next_b_tail,
+					curr_b_tail, sizeof(rx.buf));
 
 		uint8_t cpy1_len = MIN(len, ct_to_end);
 		uint8_t cpy2_len = MIN(len, ct) - cpy1_len;

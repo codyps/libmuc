@@ -5,6 +5,8 @@ TARGET = hdlc_frame
 
 SRC = main.c
 
+CFLAGS = -Wall
+
 all: build
 
 rebuild: | clean build

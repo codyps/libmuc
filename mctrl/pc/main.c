@@ -39,7 +39,7 @@ ssize_t frame_recv(FILE *in, void *vbuf, size_t nbytes)
 	for(i = 0; i < nbytes; ) {
 		int data = fgetc(in);
 		if (data == EOF)
-			continue;
+			break;
 
 		if (data == START_BYTE) {
 			if (recv_started) {
@@ -78,6 +78,7 @@ ssize_t frame_recv(FILE *in, void *vbuf, size_t nbytes)
 			return -ENOSPC;
 		}
 	}
+	return i;
 }
 
 struct bytebuf {
@@ -102,13 +103,13 @@ struct bytebuf *bytebuf_mk(size_t initial_sz)
 }
 
 struct bytebuf *bytebuf_append(struct bytebuf *s, char c) {
-
+	return 0;
 }
 
 int main(int argc, char **argv)
 {
 
-	char *d = "\x7f~";
+	char *d = "~";
 	char buf[1024];
 	frame_send(stdout, d, strlen(d));
 	frame_recv(stdin, buf, sizeof(buf));
