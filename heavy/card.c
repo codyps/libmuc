@@ -48,9 +48,15 @@ struct mag_status {
 	uint8_t data_ready;
 
 	uint8_t data_buff[64];
-	volatile list_t(mag) data_q;
+	list_t(mag) data_q;
 
 } static mag = {.data_q = LIST_INITIALIZER(mag.data_buff) };
+
+/* insert_bit()
+ * next_byte()
+ * need array indexing.
+ * forward and bit reversed readback.
+ */
 
 static uint8_t bit(uint8_t in, uint8_t pos)
 {
@@ -180,8 +186,7 @@ void card_spin(void)
 		for (uint8_t i = 0; i < MAGR_BITS_PACK; i++) {
 			printf("%d", bit(data, i));
 		}
-		uint8_t data_i =
-		    bit_reverse(data) >> (8 - MAGR_BITS_PACK);
+		uint8_t data_i = bit_reverse(data) >> (8 - MAGR_BITS_PACK);
 		uint16_t proc = iso_t2(data);
 		uint16_t proc_i = iso_t2(data_i);
 
