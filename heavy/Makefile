@@ -10,6 +10,7 @@ ADMCU = atmega644p
 FORMAT = ihex
 TARGET = main
 SRC = main.c
+SRC += card.c
 #SRC += util.c
 #SRC += usart1.c
 SRC += ../common/bus/spi_io.c
