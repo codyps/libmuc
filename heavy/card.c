@@ -143,6 +143,13 @@ void card_init(void)
 	PCMSK0 |= (MAGR_BITFIELD);
 }
 
+enum card_state {
+	C_ALL_OUT = 0,
+	C_MOVE_IN,
+	C_ALL_IN,
+	C_MOVE_OUT
+} static cstate;
+
 void card_spin(void)
 {
 
@@ -165,17 +172,17 @@ void card_spin(void)
 		puts_P(PSTR("\ninsert_0\n"));
 		mag.insert_0--;
 	}
-	/*
-	   if (mag.motion_1) {
-	   puts_P(PSTR("motion_1\n"));
-	   mag.motion_1--;
-	   }
+#if 0   
+	if (mag.motion_1) {
+		puts_P(PSTR("motion_1\n"));
+		mag.motion_1--;
+	}
 
-	   if (mag.motion_0) {
-	   puts_P(PSTR("motion_0\n"));
-	   mag.motion_0--;
-	   }
-	 */
+	if (mag.motion_0) {
+		puts_P(PSTR("motion_0\n"));
+		mag.motion_0--;
+	}
+#endif
 
 	if (mag.data_ready) {
 		uint8_t data = mag.data;
@@ -215,6 +222,39 @@ ISR(SIG_PIN_CHANGE0)
 
 	static uint8_t data;
 
+	if (pin_diff & MAGR_CDETECT) {
+		if (new_pin & MAGR_CDETECT) {
+			//set (line 1, logic 0)
+			// state = card all the way out
+			mag.insert_0++;
+		} else {
+			if (cstate == C_ALL_OUT) {
+				cstate = C_MOVE_IN;
+			}
+			//clear (line 0, logic 1)
+			// state = card begginning in
+			mag.insert_1++;
+		}
+	}
+
+	if (pin_diff & MAGR_ENDSTOP) {
+		if (new_pin & MAGR_ENDSTOP) {
+			if (cstate == C_ALL_IN) {
+				cstate = C_MOVE_OUT;
+			}
+			//set (line 1, logic 0)
+			// state = card begining to move out
+			mag.end_stop_0++;
+		} else {
+			if (cstate == C_MOVE_IN) {
+				cstate = C_ALL_IN;
+			}
+			//clear (line 0, logic 1)
+			// state parity_even_bit(in>>1)= card all the way in
+			mag.end_stop_1++;
+		}
+	}
+
 	if (pin_diff & MAGR_DATA) {
 		// data = !MAGR_DATA
 		if (new_pin & MAGR_DATA) {
@@ -230,53 +270,35 @@ ISR(SIG_PIN_CHANGE0)
 			//set (line 1, logic 0)
 			// about to do something?
 		} else {
-			//clear (line 0, logic 1)
-			// read data
-			mag.data |= (data << (mag.data_ct));
-			mag.data_ct++;
-			if (mag.data_ct >= MAGR_BITS_PACK) {
-				mag.data_ready = 1;
-				list_push(mag) (&(mag.data_q), mag.data);
+			if (cstate == C_MOVE_IN || cstate == C_MOVE_OUT) {
+				//clear (line 0, logic 1)
+				// read data
+				mag.data |= (data << (mag.data_ct));
+				mag.data_ct++;
+				if (mag.data_ct >= MAGR_BITS_PACK) {
+					if (cstate == C_MOVE_OUT) {
+						mag.data = bit_reverse(mag.data);
+					}
+					mag.data_ready = 1;
+					list_push(mag) (&(mag.data_q), mag.data);
+					mag.data_ct = 0;
+				}
 			}
 		}
 	}
 
-	/*
-	   if ( pin_diff & MAGR_MOTION ) {
-	   if ( new_pin & MAGR_MOTION) {
-	   //set (line 1, logic 0) 
-	   // state = mag card no longer in motion
-	   mag.motion_0 ++;
-	   }
-	   else {
-	   //clear (line 0, logic 1)
-	   // state = mag card in motion
-	   mag.motion_1 ++;
-	   }
-	   }
-	 */
-
-	if (pin_diff & MAGR_CDETECT) {
-		if (new_pin & MAGR_CDETECT) {
+#if 0
+	if ( pin_diff & MAGR_MOTION ) {
+		if ( new_pin & MAGR_MOTION) {
 			//set (line 1, logic 0)
-			// state = card all the way out
-			mag.insert_0++;
-		} else {
+			// state = mag card no longer in motion
+			mag.motion_0 ++;
+		}
+		else {
 			//clear (line 0, logic 1)
-			// state = card begginning in
-			mag.insert_1++;
+			// state = mag card in motion
+			mag.motion_1 ++;
 		}
 	}
-
-	if (pin_diff & MAGR_ENDSTOP) {
-		if (new_pin & MAGR_ENDSTOP) {
-			//set (line 1, logic 0)
-			// state = card begining to move out
-			mag.end_stop_0++;
-		} else {
-			//clear (line 0, logic 1)
-			// state parity_even_bit(in>>1)= card all the way in
-			mag.end_stop_1++;
-		}
-	}
+#endif
 }
