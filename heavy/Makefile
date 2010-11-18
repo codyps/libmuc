@@ -16,7 +16,7 @@ SRC += card.c
 SRC += ../common/bus/spi_io.c
 #SRC += ../common/i2c.c ../common/ex/i2c_HMC6343.c
 #SRC += ../common/servo.c
-SRC += ../common/ds/list.c
+#SRC += ../common/ds/list.c
 
 ASRC = 
 OPT = s
