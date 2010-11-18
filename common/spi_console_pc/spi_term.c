@@ -34,32 +34,32 @@
 /* Why not. */
 const char *progname;
 
-void do_printf_ui(void) {
-  uint8_t cont = 1;	
+void do_printf_ui(void)
+{
+	uint8_t cont = 1;
 
-	while(cont) {
+	while (cont) {
 		uint8_t input[4] = { 0, 0, 0, 0 };
 		uint8_t output[4];
-		
 
-    /*
-		{
-		uint8_t c;
-		uint8_t i = 0;
-		while((c = getch()) && i < 4)
-		{
-			if (c == '\003')
-				cont = 0;
+		/*
+		   {
+		   uint8_t c;
+		   uint8_t i = 0;
+		   while((c = getch()) && i < 4)
+		   {
+		   if (c == '\003')
+		   cont = 0;
 
-			input[i] = c;
-			i++;
-		}
-		}
-    */
+		   input[i] = c;
+		   i++;
+		   }
+		   }
+		 */
 
-		usbtiny_spi(input,output);
-		
-		for(uint8_t i = 0; i < sizeof(input); i++ ) {
+		usbtiny_spi(input, output);
+
+		for (uint8_t i = 0; i < sizeof(input); i++) {
 			if (output[i] && isascii(output[i]))
 				putchar(output[i]);
 		}
@@ -71,28 +71,26 @@ void do_printf_ui(void) {
 
 int main(int argc, char **argv)
 {
-  // XXX: bitclock always default for now.
-  // any faster than this with 1Mhz avr clock and bit errors are too likely.
-  double bitclock = 0.0000500;  
+	// XXX: bitclock always default for now.
+	// any faster than this with 1Mhz avr clock and bit errors are too likely.
+	double bitclock = 0.0000500;
 
-  progname = argv[0];
+	progname = argv[0];
 
-  /* Find and open usbtiny. */
-  usbtiny_open();
+	/* Find and open usbtiny. */
+	usbtiny_open();
 
-  // Check for bit-clock and tell the usbtiny to adjust itself
-  usbtiny_set_sck_period(bitclock);
+	// Check for bit-clock and tell the usbtiny to adjust itself
+	usbtiny_set_sck_period(bitclock);
 
+	// Let the device wake up.
+	usleep(50000);
 
-  // Let the device wake up.
-  usleep(50000);
+	//do_ncurses_ui();
+	do_printf_ui();
 
-  //do_ncurses_ui();
-  do_printf_ui();
+	usb_control(USBTINY_POWERDOWN, 0, 0);	// Send USB control command to device
+	usbtiny_close();
 
-  usb_control(USBTINY_POWERDOWN, 0, 0);      // Send USB control command to device
-  usbtiny_close();
-
-  return 0;
+	return 0;
 }
-
