@@ -1,4 +1,3 @@
-//FIXME: Currently the following line does nothing, had to place the '1' directly in the U_# macros
 #define USART_NUMBER	1
 
 #define EV(x) (x)
@@ -14,8 +13,6 @@
 /*
 
 #define usart_init U_I(usart,_init)
-
-
 
 
 #define usart_flush_rx U_I(usart,_flush_rx)
