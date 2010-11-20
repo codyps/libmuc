@@ -196,10 +196,10 @@ extcoff: $(TARGET).elf
 
 # Link: create ELF output file from object files.
 $(TARGET).elf: $(OBJ)
-	$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
+	$(CC) $(ALL_CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 $(TARGET).uni.elf: $(SRC)
-	$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program --output $@ $(LDFLAGS)
+	$(CC) $(ALL_CFLAGS) -fwhole-program -o $@ --combine $(SRC) $(LDFLAGS)
 
 # Compile: create object files from C source files.
 .c.o:
