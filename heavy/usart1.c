@@ -177,7 +177,7 @@ static int usart1_getchar_direct(FILE *stream) {
 			if (c == '\n') {
 				*cp = c;
 				fputc(c, stream);
-				rxp = b;
+				rxp = b;
 				break;
 			}
 			else if (c == '\t') 	c = ' ';
