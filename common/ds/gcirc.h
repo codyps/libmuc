@@ -134,16 +134,16 @@ __unused bool list_empty(_name_)(list_t(_name_) *list) { \
 #define LIST_EMPTY(_list_) \
 	((_list_)->head == (_list_)->tail)
 
-#define _L_DEF_FULL(_name_)                             \
-__unused bool list_full(_name_)(list_t(_name_) *list) { \
-	if ( likely( (list->head + 1) !=  list->tail ) )  \
-		return false;                           \
-	else                                            \
-		return true;                            \
+#define _L_DEF_FULL(_name_)                                                \
+__unused bool list_full(_name_)(list_t(_name_) *list) {                    \
+	if ( likely( (CIRC_NEXT(list->head,list->size) !=  list->tail )) ) \
+		return false;                                              \
+	else                                                               \
+		return true;                                               \
 }
 
 #define LIST_FULL(_list_) \
-	(((_list_)->head + 1) == (_list_)->tail )
+	((CIRC_NEXT((_list_)->head,(_list_)->size) == (_list_)->tail )
 
 #define _L_DEF_VAL_I(_name_, _index_t_)  \
 __unused bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\
