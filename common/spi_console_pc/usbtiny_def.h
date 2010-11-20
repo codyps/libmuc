@@ -1,5 +1,5 @@
 /*
- * spiconsole - A simple interface to usbtinyisp to act as a 'console' 
+ * spiconsole - A simple interface to usbtinyisp to act as a 'console'
  *              using SPI
  * Copyright (C) 2008 Matt Anderson, adapted from usbtiny.c from avrdude
  *
@@ -33,9 +33,9 @@
 #define USBTINY_PRODUCT 0x0C9F
 
 // Generic requests to the USBtiny
-#define	USBTINY_ECHO 	     0	// echo test
+#define	USBTINY_ECHO	     0	// echo test
 #define	USBTINY_READ         1	// read byte (wIndex:address)
-#define	USBTINY_WRITE 	     2	// write byte (wIndex:address, wValue:value)
+#define	USBTINY_WRITE	     2	// write byte (wIndex:address, wValue:value)
 #define	USBTINY_CLR          3	// clear bit (wIndex:address, wValue:bitno)
 #define	USBTINY_SET          4	// set bit (wIndex:address, wValue:bitno)
 

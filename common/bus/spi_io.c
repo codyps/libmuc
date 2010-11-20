@@ -7,10 +7,10 @@
 
 #include "../common.h"
 
+#include "hex.h"
 #include "ds/gcirc.h"
 
 #include "spi_io_conf.h"
-
 #include "spi_io.h"
 
 #define NONE
@@ -39,11 +39,6 @@ static void spi_isr_off(void);
 
 void spi_io_init(void) {
 	spi_io_init_hw();
-
-	#ifdef SPI_IO_STANDARD
-	spi_io = &_spi_io;
-	#endif
-
 }
 
 #define ISR_GIVE_OK() (!list_full(x)(&rx))
@@ -53,11 +48,11 @@ void spi_io_init(void) {
 
 // Pick which spi implimentation to use.
 #if defined(SPI_IO_USE_SPI)
-#include "spi_io_spi.c"
+# include "spi_io_spi.c"
 #elif defined(SPI_IO_USE_USI)
-#include "spi_io_usi.c"
+# include "spi_io_usi.c"
 #elif defined(SPI_IO_USE_USART)
-#error "SPI_IO over USART not implimented"
+# error "SPI_IO over USART not implimented"
 #endif
 
 /*
@@ -75,51 +70,55 @@ void spi_io_init(void) {
 
 #ifdef SPI_IO_STANDARD
 int spi_putc(char c, FILE * stream) {
-	#ifdef SPI_IO_STD_WAIT
-	while(list_full(x)(&tx))
-		;
-	#else
+# ifdef SPI_IO_STD_WAIT
+	while(list_full(x)(&tx)) {
+		asm volatile("":::"memory");
+	}
+# else
 	if (list_full(x)(&tx))
 		return EOF;
-	#endif /* SPI_IO_STD_WAIT */
+# endif /* SPI_IO_STD_WAIT */
 	list_push(x)(&tx,c);
 	return 0;
 }
 
 int spi_getc(FILE * stream) {
-	#ifdef SPI_IO_STD_WAIT
+# ifdef SPI_IO_STD_WAIT
 	while(list_empty(x)(&rx))
 		;
-	#else
+# else
 	if (list_empty(x)(&rx))
 		return EOF;
-	#endif /* SPI_IO_STD_WAIT */
+# endif /* SPI_IO_STD_WAIT */
 	return list_get(x)(&rx);
 }
 
 #endif /* SPI_IO_STANDARD */
 
-#if defined(SPI_IO_FAST_ERROR_ZERO)
-  #undef EOF
-  #define EOF 0
-#endif
 
-#if ( defined(SPI_IO_FAST_WAIT) || defined(SPI_IO_FAST_ERROR_ZERO) )
+#ifdef SPI_IO_FAST
+
+# if defined(SPI_IO_FAST_ERROR_ZERO)
+#  undef EOF
+#  define EOF 0
+# endif
+
+# if ( defined(SPI_IO_FAST_WAIT) || defined(SPI_IO_FAST_ERROR_ZERO) )
 uint8_t spi_getchar(void) {
-#else
+# else
 int spi_getchar(void) {
-#endif
-	#ifdef SPI_IO_FAST_WAIT
+# endif
+# ifdef SPI_IO_FAST_WAIT
 	while(list_empty(x)(&rx))
 		;
-	#else
+# else
 	if (list_empty(x)(&rx))
 		return EOF;
-	#endif
+# endif
 	return list_get(x)(&rx);
 }
 
-static void spi_putchar_unsafe(uint8_t ch) {
+void spi_putchar(uint8_t ch) {
 	while(list_full(x)(&tx))
 		;
 	list_push(x)(&tx,ch);
@@ -127,32 +126,21 @@ static void spi_putchar_unsafe(uint8_t ch) {
 
 void spi_puts(const char * string) {
 	while(*string) {
-		spi_putchar_unsafe(*string);
+		spi_putchar(*string);
 		string++;
 	}
 }
 
-void spi_putchar(uint8_t ch) {
-	spi_putchar_unsafe(ch);
-}
-
-static uint8_t hex2ascii(uint8_t hex) {
-	hex = 0x0F & hex;
-	hex = (uint8_t) (hex + '0');
-	if (hex > '9')
-		return (uint8_t) (hex + ('A' - '9' + 1));
-	else
-		return hex;
-}
-
 void spi_puth(uint8_t hex) {
-	spi_putchar_unsafe( hex2ascii( (hex>>4 ) ) );
-	spi_putchar_unsafe( hex2ascii( (hex>>0 ) ) );
+	spi_putchar( bin_to_hex4( (hex>>4 ) ) );
+	spi_putchar( bin_to_hex4( (hex>>0 ) ) );
 }
 
 void spi_puth2(uint16_t hex) {
-	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>12) ) );
-	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>8 ) ) );
-	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>4 ) ) );
-	spi_putchar_unsafe( hex2ascii( (uint8_t)(hex>>0 ) ) );
+	spi_putchar( bin_to_hex4( (uint8_t)(hex>>12) ) );
+	spi_putchar( bin_to_hex4( (uint8_t)(hex>>8 ) ) );
+	spi_putchar( bin_to_hex4( (uint8_t)(hex>>4 ) ) );
+	spi_putchar( bin_to_hex4( (uint8_t)(hex>>0 ) ) );
 }
+
+#endif

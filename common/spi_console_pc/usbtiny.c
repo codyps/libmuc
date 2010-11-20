@@ -18,21 +18,21 @@ int usbtiny_open(void)
 	struct usb_bus *busses, *bus;
 	struct usb_device *dev = 0;
 
-	usb_init();		// initialize the libusb system
-	usb_find_busses();	// have libusb scan all the usb busses available
-	usb_find_devices();	// have libusb scan all the usb devices available
+	usb_init();
+	usb_find_busses();
+	usb_find_devices();
+
 
 	busses = usb_get_busses();
 	usb_handle = NULL;
 
-	// now we iterate through all the busses and devices
 	for (bus = busses; bus; bus = bus->next) {
 		for (dev = bus->devices; dev; dev = dev->next) {
-			if (dev->descriptor.idVendor == USBTINY_VENDOR && dev->descriptor.idProduct == USBTINY_PRODUCT) {	// found match?
+			if (dev->descriptor.idVendor == USBTINY_VENDOR
+				&& dev->descriptor.idProduct == USBTINY_PRODUCT) {
 
-				usb_handle = usb_open(dev);	// attempt to connect to device
+				usb_handle = usb_open(dev);
 
-				// wrong permissions or something?
 				if (!usb_handle) {
 					fprintf(stderr,
 						"%s: Warning: cannot open USB device: %s\n",
@@ -50,7 +50,7 @@ int usbtiny_open(void)
 		exit(1);
 	}
 
-	return 0;		// If we got here, we must have found a good USB device
+	return 0;
 }
 
 void usbtiny_close(void)
@@ -60,13 +60,17 @@ void usbtiny_close(void)
 }
 
 // Wrapper for simple usb_control_msg messages
-int usb_control(unsigned int requestid, unsigned int val, unsigned int index)
+int usb_control(int requestid, int val, int index)
 {
 	int nbytes;
 
-	nbytes = usb_control_msg(usb_handle, USB_ENDPOINT_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE, requestid, val, index,	// 2 bytes each of data
-				 NULL, 0,	// no data buffer in control messge
-				 USB_TIMEOUT);	// default timeout
+	nbytes = usb_control_msg(usb_handle,
+			USB_ENDPOINT_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+			requestid,
+			val,
+			index,	// 2 bytes each of data
+			NULL, 0,	// no data buffer in control messge
+			USB_TIMEOUT);	// default timeout
 
 	if (nbytes < 0) {
 		fprintf(stderr, "%s: error: usbtiny_transmit: %s\n",
@@ -120,7 +124,8 @@ void usbtiny_set_chunk_size(int period)
    USBtiny to update itself to the new frequency */
 int usbtiny_set_sck_period(double v)
 {
-	sck_period = (int)(v * 1e6 + 0.5);	// convert from us to 'int', the 0.5 is for rounding up
+	// convert from us to 'int', the 0.5 is for rounding up
+	sck_period = (int)(v * 1e6 + 0.5);
 
 	// Make sure its not 0, as that will confuse the usbtiny
 	if (sck_period < SCK_MIN)
@@ -160,5 +165,5 @@ int usbtiny_spi(unsigned char cmd[4], unsigned char res[4])
 	       cmd[0], cmd[1], cmd[2], cmd[3], res[0], res[1], res[2], res[3]);
 #endif
 
-	return (nbytes == sizeof(res));	// should have read 4 bytes
+	return nbytes;	// should have read 4 bytes
 }
