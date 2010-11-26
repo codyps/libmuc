@@ -149,7 +149,19 @@ void frame_timeout(void)
 
 /*** Reception of Data ***/
 /** receive: consumer, modifies tail **/
-/* called first to determine if we have a packet */
+/* 2 paths possible for recviever:
+ *  - call frame_recv_len (returns 0 if no packet is ready) to see if there is
+ *    a packet, subsequently recv data via frame_recv_byte & frame_recv_copy.
+ *  - call frame_recv_copy (returns 0 if no packet) and either have all data
+ *    returned in the single copy call, or use subsequent
+ *    frame_recv_{copy,byte} calls to get all the data.
+ * Once done recieving current packet, call frame_recv_next to advance to the
+ * next packet. Packets *are not* advanced automatically under any condition.
+ */
+
+/* return: number of bytes in the current packet. 0 indicates the lack of
+ * a packet (packets cannot be 0 bytes).
+ */
 uint8_t frame_recv_len(void)
 {
 	uint8_t p_tail = rx.tail;
@@ -162,7 +174,15 @@ uint8_t frame_recv_len(void)
 	}
 }
 
-/* get next byte from packet */
+/* return: next byte from packet.
+ * advances byte pointer.
+ *
+ * it is not recommended to call this without first determining that the
+ * next byte in the packet exsists. It will return 0 in the case were
+ * no bytes remain in the packet, which may be a valid value in the
+ * packet and thus should not be used to indicate the packet is
+ * fully processed.
+ */
 uint8_t frame_recv_byte(void)
 {
 	uint8_t p_curr_tail = rx.tail;
@@ -179,7 +199,11 @@ uint8_t frame_recv_byte(void)
 	}
 }
 
-/* returns length of packet */
+/* dst: array of at least len bytes into which the current packet is copied
+ *      (up to len bytes).
+ * return: length of current packet, not the amount copied into dst.
+ * byte pointer is advanced by MIN(len, packet_len)
+ */
 uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
 {
 	uint8_t curr_tail = rx.tail;
@@ -191,11 +215,14 @@ uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
 		uint8_t ct_to_end = CIRC_CNT_TO_END(next_b_tail,
 					curr_b_tail, sizeof(rx.buf));
 
+		uint8_t cpy_ct = MIN(len, ct);
 		uint8_t cpy1_len = MIN(len, ct_to_end);
-		uint8_t cpy2_len = MIN(len, ct) - cpy1_len;
+		uint8_t cpy2_len = cpy_ct - cpy1_len;
 
 		memcpy(dst, rx.buf + curr_b_tail, cpy1_len);
 		memcpy(dst + cpy1_len, rx.buf, cpy2_len);
+
+		rx.p_idx[curr_tail] = (curr_b_tail + cpy_ct) & (sizeof(rx.buf) - 1);
 
 		return ct;
 	} else {
@@ -203,17 +230,24 @@ uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
 	}
 }
 
+/* advance the packet pointer to the next packet.
+ *
+ * One must be sure another packet is present prior to calling this func.
+ * That may be done either
+ *  - by calling frame_recv_ct (which will be non-zero when another
+ *    packet is present) or
+ *
+ * XXX: - when the current packet is empty??
+ */
 void frame_recv_next(void)
 {
-	/* This should only be called following frame_recv_len succeeding */
 	rx.tail = CIRC_NEXT(rx.tail,sizeof(rx.p_idx));
 }
 
+/* return: the number of packets presently waiting to be processed */
 uint8_t frame_recv_ct(void)
 {
-	return CIRC_CNT(rx.head,
-			rx.tail,
-			sizeof(rx.p_idx));
+	return CIRC_CNT(rx.head, rx.tail, sizeof(rx.p_idx));
 }
 
 /** recieve: producer, modifies head **/
@@ -226,7 +260,7 @@ RX_ISR()
 
 	/* safe location (in rx.p_idx) to store the location of the next
 	 * byte to write; */
-	uint8_t next_head = CIRC_NEXT(rx.head,sizeof(rx.p_idx));
+	uint8_t next_head = CIRC_NEXT(rx.head, sizeof(rx.p_idx));
 
 	/* check `status` for error conditions */
 	if (RX_STATUS_IS_ERROR(status)) {
@@ -376,6 +410,12 @@ TX_ISR()
 }
 
 /** transmit: producer of data, modifies head **/
+/* 2 API options:
+ *  - packet building:
+ *     frame_{start,append*,done}
+ *  - full packet sending:
+ *     frame_send
+ */
 static bool frame_start_flag;
 void frame_start(void)
 {
@@ -509,15 +549,15 @@ static void usart0_init(void)
 		| (1 << UCSZ01) | (1 << UCSZ00);
 
 	/* Baud 38400 */
-#define BAUD 38400
-#include <util/setbaud.h>
+# define BAUD 38400
+# include <util/setbaud.h>
 	UBRR0 = UBRR_VALUE;
 
-#if USE_2X
+# if USE_2X
 	UCSR0A = (1 << U2X0);
-#else
+# else
 	UCSR0A = 0;
-#endif
+# endif
 
 	/* Enable RX isr, disable UDRE isr, EN recv and trans, 8 bit data */
 	UCSR0B = (1 << RXCIE0) | (0 << UDRIE0)
@@ -525,9 +565,9 @@ static void usart0_init(void)
 		| (0 << UCSZ02);
 
 	/* XXX: debugging */
-#if defined(DEBUG)
+# if defined(DEBUG)
 	stdout = stderr = &usart0_io_direct;
-#endif
+# endif
 }
 
 void frame_init(void)
