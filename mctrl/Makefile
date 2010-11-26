@@ -212,7 +212,7 @@ extcoff: $(TARGET).extcof
 .SECONDARY:
 %.c.o: %.c
 	@echo "CC $(@F)"
-	@$(CC) $(ALL_CFLAGS) -c -o $@ $<
+	@$(CC) -MMD $(ALL_CFLAGS) -c -o $@ $<
 
 # Compile: create assembler files from C source files.
 %.c.s: %.s
@@ -246,3 +246,5 @@ depend:
 
 .PHONY:	all build elf hex eep lss sym program coff extcoff clean depend \
 	rebuild %.clean
+
+-include *.d
