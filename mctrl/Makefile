@@ -188,7 +188,8 @@ extcoff: $(TARGET).extcof
 .elf.eep:
 	@echo OBJCOPY $@
 	@-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
-	--change-section-lma .eeprom=0 -O $(FORMAT) $< $@
+	--change-section-lma .eeprom=0 --no-change-warnings \
+	-O $(FORMAT) $< $@
 
 # Create extended listing file from ELF output file.
 %.elf.lss: %.elf
