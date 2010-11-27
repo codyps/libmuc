@@ -144,8 +144,7 @@ void frame_timeout(void)
 	printf(" }}\n");
 
 }
-#endif
-/* DEBUG }} */
+#endif /* defined(DEBUG) */
 
 /*** Reception of Data ***/
 /** receive: consumer, modifies tail **/
@@ -190,7 +189,7 @@ uint8_t frame_recv_byte(void)
 	uint8_t b_curr_tail = rx.p_idx[p_curr_tail];
 	uint8_t b_next_tail = rx.p_idx[p_next_tail];
 
-	if (b_curr_tail != b_next_tail) {
+	if ((rx.tail != rx.head) && (b_curr_tail != b_next_tail)) {
 		uint8_t data = rx.buf[b_curr_tail];
 		rx.p_idx[p_curr_tail] = CIRC_NEXT(b_curr_tail, sizeof(rx.buf));
 		return data;
@@ -232,19 +231,30 @@ uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
 
 /* advance the packet pointer to the next packet.
  *
- * One must be sure another packet is present prior to calling this func.
+ * One must be sure the packet queue is not empty prior to calling this func.
  * That may be done either
- *  - by calling frame_recv_ct (which will be non-zero when another
- *    packet is present) or
- *
- * XXX: - when the current packet is empty??
+ *  - by calling frame_recv_ct (non-zero when the queue is non-empty or
+ *  - by only calling this func when one finishes processing the current packet
+ *    which ensures that at least one packet (the one presently being
+ *    processed) will be in the packet queue.
  */
 void frame_recv_next(void)
 {
-	rx.tail = CIRC_NEXT(rx.tail,sizeof(rx.p_idx));
+	uint8_t next_tail = CIRC_NEXT(rx.tail, sizeof(rx.p_idx));
+	rx.tail = next_tail;
 }
 
-/* return: the number of packets presently waiting to be processed */
+/* return: true if at least one packet is in the queue. The queue includes
+ *         the packet currently being processed.
+ */
+bool frame_recv_have_pkt(void)
+{
+	return rx.tail != rx.head;
+}
+
+/* return: the number of packets presently in the queue. The queue includes
+ *         the packet currently being processed.
+ */
 uint8_t frame_recv_ct(void)
 {
 	return CIRC_CNT(rx.head, rx.tail, sizeof(rx.p_idx));
@@ -329,10 +339,14 @@ RX_ISR()
 
 	/* do we have another byte to write into? */
 	/* FIXME: don't need full CIRC_SPACE calculation */
-	if (CIRC_SPACE(rx.p_idx[next_head], rx.p_idx[rx.tail], sizeof(rx.buf))) {
-		rx.buf[rx.p_idx[next_head]] = data;
+	//if (CIRC_SPACE(rx.p_idx[next_head], rx.p_idx[rx.tail], sizeof(rx.buf))) {
+	uint8_t next_b_head = rx.p_idx[next_head];
+	uint8_t next_b_next_head = CIRC_NEXT(next_b_head, sizeof(rx.buf));
+	uint8_t b_tail = rx.p_idx[rx.tail];
+	if (b_tail != next_b_next_head) {
+		rx.buf[next_b_head] = data;
 		rx.p_idx[next_head] =
-			(rx.p_idx[next_head] + 1) & (sizeof(rx.buf) - 1);
+			(next_b_head + 1) & (sizeof(rx.buf) - 1);
 
 		return;
 	}

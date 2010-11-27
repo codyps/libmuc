@@ -1,6 +1,7 @@
 #ifndef FRAME_ASYNC_H_
 #define FRAME_ASYNC_H_ 1
 #include <stdint.h>
+#include <stdbool.h>
 
 void frame_init(void);
 
@@ -72,16 +73,22 @@ uint8_t frame_recv_byte(void);
 
 /* advance the packet pointer to the next packet.
  *
- * One must be sure another packet is present prior to calling this func.
+ * One must be sure the packet queue is not empty prior to calling this func.
  * That may be done either
- *  - by calling frame_recv_ct (which will be non-zero when another
- *    packet is present) or
- *
- * XXX: - when the current packet is empty??
+ *  - by calling frame_recv_ct (non-zero when the queue is non-empty or
+ *  - by only calling this func when one finishes processing the current packet
+ *    which ensures that at least one packet (the one presently being
+ *    processed) will be in the packet queue.
  */
 void frame_recv_next(void);
 
-/* return: the number of packets presently waiting to be processed
+/* return: true if at least one packet is in the queue. The queue includes
+ *         the packet currently being processed.
+ */
+bool frame_recv_have_pkt(void);
+
+/* return: the number of packets presently in the queue. The queue includes
+ *         the packet currently being processed.
  */
 uint8_t frame_recv_ct(void);
 
