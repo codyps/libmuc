@@ -12,13 +12,13 @@
 static struct tq {
 	uint8_t head;
 	uint8_t tail;
-	uint8_t buf[64];
+	char buf[64];
 } tq;
 
 static struct rq {
 	uint8_t head;
 	uint8_t tail;
-	uint8_t buf[USART_RX_BUFF_SZ];
+	char buf[USART_RX_BUFF_SZ];
 } rq;
 
 
@@ -118,16 +118,16 @@ void usart_init(void) {
 	#if USE_2X
 	UCSRA |=  (1 << U2X);
 	#else
-	UCSRA &= (uint8_t) ~(1 << U2X);
+	UCSRA &= ~(1 << U2X);
 	#endif
 	// Set frame format: 8data, 1stop bit
 	UCSRC = (1<<UCSZ0)|(1<<UCSZ1);
 
 	// Enable receiver and transmitter
-	UCSRB|= (1<<TXEN); // output from uc
-	UCSRB|= (1<<RXEN); // input to uc
+	UCSRB |= (1<<TXEN); // output from uc
+	UCSRB |= (1<<RXEN); // input to uc
 
-	UCSRB|= (1<<RXCIE); //enable rx isr
+	UCSRB |= (1<<RXCIE); //enable rx isr
 
 	stdout = &usart_io;
 	stdin  = &usart_io;
