@@ -90,7 +90,7 @@ bool usart_hasc(void)
 char usart_getc(void)
 {
 	char ret = rq.buf[rq.tail];
-	rq.tail = CIRC_NEXT(rq.tail, rq.buf);
+	rq.tail = CIRC_NEXT(rq.tail, sizeof(rq.buf));
 	return ret;
 }
 

@@ -13,7 +13,7 @@
 #include <avr/interrupt.h>
 
 #include <util/atomic.h>
-#include <util/parity.h> 
+#include <util/parity.h>
 #include <util/delay.h>
 
 #include "motor.h"
@@ -39,7 +39,7 @@ static inline void init(void)
 	adc_init();
 	motors_init();
 	sei();
-  
+
 	fputs_P(version_str,stdout);
 }
 

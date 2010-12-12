@@ -163,18 +163,6 @@ void process_msg(void)
 	case 'c':
 		printf("\e[H\e[2J");
 		break;
-	case 'e':
-		switch(buf[1]) {
-		case '+':
-			usart_echo = 1;
-			break;
-		case '-':
-			usart_echo = 0;
-			break;
-		default:
-			usart_echo ^= 1;
-		}
-		break;
 #ifdef HMC6352_H_
 	case 'i':
 		process_hmc6352_cmd(buf+1);
