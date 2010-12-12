@@ -85,7 +85,8 @@ static FILE usart0_io_direct =
 
 # define RX_BYTE_GET() UDR0
 # define RX_STATUS_GET() UCSR0A
-# define RX_STATUS_IS_ERROR(status) ((status) & ((1 << FE0) | (1 << DOR0) | (1<< UPE0)))
+# define RX_STATUS_IS_ERROR(status) ((status) &          \
+		((1 << FE0) | (1 << DOR0) | (1<< UPE0)))
 
 # define TX_BYTE_SEND(byte) (UDR0 = (byte))
 
@@ -118,7 +119,8 @@ static FILE usart0_io_direct =
 #ifdef DEBUG
 static void print_packet_buf(struct packet_buf *b)
 {
-	printf("head %02d  tail %02d  p_idx(%d) ", b->head, b->tail, sizeof(b->p_idx));
+	printf("head %02d  tail %02d  p_idx(%d) ", b->head,
+			b->tail, sizeof(b->p_idx));
 	uint8_t i;
 	for (i = 0; ;) {
 		printf("%d", b->p_idx[i]);
@@ -221,7 +223,8 @@ uint8_t frame_recv_copy(uint8_t *dst, uint8_t len)
 		memcpy(dst, rx.buf + curr_b_tail, cpy1_len);
 		memcpy(dst + cpy1_len, rx.buf, cpy2_len);
 
-		rx.p_idx[curr_tail] = (curr_b_tail + cpy_ct) & (sizeof(rx.buf) - 1);
+		rx.p_idx[curr_tail] = (curr_b_tail + cpy_ct)
+					& (sizeof(rx.buf) - 1);
 
 		return ct;
 	} else {
@@ -287,7 +290,8 @@ RX_ISR()
 		/* is there any data in the packet? */
 		if (rx.p_idx[rx.head] != rx.p_idx[next_head]) {
 			/* Need to get some data for packet to be valid */
-			uint8_t next_next_head = CIRC_NEXT(next_head, sizeof(rx.p_idx));
+			uint8_t next_next_head =
+				CIRC_NEXT(next_head, sizeof(rx.p_idx));
 			if (next_next_head == rx.tail) {
 				/* no space in p_idx for another packet */
 
@@ -451,6 +455,7 @@ void frame_append_u8(uint8_t x)
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 1) {
 		tx.p_idx[next_head] = tx.p_idx[tx.head];
 		frame_start_flag = false;
+		return;
 	}
 
 	tx.buf[next_b_head] = x;
@@ -469,6 +474,7 @@ void frame_append_u16(uint16_t x)
 	if (CIRC_SPACE(next_b_head, tx.p_idx[tx.tail], sizeof(tx.buf)) < 2) {
 		tx.p_idx[next_head] = tx.p_idx[tx.head];
 		frame_start_flag = false;
+		return;
 	}
 
 	tx.buf[next_b_head] = (uint8_t)(x >> 8);

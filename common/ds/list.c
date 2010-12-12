@@ -19,15 +19,11 @@ list_base_t list_pop_front(list_t *l) {
 		LIST_ERROR_NORET();
 		return 0;
 	}
-
 	list_base_t head = l->buffer[ l->first ];
-
 	l->first++;
 	if ( l->first >= l->sz )
 		l->first = 0;
-
 	--(l->ct);
-
 	return head;
 }
 

@@ -4,7 +4,6 @@
 #include <avr/io.h>
 #include "motor_internal.h"
 
-
 /* XXX: these are not real values. */
 static const struct motor_s motors [] = {
 	MOTOR_INIT(PORTB, 1, PORTB, 2, PORTB, 3, OCR1A),
