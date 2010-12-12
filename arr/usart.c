@@ -8,6 +8,7 @@
 #include "ds/circ_buf.h"
 #include "usart.h"
 #include "usart_def.h"
+#include "common.h"
 
 static struct tq {
 	uint8_t head;
@@ -20,7 +21,6 @@ static struct rq {
 	uint8_t tail;
 	char buf[USART_RX_BUFF_SZ];
 } rq;
-
 
 static uint8_t usart_msg;
 
@@ -48,11 +48,6 @@ static inline void usart_rxi_on(void)
 static inline void usart_rxi_off(void)
 {
 	UCSRB &= ~(1 << RXCIE);
-}
-
-static inline void barrier(void)
-{
-	asm volatile("":::"memory");
 }
 
 void usart_flush_rx(void)
@@ -84,6 +79,18 @@ bool usart_new_msg(void)
 		ret = true;
 	}
 	usart_rxi_on();
+	return ret;
+}
+
+bool usart_hasc(void)
+{
+	return rq.tail != rq.head;
+}
+
+char usart_getc(void)
+{
+	char ret = rq.buf[rq.tail];
+	rq.tail = CIRC_NEXT(rq.tail, rq.buf);
 	return ret;
 }
 

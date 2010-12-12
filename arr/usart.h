@@ -14,10 +14,17 @@ USART
 
 void usart_init(void);
 
+/* non-blocking input mechanizms */
+bool usart_hasc(void);
+char usart_getc(void);
+
 void usart_flush_msg(void);
 void usart_flush_rx(void);
 void usart_flush_tx(void);
+
+/* returns true if a new line has been recieved
+ * expects the user to read up to that newline
+ */
 bool usart_new_msg(void);
-volatile bool usart_echo;
 
 #endif
