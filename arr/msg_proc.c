@@ -116,7 +116,7 @@ void process_msg(void)
 			// means that process_msg was called when
 			// the rx buffer does not contain a complete message.
 			puts_P(PSTR("process error\n"));
-			usart_flush_msg();
+			usart_flush_rx_to('\n');
 			return;
 		}
 
