@@ -45,9 +45,9 @@ static inline void init(void)
 
 static uint16_t adc_vals[ADC_CT];
 
-static struct sensor_s sensors[ADC_CT];
-static struct line_s line = LINE_INIT(sensors);
-static struct pid_s pid_turn;
+static struct sensor sensors[ADC_CT];
+static struct line line = LINE_INIT(sensors);
+static struct pid pid_turn;
 
 static int16_t motor_velocity = MOTOR_SPEED_MAX;
 
