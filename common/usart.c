@@ -60,11 +60,11 @@ void usart_flush_tx(void)
 	tq.tail = tq.head;
 }
 
-void usart_flush_msg(void)
+void usart_flush_rx_to(char end_delim)
 {
 	while(rq.tail != rq.head) {
 		uint8_t d = rq.buf[rq.tail];
-		if (d == '\n')
+		if (d == end_delim)
 			return;
 		rq.tail = CIRC_NEXT(rq.tail, sizeof(rq.buf));
 	}
@@ -96,21 +96,24 @@ char usart_getc(void)
 
 static int usart_getchar(FILE *stream)
 {
-	while(rq.tail == rq.head) {
+	/* only the head should change, cache the tail */
+	uint8_t cur_tail = rq.tail;
+	while(cur_tail == rq.head) {
 		barrier();
 	}
 
-	char ret = rq.buf[rq.tail];
-	rq.tail = CIRC_NEXT(rq.tail, sizeof(rq.buf));
+	char ret = rq.buf[cur_tail];
+	rq.tail = CIRC_NEXT(cur_tail, sizeof(rq.buf));
 	return ret;
 }
 
 static int usart_putchar(char c, FILE *stream) {
-	while(tq.tail != CIRC_NEXT(tq.head,sizeof(tq.buf))) {
+	/* we only expect the tail to change, not the head. */
+	uint8_t next_head = CIRC_NEXT(tq.head,sizeof(tq.buf));
+	while(tq.tail == next_head) {
 		barrier();
 	}
 
-	uint8_t next_head = CIRC_NEXT(tq.head,sizeof(tq.buf));
 	tq.buf[next_head] = c;
 	tq.head = next_head;
 	return 0;
@@ -145,6 +148,7 @@ ISR(USART_UDRE_vect)
 {
 	if (tq.head == tq.tail) {
 		usart_udrei_off();
+		return;
 	}
 
 	UDR = tq.buf[tq.tail];

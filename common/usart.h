@@ -18,7 +18,7 @@ void usart_init(void);
 bool usart_hasc(void);
 char usart_getc(void);
 
-void usart_flush_msg(void);
+void usart_flush_rx_to(char end_delim);
 void usart_flush_rx(void);
 void usart_flush_tx(void);
 
