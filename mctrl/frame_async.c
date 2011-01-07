@@ -495,7 +495,7 @@ void frame_done(void)
 	 * imediatly that new data can be read) */
 	tx.p_idx[new_next_head] = tx.p_idx[new_head];
 	tx.head = new_head;
-	usart0_udre_unlock();
+	usart0_udre_isr_on();
 	frame_start_flag = false;
 }
 
@@ -551,7 +551,7 @@ void frame_send(const void *data, uint8_t nbytes)
 	/* XXX: do we need to set
 	 * tx.p_idx[next_next_head] = tx.p_idx[next_head]
 	 * ? */
-	usart0_udre_unlock();
+	usart0_udre_isr_on();
 }
 
 
