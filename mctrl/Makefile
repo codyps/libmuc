@@ -182,18 +182,18 @@ extcoff: $(TARGET).extcof
 
 .SUFFIXES: .elf .hex .eep
 .elf.hex:
-	@echo OBJCOPY $@
+	@echo "  OBJCOPY   $@"
 	@$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
 .elf.eep:
-	@echo OBJCOPY $@
+	@echo "  OBJCOPY   $@"
 	@-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
 	--change-section-lma .eeprom=0 --no-change-warnings \
 	-O $(FORMAT) $< $@
 
 # Create extended listing file from ELF output file.
 %.elf.lss: %.elf
-	@echo OBJDUMP $@
+	@echo "  OBJDUMP   $@"
 	@$(OBJDUMP) -h -S $< > $@
 
 # Create a symbol table from ELF output file.
@@ -202,17 +202,17 @@ extcoff: $(TARGET).extcof
 
 # Link: create ELF output file from object files.
 %.u.elf: $(SRC)
-	@echo "CCLD $(@F) $^"
+	@echo "  CCLD      $(@F)"
 	@$(CC) $(ALL_CFLAGS) $(SRC) --combine -fwhole-program -o $@ $(LDFLAGS)
 
 %.elf: $(OBJ)
-	@echo "LD $(@F)"
+	@echo "  LD        $(@F)"
 	@$(CC) $(ALL_CFLAGS) $(OBJ) -o $@ $(LDFLAGS)
 
 # Compile: create object files from C source files.
 .SECONDARY:
 %.c.o: %.c
-	@echo "CC $(@F)"
+	@echo "  CC        $(@F)"
 	@$(CC) -MMD $(ALL_CFLAGS) -c -o $@ $<
 
 # Compile: create assembler files from C source files.
@@ -225,7 +225,7 @@ extcoff: $(TARGET).extcof
 
 
 # Target: clean project.
-%.clean : 
+%.clean :
 	$(RM) $*.hex $*.eep $*.cof $*.elf $*.map $*.sym $*.elf.lss
 
 clean: | $(TARGET).clean $(TARGET).u.clean
