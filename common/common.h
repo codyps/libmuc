@@ -6,6 +6,7 @@
 
 #include "clock.h"
 
+
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
 
@@ -18,7 +19,8 @@
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
 
-#define CT(x) (sizeof(x)/sizeof(*x))
+#define CT(x) ARRAY_SIZE(x)
+#define ARRAY_SIZE(x) (sizeof(x)/sizeof(*(x)))
 
 static inline void barrier(void)
 {
