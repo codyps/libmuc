@@ -22,7 +22,11 @@
  * 15 1 1 1 1 Fast PWM                    OCR1A  BOTTOM    TOP
  */
 
-#define TIMER1_PWM_INIT(t1_top) do {					\
+#include <avr/io.h>
+#include <avr/power.h>
+
+#define TIMER1_INIT_PWM(t1_top) do {					\
+	power_timer1_enable();						\
 	/* Stop timer */						\
 	TCCR1B = 0;							\
 	/* Enable bother compare match outputs. (COM1XY) */		\
@@ -43,6 +47,44 @@
 	 * WGM13:2 = 10 */						\
 	TCCR1B = (0 << ICNC1) | (0 << ICES1) | (1 << WGM13)		\
 		|(0 << WGM12) | (0 << CS12) | (0 << CS11) | (1 << CS10);\
+} while(0)
+
+/** Timer 0, atmega328p **/
+/* Table 14-8. Waveform Generation Mode Bit Description
+n WGM0[2:0] Desc		TOP	update_OCRx_at	TOV_flag_set_on
+0 0 0 0     Normal		0xFF	Immediate	MAX
+1 0 0 1     PWM, Phase Correct	0xFF	TOP		BOTTOM
+2 0 1 0     CTC			OCRA	Immediate	MAX
+3 0 1 1     Fast PWM		0xFF	BOTTOM		MAX
+4 1 0 0     Reserved		–	–		–
+5 1 0 1     PWM, Phase Correct	OCRA	TOP		BOTTOM
+6 1 1 0     Reserved		–	–		–
+7 1 1 1     Fast PWM		OCRA	BOTTOM		TOP
+Notes:
+1. MAX = 0xFF
+2. BOTTOM = 0x00
+*/
+
+#define TIMER0_INIT_PWM_MAX() do {					\
+	power_timer0_enable();						\
+	/* Stop timer */						\
+	TCCR0B = 0;							\
+	/* set on upcount, clear on down count. also set part of wave	\
+	 * form */							\
+	TCCR1A = (1 << COM0A1) | (1 << COM0A0)				\
+		|(1 << COM0B1) | (1 << COM0B0)				\
+		|(0 << WGM01 ) | (1 << WGM00);				\
+	/* clear counts & compares */					\
+	TCNT0 = 0;							\
+	OCR0A = 0;							\
+	OCR0B = 0;							\
+	/* no interupts */						\
+	TIMSK0 = 0;							\
+	/* clear interupt flags */					\
+	TIFR0 = (1 << OCF0B) | (1 << OCF0A) | (1 << TOV0);		\
+	/* set last of waveform, prescale and enable */			\
+	TCCR0B = (1 << WGM02)						\
+		|(0 << CS02) | (0 << CS01) | (1 << CS00);		\
 } while(0)
 
 #endif

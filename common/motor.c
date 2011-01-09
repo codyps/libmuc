@@ -1,8 +1,8 @@
-
+#include <avr/io.h>
 #include <stdint.h>
 #include "motor.h"
 #include "motor_conf.h"
-#include "pwm.h"
+#include "timer.h"
 
 /* 15bits.
  * Makes handling rounding conditions much simpler */
@@ -11,7 +11,7 @@
 void motors_init(void)
 {
 	uint8_t i;
-	TIMER1_PWM_INIT(TIMER1_TOP);
+	TIMER1_INIT_PWM(TIMER1_TOP);
 	for(i = 0; i < MOTORS_CT; i++) {
 		const struct motor_s *motor = motors + i;
 		*(motor->dir_port - 1) |= motor->dir_mask;
