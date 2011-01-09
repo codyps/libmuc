@@ -14,7 +14,6 @@ TARGET = mctrl
 SRC  = main.c
 SRC += frame_async.c
 SRC += error_led.c
-SRC += ../common/motor.c
 SRC += ../common/pid.c
 
 ASRC =

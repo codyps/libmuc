@@ -6,7 +6,7 @@
 
 #include "error_led.h"
 #include "frame_async.h"
-
+#include "motor_shb.h"
 #include "common.h"
 
 __attribute__((noreturn))
