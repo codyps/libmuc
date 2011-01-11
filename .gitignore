@@ -3,3 +3,6 @@
 *.hex
 *.lss
 *.map
+*.[do]
+*~
+.*.swp
