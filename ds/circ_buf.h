@@ -1,13 +1,6 @@
 #ifndef CIRC_BUF_H_
 #define CIRC_BUF_H_ 1
 
-#include <stdint.h>
-
-struct circ_buf8 {
-	uint8_t *buf;
-	uint8_t head; /* location of next insertion */
-	uint8_t tail; /* location of next removal */
-};
 
 /* number of items in circ_buf */
 #define CIRC_CNT(head,tail,size) (((head) - (tail)) & ((size)- 1))
@@ -36,5 +29,18 @@ struct circ_buf8 {
 	  typeof(head) n = (end + (tail)) & ((size)-1); \
 	  n <= end ? n : end+1;})
 
+
+/* the following expect q to be a structure of the form */
+#if 0
+struct q {
+	uint8_t head;
+	uint8_t tail;
+	uint8_t buf[16];
+};
+#endif
+
+#define circ_next(q, ix_var) ( q.ix_var = CIRC_NEXT(q.ix_var, sizeof(q.buf)) )
+#define circ_next_head(q) ( circ_next(q, head) )
+#define circ_next_tail(q) ( circ_next(q, tail) )
 
 #endif
