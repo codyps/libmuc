@@ -6,7 +6,6 @@
 
 #include "clock.h"
 
-
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
 
@@ -21,6 +20,23 @@
 
 #define CT(x) ARRAY_SIZE(x)
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(*(x)))
+
+#define ntohs bswap16
+#define htons bswap16
+static inline uint16_t bswap16(uint16_t s) {
+	union u {
+		struct s {
+			uint8_t a, b;
+		} s;
+		uint16_t x;
+	} u;
+
+	u.x = s;
+	uint8_t tmp = u.s.a;
+	u.s.a = u.s.b;
+	u.s.b = tmp;
+	return u.x;
+}
 
 static inline void barrier(void)
 {
