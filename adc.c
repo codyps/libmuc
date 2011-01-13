@@ -33,13 +33,20 @@ static inline void adc_channel_set_next(void)
 	adc_channel_set_from_index(adc_curr_chan_index);
 }
 
-#define adc_isr_stop() ADCSRA &= ~(1 << ADIE); asm("":::"memory")
-#define adc_isr_start() ADCSRA |= (1 << ADIE); asm("":::"memory")
+#define adc_isr_stop() do {	\
+	ADCSRA &= ~(1 << ADIE);	\
+	asm("":::"memory");	\
+} while(0)
+
+#define adc_isr_start() do {	\
+	ADCSRA |= (1 << ADIE);	\
+	asm("":::"memory");	\
+} while(0)
 
 void adc_val_cpy(uint16_t *dst)
 {
 	adc_isr_stop();
-	memcpy(dst, adc_values, ADC_CHANNEL_CT * sizeof(*adc_values));
+	memcpy(dst, adc_values, sizeof(adc_values));
 	adc_isr_start();
 }
 

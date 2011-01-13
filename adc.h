@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 
+#include "muc.h"
 #include "adc_conf.h"
 
 #define ADC_PRESCALE_BITS                     \
@@ -16,7 +17,7 @@
 #define ADC_CYCLE ( F_CPU / ADC_F ) // == ADC_PRESCALE
 
 #define ADC_CT ADC_CHANNEL_CT
-#define ADC_CHANNEL_CT (sizeof(adc_chan_map)/sizeof(*adc_chan_map))
+#define ADC_CHANNEL_CT ARRAY_SIZE(adc_chan_map)
 
 void adc_init(void);
 uint16_t adc_get_i(uint8_t sensor_i);
