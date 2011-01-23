@@ -30,8 +30,8 @@
 	/* Stop timer */						\
 	TCCR1B = 0;							\
 	/* Enable bother compare match outputs. (COM1XY) */		\
-	TCCR1A = (1 << COM1A1) | (1 << COM1A0)				\
-		|(1 << COM1B1) | (1 << COM1B0)				\
+	TCCR1A = (1 << COM1A1) | (0 << COM1A0)				\
+		|(1 << COM1B1) | (0 << COM1B0)				\
 		|(0 << WGM11 ) | (0 << WGM10 );				\
 	/* reset counts and compare matches */				\
 	TCNT1 = 0;							\
@@ -71,8 +71,8 @@ Notes:
 	TCCR0B = 0;							\
 	/* set on upcount, clear on down count. also set part of wave	\
 	 * form */							\
-	TCCR1A = (1 << COM0A1) | (1 << COM0A0)				\
-		|(1 << COM0B1) | (1 << COM0B0)				\
+	TCCR1A = (1 << COM0A1) | (0 << COM0A0)				\
+		|(1 << COM0B1) | (0 << COM0B0)				\
 		|(0 << WGM01 ) | (1 << WGM00);				\
 	/* clear counts & compares */					\
 	TCNT0 = 0;							\
