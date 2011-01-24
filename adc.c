@@ -33,14 +33,14 @@ static inline void adc_channel_set_next(void)
 	adc_channel_set_from_index(adc_curr_chan_index);
 }
 
-#define adc_isr_stop() do {	\
-	ADCSRA &= ~(1 << ADIE);	\
-	asm("":::"memory");	\
+#define adc_isr_stop() do {		\
+	ADCSRA &= ~(1 << ADIE);		\
+	asm volatile("":::"memory");	\
 } while(0)
 
-#define adc_isr_start() do {	\
-	ADCSRA |= (1 << ADIE);	\
-	asm("":::"memory");	\
+#define adc_isr_start() do {		\
+	ADCSRA |= (1 << ADIE);		\
+	asm volatile("":::"memory");	\
 } while(0)
 
 void adc_val_cpy(uint16_t *dst)
@@ -85,11 +85,9 @@ void adc_init(void) {
 	 *     1     1     1   Internal 2.56V Voltage Reference w/ extern
 	 *                         bypass capacitor at AREF pin.
 	 */
-#if 0
 	ADMUX = (0<<REFS1) | (0<<REFS0)
 		| (0<<ADLAR) /* Left adjust output when 1 */
 		| (0<<MUX4) | (0<<MUX3) | (0<<MUX2) | (0<<MUX1) | (0<<MUX0);
-#endif
 
 	ADCSRA = (1<<ADEN)  /* Enable ADC */
 		|(0<<ADSC)  /* Start Conversion	*/
@@ -110,14 +108,13 @@ void adc_init(void) {
 	 *     1     1     1   Watchdog Interrupt Request
 	 */
 
-#if 0
 	ADCSRB = (0<<BIN)   /* Bipolar input mode */
 		|(0<<GSEL)  /* Diff input Gain, (20x -> 32x, 1x -> 8x) */
 		|(0<<5)     /* Reserved, always read as 0 */
 		|(0<<REFS2)
 		|(0<<MUX5)
 		|(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
-#endif
+
 	adc_channel_set_from_index(adc_curr_chan_index);
 	ADCSRA |= (1 << ADSC);
 
