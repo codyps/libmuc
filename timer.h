@@ -83,7 +83,7 @@ Notes:
 	/* clear interupt flags */					\
 	TIFR0 = (1 << OCF0B) | (1 << OCF0A) | (1 << TOV0);		\
 	/* set last of waveform, prescale and enable */			\
-	TCCR0B = (1 << WGM02)						\
+	TCCR0B = (0 << WGM02)						\
 		|(0 << CS02) | (0 << CS01) | (1 << CS00);		\
 } while(0)
 
