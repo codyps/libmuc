@@ -29,7 +29,7 @@
 	power_timer1_enable();						\
 	/* Stop timer */						\
 	TCCR1B = 0;							\
-	/* Enable bother compare match outputs. (COM1XY) */		\
+	/* Enable both compare match outputs. (COM1XY) */		\
 	TCCR1A = (1 << COM1A1) | (0 << COM1A0)				\
 		|(1 << COM1B1) | (0 << COM1B0)				\
 		|(0 << WGM11 ) | (0 << WGM10 );				\
