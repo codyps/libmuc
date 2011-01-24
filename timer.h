@@ -71,7 +71,7 @@ Notes:
 	TCCR0B = 0;							\
 	/* set on upcount, clear on down count. also set part of wave	\
 	 * form */							\
-	TCCR1A = (1 << COM0A1) | (0 << COM0A0)				\
+	TCCR0A = (1 << COM0A1) | (0 << COM0A0)				\
 		|(1 << COM0B1) | (0 << COM0B0)				\
 		|(0 << WGM01 ) | (1 << WGM00);				\
 	/* clear counts & compares */					\
