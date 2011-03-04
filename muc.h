@@ -23,7 +23,8 @@
 
 #define ntohs bswap16
 #define htons bswap16
-static inline uint16_t bswap16(uint16_t s) {
+static inline uint16_t bswap16(uint16_t s)
+{
 	union u {
 		struct s {
 			uint8_t a, b;
@@ -35,6 +36,29 @@ static inline uint16_t bswap16(uint16_t s) {
 	uint8_t tmp = u.s.a;
 	u.s.a = u.s.b;
 	u.s.b = tmp;
+	return u.x;
+}
+
+#define htonl bswap32
+#define ntohl bswap32
+//#define bswap32(x) ((bswap16(x & 0xffff)) << 16 | (bswap16(x >> 16)))
+static inline uint32_t bswap32(uint32_t s)
+{
+	union u {
+		struct s {
+			uint8_t a, b, c, d;
+		} s;
+		uint32_t x;
+	} u;
+
+	u.x = s;
+	uint8_t tmp = u.s.a;
+	u.s.a = u.s.d;
+	u.s.d = tmp;
+
+	tmp = u.s.b;
+	u.s.b = u.s.c;
+	u.s.c = tmp;
 	return u.x;
 }
 
