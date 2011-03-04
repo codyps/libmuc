@@ -50,7 +50,8 @@ void adc_val_cpy(uint16_t *dst)
 	adc_isr_start();
 }
 
-uint16_t adc_get_i(uint8_t channel_index) {
+uint16_t adc_get_i(uint8_t channel_index)
+{
 	uint16_t ret;
 	adc_isr_stop();
 	ret = adc_values[channel_index];
@@ -58,7 +59,8 @@ uint16_t adc_get_i(uint8_t channel_index) {
 	return ret;
 }
 
-void adc_init(void) {
+void adc_init(void)
+{
 	power_adc_enable();
 
 	/* Digital Input Disable */
