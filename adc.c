@@ -12,10 +12,11 @@
 #include <avr/interrupt.h>
 #include <util/delay_basic.h>
 
+#include "muc.h"
 #include "adc.h"
 #include "adc_conf.h"
 
-uint16_t adc_values[ADC_CHANNEL_CT];
+static uint16_t adc_values[ADC_CHANNEL_CT];
 volatile bool adc_new_data;
 static uint8_t adc_curr_chan_index;
 
@@ -35,12 +36,12 @@ static inline void adc_channel_set_next(void)
 
 #define adc_isr_stop() do {		\
 	ADCSRA &= ~(1 << ADIE);		\
-	asm volatile("":::"memory");	\
+	barrier();			\
 } while(0)
 
 #define adc_isr_start() do {		\
 	ADCSRA |= (1 << ADIE);		\
-	asm volatile("":::"memory");	\
+	barrier();			\
 } while(0)
 
 void adc_val_cpy(uint16_t *dst)
