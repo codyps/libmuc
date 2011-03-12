@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <penny/penny.h>
 
 #include "clock.h"
 
@@ -16,9 +17,6 @@
 #define _PORT(x) PORT##x
 #define PIN(x)	_PIN(x)
 #define _PIN(x) PIN##x
-
-#define CT(x) ARRAY_SIZE(x)
-#define ARRAY_SIZE(x) (sizeof(x)/sizeof(*(x)))
 
 #define ntohs bswap16
 #define htons bswap16
