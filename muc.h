@@ -59,11 +59,6 @@ static inline uint32_t bswap32(uint32_t s)
 	return u.x;
 }
 
-static inline void barrier(void)
-{
-	asm volatile ("":::"memory");
-}
-
 static inline void print_bin(uint8_t inp, FILE * stream) {
 	for(int8_t j=7; j>=0; --j) {
 		fputc(((inp&(1<<j))>>j)+'0',stream);
