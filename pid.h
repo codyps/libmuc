@@ -23,7 +23,7 @@ struct pid {
 #define pid_set_ki(pid, n_ki) ((pid).ki = (n_ki))
 #define pid_set_imax(pid, n_imax) ((pid).integral_max = (n_imax))
 
-#define PID_INITIALIZER(ikp, ikd, iki, imaxi)     \
+#define PID_INITIALIZER(ikp, iki, ikd, imaxi)     \
 	{ .kp = (ikp), .kd = (ikd), .ki = (iki), .integral_max = (imaxi) }
 
 int16_t pid_update(struct pid *pid, int16_t curr_point);

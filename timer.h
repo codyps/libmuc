@@ -51,19 +51,19 @@
 
 /** Timer 0, atmega328p **/
 /* Table 14-8. Waveform Generation Mode Bit Description
-n WGM0[2:0] Desc		TOP	update_OCRx_at	TOV_flag_set_on
-0 0 0 0     Normal		0xFF	Immediate	MAX
-1 0 0 1     PWM, Phase Correct	0xFF	TOP		BOTTOM
-2 0 1 0     CTC			OCRA	Immediate	MAX
-3 0 1 1     Fast PWM		0xFF	BOTTOM		MAX
-4 1 0 0     Reserved		–	–		–
-5 1 0 1     PWM, Phase Correct	OCRA	TOP		BOTTOM
-6 1 1 0     Reserved		–	–		–
-7 1 1 1     Fast PWM		OCRA	BOTTOM		TOP
-Notes:
-1. MAX = 0xFF
-2. BOTTOM = 0x00
-*/
+ * n WGM0[2:0] Desc		TOP	update_OCRx_at	TOV_flag_set_on
+ * 0 0 0 0     Normal		0xFF	Immediate	MAX
+ * 1 0 0 1     PWM, Phase Correct	0xFF	TOP		BOTTOM
+ * 2 0 1 0     CTC			OCRA	Immediate	MAX
+ * 3 0 1 1     Fast PWM		0xFF	BOTTOM		MAX
+ * 4 1 0 0     Reserved		–	–		–
+ * 5 1 0 1     PWM, Phase Correct	OCRA	TOP		BOTTOM
+ * 6 1 1 0     Reserved		–	–		–
+ * 7 1 1 1     Fast PWM		OCRA	BOTTOM		TOP
+ * Notes:
+ * 1. MAX = 0xFF
+ * 2. BOTTOM = 0x00
+ */
 
 #define TIMER0_INIT_PWM_MAX() do {					\
 	power_timer0_enable();						\
@@ -85,6 +85,68 @@ Notes:
 	/* set last of waveform, prescale and enable */			\
 	TCCR0B = (0 << WGM02)						\
 		|(0 << CS02) | (0 << CS01) | (1 << CS00);		\
+} while(0)
+
+#define TIMER0_INIT_PERIODIC() do {					\
+	power_timer0_enable();						\
+	TCCR0B = 0;							\
+	/* WGM = 0, COM* = 0 */						\
+	TCCR0A = 0;							\
+	TCNT0 = 0;							\
+	OCR0A = 0;							\
+	OCR0B = 0;							\
+	TIMSK0 = 0;							\
+	_Pragma(error, "not done")					\
+} while(0)
+
+
+
+/*** atmega328p, timer2.
+ ** Table 17-8: Waveform Generation Mode Bit Description
+ * n WGM[2:0]	Mode of Operation	TOP	Update of OCRx	TOV Flag set on
+ * 0 0 0 0	Normal			0xFF	Immediate	MAX
+ * 1 0 0 1	PWM, Phase Correct	0xFF	TOP		BOTTOM
+ * 2 0 1 0	CTC			OCRA	Immediate	MAX
+ * 3 0 1 1	Fast PWM		0xFF	BOTTOM		MAX
+ * 4 1 0 0	Reserved		–	–		–
+ * 5 1 0 1	PWM, Phase Correct	OCRA	TOP		BOTTOM
+ * 6 1 1 0	Reserved		–	–		–
+ * 7 1 1 1	Fast PWM		OCRA	BOTTOM		TOP
+ * Notes:
+ * 1. MAX= 0xFF
+ * 2. BOTTOM= 0x00
+ *
+ ** Table 17-9.
+ * CS2{2,1,0}
+ *     0 0 0	No clock source (Timer/Counter stopped).
+ *     0 0 1	clkT2S/1	(No prescaling)
+ *     0 1 0	clkT2S/8	(From prescaler)
+ *     0 1 1	clkT2S/32	(From prescaler)
+ *     1 0 0	clkT2S/64	(From prescaler)
+ *     1 0 1	clkT2S/128	(From prescaler)
+ *     1 1 0	clkT2S/256	(From prescaler)
+ *     1 1 1	clkT2S/1024	(From prescaler)
+ */
+
+#define TIMER2_PSC_1	1
+#define TIMER2_PSC_8	2
+#define TIMER2_PSC_32	3
+#define TIMER2_PSC_64	4
+#define TIMER2_PSC_128	5
+#define TIMER2_PSC_256	6
+#define TIMER2_PSC_1024	7
+
+#define TIMER2_INIT_CTC(prescale, top) do {				\
+	power_timer2_enable();						\
+	TCCR2B = 0;							\
+	TCNT2 = 0;							\
+	OCR2A = top;							\
+	OCR2B = 0;							\
+	TIMSK2 = (0 << OCIE2B) | (0 << OCIE2A) | (1 << TOIE2);		\
+	TIFR2  = (1 << OCF2B)  | (1 << OCF2A)  | (1 << TOV2);		\
+	/* CTC mode */							\
+	TCCR2A = (0 << WGM21) | (1 << WGM22);				\
+	TCCR2B = (0 << WGM22) | (prescale & 0x7);			\
 } while(0)
 
 #endif
