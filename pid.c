@@ -35,7 +35,7 @@ int16_t pid_update(struct pid *pid, int16_t cur_pos)
 
 	if (out > INT16_MAX)
 		return INT16_MAX;
-	else if (out < INT16_MIN)
-		return INT16_MIN;
+	else if (out < -INT16_MAX)
+		return -INT16_MAX;
 	return (int16_t)out;
 }
