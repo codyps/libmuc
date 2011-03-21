@@ -142,7 +142,7 @@
 	TCNT2 = 0;							\
 	OCR2A = top;							\
 	OCR2B = 0;							\
-	TIMSK2 = (0 << OCIE2B) | (1 << OCIE2A) | ( << TOIE2);		\
+	TIMSK2 = (0 << OCIE2B) | (1 << OCIE2A) | (0 << TOIE2);		\
 	TIFR2  = (1 << OCF2B)  | (1 << OCF2A)  | (1 << TOV2);		\
 	/* CTC mode */							\
 	TCCR2A = (0 << WGM21) | (1 << WGM22);				\
