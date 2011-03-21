@@ -7,9 +7,6 @@
 
 #include "clock.h"
 
-#define likely(x)       __builtin_expect((x),1)
-#define unlikely(x)     __builtin_expect((x),0)
-#define unused		__attribute__((unused))
 
 #define DDR(x)	_DDR(x)
 #define _DDR(x) DDR##x
