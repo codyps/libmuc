@@ -22,9 +22,10 @@ struct pid {
 
 #define pid_set_goal(pid, sp) ((pid).target = (sp))
 
-
+#define PID_K(ikp, iki, ikd, imaxi) \
+	{ .p = (ikp), .d = (ikd), .i = (iki), .ilimit = (imaxi) }
 #define PID_INITIALIZER(ikp, iki, ikd, imaxi)     \
-	{ .k = { .p = (ikp), .d = (ikd), .i = (iki), .ilimit = (imaxi)} }
+	{ .k = PID_K(ikp, iki, ikd, imaxi) }
 
 int16_t pid_update(struct pid *pid, int16_t curr_point);
 
