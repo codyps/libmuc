@@ -18,19 +18,19 @@ int16_t pid_update(struct pid *pid, int16_t cur_pos)
 	int16_t error = pid->target - cur_pos;
 
 	pid->integral += error;
-	if (pid->integral > pid->ilimit) {
-		pid->integral = pid->ilimit;
-	} else if (pid->integral < -pid->ilimit) {
-		pid->integral = -pid->ilimit;
+	if (pid->integral > pid->k.ilimit) {
+		pid->integral = pid->k.ilimit;
+	} else if (pid->integral < -pid->k.ilimit) {
+		pid->integral = -pid->k.ilimit;
 	}
 
 	int16_t derivative = error - pid->previous_error;
 	pid->previous_error = error;
 
 	int32_t out = (
-		  (pid->kp * error)
-		+ (pid->ki * pid->integral)
-		+ (pid->kd * derivative)
+		  (pid->k.p * error)
+		+ (pid->k.i * pid->integral)
+		+ (pid->k.d * derivative)
 		) / PID_SCALE;
 
 	if (out > INT16_MAX)
