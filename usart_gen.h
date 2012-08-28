@@ -22,9 +22,11 @@
 #define CAT3(a, b, c) a##b##c
 
 #define DEFINE_USART_DEF(num)						\
+	/* FILE *usartX_init(void); */					\
 	FILE *usart_fn(num, init)(void);				\
-	/* non-blocking input mechanisms */				\
+	/* bool usartX_hasc(void); */					\
 	bool usart_fn(num, hasc)(void);					\
+	/* bool usartX_getc(void); */					\
 	char usart_fn(num, getc)(void);					\
 	/* flushes */							\
 	void usart_fn(num, flush_rx_to)(char end_delim);		\
@@ -32,7 +34,6 @@
 	void usart_fn(num, flush_tx)(void);				\
 	/* indicates a '\n' has been recieved. TODO: generalize	*/	\
 	bool usart_fn(num, new_msg)(void);
-
 
 #define DEFINE_USART_IMPL(num, usart_baud, tq_sz, rq_sz)		\
 	static struct U_t(num) {					\
