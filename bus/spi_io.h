@@ -19,11 +19,8 @@ void spi_puth(uint8_t hex); // put hex (uppercase, no prefix added)
 void spi_puth2(uint16_t hex);	  // ^^, 2 bytes.
 int spi_getchar(void);
 
-// standard io
-//#define SPI_IO_STANDARD // 106B flash / 16B ram
+// 106B flash / 16B ram
 #ifdef SPI_IO_STANDARD
-//static int spi_getc(FILE * stream);
-//static int spi_putc(char c, FILE * stream);
 extern FILE * spi_io;
 #endif
 

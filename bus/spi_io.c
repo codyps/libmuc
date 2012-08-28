@@ -26,8 +26,8 @@ static list_t(x) rx = LIST_INITIALIZER(rx_b);
 volatile uint8_t spi_io_rx_nl;
 
 #ifdef SPI_IO_STANDARD
-static int spi_putc(char c, FILE * stream);
-static int spi_getc(FILE * stream);
+static int spi_putc(char c, FILE *stream);
+static int spi_getc(FILE *stream);
 static FILE _spi_io = FDEV_SETUP_STREAM(spi_putc, spi_getc ,_FDEV_SETUP_RW);
 FILE * spi_io = &_spi_io;
 #endif
@@ -69,7 +69,7 @@ void spi_io_init(void) {
  */
 
 #ifdef SPI_IO_STANDARD
-int spi_putc(char c, FILE * stream) {
+static int spi_putc(char c, FILE *stream) {
 # ifdef SPI_IO_STD_WAIT
 	while(list_full(x)(&tx)) {
 		asm volatile("":::"memory");
@@ -82,7 +82,7 @@ int spi_putc(char c, FILE * stream) {
 	return 0;
 }
 
-int spi_getc(FILE * stream) {
+static int spi_getc(FILE *stream) {
 # ifdef SPI_IO_STD_WAIT
 	while(list_empty(x)(&rx))
 		;
@@ -99,8 +99,9 @@ int spi_getc(FILE * stream) {
 #ifdef SPI_IO_FAST
 
 # if defined(SPI_IO_FAST_ERROR_ZERO)
-#  undef EOF
-#  define EOF 0
+#  define SPI_GET_CHAR_ERR 0
+# else
+#  define SPI_GET_CHAR_ERR EOF
 # endif
 
 # if ( defined(SPI_IO_FAST_WAIT) || defined(SPI_IO_FAST_ERROR_ZERO) )
@@ -113,10 +114,12 @@ int spi_getchar(void) {
 		;
 # else
 	if (list_empty(x)(&rx))
-		return EOF;
+		return SPI_GET_CHAR_ERR;
 # endif
 	return list_get(x)(&rx);
 }
+
+#undef SPI_GET_CHAR_ERR
 
 void spi_putchar(uint8_t ch) {
 	while(list_full(x)(&tx))
@@ -137,10 +140,8 @@ void spi_puth(uint8_t hex) {
 }
 
 void spi_puth2(uint16_t hex) {
-	spi_putchar( bin_to_hex4( (uint8_t)(hex>>12) ) );
-	spi_putchar( bin_to_hex4( (uint8_t)(hex>>8 ) ) );
-	spi_putchar( bin_to_hex4( (uint8_t)(hex>>4 ) ) );
-	spi_putchar( bin_to_hex4( (uint8_t)(hex>>0 ) ) );
+	spi_puth(hex >> 8);
+	spi_puth(hex);
 }
 
 #endif
