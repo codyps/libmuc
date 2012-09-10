@@ -4,5 +4,9 @@
 *.lss
 *.map
 *.[do]
+*.su
 *~
 .*.swp
+.TRACK-CFLAGS
+.TRACK-ASFLAGS
+.TRACK-LDFLAGS
