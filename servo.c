@@ -176,6 +176,8 @@ ISR(TIMER_S_OVF_vect)
 	if(cycle >= SERVO_AMOUNT) {
 		// these servos don't exsist, delaying until next
 		// 20ms period.
+		/* TODO: could change the timer-top to cause only one OVF isr to
+		 * occur instead of 10 - SERVO_AMOUNT */
 		servo_cmpA_isr_off();
 	} else {
 		// set servo 'cycle' pin(s) high
@@ -194,7 +196,7 @@ ISR(TIMER_S_OVF_vect)
 	// That will always occour after the COMPA_vect executes.
 	// And interrupts need to be enabled with COMPA_vect executes.
 	if (cycle >= SERVO_AMOUNT) {
-		SERVO_OCRA = 0xFFFF;		
+		SERVO_OCRA = 0xFFFF;
 	} else {
 		SERVO_OCRA = servo[cycle].pos;
 	}

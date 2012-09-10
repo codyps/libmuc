@@ -7,7 +7,6 @@
 
 #include "clock.h"
 
-
 #define DDR(x)	_DDR(x)
 #define _DDR(x) DDR##x
 #define PORT(x) _PORT(x)
