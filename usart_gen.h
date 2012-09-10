@@ -30,7 +30,7 @@
 	/* indicates a '\n' has been recieved. TODO: generalize	*/	\
 	bool usart_fn(num, new_msg)(void);
 
-#define DEFINE_USART_IMPL(num, usart_baud, tq_sz, rq_sz)		\
+#define DEFINE_USART_IMPL(num, usart_baud, tq_sz, rq_sz, msg_delim)	\
 	static struct U_t(num) {					\
 		uint8_t head;						\
 		uint8_t tail;						\
@@ -150,13 +150,14 @@
 	ISR(CAT3(USART, num, _UDRE_vect))				\
 	{								\
 		if (U_t(num).head == U_t(num).tail) {			\
-			usart_udrei_off();				\
+			usart_fn(num, udrei_off)();			\
 			return;						\
 		}							\
 		REGN_A(UDR, num) = U_t(num).buf[U_t(num).tail];		\
 		U_t(num).tail = CIRC_NEXT(U_t(num).tail,		\
 					sizeof(U_t(num).buf));		\
 	}								\
+									\
 	ISR(CAT3(USART, num, _RX_vect))					\
 	{								\
 		uint8_t next_head = CIRC_NEXT(U_r(num).head,		\
