@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+
+#include <muc/muc.h>
 #include <penny/circ_buf.h>
 
 #define usart_var(n, name) usart##n##_##name
@@ -13,13 +15,6 @@
 /* short hand for the queue */
 #define U_r(num) usart_var(num, rq)
 #define U_t(num) usart_var(num, tq)
-
-/* composition of register & bit names are handled by these macros. */
-#define REGN_A(base, n) CAT2(base, n)
-#define REGN_I(base, n, x) CAT3(base, n, x)
-
-#define CAT2(a, b) a##b
-#define CAT3(a, b, c) a##b##c
 
 #define DEFINE_USART_DEF(num)						\
 	/* FILE *usartX_init(void); */					\
@@ -40,13 +35,13 @@
 		uint8_t head;						\
 		uint8_t tail;						\
 		char buf[tq_sz];					\
-	} U_t(num)							\
+	} U_t(num);							\
 	static struct U_r(num) {					\
 		uint8_t head;						\
 		uint8_t tail;						\
 		char buf[rq_sz];					\
 	} U_r(num);							\
-	static uint8_t usart_var(num, msg)				\
+	static uint8_t usart_var(num, msg);				\
 									\
 	static int usart_fn(num, getchar)(FILE *stream);		\
 	static int usart_fn(num, putchar)(char c, FILE *stream);	\
