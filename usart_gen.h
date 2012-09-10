@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "common/circ_buf.h"
+#include <penny/circ_buf.h>
 
 #define usart_var(n, name) usart##n##_##name
 #define usart_fn(n, name) usart##n##_##name
