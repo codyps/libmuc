@@ -64,7 +64,7 @@
 	}								\
 	static inline void usart_fn(num, rxi_off)(void)			\
 	{								\
-		REGN_I(UCSR, num, B) &= ~(1 << REGN_A(RECIE, num));	\
+		REGN_I(UCSR, num, B) &= ~(1 << REGN_A(RXCIE, num));	\
 	}								\
 									\
 	void usart_fn(num, flush_rx)(void)				\
