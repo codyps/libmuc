@@ -23,5 +23,6 @@ uint8_t RXEN0;
 
 
 #define ISR(X) void X(void)
+#define FDEV_SETUP_STREAM(x, y, z) *stdin
 
 #endif
