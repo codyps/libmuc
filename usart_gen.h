@@ -128,9 +128,8 @@
 	static int usart_fn(num, getchar)(FILE *stream)			\
 	{								\
 		uint8_t cur_tail = U_r(num).tail;			\
-		while (cur_tail == U_r(num).head) {			\
-			barrier();					\
-		}							\
+		while (cur_tail == ACCESS_ONCE(U_r(num).head))		\
+			;						\
 		char ret = U_r(num).buf[cur_tail];			\
 		U_r(num).tail = CIRC_NEXT(cur_tail,			\
 					sizeof(U_r(num).buf));		\
@@ -138,12 +137,11 @@
 	}								\
 	static int usart_fn(num, putchar)(char c, FILE *stream)		\
 	{								\
-		uint8_t next_head = CIRC_NEXT(U_t(num).head,		\
-					sizeof(U_t(num).buf));		\
-		while(U_t(num).tail == next_head) {			\
-			barrier();					\
-		}							\
-		U_t(num).buf[next_head] = c;				\
+		uint8_t head = U_t(num).head;				\
+		uint8_t next_head = CIRC_NEXT(head, tq_sz);		\
+		while(next_head == ACCESS_ONCE(U_t(num).tail))		\
+			;						\
+		U_t(num).buf[head] = c;					\
 		U_t(num).head = next_head;				\
 		return 0;						\
 	}								\
@@ -164,7 +162,7 @@
 									\
 	ISR(CAT3(USART, num, _UDRE_vect))				\
 	{								\
-		if (U_t(num).head == U_t(num).tail) {			\
+		if (circ_empty(U_t(num))) {				\
 			usart_fn(num, udrei_off)();			\
 			return;						\
 		}							\
