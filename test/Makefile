@@ -1,5 +1,10 @@
-all: t-usart-gen.o
+all: t-usart-gen.o t-ubrr
 .PHONY: all
+
+TARGETS = t-ubrr
+obj-t-ubrr = t-ubrr.o
+t-ubrr: $(obj-t-ubrr)
+
 
 ALL_CFLAGS += -I.. -I../..
 ALL_CFLAGS += -Wl,--as-needed -Os
