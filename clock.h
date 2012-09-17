@@ -1,9 +1,6 @@
 #ifndef _CLOCK_H_
 #define _CLOCK_H_
 
-#define MHz(x) ( x * 1000000 )
-#define KHz(x) ( x *    1000 )
-
 #define CLICKS_MS TICKS_MS
 #define CLICKS_US TICKS_US
 

@@ -5,12 +5,9 @@
 #include <stdio.h>
 #include <penny/penny.h>
 
-#include "clock.h"
-
 /* composition of register & bit names are handled by these macros. */
 #define REGN_A(base, n) CAT2(base, n)
 #define REGN_I(base, n, x) CAT3(base, n, x)
-
 
 #define DDR(x)	_DDR(x)
 #define _DDR(x) DDR##x
