@@ -25,7 +25,13 @@
 #define usart_var(n, name) usart##n##_##name
 #define usart_fn(n, name) usart##n##_##name
 
-#define UBRR_CALC(f_cpu, baud) (((f_cpu) + 8UL * (baud)) / (16UL * (baud)) -1UL)
+#define BAUD_TO_UBRR(f_cpu, baud) (((f_cpu) + 8UL * (baud)) / (16UL * (baud)) -1UL)
+#define BAUD_TO_UBRR_2X(f_cpu, baud)    (((f_cpu) + 4UL * (baud)) / (8UL * (baud)) -1UL)
+
+#define UBRR_TO_BAUD(f_cpu, ubrr) (16 * ((ubrr) + 1))
+#define UBRR_TO_BAUD_2X(f_cpu, ubrr) (8 * ((ubrr) + 1))
+
+#define UBRR_ERROR(f_cpu, baud, ubrr)
 
 /* short hand for the queue */
 #define U_r(num) usart_var(num, rq)
@@ -45,6 +51,7 @@
 	/* indicates a '\n' has been recieved. TODO: generalize	*/	\
 	bool usart_fn(num, new_msg)(void);
 
+/* Uses the define "F_CPU" to handle computions */
 #define DEFINE_USART_IMPL(num, usart_baud, tq_sz, rq_sz, msg_delim)	\
 	static struct U_t(num) {					\
 		uint8_t head;						\
@@ -143,6 +150,7 @@
 			;						\
 		U_t(num).buf[head] = c;					\
 		U_t(num).head = next_head;				\
+		usart_fn(num, udrei_on)();				\
 		return 0;						\
 	}								\
 									\
@@ -151,7 +159,7 @@
 		CAT3(power_usart, num, _enable)();			\
 		REGN_I(UCSR, num, B) = 0;				\
 		REGN_I(UCSR, num, A) = 0;				\
-		REGN_A(UBRR, num) = UBRR_CALC(F_CPU, usart_baud);	\
+		REGN_A(UBRR, num) = BAUD_TO_UBRR(F_CPU, usart_baud);	\
 		REGN_I(UCSR, num, C) = (1 << REGN_I(UCSZ,num,0)) |	\
 				(1 << REGN_I(UCSZ, num, 1));		\
 		REGN_I(UCSR, num, B) = (1 << REGN_A(TXEN, num)) |	\
