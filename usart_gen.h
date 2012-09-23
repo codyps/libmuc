@@ -25,13 +25,22 @@
 #define usart_var(n, name) usart##n##_##name
 #define usart_fn(n, name) usart##n##_##name
 
-#define BAUD_TO_UBRR(f_cpu, baud) (((f_cpu) + 8UL * (baud)) / (16UL * (baud)) -1UL)
-#define BAUD_TO_UBRR_2X(f_cpu, baud)    (((f_cpu) + 4UL * (baud)) / (8UL * (baud)) -1UL)
+#define BAUD_TO_UBRR_1X(f_cpu, baud) (((f_cpu) + 8UL * (baud)) / (16UL * (baud)) -1UL)
+#define BAUD_TO_UBRR_2X(f_cpu, baud) (((f_cpu) + 4UL * (baud)) / ( 8UL * (baud)) -1UL)
 
-#define UBRR_TO_BAUD(f_cpu, ubrr) ((f_cpu)/(16 * ((ubrr) + 1)))
+#define BAUD_TO_UBRR(f_cpu, baud)	\
+	(USART_USE_2X(f_cpu, baud) ? BAUD_TO_UBRR_2X(f_cpu, baud) : BAUD_TO_UBRR_1X(f_cpu, baud))
+
+#define UBRR_TO_BAUD_1X(f_cpu, ubrr) ((f_cpu)/(16 * ((ubrr) + 1)))
 #define UBRR_TO_BAUD_2X(f_cpu, ubrr) ((f_cpu)/(8 * ((ubrr) + 1)))
 
-#define UBRR_ERROR(f_cpu, baud, ubrr)
+#define UBRR_TO_BAUD(f_cpu, baud)	\
+	(USART_USE_2X(f_cpu, baud) ? UBRR_TO_BAUD_2X(f_cpu, baud) : UBRR_TO_BAUD_1X(f_cpu, baud))
+
+#define USART_USE_2X(f_cpu, baud) (UBRR_ERROR_X(2, f_cpu, baud) < UBRR_ERROR_X(1, f_cpu, baud))
+
+#define UBRR_ERROR_X(x, f_cpu, baud) \
+	ABS(UBRR_TO_BAUD_##x##X(f_cpu, BAUD_TO_UBRR_##x##X(f_cpu, baud)) - baud)
 
 /* short hand for the queue */
 #define U_r(num) usart_var(num, rq)
@@ -158,7 +167,9 @@
 	{								\
 		CAT3(power_usart, num, _enable)();			\
 		REGN_I(UCSR, num, B) = 0;				\
-		REGN_I(UCSR, num, A) = 0;				\
+		REGN_I(UCSR, num, A) = USART_USE_2X(F_CPU, usart_baud)	\
+			? (1 << REGN_A(U2X, num))			\
+			: 0;						\
 		REGN_A(UBRR, num) = BAUD_TO_UBRR(F_CPU, usart_baud);	\
 		REGN_I(UCSR, num, C) = (1 << REGN_I(UCSZ,num,0)) |	\
 				(1 << REGN_I(UCSZ, num, 1));		\

@@ -12,11 +12,19 @@ int main(int argc, char **argv)
 
 	unsigned long baud = strtol(argv[1], NULL, 10);
 	unsigned long f_cpu = strtol(argv[2], NULL, 10);
-	unsigned long ubrr = BAUD_TO_UBRR(f_cpu, baud);
-	unsigned long real_baud = UBRR_TO_BAUD(f_cpu, ubrr);
+	bool use_2x = USART_USE_2X(f_cpu, baud);
+	unsigned long ubrr_1 = BAUD_TO_UBRR_1X(f_cpu, baud);
+	unsigned long real_baud_1 = UBRR_TO_BAUD_1X(f_cpu, ubrr_1);
+	unsigned long ubrr_2 = BAUD_TO_UBRR_2X(f_cpu, baud);
+	unsigned long real_baud_2 = UBRR_TO_BAUD_2X(f_cpu, ubrr_2);
 
-	printf("BAUD = %lu ; F_CPU = %lu ; UBRR = %lu ; Actual Baud = %lu\n",
-			baud, f_cpu, ubrr, real_baud);
+
+	printf("BAUD = %lu ; F_CPU = %lu\n"
+	       "1X[%c]: UBRR = %lu ; Actual Baud = %lu\n"
+	       "2X[%c]: UBRR = %lu ; Actual Baud = %lu\n",
+	       baud, f_cpu,
+	       use_2x ? 'n' : 'Y', ubrr_1, real_baud_1,
+	       use_2x ? 'Y' : 'n', ubrr_2, real_baud_2);
 	return 0;
 }
 
