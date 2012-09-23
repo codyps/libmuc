@@ -28,8 +28,8 @@
 #define BAUD_TO_UBRR(f_cpu, baud) (((f_cpu) + 8UL * (baud)) / (16UL * (baud)) -1UL)
 #define BAUD_TO_UBRR_2X(f_cpu, baud)    (((f_cpu) + 4UL * (baud)) / (8UL * (baud)) -1UL)
 
-#define UBRR_TO_BAUD(f_cpu, ubrr) (16 * ((ubrr) + 1))
-#define UBRR_TO_BAUD_2X(f_cpu, ubrr) (8 * ((ubrr) + 1))
+#define UBRR_TO_BAUD(f_cpu, ubrr) ((f_cpu)/(16 * ((ubrr) + 1)))
+#define UBRR_TO_BAUD_2X(f_cpu, ubrr) ((f_cpu)/(8 * ((ubrr) + 1)))
 
 #define UBRR_ERROR(f_cpu, baud, ubrr)
 
