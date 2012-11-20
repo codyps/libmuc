@@ -52,7 +52,7 @@ void hmc6352_read_all_mem(void)
 	i2c_transfer(&cmd);
 }
 
-static void read_one_cb(struct i2c_trans *trans, uint8_t status)
+static void read_one_cb(struct i2c_msg *msgs, uint8_t msg_ct, uint8_t msg_pos, void *data, uint8_t status)
 {
 	if (status) {
 		DEBUG("i2c error: %d\n", status);
@@ -70,8 +70,19 @@ void hmc6352_read_mem(uint8_t addr)
 	}
 
 	DEBUG("read mem.\n");
+#if 0
 	w_buf[1] = addr;
 	cmd.cb = read_one_cb;
 	i2c_transfer(&cmd);
+#endif
+	char buf[TWI_SZ_BASE + TWI_SZ_WMSG(1) + TWI_SZ_RMSG(1)];
+	twi_start_msg(buf, HMC6352_ADDR_W);
+	twi_send(buf, 'r');
+	twi_end_msg(buf);
+	twi_start_msg(buf, HMC6352_ADDR_R);
+	twi_recv_into(buf, HMC6352_ADDR
+	twi_end_msg(buf);
+
+	i2c_xfer(T(S(HMC6352, w_buf), R(HMC6352, r_buf /* alloc */ )), read_one_cb)
 }
 
