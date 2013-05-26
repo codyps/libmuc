@@ -19,7 +19,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <muc/muc.h>
+#include <penny/math.h>
 #include <penny/circ_buf.h>
 
 #define usart_var(n, name) usart##n##_##name
