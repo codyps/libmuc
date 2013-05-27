@@ -142,8 +142,7 @@ __unused bool list_full(_name_)(list_t(_name_) *list) {                    \
 		return true;                                               \
 }
 
-#define LIST_FULL(_list_) \
-	((CIRC_NEXT((_list_)->head,(_list_)->size) == (_list_)->tail )
+#define LIST_FULL(l) CIRC_FULL((l)->head,(l)->tail,(l)->size)
 
 #define _L_DEF_VAL_I(_name_, _index_t_)  \
 __unused bool list_valid_i(_name_)(list_t(_name_) *list, _index_t_ i) {\

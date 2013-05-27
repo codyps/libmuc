@@ -58,9 +58,8 @@
 	void usart_fn(num, flush_rx_to)(char end_delim);		\
 	void usart_fn(num, flush_rx)(void);				\
 	void usart_fn(num, flush_tx)(void);				\
-	/* indicates a '\n' has been recieved. TODO: generalize	*/	\
+	/* indicates a msg_delim has been recieved. TODO: generalize */	\
 	bool usart_fn(num, new_msg)(void);
-
 
 #define DEFINE_USART_IMPL_TRANSMIT_(num, tq_sz)\
 	static struct U_t(num) {					\
@@ -74,7 +73,7 @@
 	}								\
 	static inline void usart_fn(num, udrei_off)(void)		\
 	{								\
-		UCSR##num##B &= ~(1 << UDRIE##num);	\
+		UCSR##num##B &= ~(1 << UDRIE##num);			\
 	}								\
 	static int usart_fn(num, putchar)(char c, FILE *stream)		\
 	{								\
@@ -82,8 +81,8 @@
 		uint8_t next_head = CIRC_NEXT(head, tq_sz);		\
 		while(next_head == ACCESS_ONCE(U_t(num).tail))		\
 			;						\
-		U_t(num).buf[head] = c;					\
-		U_t(num).head = next_head;				\
+		ACCESS_ONCE(U_t(num).buf[head]) = c;			\
+		ACCESS_ONCE(U_t(num).head) = next_head;			\
 		usart_fn(num, udrei_on)();				\
 		return 0;						\
 	}								\
@@ -93,6 +92,8 @@
 	}								\
 	ISR(USART##num##_UDRE_vect)					\
 	{								\
+		/* This relys on the ISR being atomic			\
+		 * (not being recursive */				\
 		if (circ_empty(U_t(num))) {				\
 			usart_fn(num, udrei_off)();			\
 			return;						\
@@ -102,7 +103,7 @@
 					sizeof(U_t(num).buf));		\
 	}
 
-#define DEFINE_USART_IMPL_RECV_(num, rq_sz)				\
+#define DEFINE_USART_IMPL_RECV_(num, rq_sz, msg_delim)			\
 	static struct U_r(num) {					\
 		uint8_t head;						\
 		uint8_t tail;						\
@@ -205,7 +206,7 @@
 /* Uses the define "F_CPU" to handle computions */
 #define DEFINE_USART_IMPL(num, usart_baud, tq_sz, rq_sz, msg_delim)	\
 	DEFINE_USART_IMPL_TRANSMIT_(num, tq_sz)				\
-	DEFINE_USART_IMPL_RECV_(num, rq_sz)				\
+	DEFINE_USART_IMPL_RECV_(num, rq_sz, msg_delim)			\
 	static FILE usart_var(num, io) = FDEV_SETUP_STREAM(		\
 			  usart_fn(num, putchar)			\
 			, usart_fn(num, getchar)			\
