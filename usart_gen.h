@@ -194,7 +194,7 @@
 		UCSR##num##A = USART_USE_2X(F_CPU, usart_baud)		\
 			? (1 << U2X##num)				\
 			: 0;						\
-		SET_UBRR(BAUD_TO_UBRR(F_CPU, usart_baud));		\
+		SET_UBRR(num, BAUD_TO_UBRR(F_CPU, usart_baud));		\
 		UCSR##num##C = (1 << UCSZ##num##0) |			\
 				(1 << UCSZ##num##1) |			\
 				(1 << URSEL##num);			\
@@ -218,7 +218,7 @@
 		UCSR##num##A = USART_USE_2X(F_CPU, usart_baud)		\
 			? (1 << U2X##num)				\
 			: 0;						\
-		SET_UBRR(BAUD_TO_UBRR(F_CPU, usart_baud));		\
+		SET_UBRR(num, BAUD_TO_UBRR(F_CPU, usart_baud));		\
 		UCSR##num##C = (1 << UCSZ##num##0) |			\
 				(1 << UCSZ##num##1) |			\
 				(1 << URSEL##num);			\

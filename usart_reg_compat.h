@@ -1,6 +1,7 @@
 #ifndef USART_REG_COMPAT_H_
 #define USART_REG_COMPAT_H_
 
+/* Provide REGNAME0 in addition to REGNAME for some chips. */
 #ifndef UCSR0A
 
 #ifdef  power_usart_enable
@@ -17,13 +18,6 @@
 #define UCSR0B UCSRB
 #define UCSR0C UCSRC
 #define UDR0 UDR
-
-/* Use SET_UBRR() for UBRR */
-#ifdef UBRR
-#define SET_UBRR(val) do { REGN_A(UBRR, num) = val; } while (0)
-#else
-#define SET_UBRR(val) do { UBRRH = val >> 8; UBRRL = val & 0xff; } while (0)
-#endif
 
 /* UCSRA */
 #define RXC0	RXC
@@ -53,9 +47,16 @@
 #define USBS0	USBS
 #define UCSZ01	UCSZ1
 #define UCSZ00	UCSZ0
-#define UCPOL	0
+#define UCPOL0	UCPOL
 
 #endif /* defined (UCSR0A) */
+
+/* Use SET_UBRR() for UBRR */
+#ifdef UBRR0
+#define SET_UBRR(num, val) do { REGN_A(UBRR, num) = val; } while (0)
+#else
+#define SET_UBRR(num, val) do { UBRRH = val >> 8; UBRRL = val & 0xff; } while (0)
+#endif
 
 #endif
 
