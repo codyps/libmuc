@@ -9,27 +9,30 @@
 		|    /|     |     |    /|    /|    /|
 	TCNT	|   / |     |     |   / |   / |   / |
 		|  /  |     |  /| |  /  |  /  |  /  |  .
-		| /   |     | / | | /   | /   | /   | .
+		| /   |     | / | | /   | /   | /   | .		|
 		|/    |/|   |/  | |/    |/    |/    |/    |/    |/    |/
 	cycle	0     1     2     3     4     5     6     7     0     1     2
 		|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|2.5ms|
 		|             20ms                              | 20ms  ...
-	outputs	|_                                               _
-	P	| |_____________________________________________| |__________
+	outputs	|_                                              |_
+	Servo1	| |_____________________________________________| |__________
 		|      _                                        |      _
-	T	|_____| |_____________________________________________| |____
+	Servo2	|_____| |_______________________________________|_____| |____
 		|            _                                  |
-	IRL	|___________| |______________________________________________
+	Servo3	|___________| |_________________________________|____________
 		|                  _                            |
-	IRR	|_________________| |________________________________________
-		|
-		| P   | T   | IRL | IRR	|None |	n   |  n  |  n  |
+	Servo4	|_________________| |___________________________|____________
+		|						|
+	Assigned| S1  | S2  | S3  | S4	|None |	n   |  n  |  n  | S1  | S2 ...
+	Timeslot|
 
 	on each cycle one of the servos is activated
 	pulled high on the overflow isr, and low on the compare 'a' isr
-*/
 
-#include <stdio.h>
+TODO:
+ - apply offseting for output change delays due to software timing
+ - investigate using multiple comparison registers
+*/
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -93,14 +96,15 @@ void servo_init(void)
 
 /* internaly called functions */
 
-// These are very costly operations (around 46 ops on each call)
-// Need to replace with logic statments, and those need to be automagicaly generated
+/* XXX: These are very costly operations (around 46 ops on each call). Need to
+ * replace with logic statments, and those need to be automagicaly generated
+ * Essentially, convertion of the servo datastructure into code is needed.
+ */
 #define SERVO_PIN_LOW(_servo_)	\
 		( *servo[_servo_].port &= (uint8_t) ~(servo[_servo_].mask) )
 
 #define SERVO_PIN_HIGH(_servo_) \
 		( *servo[_servo_].port |= (uint8_t)  (servo[_servo_].mask) )
-
 
 static void servo_pin_init(void)
 {
@@ -113,7 +117,6 @@ static void servo_pin_init(void)
 		*(servo[i].port - 1) |= (uint8_t)(servo[i].mask); // output
 	}
 }
-
 
 /*
 struct servo_ctrl {
@@ -130,17 +133,17 @@ static void servo_timer_init(void)
 	power_timer_S_enable();
 
 	// Fast PWM, ICR = TOP
-	// WGM[3,2,1,0] = 1,1,1,0 
+	// WGM[3,2,1,0] = 1,1,1,0
 	//(disables timer, CS[2,1,0] = 0)
 	SERVO_TCCRB = (uint8_t)(1<<WGM3)|(1<<WGM2);
 	//(disables outputs, COM[A,B,C][1,0] = 0)
-	SERVO_TCCRA = (uint8_t)(1<<WGM1)|(0<<WGM0); 
+	SERVO_TCCRA = (uint8_t)(1<<WGM1)|(0<<WGM0);
 
 	// write the 16 bit registers.
 	uint16_t timer_ticks = TICKS_US(SV_TIMER_PERIOD_US);
 	SERVO_ICR  = timer_ticks;
 	// causes OVF_vect execution as soon as soon as the timer is enabled.
-	SERVO_TCNT = timer_ticks; 
+	SERVO_TCNT = timer_ticks;
 
 	// set the first cycle's position (we don't get the isr for time - 1)
 	SERVO_OCRA = servo[0].pos;
