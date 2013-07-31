@@ -25,19 +25,41 @@
 #include <avr/io.h>
 #include <avr/power.h>
 
-#define TIMER1_INIT_PWM(t1_top) do {					\
+#define WGM1_NORMAL 0
+#define WGM1_PWM_PC_8 1
+#define WGM1_PWM_PC_9 2
+#define WGM1_PWM_PC_10 3
+#define WGM1_CTC_OCR1A 4
+#define WGM1_FPWM_8 5
+#define WGM1_FPWM_9 6
+#define WGM1_FPWM_10 7
+#define WGM1_PWM_PFC_ICR1 8
+#define WGM1_PWM_PFC_OCR1A 9
+#define WGM1_PWM_PC_ICR1 10
+#define WGM1_PWM_PC_OCR1A 11
+#define WGM1_CTC_ICR1 12
+#define WGM1_RESERVED 13
+#define WGM1_FPWM_IRC1 14
+#define WGM1_FPWM_OCR1A 15
+
+static inline uint8_t bi(uint8_t v, uint8_t i)
+{
+	return (v & (1 << i)) >> i
+}
+
+#define TIMER1_INIT(icr1, w) do {					\
 	power_timer1_enable();						\
 	/* Stop timer */						\
 	TCCR1B = 0;							\
 	/* Enable both compare match outputs. (COM1XY) */		\
 	TCCR1A = (1 << COM1A1) | (0 << COM1A0)				\
 		|(1 << COM1B1) | (0 << COM1B0)				\
-		|(0 << WGM11 ) | (0 << WGM10 );				\
+		|(bi(w,1) << WGM11) | (bi(w,0) << WGM10);		\
 	/* reset counts and compare matches */				\
 	TCNT1 = 0;							\
 	OCR1A = 0;							\
 	OCR1B = 0;							\
-	ICR1 = (t1_top); /* TOP */					\
+	ICR1 = (icr1); /* TOP */					\
 	/* no interrupts for us */					\
 	TIMSK1 = (0 << ICIE1) | (0 << OCIE1B) | (0 << OCIE1A)		\
 		|(0 << TOIE1);						\
@@ -45,8 +67,9 @@
 	TIFR1 = (1 << ICF1) | (1 << OCF1B) | (1 << OCF1A) | (1 << TOV1);\
 	/* Set waveform (again) and enable (prescaler bits != 0)	\
 	 * WGM13:2 = 10 */						\
-	TCCR1B = (0 << ICNC1) | (0 << ICES1) | (1 << WGM13)		\
-		|(0 << WGM12) | (0 << CS12) | (0 << CS11) | (1 << CS10);\
+	TCCR1B = (0 << ICNC1) | (0 << ICES1)				\
+		|(bi(w,3) << WGM13) | (bi(w,2) << WGM12)		\
+		|(0 << CS12) | (0 << CS11) | (1 << CS10);		\
 } while(0)
 
 /** Timer 0, atmega328p **/
