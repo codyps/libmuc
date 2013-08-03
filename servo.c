@@ -2,7 +2,7 @@
 	servo implimentation.
 		configurable pins/indexes
 		currently limited to 8 servos (modification possible to
-		support	up to 3*8 = 24) uses the timer in fpwm mode, 
+		support	up to 3*8 = 24) uses the timer in fpwm mode,
 		repeating 8 times in the 20ms period servos driven
 		on consecutive intervals.
 
@@ -176,7 +176,7 @@ static uint8_t old_cycle;
 // Needs to spend less than 600us, F_CPU/1000/10*6 clicks. (16e3@16e6Hz)
 ISR(TIMER_S_OVF_vect)
 {
-	if(cycle >= SERVO_AMOUNT) {
+	if (cycle >= SERVO_AMOUNT) {
 		// these servos don't exsist, delaying until next
 		// 20ms period.
 		/* TODO: could change the timer-top to cause only one OVF isr to
@@ -191,18 +191,16 @@ ISR(TIMER_S_OVF_vect)
 	// Set OCRA for the following cycle.
 	old_cycle = cycle;
 	cycle ++;
-	if (cycle >= (SV_TIMER_CYCLES)) {
+	if (cycle >= (SV_TIMER_CYCLES))
 		cycle = 0;
-	}
 
 	// Assignment must occour before the TCNT hits BOTTOM.
 	// That will always occour after the COMPA_vect executes.
 	// And interrupts need to be enabled with COMPA_vect executes.
-	if (cycle >= SERVO_AMOUNT) {
+	if (cycle >= SERVO_AMOUNT)
 		SERVO_OCRA = 0xFFFF;
-	} else {
+	else
 		SERVO_OCRA = servo[cycle].pos;
-	}
 }
 
 ISR(TIMER_S_COMPA_vect)
