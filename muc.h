@@ -48,8 +48,17 @@ struct bits {
 	}						\
 } while(0)
 
+#define htole16()
+#define htole32()
+#define htole64()
+#define letoh16()
+#define letoh32()
+#define letoh64()
+
 #define ntohs bswap16
 #define htons bswap16
+#define htobe16 bswap16
+#define betoh16 bswap16
 static inline uint16_t bswap16(uint16_t s)
 {
 	union u {
@@ -68,6 +77,8 @@ static inline uint16_t bswap16(uint16_t s)
 
 #define htonl bswap32
 #define ntohl bswap32
+#define htobe32 bswap32
+#define betoh32 bswap32
 //#define bswap32(x) ((bswap16(x & 0xffff)) << 16 | (bswap16(x >> 16)))
 static inline uint32_t bswap32(uint32_t s)
 {
