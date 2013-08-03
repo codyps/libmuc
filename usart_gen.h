@@ -19,9 +19,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <muc/muc.h>
+#include <penny/math.h>
 #include <penny/circ_buf.h>
 #include <penny/math.h>
+#include <muc/usart_reg_compat.h>
 
 #define usart_var(n, name) usart##n##_##name
 #define usart_fn(n, name) usart##n##_##name
@@ -58,16 +59,52 @@
 	void usart_fn(num, flush_rx_to)(char end_delim);		\
 	void usart_fn(num, flush_rx)(void);				\
 	void usart_fn(num, flush_tx)(void);				\
-	/* indicates a '\n' has been recieved. TODO: generalize	*/	\
+	/* indicates a msg_delim has been recieved. TODO: generalize */	\
 	bool usart_fn(num, new_msg)(void);
 
-/* Uses the define "F_CPU" to handle computions */
-#define DEFINE_USART_IMPL(num, usart_baud, tq_sz, rq_sz, msg_delim)	\
+#define DEFINE_USART_IMPL_TRANSMIT_(num, tq_sz)\
 	static struct U_t(num) {					\
 		uint8_t head;						\
 		uint8_t tail;						\
 		char buf[tq_sz];					\
 	} U_t(num);							\
+	static inline void usart_fn(num, udrei_on)(void)		\
+	{								\
+		UCSR##num##B |= (1 << UDRIE##num);			\
+	}								\
+	static inline void usart_fn(num, udrei_off)(void)		\
+	{								\
+		UCSR##num##B &= ~(1 << UDRIE##num);			\
+	}								\
+	static int usart_fn(num, putchar)(char c, FILE *stream)		\
+	{								\
+		uint8_t head = U_t(num).head;				\
+		uint8_t next_head = CIRC_NEXT(head, tq_sz);		\
+		while(next_head == ACCESS_ONCE(U_t(num).tail))		\
+			;						\
+		ACCESS_ONCE(U_t(num).buf[head]) = c;			\
+		ACCESS_ONCE(U_t(num).head) = next_head;			\
+		usart_fn(num, udrei_on)();				\
+		return 0;						\
+	}								\
+	static void usart_fn(num, flush_tx)(void)			\
+	{								\
+		U_t(num).tail = U_t(num).head;				\
+	}								\
+	ISR(USART##num##_UDRE_vect)					\
+	{								\
+		/* This relys on the ISR being atomic			\
+		 * (not being recursive */				\
+		if (circ_empty(U_t(num))) {				\
+			usart_fn(num, udrei_off)();			\
+			return;						\
+		}							\
+		UDR##num = U_t(num).buf[U_t(num).tail];			\
+		U_t(num).tail = CIRC_NEXT(U_t(num).tail,		\
+					sizeof(U_t(num).buf));		\
+	}
+
+#define DEFINE_USART_IMPL_RECV_(num, rq_sz, msg_delim)			\
 	static struct U_r(num) {					\
 		uint8_t head;						\
 		uint8_t tail;						\
@@ -75,39 +112,20 @@
 	} U_r(num);							\
 	static uint8_t usart_var(num, msg);				\
 									\
-	static int usart_fn(num, getchar)(FILE *stream);		\
-	static int usart_fn(num, putchar)(char c, FILE *stream);	\
-	static FILE usart_var(num, io) = FDEV_SETUP_STREAM(		\
-			  usart_fn(num, putchar)			\
-			, usart_fn(num, getchar)			\
-			, _FDEV_SETUP_RW);				\
-									\
-	static inline void usart_fn(num, udrei_on)(void)		\
-	{								\
-		REGN_I(UCSR, num, B) |= (1 << REGN_A(UDRIE, num));	\
-	}								\
-	static inline void usart_fn(num, udrei_off)(void)		\
-	{								\
-		REGN_I(UCSR, num, B) &= ~(1 << REGN_A(UDRIE, num));	\
-	}								\
 	static inline void usart_fn(num, rxi_on)(void)			\
 	{								\
-		REGN_I(UCSR, num, B) |= (1 << REGN_A(RXCIE, num));	\
+		UCSR##num##B |= (1 << RXCIE##num);			\
 	}								\
 	static inline void usart_fn(num, rxi_off)(void)			\
 	{								\
-		REGN_I(UCSR, num, B) &= ~(1 << REGN_A(RXCIE, num));	\
+		UCSR##num##B &= ~(1 << RXCIE##num);			\
 	}								\
-									\
-	void usart_fn(num, flush_rx)(void)				\
+	static void usart_fn(num, flush_rx)(void)			\
 	{								\
 		U_r(num).tail = U_r(num).head;				\
 	}								\
-	void usart_fn(num, flush_tx)(void)				\
-	{								\
-		U_t(num).tail = U_t(num).head;				\
-	}								\
-	void usart_fn(num, flush_rx_to)(char end_delim)			\
+									\
+	static void usart_fn(num, flush_rx_to)(char end_delim)		\
 	{								\
 		while(U_r(num).tail !=	U_r(num).head) {		\
 			uint8_t d = U_r(num).buf[U_r(num).tail];	\
@@ -118,7 +136,7 @@
 		}							\
 	}								\
 									\
-	bool usart_fn(num, new_msg)(void)				\
+	static bool usart_fn(num, new_msg)(void)			\
 	{								\
 		bool ret = false;					\
 		usart_fn(num, rxi_off)();				\
@@ -130,11 +148,11 @@
 		return ret;						\
 	}								\
 									\
-	bool usart_fn(num, hasc)(void)					\
+	static bool usart_fn(num, hasc)(void)				\
 	{								\
 		return U_r(num).tail != U_r(num).head;			\
 	}								\
-	char usart_fn(num, getc)(void)					\
+	static char usart_fn(num, getc)(void)				\
 	{								\
 		char ret = U_r(num).buf[U_r(num).tail];			\
 		U_r(num).tail = CIRC_NEXT(U_r(num).tail,		\
@@ -152,56 +170,64 @@
 					sizeof(U_r(num).buf));		\
 		return ret;						\
 	}								\
-	static int usart_fn(num, putchar)(char c, FILE *stream)		\
-	{								\
-		uint8_t head = U_t(num).head;				\
-		uint8_t next_head = CIRC_NEXT(head, tq_sz);		\
-		while(next_head == ACCESS_ONCE(U_t(num).tail))		\
-			;						\
-		U_t(num).buf[head] = c;					\
-		U_t(num).head = next_head;				\
-		usart_fn(num, udrei_on)();				\
-		return 0;						\
-	}								\
 									\
-	FILE *usart_fn(num, init)(void)					\
-	{								\
-		CAT3(power_usart, num, _enable)();			\
-		REGN_I(UCSR, num, B) = 0;				\
-		REGN_I(UCSR, num, A) = USART_USE_2X(F_CPU, usart_baud)	\
-			? (1 << REGN_A(U2X, num))			\
-			: 0;						\
-		REGN_A(UBRR, num) = BAUD_TO_UBRR(F_CPU, usart_baud);	\
-		REGN_I(UCSR, num, C) = (1 << REGN_I(UCSZ,num,0)) |	\
-				(1 << REGN_I(UCSZ, num, 1));		\
-		REGN_I(UCSR, num, B) = (1 << REGN_A(TXEN, num)) |	\
-				(1 << REGN_A(RXEN, num)) |		\
-				(1 << REGN_A(RXCIE, num));		\
-		return &usart_var(num, io);				\
-	}								\
-									\
-	ISR(CAT3(USART, num, _UDRE_vect))				\
-	{								\
-		if (circ_empty(U_t(num))) {				\
-			usart_fn(num, udrei_off)();			\
-			return;						\
-		}							\
-		REGN_A(UDR, num) = U_t(num).buf[U_t(num).tail];		\
-		U_t(num).tail = CIRC_NEXT(U_t(num).tail,		\
-					sizeof(U_t(num).buf));		\
-	}								\
-									\
-	ISR(CAT3(USART, num, _RX_vect))					\
+	ISR(USART##num##_RX_vect)					\
 	{								\
 		uint8_t next_head = CIRC_NEXT(U_r(num).head,		\
 					sizeof(U_r(num).buf));		\
-		if (U_r(num).tail == next_head) {			\
+		if (U_r(num).tail == next_head)				\
 			return;						\
-		}							\
-		U_r(num).buf[U_r(num).head] = REGN_A(UDR, num);		\
+		U_r(num).buf[U_r(num).head] = UDR##num;			\
 		if (U_r(num).buf[U_r(num).head] == msg_delim)		\
 			usart_var(num, msg) ++;				\
 		U_r(num).head = next_head;				\
 	}
+
+#define DEFINE_USART_IMPL_TRANSMIT(num, usart_baud, tq_sz)		\
+	DEFINE_USART_IMPL_TRANSMIT_(num, tq_sz);			\
+	static FILE usart_var(num, io) = FDEV_SETUP_STREAM(		\
+			  usart_fn(num, putchar)			\
+			, NULL						\
+			, _FDEV_SETUP_WRITE);				\
+	static FILE *usart_fn(num, init)(void)				\
+	{								\
+		power_usart##num##_enable();				\
+		UCSR##num##B = 0;					\
+		UCSR##num##A = USART_USE_2X(F_CPU, usart_baud)		\
+			? (1 << U2X##num)				\
+			: 0;						\
+		SET_UBRR(num, BAUD_TO_UBRR(F_CPU, usart_baud));		\
+		UCSR##num##C = (1 << UCSZ##num##0) |			\
+				(1 << UCSZ##num##1) |			\
+				(1 << URSEL##num);			\
+		UCSR##num##B = (1 << TXEN##num);			\
+		return &usart_var(num, io);				\
+	}								\
+
+/* Uses the define "F_CPU" to handle computions */
+#define DEFINE_USART_IMPL(num, usart_baud, tq_sz, rq_sz, msg_delim)	\
+	DEFINE_USART_IMPL_TRANSMIT_(num, tq_sz)				\
+	DEFINE_USART_IMPL_RECV_(num, rq_sz, msg_delim)			\
+	static FILE usart_var(num, io) = FDEV_SETUP_STREAM(		\
+			  usart_fn(num, putchar)			\
+			, usart_fn(num, getchar)			\
+			, _FDEV_SETUP_RW);				\
+									\
+	static FILE *usart_fn(num, init)(void)				\
+	{								\
+		power_usart##num##_enable();				\
+		UCSR##num##B = 0;					\
+		UCSR##num##A = USART_USE_2X(F_CPU, usart_baud)		\
+			? (1 << U2X##num)				\
+			: 0;						\
+		SET_UBRR(num, BAUD_TO_UBRR(F_CPU, usart_baud));		\
+		UCSR##num##C = (1 << UCSZ##num##0) |			\
+				(1 << UCSZ##num##1) |			\
+				(1 << URSEL##num);			\
+		UCSR##num##B = (1 << TXEN##num) |			\
+				(1 << RXEN##num) |			\
+				(1 << RXCIE##num);			\
+		return &usart_var(num, io);				\
+	}								\
 
 #endif
