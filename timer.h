@@ -236,7 +236,7 @@ static inline void timer1_start(uint16_t icr1, uint8_t w)
 static inline void timer2_init_async_clock(void)
 {
 	// 1. Disable the Timer/Counter2 interrupts by clearing OCIE2 and
-	//    TOIE2.
+	//    TOIE2. (non-init only)
 	TIMSK &= ~((1 << OCIE2) | (1 << TOIE2));
 
 	// 2. Select clock source by setting AS2 as appropriate.
