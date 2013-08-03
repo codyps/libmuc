@@ -21,6 +21,7 @@
 
 #include <muc/muc.h>
 #include <penny/circ_buf.h>
+#include <penny/math.h>
 
 #define usart_var(n, name) usart##n##_##name
 #define usart_fn(n, name) usart##n##_##name
