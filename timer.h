@@ -1,3 +1,7 @@
+/*
+ * Timer 0,1,2 setup for ATmega microcontrollers
+ */
+
 #ifndef TIMER_H_
 #define TIMER_H_
 
@@ -214,5 +218,52 @@ static inline void timer1_start(uint16_t icr1, uint8_t w)
 	TCCR2A = (0 << WGM21) | (1 << WGM22);				\
 	TCCR2B = (0 << WGM22) | (prescale & 0x7);			\
 } while(0)
+
+/*
+ * Setup timer2 to run off an external 32.768kHz crystal and generate a
+ * millisecond timer.
+ *
+ * Prescaller options:
+ * 1, 8, 32, 64, 128, 256, 1024
+ * Giving us clocks of:
+ * 32.768, 4.096, 1.024, 0.512, 0.256, 0.128, 0.032
+ *
+ * And we have a 8bit counter allowing maximums of:
+ * 128.0 16.0 4.0 2.0 1.0 0.5 0.125
+ *
+ * HW: atmega8a
+ */
+static inline void timer2_init_async_clock(void)
+{
+	// 1. Disable the Timer/Counter2 interrupts by clearing OCIE2 and
+	//    TOIE2.
+	TIMSK &= ~((1 << OCIE2) | (1 << TOIE2));
+
+	// 2. Select clock source by setting AS2 as appropriate.
+	ASSR = 1 << AS2;
+	// TCNT2, OCR2, and TCCR2 might be corrupted by changing AS2.
+	// Avoid setting up OC2 as an output prior to initializing this timer.
+
+	// 3. Write new values to TCNT2, OCR2, and TCCR2.
+	// - disable the counter
+	TCCR2 = 0;
+	loop_until_bit_is_clear(ASSR, TCR2UB);
+	TCNT2 = 0;
+	TCCR2 =  (0 << WGM20) | (0 << WGM21) // normal
+		|(0 << COM21) | (0 << COM20) // diconnect OC2
+		|(0 << CS22 ) | (0 << CS21 ) | (1 << CS20); // prescale = 1
+	// OCR2 is unused
+
+	// 4. To switch to asynchronous operation: Wait for TCN2UB, OCR2UB, and
+	//    TCR2UB.
+	loop_until_bit_is_clear(ASSR, TCR2UB);
+	loop_until_bit_is_clear(ASSR, TCN2UB);
+
+	// 5. Clear the Timer/Counter2 Interrupt Flags.
+	TIFR = (1 << TOV2) | (1 << OCF2);
+
+	// 6. Enable interrupts, if needed.
+	TIMSK |= (1 << TOIE2);
+}
 
 #endif
