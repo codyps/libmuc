@@ -18,9 +18,11 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include <penny/math.h>
 #include <penny/circ_buf.h>
+#include <penny/math.h>
 #include <muc/usart_reg_compat.h>
 
 #define usart_var(n, name) usart##n##_##name
