@@ -2,6 +2,7 @@
 #define T_USART_H_
 
 #include <stdint.h>
+#include <stdio.h>
 
 #define UCSR0A UCSR0A
 uint8_t UCSR0A;

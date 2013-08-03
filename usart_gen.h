@@ -18,6 +18,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include <penny/math.h>
 #include <penny/circ_buf.h>

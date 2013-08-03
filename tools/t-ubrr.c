@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned long bauds [] {
+unsigned long bauds [] = {
 	300,
 	600,
 	1200,

@@ -1,12 +1,5 @@
-all: t-usart-gen.o t-ubrr
+all: t-usart-gen.o
 .PHONY: all
-
-TARGETS = t-ubrr
-obj-t-ubrr = t-ubrr.o
-t-ubrr: $(obj-t-ubrr)
-t-ubrr: CROSS_COMPILE=
-t-ubrr: ALL_LDFLAGS=
-t-ubrr: ALL_CFLAGS=-I../.. -std=gnu99
 
 ALL_CFLAGS += -I.. -I../..
 ALL_CFLAGS += -Wl,--as-needed -Os
