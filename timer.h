@@ -1,7 +1,7 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-/** Timer1, ATMEGA328P **/
+/** Timer1, ATMEGA328P, ATMEGA8A **/
 /* Table 15-4. Waveform Generation Mode Bit Description
  * n  WGM13:0 Desc                        TOP    OCR1x_up. TOV1_flag_set
  * 0  0 0 0 0 Normal                      0xFFFF Immediate MAX
@@ -39,12 +39,55 @@
 #define WGM1_PWM_PC_OCR1A 11
 #define WGM1_CTC_ICR1 12
 #define WGM1_RESERVED 13
-#define WGM1_FPWM_IRC1 14
+#define WGM1_FPWM_ICR1 14
 #define WGM1_FPWM_OCR1A 15
 
 static inline uint8_t bi(uint8_t v, uint8_t i)
 {
 	return (v & (1 << i)) >> i
+}
+
+static inline void timer1_stop(void)
+{
+	TCCR1B = 0;
+}
+
+static inline void timer1_reset(void)
+{
+	TCCR1B = 0;
+	TIMSK = 0;
+	TCNT1 = 0;
+	OCR1A = 0;
+	OCR1B = 0;
+	ICR1 = 0;
+	TCCR1A = 0;
+#ifdef TIMSK
+#if !defined(__AVR_ATmega8__)
+#error "Ensure your part works, then add."
+#endif
+	/* TODO: mechanizm to combine this with timer{0,2}_reset() */
+	TIMSK &= ~((1 << TICIE1) | (1 << OCIE1A) | (1 << OCIE1B) | (1 << TOIE1));
+#elif defined(TIMSK1)
+#error "Haven't tested since rewrite."
+	TIMSK1 = 0;
+#else
+# error "Don't know how to disable interrupts."
+#endif
+}
+
+static inline void timer1_start(uint16_t icr1, uint8_t w, uint8_t cs)
+{
+	/* Enable both compare match outputs. (COM1XY) */
+	TCCR1A = (1 << COM1A1) | (0 << COM1A0)
+		|(1 << COM1B1) | (0 << COM1B0)
+		|(bi(w,1) << WGM11) | (bi(w,0) << WGM10);
+	/* reset counts and compare matches */
+	ICR1 = icr1; /* TOP */
+	/* Set waveform (again) and enable (prescaler bits != 0)
+	 * WGM13:2 = 10 */
+	TCCR1B = (0 << ICNC1) | (0 << ICES1)
+		|(bi(w,3) << WGM13) | (bi(w,2) << WGM12)
+		|(0 << CS12) | (0 << CS11) | (1 << CS10);
 }
 
 #define TIMER1_INIT(icr1, w) do {					\
