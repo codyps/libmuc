@@ -44,7 +44,7 @@
 
 static inline uint8_t bi(uint8_t v, uint8_t i)
 {
-	return (v & (1 << i)) >> i
+	return (v & (1 << i)) >> i;
 }
 
 static inline void timer1_stop(void)
@@ -75,7 +75,7 @@ static inline void timer1_reset(void)
 #endif
 }
 
-static inline void timer1_start(uint16_t icr1, uint8_t w, uint8_t cs)
+static inline void timer1_start(uint16_t icr1, uint8_t w)
 {
 	/* Enable both compare match outputs. (COM1XY) */
 	TCCR1A = (1 << COM1A1) | (0 << COM1A0)
