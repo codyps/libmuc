@@ -10,6 +10,15 @@
 #define SD_SSR_SZ (512/8)	// SD status
 #define SD_CSR_SZ (32/8)	// card status
 
+
+/* Stated SPI limitations:
+ * - fixed block size (TODO: check hw behavior)
+ * - cannot use CMDs defined after 2.00 (TODO: check hw behavior)
+ * - ???
+ */
+
+#define SD_SPI_BLOCK_LEN 512
+
 /* Power On
  *  |          CMD0 (from almost all states)
  *  |   /------/
@@ -47,8 +56,8 @@
  */
 
 
-
 /* Only for SD, not MMC */
+#define CMD0 0x40
 #define GO_IDLE_STATE CMD0 // [basic]
 // 0x40, 0, 0, 0, 0, 0x95
 

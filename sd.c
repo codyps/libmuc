@@ -8,21 +8,64 @@ static FILE sd_files[SD_FILE_CT];
 static uint8_t sd_files_pos;
 
 #define sd_cs_release() SD_CS_PORT |= (1 << SD_CS_IX)
-#define sd_cs_raise()   SD_CS_PORT &= ~(1 << SD_CS_IX)
+#define sd_cs_assert()   SD_CS_PORT &= ~(1 << SD_CS_IX)
 
 /* MSB first.
  * CRC = 16 bit CCITT
  */
 
-void sd_init(void)
+void sd_host_init(void)
 {
-
 	spi_master_init();
-
 	/* SD CS = output */
 	DDR(SD_CS_PORT) |= (1 << SD_CS_IX);
-
 	sd_cs_release();
+}
+
+#define sd_send_array(a) sd_send_bytes(ARRAY_SIZE(a), a)
+static void sd_send_bytes(uint8_t len, uint8_t *bytes)
+{
+	uint8_t i;
+	for (i = 0; i < len; i++) {
+		spi_xfer_discard(bytes[i]);
+	}
+}
+
+static void sd_send_cmd(uint8_t cmd, 
+
+static void card_to_spi_mode(void)
+{
+	/* card must be in IDLE or any state in SPI mode */
+
+	sd_cs_assert();
+	/* XXX: may need to setup SDHC/SDXC by sending some additional commands
+	 * before going to SPI mode */
+	sd_send_cmd(CMD0, { 0, 0, 0, 42} );
+	sd_cs_release();
+
+	/* now in SPI operation mode */
+}
+
+void sd_card_init(void)
+{
+	/* Card identification mode */
+	card_to_spi_mode();
+
+	sd_send_cmd(CMD8, ...); // mandatory for spec 2.00.
+	// if Illegal cmd: v1 or not SD
+	// check voltage range in returned data. Retry CMD8.
+
+	sd_send_cmd(CMD58, ...); // optional, READ OCR
+	// if invalid command, not a SD memory card.
+	do {
+		sd_send_acmd(ACMD41, ...);
+		// if invalid command, not a SD memory card.
+
+	} while(/* card is busy */);
+
+	sd_send_cmd(CMD58, ...); // Get CCS
+
+	/* Now in data transfer mode */
 }
 
 void sd_reset(void)
