@@ -19,7 +19,12 @@
 
 #define SD_SPI_BLOCK_LEN 512
 
-/* Power On
+/* SD initialization flow
+ *
+ * ==> Not for SPI <==
+ *     -----------
+ *
+ * Power On
  *  |          CMD0 (from almost all states)
  *  |   /------/
  *  v  v
@@ -47,7 +52,8 @@
  *
  */
 
-/* [Idle state] valid commands:
+/*
+ * [Idle state] valid commands:
  * RESET
  * SEND_IF_COND
  * SEND_OP_COND
@@ -55,43 +61,51 @@
  * CRC_ON_OFF
  */
 
+/* Command Format
+ * byte 1                     | bytes 2-5       | byte 6
+ * '0' '1' <command, 6 bits> | 4 byte argument | <CRC, 7 bits> '1'
+ */
 
-/* Only for SD, not MMC */
-#define CMD0 0x40
-#define GO_IDLE_STATE CMD0 // [basic]
+/* CMD0: Only for SD, not MMC */
+#define GO_IDLE_STATE 0x40 // [basic]
 // 0x40, 0, 0, 0, 0, 0x95
 
-/* funky rules durring reset, see standard */
-#define SEND_OP_COND CMD1 // [basic]
+/* CMD1: funky rules durring reset, see standard */
+#define SEND_OP_COND 0x41 // [basic]
 
 // CMD5 (optional) [IO mode]
 // SWITCH_FUNC CMD6 [switch]
 
-#define SEND_IF_COND  CMD8 // (>=2.00) [basic]
+/* CMD8: >= 2.00 only */
+#define SEND_IF_COND  0x48 // [basic]
 
 // SEND_CSD          CMD9 [basic]
 // SEND_CID          CMD10 [basic]
-// STOP_TRANSMISSION CMD12 [basic]
+
+/* CMD12: [basic] */
+#define STOP_TRANSMISSION (0x40|12)
+
 // SEND_STATUS       CMD13 [basic]
 
 // <reserved, not specified> CMD14
 // <not allowed in SPI mode> CMD15
 
-// CMD16 [block read, block write, lock card]
-#define SET_BLOCKLEN CMD16
-// CMD17 [block read]
-#define READ_SINGLE_BLOCK CMD17
-// CMD18 [block read]
-#define READ_MULTIPLE_BLOCK CMD18
+/* CMD16: [block read, block write, lock card] */
+#define SET_BLOCKLEN (0x40|16)
+/* CMD17: [block read] */
+#define READ_SINGLE_BLOCK (0x40|17)
+/* CMD18: [block read] */
+#define READ_MULTIPLE_BLOCK (0x40|18)
+
 
 // <reserved, not specified> CMD19
 // <not allowed in SPI mode> CMD20
 // <reserved, not specified> CMD21,22,23
 
 // CMD24 [block write]
-#define WRITE_SINGLE_BLOCK CMD24
+#define WRITE_SINGLE_BLOCK (0x40|24)
 // CMD25 [block write]
-#define WRITE_MULTIPLE_BLOCK CMD25
+#define WRITE_MULTIPLE_BLOCK (0x40|25)
 
 // PROGRAM_CSD	CMD27 [block write]
 //
@@ -126,12 +140,42 @@
 // ACMD51 [app specific]
 
 #define SD_SEND_OP_COND ACMD41
-#define APP_CMD       CMD55
 
-#define READ_OCR CMD58
-#define CRC_ON_OFF CMD59
+/* CMD55: */
+#define APP_CMD (0x40|55)
 
-#define SET_BLOCKLEN CMD16
-#define STOP_TRANS CMD12
+/* CMD58: */
+#define READ_OCR (0x40|58)
+
+/* CMD59: */
+#define CRC_ON_OFF (0x40|59)
+
+
+/** Responses **/
+
+/* R1 */
+#define R1_START_BIT 7
+#define R1_PARAMETER_ERROR 6
+#define R1_ADDRESS_ERROR 5
+#define R1_ERASE_SEQUENCE_ERROR 4
+#define R1_CRC_ERROR 3
+#define R1_ILLEGAL_CMD 2
+#define R1_ERASE_RESET 1
+#define R1_IN_IDLE_STATE 0
+
+/* R2 - R1 followed by an additional byte */
+#define R2_OUT_OF_RANGE 7
+#define R2_CSD_OVERWRITE 7
+#define R2_ERASE_PARAMETER 6
+#define R2_WRITE_PROTECT_VIOLATION 5
+#define R2_CARD_ECC_FAILED 4
+#define R2_CARD_CONTROLLER_ERROR 3
+#define R2_UNSPECIFIED_ERROR 2
+#define R2_WRITE_PROTECT_ERASE_SKIP 1
+#define R2_LOCK_UNLOCK_FAILED 1
+#define R2_CARD_LOCKED 0
+
+/* R3 - R1 followed by 4 bytes of the operating condition register (MSB
+ * first) */
 
 #endif /* SD_H_ */
