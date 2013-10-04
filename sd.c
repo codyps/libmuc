@@ -31,7 +31,10 @@ static void sd_send_bytes(uint8_t len, uint8_t *bytes)
 	}
 }
 
-static void sd_send_cmd(uint8_t cmd, 
+static uint8_t sd_send_cmd_ignore_r1(uint8_t cmd, uint8_t argument);
+static uint8_t sd_send_cmd_ignore_r2(uint8_t cmd, uint8_t argument);
+static uint8_t sd_send_cmd_ignore_r3(uint8_t cmd, uint8_t argument);
+static uint8_t sd_send_cmd_r1(uint8_t cmd, uint8_t argument, uint8_t *r1);
 
 static void card_to_spi_mode(void)
 {

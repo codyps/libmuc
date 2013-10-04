@@ -124,11 +124,19 @@
 // <reserved for CMD6>		CMD50 (optional) [switch]
 // <reserved for IO mode>	CMD52 (optional) [i/o mode]
 // <reserved for IO mode>	CMD53 (optional) [i/o mode]
-// APP_CMD			CMD55 [application specific]
+
+/* CMD55: [application specific] */
+#define APP_CMD (0x40|55)
+
 // GEN_CMD			CMD56 [application specific]
 // <reserved for CMD6>		CMD57 (optional) [switch]
-// READ_OCR			CMD58 [basic]
-// CRC_ON_OFF			CMD59 [basic]
+
+/* CMD58: [basic] */
+#define READ_OCR (0x40|58)
+
+/* CMD59: [basic] */
+#define CRC_ON_OFF (0x40|59)
+
 //
 // CMD60-63 are reserved for manuf.
 //
@@ -141,14 +149,6 @@
 
 #define SD_SEND_OP_COND ACMD41
 
-/* CMD55: */
-#define APP_CMD (0x40|55)
-
-/* CMD58: */
-#define READ_OCR (0x40|58)
-
-/* CMD59: */
-#define CRC_ON_OFF (0x40|59)
 
 
 /** Responses **/
