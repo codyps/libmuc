@@ -1,4 +1,3 @@
-
 #include <usb.h>
 #include <memory.h>
 #include <stdio.h>
@@ -60,7 +59,7 @@ void usbtiny_close(void)
 }
 
 // Wrapper for simple usb_control_msg messages
-int usb_control(int requestid, int val, int index)
+int usb_control(unsigned int requestid, unsigned int val, unsigned int index)
 {
 	int nbytes;
 
@@ -153,7 +152,7 @@ int usbtiny_spi(unsigned char cmd[4], unsigned char res[4])
 	int nbytes;
 
 	// Make sure its empty so we don't read previous calls if it fails
-	memset(res, '\0', sizeof(res));
+	memset(res, '\0', 4);
 
 	nbytes = usb_in(USBTINY_SPI, (cmd[1] << 8) | cmd[0],	// convert to 16-bit words
 			(cmd[3] << 8) | cmd[2],	//  "
