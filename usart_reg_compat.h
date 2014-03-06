@@ -3,6 +3,7 @@
 
 /* Provide REGNAME0 in addition to REGNAME for some chips. */
 #ifndef UCSR0A
+#warn "enabling compatability USART0 defintion"
 
 #ifdef  power_usart_enable
 #define power_usart0_enable() power_usart_enable()
@@ -51,11 +52,13 @@
 
 #endif /* defined (UCSR0A) */
 
+#define REGN_A(s, n) CAT2(s, n)
+
 /* Use SET_UBRR() for UBRR */
 #ifdef UBRR0
-#define SET_UBRR(num, val) do { REGN_A(UBRR, num) = val; } while (0)
+# define SET_UBRR(num, val) do { REGN_A(UBRR, num) = val; } while (0)
 #else
-#define SET_UBRR(num, val) do { UBRRH = val >> 8; UBRRL = val & 0xff; } while (0)
+# define SET_UBRR(num, val) do { UBRRH = val >> 8; UBRRL = val & 0xff; } while (0)
 #endif
 
 #endif
