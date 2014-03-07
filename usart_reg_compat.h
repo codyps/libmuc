@@ -14,7 +14,6 @@
 #endif
 
 #ifndef UCSR0A
-#warning "enabling compatability USART0 defintion"
 
 /* note the RX vs RXC here */
 #define USART0_RX_vect		USART_RXC_vect
