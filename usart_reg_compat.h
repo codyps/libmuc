@@ -2,14 +2,19 @@
 #define USART_REG_COMPAT_H_
 
 /* Provide REGNAME0 in addition to REGNAME for some chips. */
-#ifndef UCSR0A
-#warn "enabling compatability USART0 defintion"
+#include <avr/power.h>
+#include <avr/io.h>
 
-#ifdef  power_usart_enable
-#define power_usart0_enable() power_usart_enable()
-#else
-#define power_usart0_enable()
+#if !defined(power_usart0_enable)
+# ifdef power_usart_enable
+#  define power_usart0_enable() power_usart_enable()
+# else
+#  define power_usart0_enable()
+# endif
 #endif
+
+#ifndef UCSR0A
+#warning "enabling compatability USART0 defintion"
 
 /* note the RX vs RXC here */
 #define USART0_RX_vect		USART_RXC_vect
@@ -52,13 +57,17 @@
 
 #endif /* defined (UCSR0A) */
 
-#define REGN_A(s, n) CAT2(s, n)
-
-/* Use SET_UBRR() for UBRR */
 #ifdef UBRR0
-# define SET_UBRR(num, val) do { REGN_A(UBRR, num) = val; } while (0)
+# define SET_UBRR(num, val) do { UBRR##num = val; } while (0)
 #else
+/* XXX: if defined(URSEL), make sure it is cleared */
 # define SET_UBRR(num, val) do { UBRRH = val >> 8; UBRRL = val & 0xff; } while (0)
+#endif
+
+#ifdef URSEL0
+# define SET_UCSRC(num, val) do { UCSR##num##C = val | 1 << URSEL##num; } while (0)
+#else
+# define SET_UCSRC(num, val) do { UCSR##num##C = val; } while(0)
 #endif
 
 #endif

@@ -198,9 +198,8 @@
 			? (1 << U2X##num)				\
 			: 0;						\
 		SET_UBRR(num, BAUD_TO_UBRR(F_CPU, usart_baud));		\
-		UCSR##num##C = (1 << UCSZ##num##0) |			\
-				(1 << UCSZ##num##1) |			\
-				(1 << URSEL##num);			\
+		SET_UCSRC(num, (1 << UCSZ##num##0) |			\
+				(1 << UCSZ##num##1));			\
 		UCSR##num##B = (1 << TXEN##num);			\
 		return &usart_var(num, io);				\
 	}								\
@@ -222,9 +221,8 @@
 			? (1 << U2X##num)				\
 			: 0;						\
 		SET_UBRR(num, BAUD_TO_UBRR(F_CPU, usart_baud));		\
-		UCSR##num##C = (1 << UCSZ##num##0) |			\
-				(1 << UCSZ##num##1) |			\
-				(1 << URSEL##num);			\
+		SET_UCSRC(num, (1 << UCSZ##num##0) |			\
+				(1 << UCSZ##num##1));			\
 		UCSR##num##B = (1 << TXEN##num) |			\
 				(1 << RXEN##num) |			\
 				(1 << RXCIE##num);			\
