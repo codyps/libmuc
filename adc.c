@@ -11,10 +11,18 @@
 #include <avr/power.h>
 #include <avr/interrupt.h>
 #include <util/delay_basic.h>
+#include <math.h>
 
 #include "muc.h"
 #include "adc.h"
-#include "adc_conf.h"
+
+#define ADC_PRESCALE_BITS                     \
+	( (uint8_t) ceil( log((double)F_CPU / \
+		ADC_MAX_CLK)/log(2) ) )
+#define ADC_PRESCALE \
+	((uint8_t) pow(2,ADC_PRESCALE_BITS))
+#define ADC_F (F_CPU/ADC_PRESCALE)
+#define ADC_CYCLE ( F_CPU / ADC_F ) // == ADC_PRESCALE
 
 static uint16_t adc_values[ADC_CHANNEL_CT];
 volatile bool adc_new_data;
@@ -174,9 +182,8 @@ ISR(ADC_vect)
 
 	adc_values[past_channel_index] = ADC;
 
-	if (adc_curr_chan_index == 0) {
+	if (adc_curr_chan_index == 0)
 		adc_new_data = true;
-	}
 
         /* Needs ADC_PRESCALE clocks (40 on 8Mhz) from the interupt to the ADMUX
 	 *   write within this function. */

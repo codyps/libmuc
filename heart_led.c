@@ -62,12 +62,12 @@ ISR(TIMER2_COMPA_vect)
 
 #define timer2_compa_isr_lock() do {      \
 		TIMSK2 &= ~(1 << OCIE2A); \
-		asm("":::"memory");       \
+		barrier();		  \
 	} while(0)
 
 #define timer2_compa_isr_unlock() do {    \
+		barrier();		  \
 		TIMSK2 |= (1 << OCIE2A);  \
-		asm("":::"memory");       \
 	} while(0)
 
 uint32_t time_ms(void) {
